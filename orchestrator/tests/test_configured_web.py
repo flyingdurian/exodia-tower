@@ -82,9 +82,12 @@ def test_full_automated_cycle_works_with_mock_page(tmp_path):
 
 def test_screenshot_on_failure(tmp_path):
     configured(tmp_path)
+    class RedirectedPage(Page):
+        async def goto(self,url,**kwargs):
+            self.url="https://unapproved.test/"
     class Broken(Factory):
         async def launch_persistent_context(self,**kwargs):
-            c=Context();c.pages[0].url="https://unapproved.test/";return c
+            c=Context();c.pages=[RedirectedPage()];return c
     async def run():
         runner=ConfiguredWebRunner(tmp_path,browser_factory=Broken())
         with pytest.raises(WebAdapterError):
@@ -92,3 +95,47 @@ def test_screenshot_on_failure(tmp_path):
         assert runner.status=="error"
         await runner.close()
     asyncio.run(run())
+
+
+def test_custom_web_task_automatically_delivers_to_companion(monkeypatch,tmp_path):
+    from fastapi.testclient import TestClient
+    from app.api import server
+    import time
+    configured(tmp_path)
+    # Real HTTP + persistence + UI state; browser result simulated in the test.
+    monkeypatch.setattr(server.web_adapter,"snapshot",lambda:{
+       "configured":True,"status":"ready","site":"127.0.0.1"})
+    async def simulated_run(prompt,*,phase):
+        for p in ["typing","submitting","waiting_for_reply"]:
+            phase(p)
+            await asyncio.sleep(.004)
+        return {"answer":"Browser result, ready for Nova","provider":"custom_web",
+                "source":"configured_browser"}
+    monkeypatch.setattr(server.web_adapter,"run",simulated_run)
+    headers={"x-exodia-client":"exodia-dashboard"}
+    with TestClient(server.app) as client:
+        response=client.post("/api/command/tasks",headers=headers,json={
+            "prompt":"Review this plan","agent_id":"nova","model_choice":"custom_web"})
+        assert response.status_code==201,response.text
+        task_id=response.json()["id"]
+        for _ in range(50):
+            result=next(t for t in client.get("/api/command/tasks").json()["tasks"] if t["id"]==task_id)
+            if result["state"]=="answered":break
+            time.sleep(.02)
+        assert result["state"]=="answered"
+        assert result["provider"]=="custom_web"
+        assert result["answer"]=="Browser result, ready for Nova"
+        assert result["error"]==""
+        assert client.get("/automation-demo").status_code==200
+
+
+def test_custom_web_requires_configured_site(monkeypatch):
+    from fastapi.testclient import TestClient
+    from app.api import server
+    monkeypatch.setattr(server.web_adapter,"snapshot",lambda:{
+        "configured":False,"last_error":"No configuration"})
+    with TestClient(server.app) as client:
+        resp=client.post("/api/command/tasks",
+            headers={"x-exodia-client":"exodia-dashboard"},
+            json={"prompt":"Try","agent_id":"kiko","model_choice":"custom_web"})
+        assert resp.status_code==422
