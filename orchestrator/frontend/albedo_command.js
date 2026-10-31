@@ -17,6 +17,7 @@ const UI={
 const HEADER={'X-Exodia-Client':'exodia-dashboard'};
 const motionStage=new AlbedoMotionStage(UI.rig,UI.video);
 motionStage.onStatus=info=>{
+ if(info.loading){UI.playback.textContent=info.loading;return;}
  if(info.ready){
    UI.playback.textContent=(info.mode==='articulated proof'?'Articulated body + face · ':'Idle motion video · ')+
       (info.intent||'Live animated preview')+

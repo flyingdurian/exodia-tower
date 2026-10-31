@@ -27,10 +27,12 @@ export class AlbedoMotionStage {
   async initialize(){
     validatePerformanceMap();
     try{
+      this.onStatus?.({loading:'Fetching animation artwork and rig data'});
       const [a,b]=await Promise.all([
         this.fetcher('/assets/artwork/kiko_prime/manifest.json').then(r=>{if(!r.ok)throw Error('art manifest missing');return r.json()}),
         this.fetcher('/assets/rigs/kiko.json').then(r=>{if(!r.ok)throw Error('rig manifest missing');return r.json()})
       ]);
+      this.onStatus?.({loading:'Building the articulated character skeleton'});
       this.engine=new KikoArtEngine(this.canvas,a,b);
       this.engine.transparentStage=true;
       // The approved 3 MB master may remain undecoded in headed/headless Chromium.
@@ -39,6 +41,7 @@ export class AlbedoMotionStage {
       let qa;
       for(let i=0;i<60;i++){
         qa=this.engine.getArtQA();
+        if(i%5===0)this.onStatus?.({loading:'Decoding character art: '+qa.ready.length+' registered layers'});
         if(qa.ready.includes('head')&&qa.ready.includes('torso'))break;
         await new Promise(resolve=>setTimeout(resolve,200));
       }
