@@ -19,7 +19,7 @@ export function validatePerformanceMap(){
  return true;
 }
 export class AlbedoMotionStage {
-  constructor(canvas,video,{fetcher=fetch,clock=requestAnimationFrame}={}){
+  constructor(canvas,video,{fetcher=(...args)=>fetch(...args),clock=requestAnimationFrame}={}){
     this.canvas=canvas;this.video=video;this.fetcher=fetcher;this.clock=clock;
     this.state='idle';this.ready=false;this.failed=false;this.paused=false;this.engine=null;
     this.loadingPhase='created';
