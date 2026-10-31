@@ -1,0 +1,340 @@
+{
+  "version": "exodia-rig/v1",
+  "agent_id": "memory",
+  "name": "Mira",
+  "status": "needs_separated_character_layers",
+  "production_ready": false,
+  "units": "pixel_100x180",
+  "design_canvas": [
+    100,
+    180
+  ],
+  "bones": {
+    "root": {
+      "parent": null,
+      "pivot": [
+        0,
+        0
+      ]
+    },
+    "hips": {
+      "parent": "root",
+      "pivot": [
+        0,
+        -16
+      ]
+    },
+    "torso": {
+      "parent": "hips",
+      "pivot": [
+        0,
+        -15
+      ]
+    },
+    "neck": {
+      "parent": "torso",
+      "pivot": [
+        0,
+        -36
+      ]
+    },
+    "head": {
+      "parent": "neck",
+      "pivot": [
+        0,
+        -8
+      ]
+    },
+    "hair_back": {
+      "parent": "head",
+      "pivot": [
+        0,
+        -20
+      ]
+    },
+    "hair_front": {
+      "parent": "head",
+      "pivot": [
+        0,
+        -30
+      ]
+    },
+    "eye_left": {
+      "parent": "head",
+      "pivot": [
+        -10,
+        -9
+      ]
+    },
+    "eye_right": {
+      "parent": "head",
+      "pivot": [
+        10,
+        -9
+      ]
+    },
+    "mouth": {
+      "parent": "head",
+      "pivot": [
+        0,
+        3
+      ]
+    },
+    "upper_arm_left": {
+      "parent": "torso",
+      "pivot": [
+        -24,
+        -34
+      ]
+    },
+    "forearm_left": {
+      "parent": "upper_arm_left",
+      "pivot": [
+        -10,
+        24
+      ]
+    },
+    "hand_left": {
+      "parent": "forearm_left",
+      "pivot": [
+        -3,
+        22
+      ]
+    },
+    "upper_arm_right": {
+      "parent": "torso",
+      "pivot": [
+        24,
+        -34
+      ]
+    },
+    "forearm_right": {
+      "parent": "upper_arm_right",
+      "pivot": [
+        10,
+        24
+      ]
+    },
+    "hand_right": {
+      "parent": "forearm_right",
+      "pivot": [
+        3,
+        22
+      ]
+    },
+    "thigh_left": {
+      "parent": "hips",
+      "pivot": [
+        -12,
+        5
+      ]
+    },
+    "shin_left": {
+      "parent": "thigh_left",
+      "pivot": [
+        -4,
+        35
+      ]
+    },
+    "foot_left": {
+      "parent": "shin_left",
+      "pivot": [
+        0,
+        30
+      ]
+    },
+    "thigh_right": {
+      "parent": "hips",
+      "pivot": [
+        12,
+        5
+      ]
+    },
+    "shin_right": {
+      "parent": "thigh_right",
+      "pivot": [
+        4,
+        35
+      ]
+    },
+    "foot_right": {
+      "parent": "shin_right",
+      "pivot": [
+        0,
+        30
+      ]
+    }
+  },
+  "poses": {
+    "neutral": {},
+    "happy": {
+      "head": -5,
+      "upper_arm_left": -18,
+      "upper_arm_right": 18
+    },
+    "excited": {
+      "head": -7,
+      "upper_arm_left": -95,
+      "upper_arm_right": 95,
+      "forearm_left": -35,
+      "forearm_right": 35
+    },
+    "proud": {
+      "torso": -5,
+      "head": 5,
+      "upper_arm_left": -18,
+      "upper_arm_right": 18
+    },
+    "curious": {
+      "head": 15,
+      "torso": 5,
+      "upper_arm_right": -15
+    },
+    "wonder": {
+      "head": -16,
+      "upper_arm_left": -15,
+      "upper_arm_right": -35
+    },
+    "thinking": {
+      "head": 12,
+      "upper_arm_right": -45,
+      "forearm_right": -85
+    },
+    "processing": {
+      "head": -5,
+      "upper_arm_left": -25,
+      "forearm_left": -80
+    },
+    "concentrating": {
+      "torso": 8,
+      "head": -8,
+      "upper_arm_left": -30
+    },
+    "working": {
+      "torso": 8,
+      "upper_arm_left": -50,
+      "upper_arm_right": 35,
+      "forearm_left": -50,
+      "forearm_right": 45
+    },
+    "speaking": {
+      "head": -4,
+      "upper_arm_right": -35,
+      "forearm_right": -35
+    },
+    "annoyed": {
+      "head": 12,
+      "upper_arm_left": 20,
+      "upper_arm_right": -20
+    },
+    "angry": {
+      "torso": -8,
+      "head": -12,
+      "upper_arm_left": 20,
+      "upper_arm_right": -20
+    },
+    "disappointed": {
+      "head": 20,
+      "torso": 12,
+      "upper_arm_left": 12,
+      "upper_arm_right": -12
+    },
+    "sad": {
+      "head": 22,
+      "torso": 18,
+      "upper_arm_left": 15,
+      "upper_arm_right": -15
+    },
+    "hurt": {
+      "torso": 20,
+      "head": -12,
+      "upper_arm_left": -55,
+      "forearm_left": -60
+    },
+    "pain": {
+      "torso": 28,
+      "head": -24,
+      "upper_arm_left": -30,
+      "upper_arm_right": 40
+    },
+    "alarmed": {
+      "head": -15,
+      "upper_arm_left": -70,
+      "upper_arm_right": 50
+    },
+    "panic": {
+      "head": -17,
+      "upper_arm_left": -75,
+      "upper_arm_right": 70,
+      "forearm_left": -35,
+      "forearm_right": 30
+    },
+    "bored": {
+      "head": 20,
+      "torso": 10,
+      "upper_arm_left": 15,
+      "upper_arm_right": -10
+    },
+    "sleepy": {
+      "head": 25,
+      "torso": 16,
+      "upper_arm_left": 18,
+      "upper_arm_right": -18
+    },
+    "sleeping": {
+      "head": 30,
+      "torso": 24,
+      "upper_arm_left": 20,
+      "upper_arm_right": -20
+    },
+    "relieved": {
+      "head": 8,
+      "torso": -4,
+      "upper_arm_left": -15,
+      "upper_arm_right": 15
+    },
+    "celebrating": {
+      "head": -15,
+      "upper_arm_left": -110,
+      "upper_arm_right": 110
+    }
+  },
+  "sprites": {},
+  "motion": {
+    "walk": {
+      "period_seconds": 0.72,
+      "thigh_swing_deg": 24,
+      "knee_bend_deg": 30,
+      "arm_swing_deg": 15
+    },
+    "blink": {
+      "interval_seconds": [
+        3,
+        7
+      ],
+      "duration_ms": 120
+    },
+    "breathe": {
+      "period_seconds": 3.2,
+      "torso_rotation_deg": 1.5
+    },
+    "talk": {
+      "visemes": [
+        "rest",
+        "A",
+        "E",
+        "I",
+        "O",
+        "U",
+        "M",
+        "F"
+      ],
+      "mouth_layers_required": true
+    },
+    "hair_secondary": {
+      "spring": 0.18,
+      "damping": 0.82
+    }
+  },
+  "reference": "/assets/companions/portraits/memory.webp"
+}
