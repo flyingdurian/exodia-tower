@@ -60,6 +60,10 @@ async def stop_browser_sessions():
 
 @app.get('/')
 async def home():
+    return FileResponse(settings.root/'frontend'/'albedo_command.html')
+
+@app.get('/operations-legacy')
+async def operations_legacy():
     return FileResponse(settings.root/'frontend'/'exodia_workstations.html')
 
 @app.get('/automation-demo')

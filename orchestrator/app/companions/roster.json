@@ -1,17 +1,17 @@
 [
   {
     "id": "kiko",
-    "name": "Kiko Prime",
+    "name": "Albedo",
     "agent_class": "Overseer",
     "pillar": "Central Command",
-    "title": "Celestial Commander",
+    "title": "Exodia Tower Companion",
     "portrait": "/assets/companions/portraits/kiko.webp",
     "thumbnail": "/assets/companions/thumbs/kiko.webp",
     "accent": "#75b6ff",
     "secondary": "#6578d8",
     "persona": "Friendly, curious, disciplined; sees the big picture and asks before dangerous actions.",
     "lines": {
-      "idle": "The whole tower is awake! What shall we tackle today?",
+      "idle": "Welcome back. I am ready to coordinate your next mission.",
       "thinking": "I have a few ideas. Let me connect the clues.",
       "working": "Coordinating the guild. Every action goes in the quest log.",
       "success": "Quest complete! I knew this crew could do it.",
