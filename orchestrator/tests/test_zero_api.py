@@ -119,3 +119,14 @@ def test_chatgpt_contenteditable_receives_keyboard_events(tmp_path):
         assert p.inputs[PROVIDERS['chatgpt'].input_selector].messages==[]
         await m.close()
     asyncio.run(run())
+
+def test_custom_user_agent_is_passed_to_browser_without_disabling_security(tmp_path,monkeypatch):
+    async def run():
+        monkeypatch.setenv('EXODIA_BROWSER_USER_AGENT','ExodiaTowerBrowserTest/1.0')
+        factory=Factory()
+        m=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        await m.initialize_all()
+        assert all(ctx.opts.get('user_agent')=='ExodiaTowerBrowserTest/1.0' for ctx in factory.contexts)
+        assert all('args' not in ctx.opts for ctx in factory.contexts)
+        await m.close()
+    asyncio.run(run())

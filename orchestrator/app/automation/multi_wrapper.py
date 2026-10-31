@@ -52,6 +52,8 @@ class MultiWebSessionManager:
         self._status={name:"not_started" for name in PROVIDERS}
         self._last_error={name:None for name in PROVIDERS}
         self._last_timings={name:{} for name in PROVIDERS}
+        self._browser_versions={name:None for name in PROVIDERS}
+        self._browser_ua={name:None for name in PROVIDERS}
         self._pending={}
         self._initialization_lock=asyncio.Lock()
 
@@ -60,7 +62,9 @@ class MultiWebSessionManager:
                       "profile":f"session_data/{name}", "pending_prompt":name in self._pending,
                       "mode":"automatic_text" if name=="gemini" else "operator_assisted",
                       "error":self._last_error[name],
-                      "last_timings":self._last_timings[name]} for name,spec in PROVIDERS.items()}
+                      "last_timings":self._last_timings[name],
+                      "actual_user_agent":self._browser_ua[name],
+                      "browser_version":self._browser_versions[name]} for name,spec in PROVIDERS.items()}
 
     async def initialize_all(self):
         async with self._initialization_lock:
@@ -99,6 +103,12 @@ class MultiWebSessionManager:
         often rejects that build as outdated. This does not hide automation.
         """
         options = dict(user_data_dir=str(profile), headless=self.headless, accept_downloads=False)
+        # Optional honest compatibility identification; it cannot override account security checks.
+        user_agent=os.getenv("EXODIA_BROWSER_USER_AGENT","").strip()
+        if user_agent:
+            if len(user_agent)>512 or any(ord(c)<32 for c in user_agent):
+                raise SessionError("EXODIA_BROWSER_USER_AGENT must be one valid header line under 512 characters.")
+            options["user_agent"]=user_agent
         if installed_chrome():
             try:
                 return await self._browser_factory.launch_persistent_context(**options, channel="chrome")
@@ -123,6 +133,14 @@ class MultiWebSessionManager:
             # Prompt preparation checks the canonical provider origin later.
             self._contexts[name]=context
             self._pages[name]=page
+            try:
+                self._browser_ua[name]=await page.evaluate("navigator.userAgent")
+            except (AttributeError,RuntimeError,Exception):
+                self._browser_ua[name]=None
+            try:
+                self._browser_versions[name]=context.browser.version if context.browser else None
+            except (AttributeError,RuntimeError,Exception):
+                self._browser_versions[name]=None
             self._status[name]="needs_operator_login_or_review"
         except Exception as exc:
             self._status[name]="error"
