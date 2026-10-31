@@ -55,3 +55,23 @@ This implementation does **not** scrape prompts or answers from the ChatGPT, Gem
 The operator-assisted browser preparation now clicks rich-text/contenteditable prompt editors and sends actual keyboard events (`ControlOrMeta+A`, then typed characters). Native `textarea` inputs still use Playwright's `fill()`. This improves editor compatibility but deliberately does not press Send or extract consumer chat responses.
 
 A general DOM stream-stability watcher for **authorized, automatable sites** is provided separately in `app/automation/interactive_dom.py`. It requires a page that the operator has rights to automate and is not connected to the consumer ChatGPT, Gemini or DeepSeek sessions.
+
+## Custom authorized website automation — complete task loop
+
+A complete, configurable Playwright runner is available at `app/automation/configured_web.py`. It uses an isolated persistent Chromium profile, real keyboard events for contenteditable fields, submit click, detection of a **new** answer, stream-stability and stop-button checking, serialization, diagnostics, and automatic delivery to the assigned companion's terminal.
+
+To try it with the safe local simulation (no third-party account required):
+
+```powershell
+cd orchestrator
+New-Item -ItemType Directory -Force session_data | Out-Null
+Copy-Item examples/custom_web.example.json session_data/custom_web.json
+.\\.venv\\Scripts\\python.exe -m playwright install chromium
+.\\.venv\\Scripts\\python.exe main.py
+```
+
+Choose **Configured website (automatic)** in the Command Center, assign Kiko/Nova, and submit a prompt. The runner opens `http://127.0.0.1:8765/automation-demo`, types, clicks Send, waits until the demo stops streaming, then delivers its simulated response to the companion. The demo response is **not an AI model**.
+
+To adapt the code to a website you are authorized to automate, change the URL and selectors in the ignored `session_data/custom_web.json` profile, and verify that the site's terms and your access rights allow automation. Do not supply account credentials to Exodia; sign in manually within the persistent browser profile. The app does not include consumer ChatGPT/Gemini/DeepSeek auto-scraping connectors or anti-detection code.
+
+Task states: `opening -> typing -> submitting -> waiting_for_reply -> answered`, or `failed`. Browser errors save screenshots in ignored `debug_snapshots`; incomplete tasks are marked failed upon restart. This system does not bypass paywalls, CAPTCHAs, or account security challenges.

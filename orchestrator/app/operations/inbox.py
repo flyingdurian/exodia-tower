@@ -32,7 +32,7 @@ class Inbox:
    c.row_factory=sqlite3.Row;rows=c.execute("SELECT * FROM tasks ORDER BY created_at DESC LIMIT 75").fetchall()
   return [self._mapped(x) for x in rows]
  def create(self,agent,provider,prompt,web_research=False):
-  if provider not in ('ollama','chatgpt','gemini','deepseek'):raise ValueError("Unsupported model")
+  if provider not in ('ollama','custom_web','chatgpt','gemini','deepseek'):raise ValueError("Unsupported model")
   if not prompt.strip() or len(prompt)>12000:raise ValueError("Prompt length invalid")
   id=str(uuid.uuid4());now=timestamp()
   with self.lock,self.db() as c:c.execute("INSERT INTO tasks(id,agent_id,provider,prompt,state,created_at,updated_at,web_research,sources) VALUES(?,?,?,?,?,?,?,?,?)",(id,agent,provider,prompt.strip(),'draft',now,now,int(web_research),'[]'))
@@ -49,4 +49,4 @@ class Inbox:
  def fail_interrupted(self):
   """Prevent stale 'working' UI after application restart."""
   with self.lock,self.db() as c:
-   c.execute("UPDATE tasks SET state='failed',error='Interrupted by Exodia restart. Create a new task to retry.',updated_at=? WHERE state IN ('running','researching')",(timestamp(),))
+   c.execute("UPDATE tasks SET state='failed',error='Interrupted by Exodia restart. Create a new task to retry.',updated_at=? WHERE state IN ('running','researching','opening','typing','submitting','waiting_for_reply')",(timestamp(),))
