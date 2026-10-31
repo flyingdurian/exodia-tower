@@ -1,3 +1,4 @@
+import {AlbedoMotionStage} from './albedo_motion.mjs';
 /* Exodia Tower — Albedo live command stage.
  * Stage uses existing multi-frame video, real task events and independent scene VFX.
  * Production-quality articulated character art is NOT claimed.
@@ -6,7 +7,7 @@
 const $=s=>document.querySelector(s);
 const UI={
   moodList:$('#moodList'),hero:$('#hero'),label:$('#moodLabel'),description:$('#moodDescription'),
-  overlay:$('#heroOverlay'),video:$('#albedoVideo'),prompt:$('#prompt'),model:$('#model'),
+  overlay:$('#heroOverlay'),video:$('#albedoVideo'),rig:$('#albedoRig'),prompt:$('#prompt'),model:$('#model'),
   companion:$('#companion'),research:$('#liveResearch'),answer:$('#answerFrame'),
   promptBubble:$('#responsePrompt'),provider:$('#answerProvider'),timing:$('#answerTiming'),
   image:$('#responseImage'),attachment:$('#attachment'),sources:$('#sourceList'),
@@ -14,6 +15,17 @@ const UI={
   terminalStatus:$('#terminalStatus'),playback:$('#playbackInfo'),toggle:$('#motionToggle')
 };
 const HEADER={'X-Exodia-Client':'exodia-dashboard'};
+const motionStage=new AlbedoMotionStage(UI.rig,UI.video);
+motionStage.onStatus=info=>{
+ if(info.ready){
+   UI.playback.textContent=(info.mode==='articulated proof'?'Articulated body + face · ':'Idle motion video · ')+
+      (info.intent||'Live animated preview')+
+      ' · '+(info.layers||0)+' draft layers';
+   if(info.missing?.length)UI.diagnostic.textContent='Art QA: '+info.missing.length+' layer(s) need repaint or registration.';
+ }else{
+   UI.playback.textContent='Rig unavailable: '+info.error+' · idle video fallback';
+ }
+};
 const MOODS=[
  ['idle','Idle','Ready for your command','✧'],['sleeping','Sleeping','Resting between missions','☾'],
  ['processing','Processing','Connecting the task systems','⚙'],['waiting','Waiting','Awaiting the model response','◌'],
@@ -39,6 +51,7 @@ function setMood(next,{preview=false}={}){
  if(!moodDesc[next])next='idle';
  if(stateTimer){clearTimeout(stateTimer);stateTimer=null}
  state=next;UI.hero.dataset.state=next;UI.label.textContent=prettyName(next);
+ motionStage.setState(next);
  UI.description.textContent=moodDesc[next];
  UI.overlay.textContent=next==='sleeping'?'Z  z  z':next==='thinking'?'✧ ANALYZING ✧':
  next==='processing'?'✧ COMPUTING ✧':next==='waiting'?'◌ AWAITING RESPONSE ◌':
@@ -58,7 +71,7 @@ for(const [id,label,desc,mark] of MOODS){
  const img=document.createElement('img');img.src='/assets/companions/thumbs/kiko.webp';img.alt='';
  const caption=document.createElement('span');caption.textContent=mark+' '+label;
  btn.title=desc+' (stage preview)';btn.append(img,caption);
- btn.addEventListener('click',()=>{lastInteraction=Date.now();setMood(id,{preview:true});inform('Previewing '+label+' stage direction. Character motion video currently supports idle only.');});
+ btn.addEventListener('click',()=>{lastInteraction=Date.now();setMood(id,{preview:true});inform('Showing '+label+' articulated motion choreography. Registered art is still in pre-production.');});
  UI.moodList.append(btn);
 }
 function element(tag,cls,text){
@@ -242,16 +255,21 @@ $('#openWebSessions').addEventListener('click',async()=>{
  catch(e){inform(e.message,true);}
 });
 let paused=false;
-UI.video.addEventListener('playing',()=>{videoOk=true;UI.playback.textContent='Multi-frame character footage · live state-linked stage effects';});
+UI.video.addEventListener('playing',()=>{videoOk=true;if(!motionStage.ready)UI.playback.textContent='Idle motion video · loading articulated character kit';});
 UI.video.addEventListener('error',()=>{UI.playback.textContent='Motion clip unavailable; approved portrait fallback active';});
 $('#motionToggle').addEventListener('click',()=>{
  paused=!paused;
- if(paused){UI.video.pause();$('#motionToggle').textContent='Resume motion';document.body.classList.add('motion-paused');}
- else{UI.video.play().catch(()=>{});$('#motionToggle').textContent='Pause motion';document.body.classList.remove('motion-paused');}
+ motionStage.setPaused(paused);
+ if(paused){$('#motionToggle').textContent='Resume motion';document.body.classList.add('motion-paused');}
+ else{$('#motionToggle').textContent='Pause motion';document.body.classList.remove('motion-paused');}
 });
 const motionQuery=window.matchMedia('(prefers-reduced-motion: reduce)');
-if(motionQuery.matches){UI.video.pause();$('#motionToggle').textContent='Resume motion';paused=true;}
+if(motionQuery.matches){motionStage.setPaused(true);$('#motionToggle').textContent='Resume motion';paused=true;}
 setMood('idle');renderAnswer(null);
+motionStage.initialize().then(ok=>{
+  if(ok)inform('Articulated Albedo motion loaded. Use the expression states to inspect visible body and facial motion.');
+  else inform('Art rig unavailable; idle clip still plays. Inspect diagnostics.',true);
+});
 await refreshModels();
 try{await loadTasks({initial:true})}catch(e){inform('Cannot load tasks: '+e.message,true);}
 setInterval(async()=>{

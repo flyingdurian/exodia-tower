@@ -49,7 +49,7 @@ export class KikoArtEngine {
     this.loaded=Promise.all([this.art.decode().catch(()=>null),...spriteLoads]);this.elapsed=0;this.reducedMotion=false;this.showBounds=false;
     this.operatorBlink=0;this.target=null;this.activeHand=null;this.speechText='';
     this.eyePhase=0;this.speaking=false;this.handTarget=null;
-    this.performance='idle';this.performanceAt=0;
+    this.performance='idle';this.performanceAt=0;this.transparentStage=false;
   }
   setArtRenderMode(mode){if(!ART_RENDER_MODES.includes(mode))throw Error('Unknown art render mode');this.artRenderMode=mode}
   getArtQA(){return validateRegistration(this.manifest,this.layerImages)}
@@ -158,10 +158,12 @@ export class KikoArtEngine {
     const ctx=this.ctx;ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
     ctx.save();ctx.scale(this.canvas.width/1122,this.canvas.height/1402);
     // Source-space art framing; no replacement / synthetic painted character.
-    const colors=ctx.createLinearGradient(0,0,1122,1402);colors.addColorStop(0,'#10182c');colors.addColorStop(.55,'#151734');colors.addColorStop(1,'#081b30');ctx.fillStyle=colors;ctx.fillRect(0,0,1122,1402);
-    ctx.strokeStyle='#68c7ff13';ctx.lineWidth=2;
-    for(let x=0;x<1122;x+=78){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,1402);ctx.stroke();}
-    for(let y=0;y<1402;y+=78){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(1122,y);ctx.stroke();}
+    if(!this.transparentStage){
+      const colors=ctx.createLinearGradient(0,0,1122,1402);colors.addColorStop(0,'#10182c');colors.addColorStop(.55,'#151734');colors.addColorStop(1,'#081b30');ctx.fillStyle=colors;ctx.fillRect(0,0,1122,1402);
+      ctx.strokeStyle='#68c7ff13';ctx.lineWidth=2;
+      for(let x=0;x<1122;x+=78){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,1402);ctx.stroke();}
+      for(let y=0;y<1402;y+=78){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(1122,y);ctx.stroke();}
+    }
     const angles=this._angles();const layers=Object.entries(this.manifest.layers).filter(([,v])=>v.polygons);
     layers.sort((a,b)=>a[1].z-b[1].z);
     // Controlled translation (world roaming preview) is separated from bone articulation.

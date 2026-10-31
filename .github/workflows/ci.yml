@@ -25,3 +25,5 @@ jobs:
       - run: node --test orchestrator/tests/kiko_art_engine.test.mjs
       - run: node --test orchestrator/tests/kiko_layer_runtime.test.mjs
       - run: node --check orchestrator/frontend/albedo_command.js
+      - run: node --check orchestrator/frontend/albedo_motion.mjs
+      - run: node --test orchestrator/tests/albedo_motion.test.mjs
