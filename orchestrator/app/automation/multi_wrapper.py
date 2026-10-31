@@ -109,6 +109,9 @@ class MultiWebSessionManager:
             if len(user_agent)>512 or any(ord(c)<32 for c in user_agent):
                 raise SessionError("EXODIA_BROWSER_USER_AGENT must be one valid header line under 512 characters.")
             options["user_agent"]=user_agent
+        # Explicit opt-in only. May affect browser fingerprint; does not guarantee Google login.
+        if os.getenv("EXODIA_EXPERIMENTAL_CHROMIUM_FLAG","").strip().lower() in ("1","true","yes"):
+            options["args"]=["--disable-blink-features=AutomationControlled"]
         if installed_chrome():
             try:
                 return await self._browser_factory.launch_persistent_context(**options, channel="chrome")

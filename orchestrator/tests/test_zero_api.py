@@ -130,3 +130,19 @@ def test_custom_user_agent_is_passed_to_browser_without_disabling_security(tmp_p
         assert all('args' not in ctx.opts for ctx in factory.contexts)
         await m.close()
     asyncio.run(run())
+
+def test_optional_chromium_blink_flag_is_off_by_default_but_opt_in(tmp_path,monkeypatch):
+    async def run():
+        monkeypatch.delenv('EXODIA_EXPERIMENTAL_CHROMIUM_FLAG',raising=False)
+        plain=Factory()
+        manager=MultiWebSessionManager(tmp_path/'plain',browser_factory=plain)
+        await manager.initialize_all()
+        assert all('args' not in c.opts for c in plain.contexts)
+        await manager.close()
+        monkeypatch.setenv('EXODIA_EXPERIMENTAL_CHROMIUM_FLAG','true')
+        opted=Factory()
+        manager=MultiWebSessionManager(tmp_path/'opted',browser_factory=opted)
+        await manager.initialize_all()
+        assert all(c.opts.get('args')==['--disable-blink-features=AutomationControlled'] for c in opted.contexts)
+        await manager.close()
+    asyncio.run(run())
