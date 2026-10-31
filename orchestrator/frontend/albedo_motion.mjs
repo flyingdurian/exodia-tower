@@ -32,6 +32,7 @@ export class AlbedoMotionStage {
         this.fetcher('/assets/rigs/kiko.json').then(r=>{if(!r.ok)throw Error('rig manifest missing');return r.json()})
       ]);
       this.engine=new KikoArtEngine(this.canvas,a,b);
+      this.engine.transparentStage=true;
       await this.engine.loaded;
       const qa=this.engine.getArtQA();
       if(!qa.ready.length)throw Error('Albedo art layers unavailable');
