@@ -1,4 +1,4 @@
-"""Persistent operator-assisted web workspaces, no evasion or output scraping."""
+"""Persistent visible web workspaces. Account output extraction remains operator-assisted."""
 import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -102,7 +102,7 @@ class MultiWebSessionManager:
                 raise OperatorActionRequired(f"{name} session not started; start sessions and log in first.")
             try:
                 self._check_destination(name,page.url)
-                await page.locator(PROVIDERS[name].input_selector).first.fill(prompt.strip(),timeout=10000)
+                await self._type_prompt(page,name,prompt.strip())
                 self._status[name]="awaiting_operator_send_and_copy"
                 self._pending[name]={"prompt":prompt.strip(),"prepared_at":datetime.now(timezone.utc).isoformat()}
                 return {"model_choice":name,"status":"awaiting_operator",
@@ -112,6 +112,23 @@ class MultiWebSessionManager:
                 screenshot=await self._capture_failure(name,page)
                 self._status[name]="dom_error_manual_review"
                 raise SessionError(f"{name} input unavailable; inspect browser/login and local screenshot {screenshot}.") from exc
+
+    @staticmethod
+    async def _type_prompt(page,name,prompt):
+        """Type naturally into contenteditable editors; use fill only for plain textareas.
+
+        This prepares the prompt but never triggers Send or copies provider output.
+        """
+        selector=PROVIDERS[name].input_selector
+        box=page.locator(selector).first
+        if name=="deepseek":
+            # DeepSeek's configured input is a native textarea, not contenteditable.
+            await box.fill(prompt,timeout=15000)
+        else:
+            await box.click(timeout=15000)
+            # Keyboard events keep React / rich-text handlers in sync.
+            await page.keyboard.press("ControlOrMeta+A")
+            await page.keyboard.type(prompt,delay=10)
 
     async def _capture_failure(self,name,page):
         self.debug_dir.mkdir(parents=True,exist_ok=True)

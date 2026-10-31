@@ -49,3 +49,9 @@ Safety: Only hosts explicitly listed in `RESEARCH_ALLOWED_HOSTS` can be visited.
 Without a URL, Exodia performs a free Wikipedia encyclopedia search (which is **not** a broad current-news or trends search). For current trends and analytics, provide specific permitted sources or add an authorized search connector later. Do not assume Wikipedia search alone answers rapidly changing questions. A research-enabled task is capped at 4,000 prompt characters because of the added evidence context. The local model still requires its Ollama download and may hallucinate; verify citations.
 
 This implementation does **not** scrape prompts or answers from the ChatGPT, Gemini or DeepSeek consumer websites. Those workflows still require authorized provider integration. See issue #6 for ChatGPT authorization-based integration.
+
+## React-rich text input correction
+
+The operator-assisted browser preparation now clicks rich-text/contenteditable prompt editors and sends actual keyboard events (`ControlOrMeta+A`, then typed characters). Native `textarea` inputs still use Playwright's `fill()`. This improves editor compatibility but deliberately does not press Send or extract consumer chat responses.
+
+A general DOM stream-stability watcher for **authorized, automatable sites** is provided separately in `app/automation/interactive_dom.py`. It requires a page that the operator has rights to automate and is not connected to the consumer ChatGPT, Gemini or DeepSeek sessions.

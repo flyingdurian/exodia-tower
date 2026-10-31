@@ -9,13 +9,21 @@ from app.companions.rigs import load_all, validate_rig
 from app.api.server import app
 
 class Locator:
-    def __init__(self,fail=False): self.first=self;self.fail=fail;self.messages=[]
+    def __init__(self,fail=False): self.first=self;self.fail=fail;self.messages=[];self.clicks=0
     async def fill(self,s,timeout=10000):
         if self.fail: raise RuntimeError('DOM changed')
         self.messages.append(s)
+    async def click(self,timeout=15000):
+        if self.fail: raise RuntimeError('DOM changed')
+        self.clicks+=1
+
+class Keyboard:
+    def __init__(self):self.typed=[];self.pressed=[]
+    async def type(self,text,delay=0):self.typed.append((text,delay))
+    async def press(self,key):self.pressed.append(key)
 
 class Page:
-    def __init__(self): self.url='https://placeholder.invalid';self.inputs={};self.captures=[]
+    def __init__(self): self.url='https://placeholder.invalid';self.inputs={};self.captures=[];self.keyboard=Keyboard()
     async def goto(self,url,**kwargs): self.url=url
     def locator(self,sel):
         if sel not in self.inputs: self.inputs[sel]=Locator()
@@ -41,7 +49,10 @@ def test_three_isolated_sessions_and_manual_replies(tmp_path):
         router=ZeroAPIModelRouter(m)
         r=await router.generate('Review this draft','gemini')
         assert r['status']=='awaiting_operator' and r['automatic_output'] is False
-        assert f.contexts[1].pages[0].inputs[PROVIDERS['gemini'].input_selector].messages==['Review this draft']
+        gp=f.contexts[1].pages[0]
+        assert gp.inputs[PROVIDERS['gemini'].input_selector].clicks==1
+        assert gp.keyboard.typed==[('Review this draft',10)]
+        assert gp.keyboard.pressed==['ControlOrMeta+A']
         with pytest.raises(OperatorActionRequired):m.receive_operator_response('chatgpt','not pending')
         result=router.record_operator_response('gemini','Copied manually')
         assert result['source']=='manual_copy' and result['verified'] is False
@@ -85,3 +96,26 @@ def test_web_endpoints_require_operator():
         assert client.post('/api/web/sessions/chatgpt/prepare',headers=h,json={'prompt':'test'}).status_code==409
         assert client.get('/api/rigs').json()['rigs']['kiko']['production_ready'] is False
         assert client.get('/rig-lab').status_code==200
+
+def test_native_textarea_uses_normal_fill(tmp_path):
+    async def run():
+        f=Factory();m=MultiWebSessionManager(tmp_path,browser_factory=f)
+        await m.initialize_all()
+        result=await m.prepare_prompt('deepseek','Plain text')
+        p=m._pages['deepseek']
+        assert p.inputs[PROVIDERS['deepseek'].input_selector].messages==['Plain text']
+        assert p.keyboard.typed==[]
+        assert result['status']=='awaiting_operator'
+        await m.close()
+    asyncio.run(run())
+
+def test_chatgpt_contenteditable_receives_keyboard_events(tmp_path):
+    async def run():
+        f=Factory();m=MultiWebSessionManager(tmp_path,browser_factory=f)
+        await m.initialize_all()
+        await m.prepare_prompt('chatgpt','Explain this diagram')
+        p=m._pages['chatgpt']
+        assert p.keyboard.typed==[('Explain this diagram',10)]
+        assert p.inputs[PROVIDERS['chatgpt'].input_selector].messages==[]
+        await m.close()
+    asyncio.run(run())
