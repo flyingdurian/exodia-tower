@@ -43,3 +43,12 @@ def test_emotion_range_for_true_rig_contract():
     with TestClient(app) as client:
         for emotion in ('wonder','angry','hurt','disappointed','sleeping','processing','speaking','celebrating'):
             assert client.post('/api/companions/nova/react',json={'state':emotion}).status_code==200
+
+
+def test_a11_motion_studio():
+    with TestClient(app) as client:
+        assert client.get('/puppet-lab').status_code == 200
+        assert client.get('/assets/puppet_engine.mjs').status_code == 200
+        body = client.get('/api/rigs').json()['rigs']
+        assert len(body) == 10
+        assert all(x['production_ready'] is False for x in body.values())
