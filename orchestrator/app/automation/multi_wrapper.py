@@ -153,7 +153,10 @@ class MultiWebSessionManager:
         'rich-textarea .ql-editor[contenteditable="true"]',
         'rich-textarea [contenteditable="true"]',
         'rich-textarea p',
-        '[contenteditable="true"][role="textbox"]',
+        'div.ql-editor[contenteditable="true"]',
+        '[role="textbox"][contenteditable="true"]',
+        '[aria-label="Enter a prompt here"][contenteditable="true"]',
+        'textarea[aria-label="Enter a prompt here"]',
     )
     GEMINI_SEND=(
         'button.send-button',
@@ -173,6 +176,19 @@ class MultiWebSessionManager:
                     return item
             except Exception:
                 continue
+        return None
+
+    async def _wait_for_gemini_editor(self,page):
+        """Gemini may render the guest editor after DOMContentLoaded.
+
+        A signed-out welcome page is not proof that login is required.
+        """
+        for attempt in range(20):
+            editor=await self._first_visible(page,self.GEMINI_EDITORS)
+            if editor is not None:
+                return editor
+            if attempt<19:
+                await asyncio.sleep(.5)
         return None
 
     async def send_prompt_robust(self,platform: str,prompt: str,*,phase=None)->dict:
@@ -196,10 +212,16 @@ class MultiWebSessionManager:
                 raise SessionError("Gemini browser unavailable. Open the workspaces and sign in to Gemini.")
             try:
                 self._check_destination("gemini",page.url)
-                editor=await self._first_visible(page,self.GEMINI_EDITORS)
+                editor=await self._wait_for_gemini_editor(page)
                 if editor is None:
-                    self._status["gemini"]="needs_operator_login_or_review"
-                    raise SessionError("Gemini editor not found. Sign in or finish the on-screen challenge in the visible Chromium window.")
+                    self._status["gemini"]="editor_unavailable"
+                    raise SessionError(
+                        "Gemini editor is not visible after loading. Guest text chat may work "
+                        "without signing in; try typing manually in this same Exodia Chromium window. "
+                        "If only the welcome page appears, reload Gemini and check for a blocked or "
+                        "incomplete page load. Signing in is NOT required for basic guest chat. "
+                        "Google may reject automated-browser sign-in; do not bypass its security checks."
+                    )
                 history=page.locator(self.GEMINI_RESPONSE)
                 prior_count=await history.count()
                 prior_text=(await history.last.inner_text(timeout=7000)).strip() if prior_count else ""
@@ -235,11 +257,11 @@ class MultiWebSessionManager:
                         "automatic_output":True}
             except Exception as exc:
                 screenshot=await self._capture_failure("gemini",page)
-                if self._status["gemini"]!="needs_operator_login_or_review":
+                if self._status["gemini"] not in ("needs_operator_login_or_review","editor_unavailable"):
                     self._status["gemini"]="dom_error_manual_review"
                 message=(str(exc) if isinstance(exc,(SessionError,DOMResponseError)) else
                     f"Gemini browser error ({type(exc).__name__}).")
-                self._last_error["gemini"]=message[:250]
+                self._last_error["gemini"]=message[:420]
                 raise SessionError(f"{message} Debug screenshot: {screenshot}.") from exc
 
     async def _capture_failure(self,name,page):

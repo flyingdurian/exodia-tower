@@ -121,3 +121,31 @@ def test_task_dispatch_automatically_delivers_real_gemini_label(monkeypatch):
         assert row['provider']=='gemini'
         assert row['error']==''
         assert client.get('/api/command/tasks').json()['automatic_extraction']['gemini'] is True
+
+def test_guest_gemini_editor_is_accepted_without_login(tmp_path):
+    async def run():
+        factory=Factory()
+        manager=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        output=await manager.send_prompt_robust("gemini","Guest mode prompt")
+        assert output["answer"]=="Streaming Gemini result [1]."
+        assert manager.snapshot()["gemini"]["status"]=="ready_for_next_prompt"
+        await manager.close()
+    asyncio.run(run())
+
+
+def test_guest_welcome_without_editor_reports_editor_unavailable(tmp_path,monkeypatch):
+    async def run():
+        factory=Factory()
+        manager=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        await manager.initialize_one("gemini")
+        page=factory.contexts[0].pages[0]
+        async def not_visible(page):
+            return None
+        monkeypatch.setattr(manager,"_wait_for_gemini_editor",not_visible)
+        with pytest.raises(SessionError,match="Guest text chat may work"):
+            await manager.send_prompt_robust("gemini","Hello")
+        assert manager.snapshot()["gemini"]["status"]=="editor_unavailable"
+        assert page.shots
+        assert manager.snapshot()["gemini"]["error"] is not None
+        await manager.close()
+    asyncio.run(run())
