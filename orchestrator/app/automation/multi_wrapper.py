@@ -70,7 +70,8 @@ class MultiWebSessionManager:
                 user_data_dir=str(profile),headless=self.headless,accept_downloads=False)
             page=context.pages[0] if context.pages else await context.new_page()
             await page.goto(spec.url,wait_until="domcontentloaded",timeout=30000)
-            self._check_destination(name,page.url)
+            # Login redirects can leave the site domain; permit visible manual login.
+            # Prompt preparation checks the canonical provider origin later.
             self._contexts[name]=context
             self._pages[name]=page
             self._status[name]="needs_operator_login_or_review"
@@ -94,6 +95,8 @@ class MultiWebSessionManager:
         if not isinstance(prompt,str) or not 1<=len(prompt.strip())<=12000:
             raise ValueError("Prompt must contain 1–12000 characters.")
         async with self._locks[name]:
+            if name in self._pending:
+                raise OperatorActionRequired(f"{name} already has a pending browser reply; record it first.")
             page=self._pages.get(name)
             if page is None:
                 raise OperatorActionRequired(f"{name} session not started; start sessions and log in first.")
