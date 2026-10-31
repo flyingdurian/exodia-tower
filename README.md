@@ -48,3 +48,10 @@ All mutation routes require `X-Exodia-Client: exodia-dashboard` and localhost; t
 ## Articulated animation engineering
 
 Ten rig manifests define 22 joints and 24 emotional poses per character. Use `/api/rigs` and `/rig-lab` to inspect motion **diagnostics**. Existing approved portraits are flattened; production-quality animated characters still require transparent registered body segments, complete face/eye/mouth layers, mesh deformation, lip-sync and fidelity review. Do not label these debug skeletons as finished characters.
+
+
+### A1.1 — Articulated Motion Studio
+
+Open `/puppet-lab` to manipulate actual joint transforms with blended emotions, 2-bone arm IK, arm gestures, walk cycles, gaze, blinks, talking-mouth visemes and hair secondary motion for ten existing rigs. The editor allows **local-only** upload and registration of individually painted RGBA sprite parts, exporting per-bone origins and scale. The approved illustrations remain flattened references: the production quality character-art gate is **not passed**. No portraits are presented as independently animated limbs.
+
+Test with `node --test orchestrator/tests/puppet_engine.test.mjs`. See the development PR for exact acceptance criteria.
