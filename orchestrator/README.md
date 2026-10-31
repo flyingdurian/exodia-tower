@@ -39,3 +39,13 @@ No background browser scraping is performed. The ChatGPT, Gemini, and DeepSeek c
 This is **local text inference**, not an image generator, autonomous web researcher, or social publishing agent. For useful research/analytics, add authorized external retrieval tools. Performance depends on PC hardware and the selected downloaded model.
 
 If a local inference task is interrupted by an application restart, the task changes to Failed and may be resubmitted. The `/api/command/providers` endpoint checks whether Ollama is reachable and the desired model is installed.
+
+## U3 — Autonomous live public-web research
+
+In **Command Center**, choose **Local model (automatic · Ollama)**, select a companion, check **Research public web sources**, and submit a request. For precise live information, include one to three `https://` source URLs within the prompt. Exodia uses a fresh, cookie-free Playwright Chromium context to read each permitted page, then gives cited evidence to local Ollama. The companion shows `RESEARCHING → RUNNING → ANSWERED` or `FAILED` and clickable source links. There is **no manual response copying** in this flow.
+
+Safety: Only hosts explicitly listed in `RESEARCH_ALLOWED_HOSTS` can be visited. The default is `en.wikipedia.org`. To read other *public* sites, edit your local `.env`, e.g. `RESEARCH_ALLOWED_HOSTS=en.wikipedia.org,example.org` and restart Exodia. The browser checks DNS for public IPs, rejects credentials/localhost/IP URLs, blocks third-party requests, runs without accounts/cookies, and never disables anti-bot protections. Content may be incomplete on dynamic or restricted pages; failures remain visible, not invented.
+
+Without a URL, Exodia performs a free Wikipedia encyclopedia search (which is **not** a broad current-news or trends search). For current trends and analytics, provide specific permitted sources or add an authorized search connector later. Do not assume Wikipedia search alone answers rapidly changing questions. A research-enabled task is capped at 4,000 prompt characters because of the added evidence context. The local model still requires its Ollama download and may hallucinate; verify citations.
+
+This implementation does **not** scrape prompts or answers from the ChatGPT, Gemini or DeepSeek consumer websites. Those workflows still require authorized provider integration. See issue #6 for ChatGPT authorization-based integration.

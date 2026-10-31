@@ -22,6 +22,7 @@ from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
 from app.automation.local_llm import OllamaBackend, LocalModelError
+from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
 
 settings = Settings()
 cache = SpeedrunnerCache(settings.database)
@@ -33,6 +34,7 @@ social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
 inbox.fail_interrupted()
 local_model=OllamaBackend()
+researcher=PublicWebResearcher()
 active_generations=set()
 started = monotonic()
 app = FastAPI(title='Exodia Tower', version='0.3.0', docs_url='/api/docs')
@@ -312,6 +314,7 @@ class CompanionTaskBody(BaseModel):
     prompt:str=Field(min_length=1,max_length=12000)
     model_choice:str=Field(pattern='^(ollama|chatgpt|gemini|deepseek)$')
     agent_id:str=Field(min_length=1,max_length=64)
+    web_research:bool=False
 class CompanionTaskAnswer(BaseModel):
     answer:str=Field(min_length=1,max_length=100000)
 
@@ -319,7 +322,16 @@ async def _complete_local_task(task_id: str):
     """Run local inference asynchronously; task state is always persisted."""
     try:
         t=inbox.get(task_id)
-        result=await local_model.generate(t['prompt'],companion=t['agent_id'])
+        prompt=t['prompt']
+        if t['web_research']:
+            director.react(t['agent_id'],'working')
+            results=await researcher.gather(prompt)
+            inbox.update(task_id,'sources',[{'title':x.title,'url':x.url} for x in results])
+            inbox.update(task_id,'state','running')
+            events.publish('task','Companion completed source collection',
+                           f"{t['agent_id']}:public_web:{len(results)}")
+            prompt=evidence_prompt(prompt,results)
+        result=await local_model.generate(prompt,companion=t['agent_id'])
         inbox.update(task_id,'answer',result['answer'])
         inbox.update(task_id,'state','answered')
         director.react(t['agent_id'],'success')
@@ -327,7 +339,7 @@ async def _complete_local_task(task_id: str):
                        f"{t['agent_id']}:ollama")
     except Exception as exc:
         # Never record a failed inference as a successful answer.
-        message=str(exc) if isinstance(exc,(LocalModelError,ValueError)) else             'Unexpected local inference error. Check Exodia logs.'
+        message=str(exc) if isinstance(exc,(LocalModelError,ResearchError,ValueError)) else             'Unexpected local inference error. Check Exodia logs.'
         inbox.update(task_id,'error',message[:700])
         inbox.update(task_id,'state','failed')
         director.react(t['agent_id'],'alert')
@@ -346,15 +358,17 @@ async def command_list():
 async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
     if body.agent_id not in director.known:raise HTTPException(422,detail='Unknown companion')
-    try:t=inbox.create(body.agent_id,body.model_choice,body.prompt)
+    if body.web_research and body.model_choice!='ollama':
+        raise HTTPException(422,detail='Automatic public research currently requires the local Ollama provider. Consumer websites remain manual.')
+    try:t=inbox.create(body.agent_id,body.model_choice,body.prompt,web_research=body.web_research)
     except ValueError as e:raise HTTPException(422,detail=str(e))
     if body.model_choice=='ollama':
-        t=inbox.update(t['id'],'state','running')
+        t=inbox.update(t['id'],'state','researching' if body.web_research else 'running')
         director.react(body.agent_id,'working')
         job=asyncio.create_task(_complete_local_task(t['id']))
         active_generations.add(job)
         job.add_done_callback(active_generations.discard)
-        events.publish('task','Autonomous companion inference started',f"{body.agent_id}:ollama")
+        events.publish('task','Autonomous companion '+('live research' if body.web_research else 'inference')+' started',f"{body.agent_id}:ollama")
     else:
         director.react(body.agent_id,'thinking')
         events.publish('task','Manual website task created',f"{body.agent_id}:{body.model_choice}")
