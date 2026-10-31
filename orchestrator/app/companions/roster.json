@@ -178,5 +178,25 @@
       "rest": "Leaving the map open for the next mission.",
       "alert": "An unexpected outcome changed the risk picture."
     }
+  },
+  {
+    "id": "nova",
+    "name": "Nova",
+    "agent_class": "Media Strategist",
+    "pillar": "Social Media Division",
+    "title": "Creative Intelligence",
+    "portrait": null,
+    "thumbnail": null,
+    "accent": "#67e8d2",
+    "secondary": "#528ed6",
+    "persona": "Inventive, analytical, experimental, and evidence-driven; develops original YouTube, TikTok and Instagram content while requiring operator approval for every publication.",
+    "lines": {
+      "idle": "Research queue ready. What should we explore?",
+      "thinking": "Checking hooks, audience fit and source reliability.",
+      "working": "Drafting ideas, scripts and editorial briefs.",
+      "success": "The proposal is ready for human review.",
+      "rest": "Revisiting previous creative experiments.",
+      "alert": "Provider not authorized; publishing is disabled."
+    }
   }
 ]

@@ -193,6 +193,7 @@ async def social_create(body: SocialCreate, x_exodia_client: str = Header(defaul
     require_local_dashboard(x_exodia_client)
     try: job=social.create(body.title, body.platforms, body.concept, body.source_urls)
     except WorkflowError as e: raise HTTPException(status_code=422, detail=str(e))
+    director.react('nova','success')
     events.publish('task', 'Nova created an editorial draft', job['title'])
     return job
 
@@ -209,6 +210,7 @@ async def social_advance(job_id: str, body: SocialAdvance, x_exodia_client: str 
     try: job=social.advance(job_id,body.stage)
     except KeyError: raise HTTPException(status_code=404, detail='Not found')
     except WorkflowError as e: raise HTTPException(status_code=422, detail=str(e))
+    director.react('nova','thinking')
     events.publish('task', 'Nova advanced a draft',f"{job['title']} → {job['stage']}")
     return job
 
@@ -218,6 +220,7 @@ async def social_approve(job_id: str,body:SocialApproval,x_exodia_client:str=Hea
     try: job=social.approve(job_id,body.confirmation)
     except KeyError: raise HTTPException(status_code=404,detail='Not found')
     except WorkflowError as e: raise HTTPException(status_code=422,detail=str(e))
+    director.react('nova','success')
     events.publish('success','Content approved for future submission',job['title'])
     return job
 

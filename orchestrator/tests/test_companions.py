@@ -7,10 +7,11 @@ def test_roster_is_complete_and_unique():
     resp=TestClient(app).get('/api/companions')
     assert resp.status_code==200
     body=resp.json()
-    assert len(body['agents'])==9
-    assert len({a['id'] for a in body['agents']})==9
+    assert len(body['agents'])==10
+    assert len({a['id'] for a in body['agents']})==10
     assert all(a['persona'] and a['lines']['alert'] for a in body['agents'])
-    assert all('idle' in a['clips'] for a in body['agents'])
+    assert all('idle' in a['clips'] for a in body['agents'] if a['id']!='nova')
+    assert next(a for a in body['agents'] if a['id']=='nova')['clips']=={}
 
 
 def test_reactions_validate_states_and_roster():
@@ -36,3 +37,9 @@ def test_studio_assets_respond():
         assert client.get('/companions').status_code==200
         assert client.get('/assets/companions/portraits/kiko.webp').status_code==200
         assert client.get('/assets/companions/clips/kiko/idle.mp4').status_code==200
+
+
+def test_emotion_range_for_true_rig_contract():
+    with TestClient(app) as client:
+        for emotion in ('wonder','angry','hurt','disappointed','sleeping','processing','speaking','celebrating'):
+            assert client.post('/api/companions/nova/react',json={'state':emotion}).status_code==200
