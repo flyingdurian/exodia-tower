@@ -1,4 +1,5 @@
 import {PuppetEngine,solveTwoBone} from './puppet_engine.mjs';
+import {paintRegisteredLayers,validateRegistration,ART_RENDER_MODES} from './kiko_layer_runtime.mjs';
 /* Exodia Tower A1.3 — source-pixel registered art rig.
  * Art is the approved original, not a substitute AI illustration.
  * Polygon cutouts are *pre-production* masks: missing rear-side paint and expression
@@ -38,10 +39,18 @@ export class KikoArtEngine {
     this.driverCanvas=document.createElement('canvas');this.driverCanvas.width=530;this.driverCanvas.height=625;
     this.driver=new PuppetEngine(this.driverCanvas,rig,{debug:false});
     this.art=new Image();this.art.src=manifest.approved_source;
-    this.loaded=this.art.decode();this.elapsed=0;this.reducedMotion=false;this.showBounds=false;
+    this.layerImages=new Map();this.layerFailures=[];this.artRenderMode='registered';
+    const spriteLoads=Object.entries(manifest.layers).filter(([,m])=>m.polygons&&m.src).map(async([name,m])=>{
+      const image=new Image();image.src=m.src;
+      try{await image.decode();this.layerImages.set(name,image)}
+      catch(e){this.layerFailures.push(name)}
+    });
+    this.loaded=Promise.all([this.art.decode().catch(()=>null),...spriteLoads]);this.elapsed=0;this.reducedMotion=false;this.showBounds=false;
     this.operatorBlink=0;this.target=null;this.activeHand=null;this.speechText='';
     this.eyePhase=0;this.speaking=false;this.handTarget=null;
   }
+  setArtRenderMode(mode){if(!ART_RENDER_MODES.includes(mode))throw Error('Unknown art render mode');this.artRenderMode=mode}
+  getArtQA(){return validateRegistration(this.manifest,this.layerImages)}
   setEmotion(name){this.driver.setEmotion(name)}
   setActivity(name){this.driver.setActivity(name)}
   speak(text){this.speechText=String(text||'');this.driver.speak(this.speechText);this.speaking=Boolean(this.speechText)}
@@ -49,7 +58,7 @@ export class KikoArtEngine {
   setReach(side,x,y){if(!['left','right'].includes(side))throw Error('Invalid hand');this.handTarget={side,x,y};}
   release(){this.handTarget=null;}
   moveTo(x,y){this.target={x:clamp(x,-120,120),y:clamp(y,-110,130)};this.driver.setActivity('walk');}
-  read(){return {emotion:this.driver.emotion,activity:this.driver.activity,blink:this.driver.blink,viseme:this.driver.viseme,art_layers:Object.keys(this.manifest.layers).length,source: this.manifest.approved_source.startsWith('data:')?'[embedded source image]':this.manifest.approved_source.startsWith('data:')?'[embedded source image]':this.manifest.approved_source};}
+  read(){return {emotion:this.driver.emotion,activity:this.driver.activity,blink:this.driver.blink,viseme:this.driver.viseme,art_layers:Object.keys(this.manifest.layers).length,render_mode:this.artRenderMode,registered:this.getArtQA().ready.length,missing:this.getArtQA().rejected.map(x=>x.name),production_ready:false,source: this.manifest.approved_source.startsWith('data:')?'[embedded source image]':this.manifest.approved_source};}
   _angles(){
     const p=this.driver.pose,t=this.elapsed;
     const a={hips:0,torso:clamp((p.torso||0)*.5,-5,5),head:clamp((p.head||0)*.75,-12,12),
@@ -99,13 +108,18 @@ export class KikoArtEngine {
     // Controlled translation (world roaming preview) is separated from bone articulation.
     const drift=this.target||{x:0,y:0};
     ctx.translate(drift.x,drift.y);
-    if(this.art.complete&&this.art.naturalWidth){for(const [name,data] of layers){
-      ctx.save();withTransform(ctx,sourceJoints,name,angles);ctx.beginPath();
-      for(const poly of data.polygons){poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();}
-      ctx.clip();ctx.drawImage(this.art,0,0,1122,1402);
-      if(this.showBounds){ctx.lineWidth=2;ctx.strokeStyle='#f9d772';ctx.stroke();}
-      ctx.restore();
-    }}
+    if(this.artRenderMode==='registered'){
+      this.lastArtFrame=paintRegisteredLayers(ctx,this.manifest,this.layerImages,angles,
+        (c,name,a)=>withTransform(c,sourceJoints,name,a),{showBounds:this.showBounds});
+    }else if(this.art.complete&&this.art.naturalWidth){
+      for(const [name,data] of layers){
+        ctx.save();withTransform(ctx,sourceJoints,name,angles);ctx.beginPath();
+        for(const poly of data.polygons){poly.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.closePath();}
+        ctx.clip();ctx.drawImage(this.art,0,0,1122,1402);
+        if(this.showBounds){ctx.lineWidth=2;ctx.strokeStyle='#f9d772';ctx.stroke();}
+        ctx.restore();
+      }
+    }
     for(const name of ['eye_left','eye_right','mouth'])this._feature(ctx,name,angles);
     ctx.restore();
     this.onUpdate?.(this.read());

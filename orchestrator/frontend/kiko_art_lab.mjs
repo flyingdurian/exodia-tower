@@ -6,7 +6,8 @@ async function boot(){const [visual,rig]=await Promise.all([fetch('/assets/artwo
  art=new KikoArtEngine($('#kikoCanvas'),visual,rig);await art.loaded;options($('#emotion'),Object.keys(rig.poses));options($('#activity'),ACTIVITIES);
  $('#emotion').addEventListener('change',e=>art.setEmotion(e.target.value));$('#activity').addEventListener('change',e=>art.setActivity(e.target.value));
  $('#blink').onclick=()=>art.blink();$('#speak').onclick=()=>art.speak('Analyzing. I found an answer. Let me explain!');$('#reach').onclick=()=>{art.setReach('left',345,495);art.setActivity('wave');};
- $('#bounds').onchange=e=>art.showBounds=e.target.checked;$('#pause').onchange=e=>art.reducedMotion=e.target.checked;$('#reference').onchange=e=>{let c=$('#kikoCanvas'),m=$('#master');m.hidden=!e.target.checked;c.hidden=e.target.checked;};
+ $('#bounds').onchange=e=>art.showBounds=e.target.checked;
+ $('#renderMode').addEventListener('change',e=>art.setArtRenderMode(e.target.value));$('#pause').onchange=e=>art.reducedMotion=e.target.checked;$('#reference').onchange=e=>{let c=$('#kikoCanvas'),m=$('#master');m.hidden=!e.target.checked;c.hidden=e.target.checked;};
  $('#reset').onclick=()=>{art.target=null;art.release();art.setEmotion('neutral');art.setActivity('idle');$('#emotion').value='neutral';$('#activity').value='idle';};
  $('#tour').onclick=e=>{if(tourTimer){clearInterval(tourTimer);tourTimer=0;e.target.textContent='▶ Expression tour';return;}
   tourTimer=setInterval(()=>{let name=tour[idx++%tour.length];art.setEmotion(name);art.setActivity(name==='sleeping'?'sleep':name==='processing'?'work':name==='celebrating'?'wave':'idle');$('#emotion').value=name;$('#activity').value=art.driver.activity;},1600);e.target.textContent='■ Stop tour';};
