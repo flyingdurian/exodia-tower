@@ -35,7 +35,7 @@ def test_task_requires_operator_and_cannot_skip_prepare():
     premature=client.post('/api/command/tasks/'+task['id']+'/response',
        json={'answer':'Unverified fake'},headers={'x-exodia-client':'exodia-dashboard'})
     assert premature.status_code==409
-    assert client.get('/api/command/tasks').json()['automatic_extraction'] is False
+    assert client.get('/api/command/tasks').json()['automatic_extraction']['gemini'] is True
 
 
 def test_full_operator_handoff_updates_companion_screen(monkeypatch):
@@ -48,7 +48,7 @@ def test_full_operator_handoff_updates_companion_screen(monkeypatch):
     client=TestClient(app)
     headers={'x-exodia-client':'exodia-dashboard'}
     task=client.post('/api/command/tasks',json={
-      'prompt':'Propose video titles','model_choice':'gemini','agent_id':'nova'},headers=headers).json()
+      'prompt':'Propose video titles','model_choice':'deepseek','agent_id':'nova'},headers=headers).json()
     prepared=client.post('/api/command/tasks/'+task['id']+'/prepare',headers=headers)
     assert prepared.status_code==200
     assert prepared.json()['task']['state']=='awaiting_operator'
@@ -57,4 +57,4 @@ def test_full_operator_handoff_updates_companion_screen(monkeypatch):
     assert delivered.status_code==200
     assert delivered.json()['state']=='answered'
     assert delivered.json()['answer'].startswith('Three titles')
-    assert client.get('/api/command/tasks').json()['automatic_extraction'] is False
+    assert client.get('/api/command/tasks').json()['automatic_extraction']['chatgpt'] is False

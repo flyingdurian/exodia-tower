@@ -108,7 +108,8 @@ async def companion_react(agent_id: str, body: ReactionBody):
 
 @app.get('/api/web/sessions')
 async def web_sessions():
-    return {'models':router.sessions.snapshot(),'automatic_extraction':False}
+    return {'models':router.sessions.snapshot(),
+            'automatic_extraction':{'gemini':True,'chatgpt':False,'deepseek':False}}
 
 @app.post('/api/web/sessions/start')
 async def start_web_sessions(x_exodia_client: str = Header(default='')):
