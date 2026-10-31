@@ -11,7 +11,7 @@ export class FootPlantPlanner{
  }
  reset(root){this.phase=0;this.active=false;this.feet={};
   for(const side of ['left','right']){const offset=side==='left'?-13:13;
-   this.feet[side]={anchor:{x:root.x+offset,y:root.y+this.groundOffset},swingFrom:null,lastStance:false,offset};}
+   this.feet[side]={anchor:{x:root.x+offset,y:root.y+this.groundOffset},swingFrom:null,lastTarget:null,lastStance:false,offset};}
  }
  update(dt,root,moving=true,direction={x:1,y:0}){
   if(!this.feet.left)this.reset(root);
@@ -25,8 +25,8 @@ export class FootPlantPlanner{
    const stance=local<this.stanceFraction;
    if(stance){
     if(!state.lastStance){
-     const x=state.swingFrom?state.swingFrom.x:state.anchor.x;
-     state.anchor={x,y:root.y+this.groundOffset};
+     const landing=state.lastTarget||state.anchor;
+     state.anchor={x:landing.x,y:root.y+this.groundOffset};state.swingFrom=null;state.lastTarget=null;
     }
     result[side]={...state.anchor,planted:true};
    }else{
@@ -35,7 +35,7 @@ export class FootPlantPlanner{
     const target={x:root.x+state.offset+dx*this.stride,y:root.y+this.groundOffset};
     result[side]={x:state.swingFrom.x+(target.x-state.swingFrom.x)*e,
       y:state.swingFrom.y+(target.y-state.swingFrom.y)*e-Math.sin(Math.PI*u)*this.lift,planted:false};
-    if(u>=.96)state.anchor={x:result[side].x,y:root.y+this.groundOffset};
+    state.lastTarget={...result[side]};
    }
    state.lastStance=stance;
   }
