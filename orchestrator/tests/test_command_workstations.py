@@ -21,8 +21,10 @@ def test_bad_models_rejected(tmp_path):
 def test_new_dashboard_and_nova_agent():
     client=TestClient(app)
     r=client.get('/')
-    assert r.status_code==200
-    assert 'Media Division' in r.text and 'NOVA' in r.text
+    assert r.status_code==200 and 'ALBEDO' in r.text
+    legacy=client.get('/operations-legacy')
+    assert legacy.status_code==200
+    assert 'Media Division' in legacy.text and 'NOVA' in legacy.text
     agents=client.get('/api/companions').json()['agents']
     assert 'nova' in {x['id'] for x in agents}
 
