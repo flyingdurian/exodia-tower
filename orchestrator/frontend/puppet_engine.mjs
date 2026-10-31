@@ -1,3 +1,4 @@
+import {FootPlantPlanner} from './foot_plant.mjs';
 /* Exodia Tower A1.1. Articulated sprite controller. Missing parts render a diagnostic skeleton,
  * never a fake "animated" static portrait. Requires separately painted transparent sprite layers. */
 export const ACTIVITIES=['idle','walk','work','wave','talk','sleep'];
@@ -31,12 +32,12 @@ export class PuppetEngine{
   this.sprites=new Map();this.spriteDefs={};this.position={x:canvas.width/2,y:canvas.height*.57};
   this.destination=null;this.gaze={x:canvas.width/2,y:160};this.leftHandTarget=null;this.rightHandTarget=null;
   this.blink=0;this.nextBlink=3.2;this.viseme='rest';this.talking=false;this.voiceText='';this.speechProgress=0;
-  this.hair={front:0,back:0,frontV:0,backV:0};
+  this.hair={front:0,back:0,frontV:0,backV:0};this.gait=new FootPlantPlanner();this.gaitDirection={x:1,y:0};
   this.children={};for(const [k,v] of Object.entries(manifest.bones))if(v.parent)(this.children[v.parent]??=[]).push(k);
  }
  setEmotion(e){if(!(e in this.manifest.poses))throw Error('Unsupported emotion');this.emotion=e}
  setActivity(a){if(!ACTIVITIES.includes(a))throw Error('Unknown activity');this.activity=a;if(a!=='talk'){this.talking=false;this.viseme='rest'}}
- moveTo(x,y){this.destination={x:clamp(x,80,this.canvas.width-80),y:clamp(y,120,this.canvas.height-90)};this.activity='walk'}
+ moveTo(x,y){this.destination={x:clamp(x,80,this.canvas.width-80),y:clamp(y,120,this.canvas.height-90)};const dx=this.destination.x-this.position.x,dy=this.destination.y-this.position.y,d=Math.hypot(dx,dy)||1;this.gaitDirection={x:dx/d,y:dy/d};this.activity='walk'}
  lookAt(x,y){this.gaze={x,y}}
  reach(hand,x,y){if(!['left','right'].includes(hand))throw Error('Invalid hand');this[hand==='left'?'leftHandTarget':'rightHandTarget']={x,y}}
  releaseHands(){this.leftHandTarget=null;this.rightHandTarget=null}
@@ -104,6 +105,16 @@ export class PuppetEngine{
   this.pose['forearm_'+side]=deg(b-a);
   this.branch('upper_arm_'+side,upper.x,upper.y,this.world.torso.angle);
  }
+ legIK(side,target){
+  const upper=this.world['thigh_'+side];if(!upper)return;
+  const p1=this.manifest.bones['shin_'+side].pivot,p2=this.manifest.bones['foot_'+side].pivot;
+  const solution=solveTwoBone(upper,target,Math.hypot(...p1),Math.hypot(...p2),side==='left'?-1:1);
+  const a=rad(solution.first)-Math.atan2(p1[1],p1[0]);
+  const b=rad(solution.second)-Math.atan2(p2[1],p2[0]);
+  this.pose['thigh_'+side]=deg(a-this.world.hips.angle);
+  this.pose['shin_'+side]=deg(b-a);
+  this.branch('thigh_'+side,upper.x,upper.y,this.world.hips.angle);
+ }
  draw(){
   const ctx=this.ctx;ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
   const order=['hair_back','thigh_left','thigh_right','shin_left','shin_right','foot_left','foot_right',
@@ -138,6 +149,8 @@ export class PuppetEngine{
  step(dt){
   if(!this.reducedMotion){dt=clamp(dt,0,.05);this.elapsed+=dt;this.update(dt)}
   this.world={};this.branch('root',this.position.x,this.position.y,0);
+  const feet=this.gait.update(dt,this.position,this.activity==='walk',this.gaitDirection);
+  if(this.activity==='walk'){for(const side of ['left','right'])this.legIK(side,feet[side]);}
   if(this.leftHandTarget)this.ik('left',this.leftHandTarget);
   if(this.rightHandTarget)this.ik('right',this.rightHandTarget);
   this.draw();
