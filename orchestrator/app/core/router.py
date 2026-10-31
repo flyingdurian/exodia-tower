@@ -57,7 +57,7 @@ class Router:
         hit = False
         try:
             if action == 'system':
-                answer = 'Command Tower is running locally. Check the connection cards for configured credentials; configuration does not prove authentication.'
+                answer = 'Exodia Tower is running locally. Check the connection cards for configured credentials; configuration does not prove authentication.'
                 data = self.settings.public_config()
             elif action == 'integration' and service:
                 data = await service_overview(service)
