@@ -26,7 +26,7 @@ function renderAgentDetail(){const a=state.roster.find(v=>v.id===state.selected)
 
 async function loadStats(){try{const s=await api('/api/stats');txt('#uptimeStat',s.uptime_seconds<3600?`${Math.floor(s.uptime_seconds/60)} min`:`${(s.uptime_seconds/3600).toFixed(1)} h`);txt('#chunkStat',s.indexed_chunks);txt('#cacheStat',s.cache_entries);txt('#routeStat',s.last_route);const available=s.config.integrations||{};const host=$('#integrations');host.replaceChildren();for(const name of ['github','etsy','youtube','gmail']){const item=document.createElement('div');item.className='integration';const title=document.createElement('strong');title.textContent=name.toUpperCase();const desc=document.createElement('small');desc.textContent=({github:'Repositories & pull requests',etsy:'Shop & inventory',youtube:'Channel reports',gmail:'Inbox pulse'})[name];const status=document.createElement('b');status.textContent=available[name]?'TOKEN CONFIGURED (UNVERIFIED)':'NOT CONFIGURED';const btn=document.createElement('button');btn.textContent='Check connection ↗';btn.addEventListener('click',async()=>{btn.disabled=true;try{const res=await api(`/api/integrations/${name}/check`,{method:'POST'});status.textContent=res.error?'CHECK FAILED':'CHECK COMPLETE · SEE RESULT';showAnswer(res)}catch(e){status.textContent=e.message}finally{btn.disabled=false;loadEvents()}});item.append(title,desc,status,btn);host.append(item)}}catch(e){txt('#linkStatus','OFFLINE')}}
 function showAnswer(r){$('#responsePanel').hidden=false;txt('#resultMeta',`${r.route||'LOCAL'} · ${r.latency_ms||0}ms`);txt('#responseText',r.answer||r.error||JSON.stringify(r.data||r,null,2))}
-$('#askForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('#submitBtn');btn.disabled=true;try{const r=await api('/api/ask',{method:'POST',body:JSON.stringify({question:$('#question').value,channel:$('#channel').value})});showAnswer(r);loadStats();loadEvents();loadRosterStates()}catch(e){showAnswer({error:e.message})}finally{btn.disabled=false}});
+$('#askForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('#submitBtn');btn.disabled=true;try{const r=await api('/api/ask',{method:'POST',body:JSON.stringify({question:$('#question').value,channel:$('#channel').value,model_choice:$('#modelChoice').value})});showAnswer(r);if(r.status==='awaiting_operator')$('#manualReplyPanel').hidden=false;loadStats();loadEvents();loadRosterStates()}catch(e){showAnswer({error:e.message})}finally{btn.disabled=false}});
 $('#indexBtn').addEventListener('click',async()=>{try{const r=await api('/api/index',{method:'POST'});showAnswer({route:'archive',answer:`Indexed ${r.files} files into ${r.chunks} chunks.`});loadStats()}catch(e){showAnswer({error:e.message})}});
 $('#cacheClear').addEventListener('click',async()=>{try{await api('/api/cache/clear',{method:'POST'});loadStats()}catch(e){showAnswer({error:e.message})}});
 async function loadRosterStates(){try{const data=await api('/api/companions');state.states={...state.states,...data.states};if(!state.roster.length){state.roster=data.agents;paintAgents()}if(!$('#agentsView').hidden)renderAgentDetail()}catch(e){console.warn('Roster unavailable',e.message)}}
@@ -44,3 +44,28 @@ $('#approveJob').addEventListener('click',async()=>{const j=state.jobs.find(j=>j
 function connect(){let ws;try{ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/events')}catch{return}ws.onopen=()=>{state.linked=true;txt('#linkStatus','LINKED')};ws.onmessage=e=>{try{const v=JSON.parse(e.data);if(v.kind==='companion'){const [id,mood]=(v.detail||'').split(':');if(id&&mood)state.states[id]=mood;}if(!$('#activityView').hidden)loadEvents()}catch{}};ws.onclose=()=>{state.linked=false;txt('#linkStatus','OFFLINE');setTimeout(connect,4000)}}
 function boot(){txt('#dateNow',time());setInterval(()=>txt('#dateNow',time()),30000);loadStats();loadRosterStates();loadEvents();setInterval(loadStats,20000);setInterval(loadRosterStates,12000);connect();}
 boot();
+
+async function refreshWebModels(){
+ try{
+  const r=await api('/api/web/sessions');
+  txt('#webSessionStatus',Object.entries(r.models).map(([k,v])=>k+': '+v.status).join(' · '));
+ }catch(e){txt('#webSessionStatus',e.message)}
+}
+$('#sessionStart').addEventListener('click',async()=>{
+ const b=$('#sessionStart');b.disabled=true;
+ try{await api('/api/web/sessions/start',{method:'POST',body:'{}'});await refreshWebModels();}
+ catch(e){txt('#webSessionStatus',e.message);}
+ finally{b.disabled=false;}
+});
+$('#recordModelReply').addEventListener('click',async()=>{
+ const b=$('#recordModelReply');b.disabled=true;
+ try{
+  const r=await api('/api/web/sessions/'+$('#modelChoice').value+'/record',{
+   method:'POST',body:JSON.stringify({response:$('#manualReply').value})});
+  showAnswer({route:r.model_choice,answer:r.answer,latency_ms:0});
+  $('#manualReplyPanel').hidden=true;$('#manualReply').value='';
+  await refreshWebModels();
+ }catch(e){showAnswer({error:e.message})}
+ finally{b.disabled=false;}
+});
+refreshWebModels();
