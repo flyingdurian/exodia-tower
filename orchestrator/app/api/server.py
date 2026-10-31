@@ -47,6 +47,10 @@ async def stop_browser_sessions():
 async def home():
     return FileResponse(settings.root/'frontend'/'index.html')
 
+@app.get('/art-studio')
+async def art_studio():
+    return FileResponse(settings.root/'frontend'/'kiko_art_lab.html')
+
 @app.get('/puppet-lab')
 async def puppet_lab():
     return FileResponse(settings.root/'frontend'/'puppet_lab.html')
