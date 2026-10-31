@@ -17,3 +17,6 @@ jobs:
       - run: cd orchestrator && python -m pytest tests -q
       - run: node --check orchestrator/frontend/app.js
       - run: node --check orchestrator/frontend/companions.js
+
+      - run: node --check orchestrator/frontend/puppet_engine.mjs
+      - run: node --test orchestrator/tests/puppet_engine.test.mjs
