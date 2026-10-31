@@ -20,3 +20,5 @@ jobs:
 
       - run: node --check orchestrator/frontend/puppet_engine.mjs
       - run: node --test orchestrator/tests/puppet_engine.test.mjs
+      - run: node --test orchestrator/tests/foot_plant.test.mjs
+      - run: node --test orchestrator/tests/roster_motion.test.mjs
