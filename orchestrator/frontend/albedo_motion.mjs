@@ -33,9 +33,18 @@ export class AlbedoMotionStage {
       ]);
       this.engine=new KikoArtEngine(this.canvas,a,b);
       this.engine.transparentStage=true;
-      await this.engine.loaded;
-      const qa=this.engine.getArtQA();
-      if(!qa.ready.length)throw Error('Albedo art layers unavailable');
+      // The approved 3 MB master may remain undecoded in headed/headless Chromium.
+      // Do not block the entire animated character on one unrelated image decode.
+      // Registered layers populate independently as their individual images finish.
+      let qa;
+      for(let i=0;i<60;i++){
+        qa=this.engine.getArtQA();
+        if(qa.ready.includes('head')&&qa.ready.includes('torso'))break;
+        await new Promise(resolve=>setTimeout(resolve,200));
+      }
+      qa=this.engine.getArtQA();
+      if(!qa.ready.includes('head')||!qa.ready.includes('torso'))
+        throw Error('Essential Albedo art layers did not decode; inspect local assets.');
       this.ready=true;
       this.onStatus?.({ready:true,layers:qa.ready.length,missing:qa.rejected.map(x=>x.name),
           production_ready:false,mode:'registered pre-production articulated art'});
