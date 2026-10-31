@@ -89,7 +89,7 @@ def test_10_rig_manifests():
 
 def test_web_endpoints_require_operator():
     with TestClient(app) as client:
-        assert client.get('/api/web/sessions').json()['automatic_extraction'] is False
+        assert client.get('/api/web/sessions').json()['automatic_extraction']['gemini'] is True
         assert len(client.get('/api/web/sessions').json()['models'])==3
         assert client.post('/api/web/sessions/chatgpt/prepare',json={'prompt':'test'}).status_code==403
         h={'X-Exodia-Client':'exodia-dashboard'}

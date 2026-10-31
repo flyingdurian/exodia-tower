@@ -88,7 +88,7 @@ def test_gemini_failed_login_stores_private_screenshot(tmp_path):
         with pytest.raises(SessionError,match='screenshot'):
             await manager.send_prompt_robust("gemini","Hello")
         assert page.shots
-        assert manager.snapshot()['gemini']['status']=='dom_error_manual_review'
+        assert manager.snapshot()['gemini']['status']=='needs_operator_login_or_review'
         await manager.close()
     asyncio.run(run())
 
