@@ -38,7 +38,7 @@ class Context:
 class Factory:
     def __init__(self):self.contexts=[]
     async def launch_persistent_context(self,**kwargs):
-        c=Context(kwargs['user_data_dir']);self.contexts.append(c);return c
+        c=Context(kwargs['user_data_dir']);c.opts=dict(kwargs);self.contexts.append(c);return c
 
 def test_three_isolated_sessions_and_manual_replies(tmp_path):
     async def go():
