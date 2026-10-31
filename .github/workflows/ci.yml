@@ -22,3 +22,5 @@ jobs:
       - run: node --test orchestrator/tests/puppet_engine.test.mjs
       - run: node --test orchestrator/tests/foot_plant.test.mjs
       - run: node --test orchestrator/tests/roster_motion.test.mjs
+      - run: node --test orchestrator/tests/kiko_art_engine.test.mjs
+      - run: node --test orchestrator/tests/kiko_layer_runtime.test.mjs
