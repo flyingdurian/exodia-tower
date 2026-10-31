@@ -107,7 +107,7 @@ def test_task_dispatch_automatically_delivers_real_gemini_label(monkeypatch):
         for part in ('typing','submitting','waiting_for_reply'):
             phase(part)
             await asyncio.sleep(.003)
-        return {'answer':'Gemini synthetic answer','source':'gemini_visible_browser','automatic_output':True}
+        return {'answer':'Gemini synthetic answer','source':'gemini_visible_browser','automatic_output':True,'timings':{'total_s':3.2,'first_text_s':0.4,'typing_s':0.05,'stream_completion_s':2.7}}
     monkeypatch.setattr(server.router.sessions,'send_prompt_robust',answer)
     headers={'X-Exodia-Client':'exodia-dashboard'}
     with TestClient(server.app) as client:
@@ -122,6 +122,8 @@ def test_task_dispatch_automatically_delivers_real_gemini_label(monkeypatch):
             time.sleep(.02)
         assert row['state']=='answered',row
         assert row['answer']=='Gemini synthetic answer'
+        assert row['metrics']['total_s']==3.2
+        assert row['metrics']['first_text_s']==0.4
         assert row['provider']=='gemini'
         assert row['error']==''
         assert client.get('/api/command/tasks').json()['automatic_extraction']['gemini'] is True
@@ -161,7 +163,7 @@ def test_large_prompt_uses_faster_input_event_instead_of_character_events(tmp_pa
         output=await manager.send_prompt_robust('gemini',prompt)
         p=f.contexts[0].pages[0]
         assert p.used_insert_text is True
-        assert p.typed==prompt
+        assert p.typed==prompt.strip()
         assert p.sent==1
         assert output['timings']['typing_method']=='insert_text'
         await manager.close()
