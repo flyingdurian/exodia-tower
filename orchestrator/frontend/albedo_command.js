@@ -16,6 +16,7 @@ const UI={
 };
 const HEADER={'X-Exodia-Client':'exodia-dashboard'};
 const motionStage=new AlbedoMotionStage(UI.rig,UI.video);
+window.__exodiaMotionDebug=()=>motionStage.snapshot();
 motionStage.onStatus=info=>{
  if(info.loading){UI.playback.textContent=info.loading;return;}
  if(info.ready){
@@ -256,7 +257,7 @@ $('#openWebSessions').addEventListener('click',async()=>{
  catch(e){inform(e.message,true);}
 });
 let paused=false;
-UI.video.addEventListener('playing',()=>{videoOk=true;if(!motionStage.ready)UI.playback.textContent='Idle motion video · loading articulated character kit';});
+UI.video.addEventListener('playing',()=>{videoOk=true;});
 UI.video.addEventListener('error',()=>{UI.playback.textContent='Motion clip unavailable; approved portrait fallback active';});
 $('#motionToggle').addEventListener('click',()=>{
  paused=!paused;

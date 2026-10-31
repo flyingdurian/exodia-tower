@@ -58,6 +58,7 @@ def test_albedo_real_frames_in_browser():
                           rigHidden:document.querySelector('#albedoRig')?.hidden,
                           videoHidden:document.querySelector('#albedoVideo')?.hidden,
                           mood:document.querySelector('#moodLabel')?.innerText,
+                          motion:window.__exodiaMotionDebug?.(),
                           sources:await Promise.all(['/assets/artwork/kiko_prime/manifest.json',
                             '/assets/rigs/kiko.json','/assets/artwork/kiko_prime/head.webp',
                             '/assets/artwork/kiko_prime/torso.webp'].map(async u=>{

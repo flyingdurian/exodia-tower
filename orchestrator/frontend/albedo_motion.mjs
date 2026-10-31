@@ -22,19 +22,23 @@ export class AlbedoMotionStage {
   constructor(canvas,video,{fetcher=fetch,clock=requestAnimationFrame}={}){
     this.canvas=canvas;this.video=video;this.fetcher=fetcher;this.clock=clock;
     this.state='idle';this.ready=false;this.failed=false;this.paused=false;this.engine=null;
+    this.loadingPhase='created';
     this.frame=0;this.renderedFrames=0;this.lastFrame=0;this.onStatus=null;
   }
   async initialize(){
     validatePerformanceMap();
     try{
+      this.loadingPhase='fetching';
       this.onStatus?.({loading:'Fetching animation artwork and rig data'});
       const [a,b]=await Promise.all([
         this.fetcher('/assets/artwork/kiko_prime/manifest.json').then(r=>{if(!r.ok)throw Error('art manifest missing');return r.json()}),
         this.fetcher('/assets/rigs/kiko.json').then(r=>{if(!r.ok)throw Error('rig manifest missing');return r.json()})
       ]);
+      this.loadingPhase='constructing';
       this.onStatus?.({loading:'Building the articulated character skeleton'});
       this.engine=new KikoArtEngine(this.canvas,a,b);
       this.engine.transparentStage=true;
+      this.loadingPhase='decoding';
       // The approved 3 MB master may remain undecoded in headed/headless Chromium.
       // Do not block the entire animated character on one unrelated image decode.
       // Registered layers populate independently as their individual images finish.
@@ -48,7 +52,7 @@ export class AlbedoMotionStage {
       qa=this.engine.getArtQA();
       if(!qa.ready.includes('head')||!qa.ready.includes('torso'))
         throw Error('Essential Albedo art layers did not decode; inspect local assets.');
-      this.ready=true;
+      this.ready=true;this.loadingPhase='ready';
       this.onStatus?.({ready:true,layers:qa.ready.length,missing:qa.rejected.map(x=>x.name),
           production_ready:false,mode:'registered pre-production articulated art'});
       this.setState(this.state);
@@ -62,7 +66,7 @@ export class AlbedoMotionStage {
       this.frame=this.clock(loop);
       return true;
     }catch(e){
-      this.failed=true;this.onStatus?.({ready:false,error:String(e.message||e),production_ready:false});
+      this.failed=true;this.loadingPhase='error';this.onStatus?.({ready:false,error:String(e.message||e),production_ready:false});
       this.video.hidden=false;this.canvas.hidden=true;return false;
     }
   }
@@ -88,7 +92,10 @@ export class AlbedoMotionStage {
     else if(this.state==='idle')this.video.play().catch(()=>{});
   }
   snapshot(){
-    return {state:this.state,ready:this.ready,renderedFrames:this.renderedFrames,
+    return {state:this.state,ready:this.ready,loadingPhase:this.loadingPhase,
+      registeredLayers:this.engine?.getArtQA().ready.length||0,
+      layerFailures:this.engine?.layerFailures||[],
+      renderedFrames:this.renderedFrames,
       active_media:this.state==='idle'?'video':'articulated_canvas',
       production_ready:false};
   }
