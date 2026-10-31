@@ -7,6 +7,7 @@ import {paintRegisteredLayers,validateRegistration,ART_RENDER_MODES} from './kik
  */
 
 const RAD=Math.PI/180;
+const clamp=(x,min,max)=>Math.min(max,Math.max(min,x));
 const sourceJoints={
  hips:{at:[623,760]},torso:{at:[590,570],parent:'hips'},
  skirt:{at:[633,694],parent:'hips'},
