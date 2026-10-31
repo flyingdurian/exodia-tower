@@ -52,19 +52,18 @@ def test_albedo_real_frames_in_browser():
                           timeout=17000)
                     except Exception as exc:
                         await page.screenshot(path=str(images/'motion_failed.png'),full_page=True)
-                        diagnostics=await page.evaluate("""() => ({
+                        diagnostics=await page.evaluate("""async () => ({
                           feedback:document.querySelector('#feedback')?.innerText,
                           playback:document.querySelector('#playbackInfo')?.innerText,
                           rigHidden:document.querySelector('#albedoRig')?.hidden,
                           videoHidden:document.querySelector('#albedoVideo')?.hidden,
                           mood:document.querySelector('#moodLabel')?.innerText,
-                          sources:Promise.all(['/assets/artwork/kiko_prime/manifest.json',
+                          sources:await Promise.all(['/assets/artwork/kiko_prime/manifest.json',
                             '/assets/rigs/kiko.json','/assets/artwork/kiko_prime/head.webp',
                             '/assets/artwork/kiko_prime/torso.webp'].map(async u=>{
                               try{return [u,(await fetch(u)).status]}catch(e){return [u,String(e)]}
                             }))
                         })""")
-                        diagnostics["sources"]=await diagnostics["sources"] if hasattr(diagnostics["sources"],"__await__") else diagnostics["sources"]
                         raise AssertionError(
                             f"Motion engine never activated: {diagnostics}, javascript errors={errors}"
                         ) from exc
