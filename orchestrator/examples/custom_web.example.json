@@ -1,0 +1,11 @@
+{
+  "_comment": "Demonstration only. You must have permission to automate a configured website.",
+  "operator_authorized": true,
+  "url": "http://127.0.0.1:8765/automation-demo",
+  "input_selector": "#demo-input",
+  "submit_selector": "#demo-send",
+  "response_selector": ".demo-response",
+  "stop_selector": "#demo-stop",
+  "input_mode": "contenteditable",
+  "headless": false
+}
