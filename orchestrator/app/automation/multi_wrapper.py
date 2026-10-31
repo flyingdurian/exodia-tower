@@ -1,5 +1,6 @@
 """Persistent visible web workspaces. Account output extraction remains operator-assisted."""
 import asyncio
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -7,6 +8,18 @@ from typing import Any
 from urllib.parse import urlparse
 from time import monotonic
 from app.automation.interactive_dom import StreamWatchConfig, watch_response_stream, DOMResponseError
+
+def installed_chrome() -> bool:
+    """Google sign-in rejects Playwright's bundled Chromium. Prefer installed Chrome."""
+    candidates = (
+        Path(os.environ.get("PROGRAMFILES", "")) / "Google/Chrome/Application/chrome.exe",
+        Path(os.environ.get("PROGRAMFILES(X86)", "")) / "Google/Chrome/Application/chrome.exe",
+        Path(os.environ.get("LOCALAPPDATA", "")) / "Google/Chrome/Application/chrome.exe",
+        Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
+        Path("/usr/bin/google-chrome"),
+        Path("/usr/bin/google-chrome-stable"),
+    )
+    return any(path.is_file() for path in candidates)
 
 @dataclass(frozen=True)
 class ProviderSpec:
@@ -79,6 +92,22 @@ class MultiWebSessionManager:
             await self._launch(name)
             return self.snapshot()[name]
 
+    async def _open_visible_browser(self, profile: Path):
+        """Open the persistent profile in installed Chrome when it is present.
+
+        Playwright's bundled Chromium is a separate build. Google account sign-in
+        often rejects that build as outdated. This does not hide automation.
+        """
+        options = dict(user_data_dir=str(profile), headless=self.headless, accept_downloads=False)
+        if installed_chrome():
+            try:
+                return await self._browser_factory.launch_persistent_context(**options, channel="chrome")
+            except Exception as exc:
+                message = str(exc).lower()
+                if "channel" not in message and "chrome" not in message and "executable" not in message:
+                    raise
+        return await self._browser_factory.launch_persistent_context(**options)
+
     async def _launch(self,name):
         if name in self._contexts: return
         spec=PROVIDERS[name]
@@ -87,8 +116,7 @@ class MultiWebSessionManager:
         context=None
         self._status[name]="launching"
         try:
-            context=await self._browser_factory.launch_persistent_context(
-                user_data_dir=str(profile),headless=self.headless,accept_downloads=False)
+            context=await self._open_visible_browser(profile)
             page=context.pages[0] if context.pages else await context.new_page()
             await page.goto(spec.url,wait_until="domcontentloaded",timeout=30000)
             # Login redirects can leave the site domain; permit visible manual login.
@@ -224,7 +252,7 @@ class MultiWebSessionManager:
                     self._status["gemini"]="editor_unavailable"
                     raise SessionError(
                         "Gemini editor is not visible after loading. Guest text chat may work "
-                        "without signing in; try typing manually in this same Exodia Chromium window. "
+                        "without signing in; try typing manually in this same browser window. "
                         "If only the welcome page appears, reload Gemini and check for a blocked or "
                         "incomplete page load. Signing in is NOT required for basic guest chat. "
                         "Google may reject automated-browser sign-in; do not bypass its security checks."
