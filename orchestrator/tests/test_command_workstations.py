@@ -36,3 +36,25 @@ def test_task_requires_operator_and_cannot_skip_prepare():
        json={'answer':'Unverified fake'},headers={'x-exodia-client':'exodia-dashboard'})
     assert premature.status_code==409
     assert client.get('/api/command/tasks').json()['automatic_extraction'] is False
+
+
+def test_full_operator_handoff_updates_companion_screen(monkeypatch):
+    from app.api.server import router
+    async def fake_prepare(prompt, model):
+        return {'model_choice':model,'status':'awaiting_operator','automatic_output':False}
+    monkeypatch.setattr(router.models, 'generate', fake_prepare)
+    monkeypatch.setattr(router.models, 'record_operator_response',
+                        lambda model, response: {'answer':response,'source':'manual_copy'})
+    client=TestClient(app)
+    headers={'x-exodia-client':'exodia-dashboard'}
+    task=client.post('/api/command/tasks',json={
+      'prompt':'Propose video titles','model_choice':'gemini','agent_id':'nova'},headers=headers).json()
+    prepared=client.post('/api/command/tasks/'+task['id']+'/prepare',headers=headers)
+    assert prepared.status_code==200
+    assert prepared.json()['task']['state']=='awaiting_operator'
+    delivered=client.post('/api/command/tasks/'+task['id']+'/response',
+                json={'answer':'Three titles (operator copied)'},headers=headers)
+    assert delivered.status_code==200
+    assert delivered.json()['state']=='answered'
+    assert delivered.json()['answer'].startswith('Three titles')
+    assert client.get('/api/command/tasks').json()['automatic_extraction'] is False
