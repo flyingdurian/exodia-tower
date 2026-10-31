@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 import os
+import shutil
 
 from dotenv import load_dotenv
 
@@ -29,7 +30,12 @@ class Settings:
 
     @property
     def database(self) -> Path:
-        return self.root / 'app_data' / 'command_tower.sqlite'
+        target = self.root / 'app_data' / 'exodia_tower.sqlite'
+        legacy = self.root / 'app_data' / 'command_tower.sqlite'
+        if not target.exists() and legacy.is_file():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(legacy, target)  # preserve historic archive/cache intact
+        return target
 
     def public_config(self) -> dict:
         return {

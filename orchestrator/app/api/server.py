@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import re
 from time import monotonic
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Header
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -17,6 +17,7 @@ from app.rag.engine import CrystalArchives
 from app.monitoring.logger import EventLog
 from app.companions.director import CompanionDirector
 from app.core.classifier import classify
+from app.social.workflow import EditorialStore, WorkflowError
 
 settings = Settings()
 cache = SpeedrunnerCache(settings.database)
@@ -24,11 +25,12 @@ archive = CrystalArchives(settings.database, settings.index_root, dense=__import
 events = EventLog()
 router = Router(settings, archive, cache, events)
 director = CompanionDirector(settings.root, events)
+social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 started = monotonic()
-app = FastAPI(title='The Command Tower', version='0.2.0', docs_url='/api/docs')
+app = FastAPI(title='Exodia Tower', version='0.3.0', docs_url='/api/docs')
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['localhost','127.0.0.1','testserver'])
 app.mount('/assets', StaticFiles(directory=settings.root/'frontend'), name='assets')
-events.publish('system', 'Command Tower boot sequence complete', 'Local mode active')
+events.publish('system', 'Exodia Tower boot sequence complete', 'Local mode active')
 
 class AskBody(BaseModel):
     question: str = Field(min_length=2, max_length=2000)
@@ -44,7 +46,8 @@ async def companion_studio():
 
 @app.get('/api/companions')
 async def companions():
-    return {'agents':director.agents,'states':director.snapshot(),'motion_tier':'interactive_2_5d'}
+    return {'agents':director.agents,'states':director.snapshot(),'motion_tier':'projection_navigation',
+            'articulated_rigs_ready':False}
 
 class ReactionBody(BaseModel):
     state: str = Field(min_length=3, max_length=16)
@@ -146,3 +149,86 @@ async def snapshot_file(name: str):
         raise HTTPException(status_code=404,detail='Not found')
     return FileResponse(file, media_type='image/png',headers={'Cache-Control':'no-store',
                                                                'X-Content-Type-Options':'nosniff'})
+
+
+# All social API mutations are guarded against cross-site form posts and unrelated pages.
+# The service remains bound to localhost; this is not multi-user authentication.
+def require_local_dashboard(x_exodia_client: str = Header(default='')):
+    if x_exodia_client != 'exodia-dashboard':
+        raise HTTPException(status_code=403, detail='Local dashboard request header required')
+
+class SocialCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=160)
+    concept: str = Field(default='', max_length=4000)
+    platforms: list[str] = Field(min_length=1, max_length=3)
+    source_urls: list[str] = Field(default_factory=list, max_length=12)
+
+class SocialPatch(BaseModel):
+    fields: dict
+
+class SocialAdvance(BaseModel):
+    stage: str
+
+class SocialApproval(BaseModel):
+    confirmation: str
+
+@app.get('/api/social/status')
+async def social_status():
+    return {'summary': social.summary(), 'connections':{
+        'youtube':'not_connected','tiktok':'not_connected','instagram':'not_connected'},
+        'agent':'nova','capabilities':['local_drafts','research_briefs','review_queue'],
+        'restrictions':['no_external_uploads','no_analytics_claims','no_autopublishing']}
+
+@app.get('/api/social/jobs')
+async def social_jobs():
+    return {'jobs': social.list()}
+
+@app.get('/api/social/jobs/{job_id}')
+async def social_job(job_id: str):
+    try: return social.get(job_id)
+    except KeyError: raise HTTPException(status_code=404, detail='Not found')
+
+@app.post('/api/social/jobs', status_code=201)
+async def social_create(body: SocialCreate, x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try: job=social.create(body.title, body.platforms, body.concept, body.source_urls)
+    except WorkflowError as e: raise HTTPException(status_code=422, detail=str(e))
+    events.publish('task', 'Nova created an editorial draft', job['title'])
+    return job
+
+@app.patch('/api/social/jobs/{job_id}')
+async def social_update(job_id: str, body: SocialPatch, x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try: return social.update(job_id,body.fields)
+    except KeyError: raise HTTPException(status_code=404, detail='Not found')
+    except WorkflowError as e: raise HTTPException(status_code=422, detail=str(e))
+
+@app.post('/api/social/jobs/{job_id}/advance')
+async def social_advance(job_id: str, body: SocialAdvance, x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try: job=social.advance(job_id,body.stage)
+    except KeyError: raise HTTPException(status_code=404, detail='Not found')
+    except WorkflowError as e: raise HTTPException(status_code=422, detail=str(e))
+    events.publish('task', 'Nova advanced a draft',f"{job['title']} → {job['stage']}")
+    return job
+
+@app.post('/api/social/jobs/{job_id}/approve')
+async def social_approve(job_id: str,body:SocialApproval,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try: job=social.approve(job_id,body.confirmation)
+    except KeyError: raise HTTPException(status_code=404,detail='Not found')
+    except WorkflowError as e: raise HTTPException(status_code=422,detail=str(e))
+    events.publish('success','Content approved for future submission',job['title'])
+    return job
+
+@app.get('/api/social/jobs/{job_id}/brief')
+async def social_brief(job_id: str):
+    try: return social.brief(job_id)
+    except KeyError: raise HTTPException(status_code=404,detail='Not found')
+
+@app.post('/api/social/jobs/{job_id}/publish')
+async def social_publish_disabled(job_id: str,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:social.get(job_id)
+    except KeyError: raise HTTPException(status_code=404,detail='Not found')
+    raise HTTPException(status_code=409,detail='Publishing disabled until authorized official platform adapters and per-post approval are verified')

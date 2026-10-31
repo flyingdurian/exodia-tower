@@ -8,7 +8,7 @@ from app.mcp.clients import service_overview, ServiceError
 from app.rag.engine import CrystalArchives
 from app.config import Settings, enabled
 
-mcp = MCPServer('Command Tower · Relic Inventory')
+mcp = MCPServer('Exodia Tower · Relic Inventory')
 
 @mcp.tool()
 async def github_repo_overview() -> dict:
