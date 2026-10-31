@@ -14,6 +14,7 @@ class Inbox:
    if "error" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN error TEXT DEFAULT ''")
    if "web_research" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN web_research INTEGER DEFAULT 0")
    if "sources" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN sources TEXT DEFAULT '[]'")
+   if "metrics" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN metrics TEXT DEFAULT '{}'")
  def db(self):return sqlite3.connect(self.path,timeout=10)
  @staticmethod
  def _mapped(row):
@@ -21,6 +22,8 @@ class Inbox:
   d['web_research']=bool(d.get('web_research'))
   try:d['sources']=json.loads(d.get('sources') or '[]')
   except (TypeError,ValueError):d['sources']=[]
+  try:d['metrics']=json.loads(d.get('metrics') or '{}')
+  except (TypeError,ValueError):d['metrics']={}
   return d
  def get(self,id):
   with self.lock,self.db() as c:
@@ -38,10 +41,13 @@ class Inbox:
   with self.lock,self.db() as c:c.execute("INSERT INTO tasks(id,agent_id,provider,prompt,state,created_at,updated_at,web_research,sources) VALUES(?,?,?,?,?,?,?,?,?)",(id,agent,provider,prompt.strip(),'draft',now,now,int(web_research),'[]'))
   return self.get(id)
  def update(self,id,key,value):
-  if key not in ('answer','state','artifact','error','sources'):raise ValueError("Forbidden update")
+  if key not in ('answer','state','artifact','error','sources','metrics'):raise ValueError("Forbidden update")
   self.get(id)
   if key=='sources':
    if not isinstance(value,list) or len(value)>4:raise ValueError("Invalid evidence links")
+   value=json.dumps(value)
+  elif key=='metrics':
+   if not isinstance(value,dict) or len(value)>20:raise ValueError("Invalid task timing metrics")
    value=json.dumps(value)
   with self.lock,self.db() as c:c.execute(f"UPDATE tasks SET {key}=?,updated_at=? WHERE id=?",(value,timestamp(),id))
   return self.get(id)

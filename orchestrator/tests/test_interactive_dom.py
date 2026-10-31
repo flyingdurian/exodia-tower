@@ -43,3 +43,15 @@ def test_watcher_requires_valid_configuration():
         with pytest.raises(ValueError):
             await watch_response_stream(FakePage([]),StreamWatchConfig('',timeout_seconds=1))
     asyncio.run(run())
+
+
+def test_first_visible_callback_only_fires_for_new_text():
+    async def run():
+        page=FakePage(['old answer','old answer','fresh answer','fresh answer','fresh answer'])
+        calls=[]
+        result=await watch_response_stream(
+            page,StreamWatchConfig('.answer',timeout_seconds=.4,stable_seconds=.01,poll_seconds=.005),
+            initial_count=1,initial_text='old answer',on_first_text=lambda:calls.append('new'))
+        assert result=='fresh answer'
+        assert calls==['new']
+    asyncio.run(run())

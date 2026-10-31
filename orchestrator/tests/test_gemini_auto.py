@@ -30,6 +30,7 @@ class Stop:
 class Keyboard:
     def __init__(self,page):self.page=page;self.pressed=[]
     async def type(self,content,delay=4):self.page.typed=content
+    async def insert_text(self,content):self.page.typed=content;self.page.used_insert_text=True
     async def press(self,key):self.pressed.append(key)
 
 class FakePage:
@@ -67,6 +68,9 @@ def test_gemini_automatic_types_submits_waits_and_returns_new_reply(tmp_path):
         assert output['answer']=="Streaming Gemini result [1]."
         assert output['automatic_output'] is True
         assert output['source']=="gemini_visible_browser"
+        metrics=output['timings']
+        assert metrics['total_s']>=metrics['first_text_s']
+        assert metrics['typing_method']=='keyboard_type'
         assert states==["opening","typing","submitting","waiting_for_reply"]
         page=factory.contexts[0].pages[0]
         assert page.typed=="Summarize this article"
@@ -147,5 +151,18 @@ def test_guest_welcome_without_editor_reports_editor_unavailable(tmp_path,monkey
         assert manager.snapshot()["gemini"]["status"]=="editor_unavailable"
         assert page.shots
         assert manager.snapshot()["gemini"]["error"] is not None
+        await manager.close()
+    asyncio.run(run())
+
+def test_large_prompt_uses_faster_input_event_instead_of_character_events(tmp_path):
+    async def run():
+        f=Factory();manager=MultiWebSessionManager(tmp_path,browser_factory=f)
+        prompt='Research summary with details: ' + ('important evidence ' * 30)
+        output=await manager.send_prompt_robust('gemini',prompt)
+        p=f.contexts[0].pages[0]
+        assert p.used_insert_text is True
+        assert p.typed==prompt
+        assert p.sent==1
+        assert output['timings']['typing_method']=='insert_text'
         await manager.close()
     asyncio.run(run())

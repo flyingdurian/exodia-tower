@@ -22,7 +22,9 @@ class StreamWatchConfig:
     poll_seconds: float = 0.4
 
 
-async def watch_response_stream(page, config: StreamWatchConfig, *, initial_count=0, initial_text="") -> str:
+async def watch_response_stream(page, config: StreamWatchConfig, *,
+                                initial_count=0, initial_text="",
+                                on_first_text=None) -> str:
     """Wait for a *new* answer and observe stable text after generation has ended.
 
     Unlike simple 'two equal samples', this requires evidence of a new response, so
@@ -41,6 +43,8 @@ async def watch_response_stream(page, config: StreamWatchConfig, *, initial_coun
         count=await matches.count()
         text=(await matches.last.inner_text(timeout=5000)).strip() if count else ""
         if text and (count>initial_count or text != initial_text):
+            if not new_output_seen and on_first_text is not None:
+                on_first_text()
             new_output_seen=True
         generating=False
         if config.stop_selector:

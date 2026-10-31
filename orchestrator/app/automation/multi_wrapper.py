@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
+from time import monotonic
 from app.automation.interactive_dom import StreamWatchConfig, watch_response_stream, DOMResponseError
 
 @dataclass(frozen=True)
@@ -37,6 +38,7 @@ class MultiWebSessionManager:
         self._locks={name:asyncio.Lock() for name in PROVIDERS}
         self._status={name:"not_started" for name in PROVIDERS}
         self._last_error={name:None for name in PROVIDERS}
+        self._last_timings={name:{} for name in PROVIDERS}
         self._pending={}
         self._initialization_lock=asyncio.Lock()
 
@@ -44,7 +46,8 @@ class MultiWebSessionManager:
         return {name:{"status":self._status[name], "url":spec.url,
                       "profile":f"session_data/{name}", "pending_prompt":name in self._pending,
                       "mode":"automatic_text" if name=="gemini" else "operator_assisted",
-                      "error":self._last_error[name]} for name,spec in PROVIDERS.items()}
+                      "error":self._last_error[name],
+                      "last_timings":self._last_timings[name]} for name,spec in PROVIDERS.items()}
 
     async def initialize_all(self):
         async with self._initialization_lock:
@@ -201,9 +204,11 @@ class MultiWebSessionManager:
             raise OperatorActionRequired("Automatic website mode is currently implemented only for Gemini.")
         if not isinstance(prompt,str) or not 1<=len(prompt.strip())<=12000:
             raise ValueError("Prompt must contain 1–12000 characters.")
+        t_begin=monotonic()
         if "gemini" not in self._pages:
             if phase: phase("opening")
             await self.initialize_one("gemini")
+        browser_ready=monotonic()
         async with self._locks["gemini"]:
             if "gemini" in self._pending:
                 raise OperatorActionRequired("Gemini has an earlier manually prepared prompt; resolve it first.")
@@ -212,7 +217,9 @@ class MultiWebSessionManager:
                 raise SessionError("Gemini browser unavailable. Open the workspaces and sign in to Gemini.")
             try:
                 self._check_destination("gemini",page.url)
+                t_editor=monotonic()
                 editor=await self._wait_for_gemini_editor(page)
+                editor_ready=monotonic()
                 if editor is None:
                     self._status["gemini"]="editor_unavailable"
                     raise SessionError(
@@ -228,9 +235,18 @@ class MultiWebSessionManager:
 
                 self._status["gemini"]="typing"
                 if phase: phase("typing")
+                t_typing=monotonic()
                 await editor.click(timeout=15000)
                 await page.keyboard.press("ControlOrMeta+A")
-                await page.keyboard.type(prompt.strip(),delay=4)
+                # Fast text insertion preserves an input event for React editors.
+                # Keep actual key events for shorter prompts that already work.
+                if len(prompt.strip())>=250 and hasattr(page.keyboard,"insert_text"):
+                    await page.keyboard.insert_text(prompt.strip())
+                    typing_method="insert_text"
+                else:
+                    await page.keyboard.type(prompt.strip(),delay=0)
+                    typing_method="keyboard_type"
+                typed_at=monotonic()
 
                 sender=await self._first_visible(page,self.GEMINI_SEND)
                 self._status["gemini"]="submitting"
@@ -241,20 +257,39 @@ class MultiWebSessionManager:
                 else:
                     # Enter can submit in Gemini; it is used only when no send button exists.
                     await page.keyboard.press("Enter")
+                submitted_at=monotonic()
                 self._status["gemini"]="waiting_for_reply"
                 if phase: phase("waiting_for_reply")
+                first_text_at=[None]
+                def mark_first_text():
+                    if first_text_at[0] is None:
+                        first_text_at[0]=monotonic()
                 answer=await watch_response_stream(
                     page,
                     StreamWatchConfig(response_selector=self.GEMINI_RESPONSE,
                         stop_selector=self.GEMINI_STOP,timeout_seconds=180.0,
-                        stable_seconds=2.3,poll_seconds=.4),
-                    initial_count=prior_count,initial_text=prior_text)
+                        stable_seconds=1.5,poll_seconds=.25),
+                    initial_count=prior_count,initial_text=prior_text,
+                    on_first_text=mark_first_text)
+                finished_at=monotonic()
                 if not answer.strip(): raise SessionError("Gemini returned no readable text.")
+                timings={
+                    "browser_setup_s":round(browser_ready-t_begin,3),
+                    "editor_wait_s":round(editor_ready-t_editor,3),
+                    "typing_s":round(typed_at-t_typing,3),
+                    "submit_s":round(submitted_at-typed_at,3),
+                    "first_text_s":round(first_text_at[0]-submitted_at,3) if first_text_at[0] is not None else None,
+                    "stream_completion_s":round(finished_at-submitted_at,3),
+                    "settle_after_first_text_s":round(finished_at-first_text_at[0],3) if first_text_at[0] is not None else None,
+                    "total_s":round(finished_at-t_begin,3),
+                    "typing_method":typing_method,
+                }
+                self._last_timings["gemini"]=timings
                 self._status["gemini"]="ready_for_next_prompt"
                 self._last_error["gemini"]=None
                 return {"answer":answer.strip()[:100000],"model_choice":"gemini",
                         "provider":"gemini","source":"gemini_visible_browser",
-                        "automatic_output":True}
+                        "automatic_output":True,"timings":timings}
             except Exception as exc:
                 screenshot=await self._capture_failure("gemini",page)
                 if self._status["gemini"] not in ("needs_operator_login_or_review","editor_unavailable"):

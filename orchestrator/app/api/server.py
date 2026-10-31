@@ -388,6 +388,8 @@ async def _complete_gemini_task(task_id: str):
     try:
         output=await router.sessions.send_prompt_robust(
             'gemini',task['prompt'],phase=on_phase)
+        if isinstance(output.get('timings'),dict):
+            inbox.update(task_id,'metrics',output['timings'])
         inbox.update(task_id,'answer',output['answer'])
         inbox.update(task_id,'state','answered')
         director.react(task['agent_id'],'success')
