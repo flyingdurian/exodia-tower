@@ -36,7 +36,8 @@ events.publish('system', 'Exodia Tower boot sequence complete', 'Local mode acti
 
 class AskBody(BaseModel):
     question: str = Field(min_length=2, max_length=2000)
-    channel: str = Field(default='auto', pattern='^(auto|api|browser|local)
+    channel: str = Field(default='auto', pattern='^(auto|api|browser|local)$')
+    model_choice: str = Field(default='chatgpt', pattern='^(chatgpt|gemini|deepseek)$')
 
 @app.on_event('shutdown')
 async def stop_browser_sessions():
