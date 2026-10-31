@@ -42,10 +42,26 @@ def test_albedo_real_frames_in_browser():
                     page=await browser.new_page(viewport={"width":1600,"height":980})
                     await page.goto(f"http://127.0.0.1:{PORT}/",wait_until="domcontentloaded")
                     await page.wait_for_selector('.mood[data-mood="excited"]',timeout=15000)
+                    errors=[]
+                    page.on('pageerror',lambda err:errors.append(str(err)))
+                    page.on('console',lambda msg:errors.append('console: '+msg.text) if msg.type=='error' else None)
                     await page.locator('.mood[data-mood="excited"]').click()
-                    await page.wait_for_function(
-                      "()=>{const c=document.querySelector('#albedoRig');return c && !c.hidden}",
-                      timeout=25000)
+                    try:
+                        await page.wait_for_function(
+                          "()=>{const c=document.querySelector('#albedoRig');return c && !c.hidden}",
+                          timeout=9500)
+                    except Exception as exc:
+                        await page.screenshot(path=str(images/'motion_failed.png'),full_page=True)
+                        diagnostics=await page.evaluate("""() => ({
+                          feedback:document.querySelector('#feedback')?.innerText,
+                          playback:document.querySelector('#playbackInfo')?.innerText,
+                          rigHidden:document.querySelector('#albedoRig')?.hidden,
+                          videoHidden:document.querySelector('#albedoVideo')?.hidden,
+                          mood:document.querySelector('#moodLabel')?.innerText
+                        })""")
+                        raise AssertionError(
+                            f"Motion engine never activated: {diagnostics}, javascript errors={errors}"
+                        ) from exc
                     canvas=page.locator('#albedoRig')
                     script="""canvas=>{const c=canvas.getContext('2d'),d=c.getImageData(0,0,canvas.width,canvas.height).data;
                       let nonzero=0,hash=0;for(let i=0;i<d.length;i+=137){if(d[i+3]>0)nonzero++;hash=(hash*33+(d[i]||0)+(d[i+1]||0)*2+(d[i+2]||0)*3+(d[i+3]||0)*5)>>>0;}
