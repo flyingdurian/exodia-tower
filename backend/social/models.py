@@ -36,7 +36,7 @@ class ContentJob:
     def advance(self, target: Stage) -> None:
         order=list(Stage)
         current=order.index(self.stage)
-        if target != order[current+1] if current < len(order)-1 else True:
+        if current == len(order) - 1 or target != order[current + 1]:
             raise ValueError('Stage transitions must advance by one step')
         if target in (Stage.APPROVED, Stage.SCHEDULED, Stage.PUBLISHED) and not self.approval_record:
             raise PermissionError('Operator approval is required')
