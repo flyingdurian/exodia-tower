@@ -80,3 +80,9 @@ Task states: `opening -> typing -> submitting -> waiting_for_reply -> answered`,
 ### Three independent authorized browser slots
 
 Custom browser configurations are `session_data/custom_web.json`, `session_data/web_slot_2.json` and `session_data/web_slot_3.json`. All three are optional, private and gitignored. Their persistent profiles live in separate folders. The Command Center provides **Configured browser A, B, C** task choices. Separate tasks on different slots run concurrently; tasks on the same slot serialize to avoid interleaving prompts. To test all slots, copy the example JSON to each filename. These are configurable authorized-site slots—not prewired consumer account scrapers.
+
+## Gemini automatic text tasks (experimental)
+
+Gemini browser (automatic · text) runs a task in the Gemini Playwright browser profile under ignored `session_data/gemini`. Open Browser Workspaces and sign in manually when required; then choose Gemini in Task Dispatch, assign a companion, and Create task. Exodia prepares React-rich text, submits using Gemini's visible send button (or Enter if unavailable), waits for **new** streamed text to finish, and puts it into the companion's terminal without manual copying. Task states are opening/typing/submitting/waiting_for_reply/answered or failed. The original model answer is displayed as text, not recomposed by Ollama.
+
+This is a **best-effort experimental website integration**, not an official Gemini API contract. DOM selectors can change; no end-to-end live authenticated Google account test is included in CI. Session login, rate limits, permissions, verification challenges and website access instructions still apply. This implementation does not evade bot detection or authentication challenges. Debug screenshots of failed browser interactions are saved privately in ignored `debug_snapshots`. Any automatically generated images are not yet captured by this text-only adapter.

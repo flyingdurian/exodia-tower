@@ -376,16 +376,43 @@ async def _complete_web_task(task_id: str):
         events.publish('alert','Configured browser workflow failed',
                        f"{task['agent_id']}:configured_web")
 
+async def _complete_gemini_task(task_id: str):
+    """Gemini browser roundtrip, tied to companion task-state lifecycle."""
+    task=inbox.get(task_id)
+    def on_phase(stage):
+        inbox.update(task_id,'state',stage)
+        director.react(task['agent_id'],'working')
+        events.publish('task','Gemini browser task progress',
+                       f"{task['agent_id']}:{stage}")
+    try:
+        output=await router.sessions.send_prompt_robust(
+            'gemini',task['prompt'],phase=on_phase)
+        inbox.update(task_id,'answer',output['answer'])
+        inbox.update(task_id,'state','answered')
+        director.react(task['agent_id'],'success')
+        events.publish('success','Gemini response delivered to companion',
+                       f"{task['agent_id']}:gemini")
+    except Exception as exc:
+        message=str(exc) if isinstance(exc,(SessionError,ValueError)) else (
+            "Gemini automation failed. Inspect the browser and local debug screenshots.")
+        inbox.update(task_id,'error',message[:700])
+        inbox.update(task_id,'state','failed')
+        director.react(task['agent_id'],'alert')
+        events.publish('alert','Gemini browser task failed',f"{task['agent_id']}:gemini")
+
+
 @app.get('/api/command/providers')
 async def command_providers():
     return {'ollama':await local_model.status(),
             'configured_web':web_adapter.snapshot(),
             'configured_slots':{key:runner.snapshot() for key,runner in web_adapters.items()},
-            'website_workspaces':'manual_only'}
+            'gemini':router.sessions.snapshot()['gemini'],
+            'website_workspaces':'manual_only_except_gemini'}
 
 @app.get('/api/command/tasks')
 async def command_list():
-    return {'tasks':inbox.list(),'sessions':router.sessions.snapshot(),'automatic_extraction':False}
+    return {'tasks':inbox.list(),'sessions':router.sessions.snapshot(),
+            'automatic_extraction':{'gemini':True,'chatgpt':False,'deepseek':False}}
 
 @app.post('/api/command/tasks',status_code=201)
 async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(default='')):
@@ -412,6 +439,13 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
         job.add_done_callback(active_generations.discard)
         events.publish('task','Autonomous configured website task started',
                        f"{body.agent_id}:custom_web")
+    elif body.model_choice=='gemini':
+        t=inbox.update(t['id'],'state','opening')
+        director.react(body.agent_id,'working')
+        job=asyncio.create_task(_complete_gemini_task(t['id']))
+        active_generations.add(job)
+        job.add_done_callback(active_generations.discard)
+        events.publish('task','Gemini browser task started',f"{body.agent_id}:gemini")
     else:
         director.react(body.agent_id,'thinking')
         events.publish('task','Manual website task created',f"{body.agent_id}:{body.model_choice}")
@@ -422,7 +456,7 @@ async def command_prepare(task_id:str,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
     try:t=inbox.get(task_id)
     except KeyError:raise HTTPException(404,detail='Task not found')
-    if t['provider']=='ollama' or t['provider'] in web_adapters:raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
+    if t['provider'] in ('ollama','gemini') or t['provider'] in web_adapters:raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
     if t['state']!='draft':raise HTTPException(409,detail='Already prepared')
     try:info=await router.models.generate(t['prompt'],t['provider'])
     except (SessionError,ValueError) as e:raise HTTPException(409,detail=str(e))
