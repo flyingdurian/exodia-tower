@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
+from app.automation.interactive_dom import StreamWatchConfig, watch_response_stream, DOMResponseError
 
 @dataclass(frozen=True)
 class ProviderSpec:
@@ -35,13 +36,15 @@ class MultiWebSessionManager:
         self._pages={}
         self._locks={name:asyncio.Lock() for name in PROVIDERS}
         self._status={name:"not_started" for name in PROVIDERS}
+        self._last_error={name:None for name in PROVIDERS}
         self._pending={}
         self._initialization_lock=asyncio.Lock()
 
     def snapshot(self):
         return {name:{"status":self._status[name], "url":spec.url,
                       "profile":f"session_data/{name}", "pending_prompt":name in self._pending,
-                      "mode":"operator_assisted"} for name,spec in PROVIDERS.items()}
+                      "mode":"automatic_text" if name=="gemini" else "operator_assisted",
+                      "error":self._last_error[name]} for name,spec in PROVIDERS.items()}
 
     async def initialize_all(self):
         async with self._initialization_lock:
@@ -57,6 +60,21 @@ class MultiWebSessionManager:
             for name,result in zip(PROVIDERS,results):
                 if isinstance(result,BaseException): self._status[name]="error"
             return self.snapshot()
+
+    async def initialize_one(self, name):
+        """Launch only the requested persistent browser profile."""
+        if name not in PROVIDERS: raise ValueError("Unknown web provider")
+        async with self._initialization_lock:
+            self.profile_dir.mkdir(parents=True,exist_ok=True)
+            if self._browser_factory is None and self._playwright is None:
+                try:
+                    from playwright.async_api import async_playwright
+                    self._playwright=await async_playwright().start()
+                    self._browser_factory=self._playwright.chromium
+                except Exception as exc:
+                    raise SessionError("Chromium is unavailable; run: .\\.venv\\Scripts\\python.exe -m playwright install chromium") from exc
+            await self._launch(name)
+            return self.snapshot()[name]
 
     async def _launch(self,name):
         if name in self._contexts: return
@@ -129,6 +147,100 @@ class MultiWebSessionManager:
             # Keyboard events keep React / rich-text handlers in sync.
             await page.keyboard.press("ControlOrMeta+A")
             await page.keyboard.type(prompt,delay=10)
+
+    # Site-specific selectors are best-effort, not stable public interfaces.
+    GEMINI_EDITORS=(
+        'rich-textarea .ql-editor[contenteditable="true"]',
+        'rich-textarea [contenteditable="true"]',
+        'rich-textarea p',
+        '[contenteditable="true"][role="textbox"]',
+    )
+    GEMINI_SEND=(
+        'button.send-button',
+        'button[aria-label="Send message"]',
+        'button[aria-label="Send"]',
+        'button[data-test-id="send-button"]',
+    )
+    GEMINI_RESPONSE='message-content, model-response .markdown, model-response .response-container'
+    GEMINI_STOP='button[aria-label*="Stop generating"], button[aria-label*="Stop response"], button.stop-button'
+
+    @staticmethod
+    async def _first_visible(page, selectors):
+        for selector in selectors:
+            try:
+                item=page.locator(selector).first
+                if await item.is_visible(timeout=1500):
+                    return item
+            except Exception:
+                continue
+        return None
+
+    async def send_prompt_robust(self,platform: str,prompt: str,*,phase=None)->dict:
+        """Full Gemini user-requested browser task -> final text.
+
+        No stealth, auth bypass, hidden API calls, or unattended sensitive actions.
+        One active Gemini task per profile. Designed for plain chat text only.
+        """
+        if platform!="gemini":
+            raise OperatorActionRequired("Automatic website mode is currently implemented only for Gemini.")
+        if not isinstance(prompt,str) or not 1<=len(prompt.strip())<=12000:
+            raise ValueError("Prompt must contain 1–12000 characters.")
+        if "gemini" not in self._pages:
+            if phase: phase("opening")
+            await self.initialize_one("gemini")
+        async with self._locks["gemini"]:
+            if "gemini" in self._pending:
+                raise OperatorActionRequired("Gemini has an earlier manually prepared prompt; resolve it first.")
+            page=self._pages.get("gemini")
+            if page is None:
+                raise SessionError("Gemini browser unavailable. Open the workspaces and sign in to Gemini.")
+            try:
+                self._check_destination("gemini",page.url)
+                editor=await self._first_visible(page,self.GEMINI_EDITORS)
+                if editor is None:
+                    self._status["gemini"]="needs_operator_login_or_review"
+                    raise SessionError("Gemini editor not found. Sign in or finish the on-screen challenge in the visible Chromium window.")
+                history=page.locator(self.GEMINI_RESPONSE)
+                prior_count=await history.count()
+                prior_text=(await history.last.inner_text(timeout=7000)).strip() if prior_count else ""
+
+                self._status["gemini"]="typing"
+                if phase: phase("typing")
+                await editor.click(timeout=15000)
+                await page.keyboard.press("ControlOrMeta+A")
+                await page.keyboard.type(prompt.strip(),delay=4)
+
+                sender=await self._first_visible(page,self.GEMINI_SEND)
+                self._status["gemini"]="submitting"
+                if phase: phase("submitting")
+                if sender is not None:
+                    # A timeout here is ambiguous; do not retry or press Enter.
+                    await sender.click(timeout=15000)
+                else:
+                    # Enter can submit in Gemini; it is used only when no send button exists.
+                    await page.keyboard.press("Enter")
+                self._status["gemini"]="waiting_for_reply"
+                if phase: phase("waiting_for_reply")
+                answer=await watch_response_stream(
+                    page,
+                    StreamWatchConfig(response_selector=self.GEMINI_RESPONSE,
+                        stop_selector=self.GEMINI_STOP,timeout_seconds=180.0,
+                        stable_seconds=2.3,poll_seconds=.4),
+                    initial_count=prior_count,initial_text=prior_text)
+                if not answer.strip(): raise SessionError("Gemini returned no readable text.")
+                self._status["gemini"]="ready_for_next_prompt"
+                self._last_error["gemini"]=None
+                return {"answer":answer.strip()[:100000],"model_choice":"gemini",
+                        "provider":"gemini","source":"gemini_visible_browser",
+                        "automatic_output":True}
+            except Exception as exc:
+                screenshot=await self._capture_failure("gemini",page)
+                if self._status["gemini"]!="needs_operator_login_or_review":
+                    self._status["gemini"]="dom_error_manual_review"
+                message=(str(exc) if isinstance(exc,(SessionError,DOMResponseError)) else
+                    f"Gemini browser error ({type(exc).__name__}).")
+                self._last_error["gemini"]=message[:250]
+                raise SessionError(f"{message} Debug screenshot: {screenshot}.") from exc
 
     async def _capture_failure(self,name,page):
         self.debug_dir.mkdir(parents=True,exist_ok=True)
