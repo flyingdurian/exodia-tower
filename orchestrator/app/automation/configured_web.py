@@ -54,10 +54,13 @@ class SiteProfile:
 
 
 class ConfiguredWebRunner:
-    def __init__(self, root, *, browser_factory=None):
+    def __init__(self, root, *, slot="custom_web", browser_factory=None):
+        if slot not in ("custom_web","web_slot_2","web_slot_3"):
+            raise ValueError("Unsupported configured browser slot")
+        self.slot=slot
         self.root=Path(root).resolve()
-        self.config_path=self.root/"session_data"/"custom_web.json"
-        self.profile_dir=self.root/"session_data"/"custom_web_profile"
+        self.config_path=self.root/"session_data"/(slot+".json")
+        self.profile_dir=self.root/"session_data"/(slot+"_profile")
         self.debug_dir=self.root/"debug_snapshots"
         self._browser_factory=browser_factory
         self._playwright=None
@@ -69,7 +72,8 @@ class ConfiguredWebRunner:
 
     def profile(self):
         if not self.config_path.exists():
-            raise WebAdapterError("Custom site not configured. Copy examples/custom_web.example.json to session_data/custom_web.json.")
+            raise WebAdapterError(
+                f"{self.slot} not configured. Copy examples/custom_web.example.json to session_data/{self.slot}.json.")
         try:
             data=json.loads(self.config_path.read_text(encoding="utf-8"))
         except (ValueError,OSError) as exc:
@@ -79,10 +83,10 @@ class ConfiguredWebRunner:
     def snapshot(self):
         try:
             spec=self.profile()
-            return {"configured":True,"status":self.status,"site":urlparse(spec.url).hostname,
+            return {"configured":True,"slot":self.slot,"status":self.status,"site":urlparse(spec.url).hostname,
                     "mode":"configured_browser","last_error":self.last_error}
         except WebAdapterError as exc:
-            return {"configured":False,"status":"not_configured","last_error":str(exc)}
+            return {"configured":False,"slot":self.slot,"status":"not_configured","last_error":str(exc)}
 
     def _assert_page(self, page, profile):
         expected=urlparse(profile.url)

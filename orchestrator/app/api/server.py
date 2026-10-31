@@ -36,7 +36,9 @@ inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
 inbox.fail_interrupted()
 local_model=OllamaBackend()
 researcher=PublicWebResearcher()
-web_adapter=ConfiguredWebRunner(settings.root)
+web_adapters={slot:ConfiguredWebRunner(settings.root,slot=slot)
+              for slot in ("custom_web","web_slot_2","web_slot_3")}
+web_adapter=web_adapters["custom_web"]  # first-slot compatibility
 active_generations=set()
 started = monotonic()
 app = FastAPI(title='Exodia Tower', version='0.3.0', docs_url='/api/docs')
@@ -54,7 +56,7 @@ class AskBody(BaseModel):
 @app.on_event('shutdown')
 async def stop_browser_sessions():
     await router.close_sessions()
-    await web_adapter.close()
+    await asyncio.gather(*(runner.close() for runner in web_adapters.values()))
 
 @app.get('/')
 async def home():
@@ -319,7 +321,7 @@ async def social_publish_disabled(job_id: str,x_exodia_client:str=Header(default
 # U2 — browser task inbox. Persist only operator-supplied output, never scraped output.
 class CompanionTaskBody(BaseModel):
     prompt:str=Field(min_length=1,max_length=12000)
-    model_choice:str=Field(pattern=r'^(ollama|custom_web|chatgpt|gemini|deepseek)$')
+    model_choice:str=Field(pattern=r'^(ollama|custom_web|web_slot_2|web_slot_3|chatgpt|gemini|deepseek)$')
     agent_id:str=Field(min_length=1,max_length=64)
     web_research:bool=False
 class CompanionTaskAnswer(BaseModel):
@@ -359,7 +361,7 @@ async def _complete_web_task(task_id: str):
         inbox.update(task_id,'state',state)
         events.publish('task','Configured web workflow',f"{task['agent_id']}:{state}")
     try:
-        result=await web_adapter.run(task['prompt'],phase=on_phase)
+        result=await web_adapters[task['provider']].run(task['prompt'],phase=on_phase)
         inbox.update(task_id,'answer',result['answer'])
         inbox.update(task_id,'state','answered')
         director.react(task['agent_id'],'success')
@@ -378,6 +380,7 @@ async def _complete_web_task(task_id: str):
 async def command_providers():
     return {'ollama':await local_model.status(),
             'configured_web':web_adapter.snapshot(),
+            'configured_slots':{key:runner.snapshot() for key,runner in web_adapters.items()},
             'website_workspaces':'manual_only'}
 
 @app.get('/api/command/tasks')
@@ -390,8 +393,8 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
     if body.agent_id not in director.known:raise HTTPException(422,detail='Unknown companion')
     if body.web_research and body.model_choice!='ollama':
         raise HTTPException(422,detail='Public research currently requires Ollama. Disable that option for configured browser tasks.')
-    if body.model_choice=='custom_web' and not web_adapter.snapshot()['configured']:
-        raise HTTPException(422,detail='Configured browser unavailable. Copy examples/custom_web.example.json to session_data/custom_web.json and restart.')
+    if body.model_choice in web_adapters and not web_adapters[body.model_choice].snapshot()['configured']:
+        raise HTTPException(422,detail=body.model_choice+' is unconfigured. Copy examples/custom_web.example.json to session_data/'+body.model_choice+'.json and restart.')
     try:t=inbox.create(body.agent_id,body.model_choice,body.prompt,web_research=body.web_research)
     except ValueError as e:raise HTTPException(422,detail=str(e))
     if body.model_choice=='ollama':
@@ -401,7 +404,7 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
         active_generations.add(job)
         job.add_done_callback(active_generations.discard)
         events.publish('task','Autonomous companion '+('live research' if body.web_research else 'inference')+' started',f"{body.agent_id}:ollama")
-    elif body.model_choice=='custom_web':
+    elif body.model_choice in web_adapters:
         t=inbox.update(t['id'],'state','opening')
         director.react(body.agent_id,'working')
         job=asyncio.create_task(_complete_web_task(t['id']))
@@ -419,7 +422,7 @@ async def command_prepare(task_id:str,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
     try:t=inbox.get(task_id)
     except KeyError:raise HTTPException(404,detail='Task not found')
-    if t['provider'] in ('ollama','custom_web'):raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
+    if t['provider']=='ollama' or t['provider'] in web_adapters:raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
     if t['state']!='draft':raise HTTPException(409,detail='Already prepared')
     try:info=await router.models.generate(t['prompt'],t['provider'])
     except (SessionError,ValueError) as e:raise HTTPException(409,detail=str(e))

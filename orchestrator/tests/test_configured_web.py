@@ -139,3 +139,27 @@ def test_custom_web_requires_configured_site(monkeypatch):
             headers={"x-exodia-client":"exodia-dashboard"},
             json={"prompt":"Try","agent_id":"kiko","model_choice":"custom_web"})
         assert resp.status_code==422
+
+
+def test_three_independent_configurable_browser_slots(tmp_path):
+    base=tmp_path/"session_data"
+    base.mkdir()
+    sample={
+        "operator_authorized":True,"url":"http://127.0.0.1:8765/automation-demo",
+        "input_selector":"#prompt","submit_selector":"#send",
+        "response_selector":".reply","stop_selector":"#stop",
+        "input_mode":"contenteditable","headless":False
+    }
+    for slot in ("custom_web","web_slot_2","web_slot_3"):
+        (base/(slot+".json")).write_text(json.dumps(sample))
+    async def run():
+        factory=Factory()
+        slots=[ConfiguredWebRunner(tmp_path,slot=s,browser_factory=factory)
+               for s in ("custom_web","web_slot_2","web_slot_3")]
+        results=await asyncio.gather(*(r.run("A different prompt") for r in slots))
+        assert len(results)==3
+        assert all(r["answer"]=="Model answer" for r in results)
+        assert len({r.profile_dir for r in slots})==3
+        assert len(factory.launches)==3
+        await asyncio.gather(*(r.close() for r in slots))
+    asyncio.run(run())

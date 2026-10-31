@@ -75,3 +75,8 @@ Choose **Configured website (automatic)** in the Command Center, assign Kiko/Nov
 To adapt the code to a website you are authorized to automate, change the URL and selectors in the ignored `session_data/custom_web.json` profile, and verify that the site's terms and your access rights allow automation. Do not supply account credentials to Exodia; sign in manually within the persistent browser profile. The app does not include consumer ChatGPT/Gemini/DeepSeek auto-scraping connectors or anti-detection code.
 
 Task states: `opening -> typing -> submitting -> waiting_for_reply -> answered`, or `failed`. Browser errors save screenshots in ignored `debug_snapshots`; incomplete tasks are marked failed upon restart. This system does not bypass paywalls, CAPTCHAs, or account security challenges.
+
+
+### Three independent authorized browser slots
+
+Custom browser configurations are `session_data/custom_web.json`, `session_data/web_slot_2.json` and `session_data/web_slot_3.json`. All three are optional, private and gitignored. Their persistent profiles live in separate folders. The Command Center provides **Configured browser A, B, C** task choices. Separate tasks on different slots run concurrently; tasks on the same slot serialize to avoid interleaving prompts. To test all slots, copy the example JSON to each filename. These are configurable authorized-site slots—not prewired consumer account scrapers.
