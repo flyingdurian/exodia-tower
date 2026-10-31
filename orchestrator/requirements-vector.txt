@@ -1,0 +1,3 @@
+# Optional, local dense search. May download the embedding model at first use.
+sqlite-vec>=0.1.6,<1
+sentence-transformers>=3,<6

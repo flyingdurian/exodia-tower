@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090e21">
+<title>The Command Tower | Companion Studio</title>
+<link rel="stylesheet" href="/assets/companions.css">
+</head>
+<body>
+<div id="app" class="studio" data-hero="kiko" data-mood="idle">
+  <div class="ambient-veil" aria-hidden="true"></div>
+  <header class="topbar">
+    <a href="/" class="brand"><span class="brand-glyph">✦</span><span><b>THE COMMAND TOWER</b><small>THE LIVING GUILD · COMPANION STUDIO</small></span></a>
+    <div class="top-actions"><span class="live-dot"></span><span id="backendStatus">CHECKING LOCAL ENGINE</span><span class="header-divider"></span><span>CHAPTER II / NINE MINDS</span></div>
+  </header>
+  <main class="layout">
+    <aside class="roster-panel">
+      <div class="panel-overline">THE GUILD</div><h1>Choose your <em>companion.</em></h1>
+      <p class="roster-intro">Nine specialized personalities. One command tower.</p>
+      <div id="roster" class="roster" role="group" aria-label="Select an agent"></div>
+      <div class="roster-foot"><span class="roster-count">09 <small>ACTIVE ROLES</small></span><div><b>Art direction · v0.2</b><span>Portrait-preserving motion prototype</span></div></div>
+    </aside>
+    <section class="hero-section" aria-labelledby="heroName">
+      <div class="hero-illustration" id="heroIllustration">
+        <div class="hero-back-glow"></div>
+        <div class="halo halo-a"></div><div class="halo halo-b"></div><div class="halo halo-c"></div>
+        <div class="hero-camera" id="heroCamera"><img class="hero-art" id="heroArt" src="/assets/companions/portraits/kiko.webp" alt="Kiko Prime — illustrated Command Tower overseer"><video class="hero-video" id="heroVideo" playsinline muted loop preload="none" hidden></video></div>
+        <canvas id="particles" aria-hidden="true"></canvas>
+        <div class="hero-aurora"></div>
+        <div class="floating-sigil sigil-one">✦</div><div class="floating-sigil sigil-two">✧</div><div class="floating-sigil sigil-three">✳</div>
+        <div class="hero-topline"><span class="hero-overline">✧ GUILD PERSONNEL FILE</span><span class="folio">C/09 · <span id="folio">01</span></span></div>
+        <div class="hero-bottom">
+          <span class="agent-class" id="agentClass">CELESTIAL COMMANDER</span>
+          <h2 id="heroName">Kiko Prime</h2>
+          <p id="heroPillar">Central Command · Overseer</p>
+        </div>
+        <div class="mood-emblem" id="moodEmblem">☾</div>
+      </div>
+      <div class="stage-bottom"><span><b class="marker">✦</b> LIVE PORTRAIT STAGE</span><span>POINTER PARALLAX · AMBIENT FX · STATE REACTIONS</span></div>
+    </section>
+    <aside class="control-panel">
+      <div class="control-header"><div class="panel-overline">SOUL & SYSTEMS</div><h2>The companion <em>director.</em></h2><p>Preview state transitions and see how the guild reacts to real task events.</p></div>
+      <div class="identity-card"><span class="ring-icon" id="identityMark">✦</span><div><span class="micro">AGENT PROFILE</span><strong id="identityTitle">Central Command</strong><span id="identityClass">Overseer · Celestial Commander</span></div></div>
+      <div class="dialogue"><div class="quote">“</div><p id="agentLine">The whole tower is awake! What shall we tackle today?</p><small id="personaLine">Friendly, curious, disciplined.</small></div>
+      <div class="action-head"><span>TRIGGER A REACTION</span><span>LIVE PREVIEW</span></div>
+      <div class="mood-buttons" role="group" aria-label="Select animation state">
+        <button data-mood="idle"><span>☾</span><b>Idle</b><small>Breathing</small></button>
+        <button data-mood="thinking"><span>✧</span><b>Thinking</b><small>Scanning</small></button>
+        <button data-mood="working"><span>⚔</span><b>Working</b><small>Task mode</small></button>
+        <button data-mood="success"><span>✦</span><b>Success</b><small>Celebration</small></button>
+        <button data-mood="rest"><span>☕</span><b>Resting</b><small>Cache hit</small></button>
+        <button data-mood="alert"><span>!</span><b>Alert</b><small>Fallback</small></button>
+      </div>
+      <div class="log-box"><div class="action-head"><span>COMPANION LOG</span><span id="stateIndicator">IDLE</span></div><div id="agentLog" class="agent-log" aria-live="polite"></div></div>
+      <div class="bottom-controls"><button id="surprise" class="surprise">✦ Surprise me</button><button id="reduceMotion" class="toggle-anim" aria-pressed="false">Motion on</button></div>
+      <div class="honest-note">This version animates lighting, movement cues and interaction states around the approved paintings. Full face/body performance requires separate rigged or generated motion assets.</div>
+    </aside>
+  </main>
+  <footer>THE COMMAND TOWER <span>✦</span> MADE FOR THE GUILD <span class="footer-right">LOCAL-FIRST · NO FICTIONAL TASK RESULTS</span></footer>
+</div>
+<script src="/assets/companions.js" defer></script>
+</body>
+</html>
