@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import re
 from time import monotonic
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Header
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Header, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -20,6 +20,7 @@ from app.companions.director import CompanionDirector
 from app.companions.rigs import load_all
 from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
+from app.operations.inbox import Inbox
 
 settings = Settings()
 cache = SpeedrunnerCache(settings.database)
@@ -28,10 +29,13 @@ events = EventLog()
 router = Router(settings, archive, cache, events)
 director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
+inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
 started = monotonic()
 app = FastAPI(title='Exodia Tower', version='0.3.0', docs_url='/api/docs')
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['localhost','127.0.0.1','testserver'])
 app.mount('/assets', StaticFiles(directory=settings.root/'frontend'), name='assets')
+(settings.root/'app_data'/'artifacts').mkdir(parents=True,exist_ok=True)
+app.mount('/artifacts',StaticFiles(directory=settings.root/'app_data'/'artifacts'),name='artifacts')
 events.publish('system', 'Exodia Tower boot sequence complete', 'Local mode active')
 
 class AskBody(BaseModel):
@@ -45,7 +49,7 @@ async def stop_browser_sessions():
 
 @app.get('/')
 async def home():
-    return FileResponse(settings.root/'frontend'/'index.html')
+    return FileResponse(settings.root/'frontend'/'exodia_workstations.html')
 
 @app.get('/art-studio')
 async def art_studio():
@@ -54,6 +58,9 @@ async def art_studio():
 @app.get('/puppet-lab')
 async def puppet_lab():
     return FileResponse(settings.root/'frontend'/'puppet_lab.html')
+
+@app.get('/legacy')
+async def legacy():return FileResponse(settings.root/'frontend'/'index.html')
 
 @app.get('/rig-lab')
 async def rig_lab():
@@ -294,3 +301,73 @@ async def social_publish_disabled(job_id: str,x_exodia_client:str=Header(default
     try:social.get(job_id)
     except KeyError: raise HTTPException(status_code=404,detail='Not found')
     raise HTTPException(status_code=409,detail='Publishing disabled until authorized official platform adapters and per-post approval are verified')
+
+
+# U2 — browser task inbox. Persist only operator-supplied output, never scraped output.
+class CompanionTaskBody(BaseModel):
+    prompt:str=Field(min_length=1,max_length=12000)
+    model_choice:str=Field(pattern='^(chatgpt|gemini|deepseek)$')
+    agent_id:str=Field(min_length=1,max_length=64)
+class CompanionTaskAnswer(BaseModel):
+    answer:str=Field(min_length=1,max_length=100000)
+
+@app.get('/api/command/tasks')
+async def command_list():
+    return {'tasks':inbox.list(),'sessions':router.sessions.snapshot(),'automatic_extraction':False}
+
+@app.post('/api/command/tasks',status_code=201)
+async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    if body.agent_id not in director.known:raise HTTPException(422,detail='Unknown companion')
+    try:t=inbox.create(body.agent_id,body.model_choice,body.prompt)
+    except ValueError as e:raise HTTPException(422,detail=str(e))
+    director.react(body.agent_id,'thinking')
+    events.publish('task','Task assigned to companion',f"{body.agent_id}:{body.model_choice}")
+    return t
+
+@app.post('/api/command/tasks/{task_id}/prepare')
+async def command_prepare(task_id:str,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:t=inbox.get(task_id)
+    except KeyError:raise HTTPException(404,detail='Task not found')
+    if t['state']!='draft':raise HTTPException(409,detail='Already prepared')
+    try:info=await router.models.generate(t['prompt'],t['provider'])
+    except (SessionError,ValueError) as e:raise HTTPException(409,detail=str(e))
+    saved=inbox.update(task_id,'state','awaiting_operator')
+    director.react(t['agent_id'],'working')
+    return {'task':saved,'instructions':info}
+
+@app.post('/api/command/tasks/{task_id}/response')
+async def command_response(task_id:str,body:CompanionTaskAnswer,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:t=inbox.get(task_id)
+    except KeyError:raise HTTPException(404,detail='Task not found')
+    if t['state']!='awaiting_operator':raise HTTPException(409,detail='Prepare the prompt first')
+    try:router.models.record_operator_response(t['provider'],body.answer)
+    except (SessionError,ValueError) as e:raise HTTPException(409,detail=str(e))
+    inbox.update(task_id,'answer',body.answer.strip())
+    saved=inbox.update(task_id,'state','answered')
+    director.react(t['agent_id'],'success')
+    events.publish('success','Operator-delivered response',f"{t['agent_id']}:{t['provider']}")
+    return saved
+
+@app.post('/api/command/tasks/{task_id}/artifact')
+async def command_artifact(task_id:str,request:Request,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:t=inbox.get(task_id)
+    except KeyError:raise HTTPException(404,detail='Task not found')
+    if t['state']!='answered':raise HTTPException(409,detail='Record response before image')
+    content_type=request.headers.get('content-type','').split(';')[0].lower()
+    extensions={'image/png':('.png',b'\x89PNG\r\n\x1a\n'),'image/jpeg':('.jpg',b'\xff\xd8\xff'),'image/webp':('.webp',b'RIFF')}
+    if content_type not in extensions:raise HTTPException(415,detail='PNG, JPEG or WebP only')
+    content=bytearray()
+    async for chunk in request.stream():
+        if len(content)+len(chunk)>8*1024*1024:raise HTTPException(413,detail='Image exceeds 8 MiB')
+        content.extend(chunk)
+    ext,magic=extensions[content_type]
+    if not content.startswith(magic) or (ext=='.webp' and content[8:12]!=b'WEBP'):
+        raise HTTPException(415,detail='Invalid image header')
+    from uuid import uuid4
+    fname=f"{uuid4().hex}{ext}"
+    (settings.root/'app_data'/'artifacts'/fname).write_bytes(content)
+    return inbox.update(task_id,'artifact',f"/artifacts/{fname}")
