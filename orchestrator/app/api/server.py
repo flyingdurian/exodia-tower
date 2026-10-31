@@ -310,7 +310,7 @@ async def social_publish_disabled(job_id: str,x_exodia_client:str=Header(default
 # U2 — browser task inbox. Persist only operator-supplied output, never scraped output.
 class CompanionTaskBody(BaseModel):
     prompt:str=Field(min_length=1,max_length=12000)
-    model_choice:str=Field(pattern='^(ollama|chatgpt|gemini|deepseek)
+    model_choice:str=Field(pattern='^(ollama|chatgpt|gemini|deepseek)$')
     agent_id:str=Field(min_length=1,max_length=64)
 class CompanionTaskAnswer(BaseModel):
     answer:str=Field(min_length=1,max_length=100000)
