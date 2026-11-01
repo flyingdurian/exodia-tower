@@ -14,18 +14,32 @@ class MediaCaptureError(RuntimeError):pass
 
 GENERATOR_SCOPE="model-response, .model-response, [data-message-author-role='model']"
 MEDIA_SCRIPT=r"""() => {
-  const nodes=[...document.querySelectorAll(
-    'model-response img, model-response video, .model-response img, .model-response video, [data-message-author-role="model"] img, [data-message-author-role="model"] video, generated-image img, generated-image video, image-generation img, image-generation video, [data-test-id*="generated-image"] img, [data-test-id*="generated-video"] video'
-  )];
-  return nodes.filter(n=>{
-    const rect=n.getBoundingClientRect();
-    const w=n.naturalWidth||n.videoWidth||rect.width;
-    const h=n.naturalHeight||n.videoHeight||rect.height;
-    return w>=100&&h>=70;
-  }).map(n=>({kind:n.tagName.toLowerCase()==='video'?'video':'image',
-    src:n.currentSrc||n.getAttribute('src')||'',
-    poster:n.getAttribute('poster')||'',width:n.naturalWidth||n.videoWidth||0,
-    height:n.naturalHeight||n.videoHeight||0})).filter(n=>n.src&&!n.src.startsWith('javascript:'));
+  const result=[];
+  const seen=new Set();
+  const SELECTOR='model-response, .model-response, [data-message-author-role="model"], generated-image, image-generation, generated-video, [data-test-id*="generated-image"], [data-test-id*="generated-video"]';
+  function walk(root,inside){
+    if(!root)return;
+    // Shadow DOM is used by some Gemini components. document.querySelectorAll
+    // alone misses generated content living inside open shadow roots.
+    const nodes=root.querySelectorAll('*');
+    for(const el of nodes){
+      const admitted=inside || (el.matches&&el.matches(SELECTOR));
+      if(admitted && (el.tagName==='IMG'||el.tagName==='VIDEO')){
+        const bounds=el.getBoundingClientRect();
+        const width=el.naturalWidth||el.videoWidth||bounds.width;
+        const height=el.naturalHeight||el.videoHeight||bounds.height;
+        const src=el.currentSrc||el.getAttribute('src')||'';
+        if(width>=100&&height>=70&&src&&!seen.has(src)&&!src.startsWith('javascript:')){
+          seen.add(src);
+          result.push({kind:el.tagName==='VIDEO'?'video':'image',src,
+            poster:el.getAttribute('poster')||'',width,height});
+        }
+      }
+      if(el.shadowRoot)walk(el.shadowRoot,admitted);
+    }
+  }
+  walk(document,false);
+  return result;
 }"""
 BINARY_FETCH_SCRIPT=r"""async ({src,limit})=>{
   const response=await fetch(src,{credentials:'include'});
@@ -95,7 +109,10 @@ async def await_media_answer(page,*,text_selector:str,stop_selector:str,
 async def store_media(page,candidates:list[dict],destination:Path,*,max_bytes:int=50*1024*1024)->list[dict]:
     destination.mkdir(parents=True,exist_ok=True)
     records=[]
+    seen_sources=set()
     for candidate in candidates[:4]:
+        if candidate.get('src') in seen_sources:continue
+        seen_sources.add(candidate.get('src'))
         kind=candidate.get('kind')
         src=candidate.get('src','')
         if kind not in ('image','video') or not src.startswith(('https://','blob:','data:')):
@@ -124,7 +141,10 @@ async def store_media(page,candidates:list[dict],destination:Path,*,max_bytes:in
             if kind=='image':
                 try:
                     target=destination/(secrets.token_hex(16)+'.png')
-                    locator=page.locator('model-response img, generated-image img, image-generation img').last
+                    locator=page.locator(
+                        'model-response img, .model-response img, '
+                        'generated-image img, image-generation img, '
+                        '[data-test-id*="generated-image"] img').last
                     await locator.screenshot(path=str(target),timeout=8000)
                     raw=target.read_bytes()
                     if validate_bytes(raw,'image')=='.png':
