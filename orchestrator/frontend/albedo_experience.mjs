@@ -1,9 +1,45 @@
-import {VoiceDirector} from './companion_voice.mjs';
+import {VoiceDirector,readableSpeech} from './companion_voice.mjs';
 
 /* Public Exodia companion UX: portrait expression plates, generated media,
  * and opt-in instant system speech. No debug puppet preview or fake talk wobble. */
 const $=selector=>document.querySelector(selector);
 const voice=new VoiceDirector();
+let neuralAudio=null,voiceVersion=0;
+function stopNeural(){
+ voiceVersion++;
+ if(neuralAudio){neuralAudio.pause();URL.revokeObjectURL(neuralAudio.src);neuralAudio=null;}
+}
+async function speakCompanion(text,agent,{manual=false}={}){
+ if(!manual&&!voice.auto)return false;
+ const spoken=readableSpeech(text,950);
+ if(!spoken)return false;
+ stopNeural();
+ if($('#ttsEngine')?.value==='system')return voice.speak(spoken,{manual:true});
+ voice.cancel();
+ const version=voiceVersion;
+ voiceStatus('Preparing natural companion voice…');
+ try{
+   const res=await fetch('/api/voice/speak',{
+      method:'POST',headers:{'X-Exodia-Client':'exodia-dashboard','Content-Type':'application/json'},
+      body:JSON.stringify({agent_id:agent,text:spoken})});
+   if(!res.ok){
+      let problem='Neural TTS unavailable';try{problem=(await res.json()).detail||problem}catch{}
+      throw Error(problem);
+   }
+   const blob=await res.blob();
+   if(version!==voiceVersion)return false;
+   const src=URL.createObjectURL(blob);
+   neuralAudio=new Audio(src);
+   neuralAudio.onended=()=>{if(version===voiceVersion){voiceStatus('Speech complete');URL.revokeObjectURL(src);neuralAudio=null;}};
+   neuralAudio.onerror=()=>voiceStatus('Audio playback failed');
+   await neuralAudio.play();
+   voiceStatus('Speaking with local neural voice…');
+   return true;
+ }catch(e){
+   voiceStatus(e.message+' · Choose system fallback or start Kokoro.');
+   return false;
+ }
+}
 const STATES=['idle','sleeping','processing','waiting','thinking','failed','frustration','happy','excited','proud'];
 const labels={
   idle:'Ready',sleeping:'Resting',processing:'Working',waiting:'Awaiting reply',
@@ -117,11 +153,19 @@ function updateVoices(){
  select.value=current;
  voiceStatus(voice.available()?options.length+' available English voice(s)':'Speech not supported here');
 }
-voice.onState=state=>voiceStatus(state==='speaking'?'Reading response…':state==='unavailable'?'Speech synthesis unavailable':'Speech ready');
+voice.onState=state=>{
+ if($('#ttsEngine')?.value==='system')
+   voiceStatus(state==='speaking'?'Reading response…':state==='unavailable'?'Speech synthesis unavailable':'Speech ready');
+};
 updateVoices();
 if(voice.available())speechSynthesis.addEventListener?.('voiceschanged',updateVoices);
 $('#autoSpeech')?.addEventListener('change',event=>{
- voice.setAuto(event.target.checked);voiceStatus(event.target.checked?'Automatic voice enabled':'Voice autoplay disabled');
+ voice.setAuto(event.target.checked);
+ voiceStatus(event.target.checked?'Auto speech enabled; neural service used when selected':'Voice autoplay disabled');
+});
+$('#ttsEngine')?.addEventListener('change',event=>{
+ stopNeural();voice.cancel();
+ voiceStatus(event.target.value==='neural'?'Natural Kokoro voice: requires local TTS service on port 8880':'System voice fallback selected');
 });
 $('#voiceChoice')?.addEventListener('change',event=>voice.setVoiceName(event.target.value));
 $('#companion')?.addEventListener('change',event=>{
@@ -130,9 +174,10 @@ $('#companion')?.addEventListener('change',event=>{
 });
 $('#speakNow')?.addEventListener('click',()=>{
  voice.setAgent(lastAgent);
- if(!voice.speak(lastRenderedAnswer,{manual:true}))voiceStatus('No completed text response to speak.');
+ if(!lastRenderedAnswer)voiceStatus('No completed text response to speak.');
+ else speakCompanion(lastRenderedAnswer,lastAgent,{manual:true});
 });
-$('#stopSpeech')?.addEventListener('click',()=>voice.cancel());
+$('#stopSpeech')?.addEventListener('click',()=>{stopNeural();voice.cancel();});
 async function refreshDelivery(){
  const selected=document.querySelector('.task-item.active');
  const id=selected?.dataset.id||'';
@@ -156,7 +201,8 @@ async function refreshDelivery(){
    // Read only tasks completed after this page opened; history is never auto-played.
    if(Date.parse(task.updated_at||0)<EPOCH){lastSpokenId=id;return;}
    lastSpokenId=id;
-   voice.setAgent(lastAgent);voice.speak(task.answer);
+   voice.setAgent(lastAgent);
+   speakCompanion(task.answer,lastAgent);
   }
  }catch(error){voiceStatus('Companion delivery refresh: '+error.message);}
 }
@@ -165,3 +211,5 @@ refreshDelivery();
 
 $('#model')?.addEventListener('change',()=>paintComputer(active));
 paintComputer('idle');
+
+if($('#ttsEngine'))voiceStatus('Natural neural voices require the optional local Kokoro service (port 8880)');
