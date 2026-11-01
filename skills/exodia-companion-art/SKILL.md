@@ -1,3 +1,7 @@
+## 2026-11-01 — OWNER'S SUPERSEDING 2D DELIVERY DIRECTION
+
+High-fidelity 3D character sculpting/rigging is DEFERRED to a future project. The current approved task is separate 2D painted image masters for 20 facial emotions and 13 action poses, plus transparent directional sprite sets and authored sprite animation frames for roaming and idle behaviors on the Operations Deck. **Do not claim crop-derived 100px thumbnails are individually authored high-definition images.** Keep them out of a large hero portrait and reject static whole-body wiggles as movement animation. Visual benchmark hashes, complete requirements, and release gates are in `docs/ALBEDO_2D_PIVOT.md` and `docs/companion_2d_requirements.json`.
+
 # Exodia Tower — Companion Art & Rigging Skill
 Status: owner-approved visual benchmark LOCKED; individual production assets and genuine rigs NOT YET APPROVED.
 Updated: 2026-11-01. Applies to all 10 companions.

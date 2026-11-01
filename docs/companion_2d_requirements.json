@@ -1,0 +1,169 @@
+{
+  "schema": "exodia.companion-2d/v1",
+  "date": "2026-11-01",
+  "implementation_status": "in_review_not_accepted",
+  "supersedes_for_now": [
+    "full_3d_character_required",
+    "skinned_rig_as_current_art_delivery"
+  ],
+  "retains_as_future": [
+    "high_fidelity_3d",
+    "genuine_skeletal_animation"
+  ],
+  "identity": {
+    "agent_id": "kiko",
+    "public_name": "Albedo",
+    "source_full_body": {
+      "filename": "elegant_lavender_crystal_fantasy_gown.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "ddf1cc58e770d7cc99ffc3b2bd5a04ec77f720b05b8c96baf214090c899fb082"
+    },
+    "source_turnaround": {
+      "filename": "albedo_rig_development_sheet.png",
+      "width": 1448,
+      "height": 1086,
+      "sha256": "787fa6009d504083a927c81c97dec1b01f3add6e1a6f5dacd7516f4789abf480"
+    },
+    "source_command_center": {
+      "name": "albedo_mission_complete_v1",
+      "source_filename": "albedo_s_mission_complete_command_center.png",
+      "sha256": "bfc233740851980021ea0b479a1b4254574f6ca614e3a1e9cbb7bd66c03dc409",
+      "width": 1448,
+      "height": 1086,
+      "status": "owner_approved_reference_pending_repo_import",
+      "target_repository_path": "orchestrator/frontend/companions/benchmarks/albedo_mission_complete_v1.png",
+      "library_path": "/Exodia Tower/Benchmarks/Albedo - approved mission-complete benchmark.png"
+    }
+  },
+  "workstation": {
+    "art_type": "separate_painted_still_image_per_emotion_and_status",
+    "required_emotions": [
+      "happy",
+      "excited",
+      "laugh",
+      "smile",
+      "thinking",
+      "curious",
+      "surprised",
+      "confused",
+      "determined",
+      "serious",
+      "sad",
+      "disappointed",
+      "pouting",
+      "angry",
+      "hurt",
+      "bored",
+      "sleepy",
+      "dizzy",
+      "pain",
+      "cheerful_wink"
+    ],
+    "min_face_native_height_px": 1024,
+    "base_hero_image": "approved_high_resolution_albedo",
+    "large_circle_from_low_resolution_atlas": "forbidden",
+    "expression_indicators_under_100px": "temporary_review_only",
+    "actual_runtime_status_must_come_from_task_events": true
+  },
+  "actions": {
+    "ids": [
+      "idle",
+      "walk",
+      "run",
+      "jump",
+      "sit",
+      "work_computer",
+      "typing_working",
+      "pointing",
+      "explaining",
+      "celebrating",
+      "stretching",
+      "sleeping",
+      "waking_up"
+    ],
+    "independent_action_illustrations_required": true,
+    "static_illustrations_do_not_claim_animation": true
+  },
+  "deck": {
+    "design": "2d_sprite_navigation",
+    "base_frame_px": [
+      128,
+      196
+    ],
+    "directional_stills": [
+      "front",
+      "back",
+      "left",
+      "right"
+    ],
+    "future_8_direction_support": [
+      "front",
+      "front_right",
+      "right",
+      "back_right",
+      "back",
+      "back_left",
+      "left",
+      "front_left"
+    ],
+    "source_status": "3_matted_from_approved_turnaround_and_1_mirrored_not_production_ready",
+    "required_frame_sets": [
+      {
+        "action": "idle",
+        "frames_per_direction": 6
+      },
+      {
+        "action": "walk",
+        "frames_per_direction": 8
+      },
+      {
+        "action": "run",
+        "frames_per_direction": 8
+      },
+      {
+        "action": "interact",
+        "frames_per_direction": 4
+      },
+      {
+        "action": "sit",
+        "frames_per_direction": 4
+      },
+      {
+        "action": "sleep",
+        "frames_per_direction": 4
+      },
+      {
+        "action": "wake",
+        "frames_per_direction": 4
+      }
+    ],
+    "idle_behaviors": [
+      "holo_map",
+      "reviewing_reports",
+      "tea_break",
+      "gazing_window",
+      "checking_devices",
+      "crew_greeting"
+    ],
+    "scripted_demo_must_be_labeled": true
+  },
+  "quality_acceptance": {
+    "same_face_hair_ornament_outfit_across_every_asset": true,
+    "independent_image_not_crop_from_small_contact_sheet": true,
+    "seamless_sprites_no_background_artifacts": true,
+    "character_looks_good_at_native_display_size": true,
+    "past_low_quality_cutout_wobble_rejected": true,
+    "owner_signoff_required": true,
+    "no_fleet_rollout_until_Albedo_accepted": true
+  },
+  "review_snapshot": {
+    "emotions_preview_slots": 20,
+    "miniature_actions_preview_slots": 13,
+    "deck_stills_preview_slots": 4,
+    "independent_emotion_masters_approved": 0,
+    "individual_action_masters_approved": 0,
+    "multiframe_walk_approved": false,
+    "release_ready": false
+  }
+}
