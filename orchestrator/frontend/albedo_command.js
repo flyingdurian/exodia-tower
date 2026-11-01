@@ -260,13 +260,26 @@ $('#openChatgptSession').addEventListener('click',async()=>{
 $('#chatgptImport').addEventListener('click',async()=>{
  const task=tasks.find(x=>x.id===activeTaskId);
  if(!task||task.provider!=='chatgpt'||task.state!=='awaiting_operator')return;
- const answer=$('#chatgptResultText').value.trim();
- if(!answer){$('#chatgptHandoffStatus').textContent='Enter the response from ChatGPT first.';return;}
+ const file=$('#chatgptArtifact').files?.[0];
+ const answer=$('#chatgptResultText').value.trim()||(file?'Generated image attached by operator.':'');
+ if(!answer){$('#chatgptHandoffStatus').textContent='Enter a ChatGPT response or choose a downloaded image.';return;}
+ if(file&&(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>8*1024*1024)){
+   $('#chatgptHandoffStatus').textContent='Use PNG, JPEG or WebP under 8 MiB.';return;
+ }
  const btn=$('#chatgptImport');btn.disabled=true;
  try{
    await post('/api/command/tasks/'+encodeURIComponent(task.id)+'/response',{answer});
-   inform('ChatGPT response delivered through the assigned companion.');
+   let attachmentError=null;
+   if(file){
+     try{
+       await api('/api/command/tasks/'+encodeURIComponent(task.id)+'/artifact',{
+          method:'POST',headers:{'Content-Type':file.type},body:file});
+     }catch(error){attachmentError=error.message;}
+   }
+   inform(attachmentError?'ChatGPT text delivered; image upload failed: '+attachmentError:
+     'ChatGPT response delivered through the assigned companion.',Boolean(attachmentError));
    handoffTaskId=null;
+   $('#chatgptArtifact').value='';
    await loadTasks();selectTask(task.id);
  }catch(e){$('#chatgptHandoffStatus').textContent=e.message;}
  finally{btn.disabled=false;}
