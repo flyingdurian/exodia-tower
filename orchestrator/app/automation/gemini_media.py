@@ -55,12 +55,28 @@ BINARY_FETCH_SCRIPT=r"""async ({src,limit})=>{
 
 def media_intent(prompt:str)->bool:
     """Only use the image/video watcher for explicit generation tasks."""
-    return bool(re.search(r'\b(generate|create|draw|make|design|render|produce|illustrate|animate)\b'
-                          r'.{0,100}\b(image|picture|photo|artwork|illustration|video|clip|animation)\b'
-                          r'|\b(image|video)\b.{0,50}\b(generate|creation)\b',
-                          prompt,re.I|re.S)
-                or re.search(r'\b(draw|illustrate|paint|render)\s+(?:me\s+)?(?:a|an|the)\b',
-                             prompt,re.I))
+    if re.search(r'\b(generate|create|draw|make|design|render|produce|illustrate|animate)\b'
+                 r'.{0,100}\b(image|picture|photo|artwork|illustration|video|clip|animation)\b'
+                 r'|\b(image|video)\b.{0,50}\b(generate|creation)\b',
+                 prompt,re.I|re.S):
+        return True
+    if re.search(r'\b(draw|illustrate|paint|render)\s+(?:me\s+)?(?:a|an|the)\b',
+                 prompt,re.I):
+        return True
+    # Gemini also treats concise requests such as "Generate me a pineapple" as
+    # image generation even though they omit the word "image". Keep common
+    # writing/code requests on the text watcher.
+    implicit=re.search(
+        r'\b(generate|create|make|design)\s+(?:me\s+)?(?:a|an|the)\s+(.+)',
+        prompt,re.I|re.S)
+    if not implicit:
+        return False
+    requested=implicit.group(2).strip()
+    text_output=re.search(
+        r'\b(summary|text|story|poem|code|script|list|report|answer|response|'
+        r'plan|description|caption|email|message|article|document|table)\b',
+        requested,re.I)
+    return bool(requested) and not text_output
 
 def validate_bytes(binary:bytes,kind:str)->str:
     if kind=="image":

@@ -5,9 +5,13 @@ from app.automation.gemini_media import (
 )
 def test_media_intents():
  assert media_intent('Generate an image of a blue cottage')
+ assert media_intent('Generate me a pineapple')
+ assert media_intent('Create a futuristic city')
  assert media_intent('Draw me a blue dragon')
  assert media_intent('Create a 6 second video clip of a kite')
  assert not media_intent('Summarize this text')
+ assert not media_intent('Generate a summary of this article')
+ assert not media_intent('Create a Python script')
  assert not media_intent('What is the TSLA price?')
 def test_content_signature():
  assert validate_bytes(b'\x89PNG\r\n\x1a\nhello','image')=='.png'
