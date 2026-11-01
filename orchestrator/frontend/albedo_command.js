@@ -134,8 +134,7 @@ function getStock(answer,question){
 function renderAnswer(task){
  UI.answer.replaceChildren();
  UI.promptBubble.hidden=!task;UI.promptBubble.textContent=task?.prompt||'';
- UI.attachment.hidden=!task?.artifact;
- if(task?.artifact)UI.image.src=task.artifact;else UI.image.removeAttribute('src');
+ // All media is rendered once by the dedicated media-gallery module.
  UI.sources.replaceChildren();
  const state=task?.state||'idle';
  UI.terminalStatus.textContent=state==='answered'?'RESPONSE READY':ACTIVE.has(state)?'LIVE · '+prettyName(state):state==='failed'?'TASK FAILED':'STANDBY';

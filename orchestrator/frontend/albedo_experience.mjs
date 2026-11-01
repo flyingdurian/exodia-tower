@@ -38,10 +38,13 @@ function renderMedia(task){
  const gallery=$('#mediaGallery');if(!gallery)return;
  const items=Array.isArray(task?.media)?task.media.filter(x=>x.url):[];
  if(task?.artifact&&!items.some(x=>x.url===task.artifact))items.unshift({kind:'image',url:task.artifact});
- const key=JSON.stringify([task?.id,items.map(x=>x.url)]);if(lastMediaKey===key)return;
+ const key=JSON.stringify([task?.id,[...new Set(items.map(x=>x.url))]]);if(lastMediaKey===key)return;
  lastMediaKey=key;gallery.replaceChildren();
+ const shown=new Set();
  for(const item of items){
   const url=String(item.url||'');
+  if(shown.has(url))continue;
+  shown.add(url);
   if(!/^\/artifacts\/[a-f0-9]{32}\.(png|jpg|jpeg|webp|mp4|webm)$/.test(url))continue;
   const card=element('div','media-item'),media=item.kind==='video'?element('video'):element('img');
   media.src=url;
