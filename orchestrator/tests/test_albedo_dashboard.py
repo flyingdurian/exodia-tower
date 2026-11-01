@@ -6,7 +6,7 @@ def test_albedo_is_the_primary_dashboard():
     with TestClient(app) as c:
         result=c.get('/')
         assert result.status_code==200
-        assert 'ALBEDO' in result.text
+        assert 'agentStageName' in result.text and 'taskComputer' in result.text
         assert 'Holographic terminal' in result.text
         assert 'moodList' not in result.text
         assert 'albedo_experience.mjs' in result.text
