@@ -59,6 +59,12 @@ class MultiWebSessionManager:
         self._browser_ua={name:None for name in PROVIDERS}
         self._pending={}
         self._initialization_lock=asyncio.Lock()
+        # Distinct task tabs in one authenticated context. Concurrency is bounded,
+        # not serialized behind an unrelated long-running Gemini image/video job.
+        self._gemini_slots=asyncio.Semaphore(2)
+        self._gemini_start_lock=asyncio.Lock()
+        self._gemini_last_start=0.0
+        self._gemini_active=0
 
     def snapshot(self):
         return {name:{"status":self._status[name], "url":spec.url,
@@ -67,7 +73,9 @@ class MultiWebSessionManager:
                       "error":self._last_error[name],
                       "last_timings":self._last_timings[name],
                       "actual_user_agent":self._browser_ua[name],
-                      "browser_version":self._browser_versions[name]} for name,spec in PROVIDERS.items()}
+                      "browser_version":self._browser_versions[name],
+                      "running_tasks":self._gemini_active if name=="gemini" else 0,
+                      "max_parallel_tasks":2 if name=="gemini" else 1} for name,spec in PROVIDERS.items()}
 
     async def initialize_all(self):
         async with self._initialization_lock:
@@ -261,14 +269,35 @@ class MultiWebSessionManager:
             if phase: phase("opening")
             await self.initialize_one("gemini")
         browser_ready=monotonic()
-        async with self._locks["gemini"]:
+        if phase:phase("queued")
+        async with self._gemini_slots:
             if "gemini" in self._pending:
                 raise OperatorActionRequired("Gemini has an earlier manually prepared prompt; resolve it first.")
-            page=self._pages.get("gemini")
-            if page is None:
+            context=self._contexts.get("gemini")
+            baseline_page=self._pages.get("gemini")
+            if baseline_page is None:
                 raise SessionError("Gemini browser unavailable. Open the workspaces and sign in to Gemini.")
+            page=baseline_page
+            disposable=False
+            self._gemini_active+=1
             try:
+                # Each task gets a fresh conversation tab to prevent stale prompt
+                # editors, old generated media and task cross-talk. Persistent
+                # browser context shares its existing Google sign-in cookies.
+                if context is not None and hasattr(context,"new_page"):
+                    if phase:phase("opening")
+                    page=await context.new_page()
+                    disposable=True
+                    await page.goto(PROVIDERS["gemini"].url,
+                                    wait_until="domcontentloaded",timeout=30000)
                 self._check_destination("gemini",page.url)
+                # Light start-spacing limits UI racing without serializing responses.
+                async with self._gemini_start_lock:
+                    delay=max(0.0,2.5-(monotonic()-self._gemini_last_start))
+                    if delay:
+                        if phase:phase("cooldown")
+                        await asyncio.sleep(delay)
+                    self._gemini_last_start=monotonic()
                 t_editor=monotonic()
                 editor=await self._wait_for_gemini_editor(page)
                 editor_ready=monotonic()
@@ -374,6 +403,11 @@ class MultiWebSessionManager:
                     f"Gemini browser error ({type(exc).__name__}).")
                 self._last_error["gemini"]=message[:420]
                 raise SessionError(f"{message} Debug screenshot: {screenshot}.") from exc
+            finally:
+                self._gemini_active-=1
+                if disposable:
+                    try:await page.close()
+                    except Exception:pass
 
     async def _capture_failure(self,name,page):
         self.debug_dir.mkdir(parents=True,exist_ok=True)
