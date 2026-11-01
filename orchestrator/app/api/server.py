@@ -394,6 +394,11 @@ async def _complete_gemini_task(task_id: str):
             'gemini',task['prompt'],phase=on_phase)
         if isinstance(output.get('timings'),dict):
             inbox.update(task_id,'metrics',output['timings'])
+        if output.get('media'):
+            inbox.update(task_id,'media',output['media'])
+            first_image=next((m for m in output['media']
+                              if m.get('kind')=='image' and m.get('url')),None)
+            if first_image:inbox.update(task_id,'artifact',first_image['url'])
         inbox.update(task_id,'answer',output['answer'])
         inbox.update(task_id,'state','answered')
         director.react(task['agent_id'],'success')

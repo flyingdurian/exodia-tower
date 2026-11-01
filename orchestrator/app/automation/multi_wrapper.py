@@ -8,6 +8,9 @@ from typing import Any
 from urllib.parse import urlparse
 from time import monotonic
 from app.automation.interactive_dom import StreamWatchConfig, watch_response_stream, DOMResponseError
+from app.automation.gemini_media import (
+    media_intent, snapshot_media, await_media_answer, store_media, MediaCaptureError
+)
 
 def installed_chrome() -> bool:
     """Google sign-in rejects Playwright's bundled Chromium. Prefer installed Chrome."""
@@ -281,6 +284,8 @@ class MultiWebSessionManager:
                 history=page.locator(self.GEMINI_RESPONSE)
                 prior_count=await history.count()
                 prior_text=(await history.last.inner_text(timeout=7000)).strip() if prior_count else ""
+                wants_media=media_intent(prompt)
+                baseline_media=await snapshot_media(page) if wants_media else []
 
                 self._status["gemini"]="typing"
                 if phase: phase("typing")
@@ -313,15 +318,33 @@ class MultiWebSessionManager:
                 def mark_first_text():
                     if first_text_at[0] is None:
                         first_text_at[0]=monotonic()
-                answer=await watch_response_stream(
-                    page,
-                    StreamWatchConfig(response_selector=self.GEMINI_RESPONSE,
-                        stop_selector=self.GEMINI_STOP,timeout_seconds=180.0,
-                        stable_seconds=1.5,poll_seconds=.25),
-                    initial_count=prior_count,initial_text=prior_text,
-                    on_first_text=mark_first_text)
+                media=[]
+                if wants_media:
+                    result=await await_media_answer(page,
+                        text_selector=self.GEMINI_RESPONSE,stop_selector=self.GEMINI_STOP,
+                        baseline=baseline_media,baseline_count=prior_count,
+                        baseline_text=prior_text,timeout=300.0,poll=.5,stable=1.6)
+                    answer=result.answer
+                    if answer:mark_first_text()
+                    if result.media:
+                        media=await store_media(page,result.media,
+                          self.root/'app_data'/'artifacts')
+                        if not answer.strip():
+                            complete=sum(1 for item in media if item.get('url'))
+                            answer=f"Generated {complete} media file(s)." if complete else (
+                                "Gemini generated media but download capture failed; "
+                                "inspect the Gemini browser and task diagnostics."
+                            )
+                else:
+                    answer=await watch_response_stream(
+                        page,
+                        StreamWatchConfig(response_selector=self.GEMINI_RESPONSE,
+                            stop_selector=self.GEMINI_STOP,timeout_seconds=180.0,
+                            stable_seconds=1.5,poll_seconds=.25),
+                        initial_count=prior_count,initial_text=prior_text,
+                        on_first_text=mark_first_text)
                 finished_at=monotonic()
-                if not answer.strip(): raise SessionError("Gemini returned no readable text.")
+                if not answer.strip(): raise SessionError("Gemini returned no readable text or media.")
                 timings={
                     "browser_setup_s":round(browser_ready-t_begin,3),
                     "editor_wait_s":round(editor_ready-t_editor,3),
@@ -338,7 +361,7 @@ class MultiWebSessionManager:
                 self._last_error["gemini"]=None
                 return {"answer":answer.strip()[:100000],"model_choice":"gemini",
                         "provider":"gemini","source":"gemini_visible_browser",
-                        "automatic_output":True,"timings":timings}
+                        "automatic_output":True,"timings":timings,"media":media}
             except Exception as exc:
                 screenshot=await self._capture_failure("gemini",page)
                 if self._status["gemini"] not in ("needs_operator_login_or_review","editor_unavailable"):
