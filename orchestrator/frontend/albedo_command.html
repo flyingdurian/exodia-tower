@@ -71,7 +71,7 @@
 <label for="companion">ASSIGNED AGENT</label><select id="companion" aria-label="Assigned companion"></select>
 <label for="prompt">YOUR COMMAND</label><textarea id="prompt" maxlength="12000" required placeholder="Ask Albedo anything…"></textarea>
 <label class="research-check"><input type="checkbox" id="liveResearch"/><span>Public web research (Ollama only)</span></label>
-<div class="speech-config"><div class="speech-row"><label class="research-check"><input id="autoSpeech" type="checkbox"/>Speak answers automatically</label><button type="button" id="speakNow">▶ Speak</button><button type="button" id="stopSpeech">■</button></div><label for="voiceChoice">COMPANION VOICE</label><select id="voiceChoice"><option value="">Automatic local voice</option></select><small id="speechStatus">Local browser speech</small></div>
+<div class="speech-config"><label for="ttsEngine">VOICE ENGINE</label><select id="ttsEngine"><option value="neural">Natural local voices (Kokoro)</option><option value="system">System voice (fallback)</option></select><div class="speech-row"><label class="research-check"><input id="autoSpeech" type="checkbox"/>Speak answers automatically</label><button type="button" id="speakNow">▶ Speak</button><button type="button" id="stopSpeech">■</button></div><label for="voiceChoice">COMPANION VOICE</label><select id="voiceChoice"><option value="">Automatic local voice</option></select><small id="speechStatus">Local browser speech</small></div>
 <button type="submit" class="send" id="sendTask">Send command <span>➤</span></button></form>
 <div class="feedback" id="feedback" role="status"></div>
 </section>
