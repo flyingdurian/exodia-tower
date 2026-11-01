@@ -24,9 +24,18 @@ def test_portrait_expression_transitions_in_browser():
     browser=await p.chromium.launch(headless=True,args=['--no-sandbox'])
     try:
      page=await browser.new_page(viewport={'width':1600,'height':980})
-     # Isolate visual-state testing from leftover mutable SQLite task history.
-     await page.route('**/api/command/tasks',lambda route:route.fulfill(
-       status=200,content_type='application/json',body='{"tasks":[]}'))
+     # Use an actual synthetic task state transition, not a manual label edit.
+     # This avoids a race with the application's ordinary task polling loop.
+     state={'value':'waiting_for_reply'}
+     async def task_route(route):
+      import json
+      task={'id':'visual-task','agent_id':'kiko','provider':'gemini',
+        'prompt':'Synthetic visual transition','state':state['value'],
+        'answer':'Test result' if state['value']=='answered' else '',
+        'sources':[],'metrics':{},'media':[]}
+      await route.fulfill(status=200,content_type='application/json',
+                          body=json.dumps({'tasks':[task]}))
+     await page.route('**/api/command/tasks',task_route)
      await page.goto('http://127.0.0.1:8897/',wait_until='domcontentloaded')
      await page.wait_for_selector('#expressionFace',state='attached',timeout=15000)
      # Without the optional expression-pack ZIP, the selected agent portrait
@@ -39,10 +48,10 @@ def test_portrait_expression_transitions_in_browser():
      await page.wait_for_function(
        "()=>document.documentElement.dataset.expressionControllerReady==='1'",
        timeout=10000)
-     await page.wait_for_function("()=>document.querySelector('#expressionName')?.textContent==='Ready'",timeout=3000)
+     await page.wait_for_function("()=>document.querySelector('#expressionName')?.textContent==='Awaiting reply'",timeout=5000)
      before=await page.locator('#expressionFace').evaluate('(el)=>getComputedStyle(el).backgroundPosition')
-     await page.locator('#moodLabel').evaluate("(el)=>el.textContent='SLEEPING'")
-     await page.wait_for_function("()=>document.querySelector('#expressionName')?.textContent==='Resting'",timeout=4000)
+     state['value']='answered'
+     await page.wait_for_function("()=>document.querySelector('#expressionName')?.textContent==='Successful'",timeout=8000)
      after=await page.locator('#expressionFace').evaluate('(el)=>getComputedStyle(el).backgroundPosition')
      assert before!=after
      await page.screenshot(path=str(root/'expression_transition.png'),full_page=False)
