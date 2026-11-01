@@ -11,6 +11,54 @@ const labels={
   happy:'Successful',excited:'Celebrating',proud:'Mission complete'
 };
 let active='',activeId='',lastMediaKey='',lastSpokenId='',lastAgent='kiko',lastRenderedAnswer='';
+let atlasAvailable=false,agents=[];
+const EPOCH=Date.now();
+const computerStates={
+ idle:['✦','All systems ready','Your companion is waiting for a command'],
+ sleeping:['☾','Rest mode','Quiet time in the digital lounge'],
+ processing:['⌨','Working on your task','Preparing and dispatching the prompt'],
+ thinking:['◇','Analyzing','Working through the details'],
+ waiting:['◌','Awaiting model response','Monitoring the live response stream'],
+ failed:['×','Action failed','See diagnostics and the task response'],
+ frustration:['!','Reassessing','Preparing a fresh route'],
+ happy:['✓','Mission complete','Your response is ready'],
+ excited:['✧','Great result!','The response is now in your terminal'],
+ proud:['✓','Delivered to terminal','View the answer in the next panel']
+};
+function paintComputer(key){
+ const data=computerStates[key]||computerStates.idle;
+ const el=$('#computerSymbol');if(el)el.textContent=data[0];
+ const title=$('#computerTitle');if(title)title.textContent=data[1];
+ const sub=$('#computerSubtitle');if(sub)sub.textContent=data[2];
+ const btn=$('#resultPointer');if(btn)btn.hidden=!['happy','excited','proud'].includes(key);
+ const model=$('#computerModel');if(model)model.textContent=$('#model')?.selectedOptions[0]?.textContent.split(' · ')[0]||'STANDBY';
+}
+function selectAgentStage(id){
+ const info=agents.find(a=>a.id===id);
+ if(!info)return;
+ const name=$('#agentStageName');if(name)name.textContent=info.name;
+ const role=$('#agentStageRole');if(role)role.textContent=info.pillar||info.title||'Companion';
+ const face=$('#expressionFace'),portrait=$('#agentPortrait');
+ if(face&&portrait){
+   const showAtlas=id==='kiko'&&atlasAvailable;
+   face.hidden=!showAtlas;
+   portrait.hidden=showAtlas;
+   if(!showAtlas){portrait.src=info.portrait||'/assets/companions/portraits/kiko.webp';portrait.alt=info.name+' portrait';}
+ }
+}
+async function loadAgentRoster(){
+ try{
+  const resp=await fetch('/api/companions');if(!resp.ok)return;
+  agents=(await resp.json()).agents||[];
+  selectAgentStage($('#companion')?.value||'kiko');
+ }catch(error){/* Default portrait remains available */ }
+}
+const atlasCheck=new Image();
+atlasCheck.onload=()=>{atlasAvailable=true;selectAgentStage($('#companion')?.value||'kiko');};
+atlasCheck.onerror=()=>{atlasAvailable=false;selectAgentStage($('#companion')?.value||'kiko');};
+atlasCheck.src='/assets/companions/expressions/albedo_expression_atlas.webp';
+loadAgentRoster();
+$('#resultPointer')?.addEventListener('click',()=>$('#answerFrame')?.scrollIntoView({block:'center',behavior:'smooth'}));
 function expression(state){
  if(!STATES.includes(state)||active===state)return;
  active=state;
@@ -19,7 +67,8 @@ function expression(state){
  card.classList.add('changing');
  setTimeout(()=>{
    const n=STATES.indexOf(state);
-   face.style.backgroundPosition=(-100*(n%5))+'px '+(-100*Math.floor(n/5))+'px';
+   face.style.backgroundPosition=(25*(n%5))+'% '+(100*Math.floor(n/5))+'%';
+   paintComputer(state);
    $('#expressionName').textContent=labels[state]||state;
    card.classList.remove('changing');
  },160);
@@ -75,7 +124,10 @@ $('#autoSpeech')?.addEventListener('change',event=>{
  voice.setAuto(event.target.checked);voiceStatus(event.target.checked?'Automatic voice enabled':'Voice autoplay disabled');
 });
 $('#voiceChoice')?.addEventListener('change',event=>voice.setVoiceName(event.target.value));
-$('#companion')?.addEventListener('change',event=>voice.setAgent(event.target.value));
+$('#companion')?.addEventListener('change',event=>{
+ voice.setAgent(event.target.value);
+ selectAgentStage(event.target.value);
+});
 $('#speakNow')?.addEventListener('click',()=>{
  voice.setAgent(lastAgent);
  if(!voice.speak(lastRenderedAnswer,{manual:true}))voiceStatus('No completed text response to speak.');
@@ -92,8 +144,17 @@ async function refreshDelivery(){
   const task=rows.find(item=>item.id===id);
   if(!task)return;
   activeId=id;lastAgent=task.agent_id||'kiko';lastRenderedAnswer=task.answer||'';
+  selectAgentStage(lastAgent);
+  paintComputer(task.state==='answered'?'happy':
+     task.state==='waiting_for_reply'?'waiting':
+     task.state==='rendering_media'?'processing':
+     task.state==='running'?'thinking':
+     task.state==='failed'?'failed':
+     ['queued','cooldown','opening','typing','submitting','researching'].includes(task.state)?'processing':'idle');
   renderMedia(task);
   if(task.state==='answered'&&lastSpokenId!==id){
+   // Read only tasks completed after this page opened; history is never auto-played.
+   if(Date.parse(task.updated_at||0)<EPOCH){lastSpokenId=id;return;}
    lastSpokenId=id;
    voice.setAgent(lastAgent);voice.speak(task.answer);
   }
@@ -101,3 +162,6 @@ async function refreshDelivery(){
 }
 setInterval(refreshDelivery,900);
 refreshDelivery();
+
+$('#model')?.addEventListener('change',()=>paintComputer(active));
+paintComputer('idle');
