@@ -66,4 +66,4 @@ class Inbox:
  def fail_interrupted(self):
   """Prevent stale 'working' UI after application restart."""
   with self.lock,self.db() as c:
-   c.execute("UPDATE tasks SET state='failed',error='Interrupted by Exodia restart. Create a new task to retry.',updated_at=? WHERE state IN ('running','researching','opening','typing','submitting','waiting_for_reply')",(timestamp(),))
+   c.execute("UPDATE tasks SET state='failed',error='Interrupted by Exodia restart. Create a new task to retry.',updated_at=? WHERE state IN ('running','researching','opening','typing','submitting','waiting_for_reply','rendering_media')",(timestamp(),))

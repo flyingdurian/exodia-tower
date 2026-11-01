@@ -320,10 +320,14 @@ class MultiWebSessionManager:
                         first_text_at[0]=monotonic()
                 media=[]
                 if wants_media:
+                    self._status["gemini"]="rendering_media"
+                    if phase:phase("rendering_media")
                     result=await await_media_answer(page,
                         text_selector=self.GEMINI_RESPONSE,stop_selector=self.GEMINI_STOP,
                         baseline=baseline_media,baseline_count=prior_count,
-                        baseline_text=prior_text,timeout=300.0,poll=.5,stable=1.6)
+                        baseline_text=prior_text,
+                        timeout=360.0 if 'video' in prompt.lower() else 130.0,
+                        poll=.5,stable=1.6)
                     answer=result.answer
                     if answer:mark_first_text()
                     if result.media:

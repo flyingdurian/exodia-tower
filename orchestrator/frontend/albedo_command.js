@@ -24,14 +24,14 @@ const MOODS=[
  ['frustration','Frustration','Reassessing the failed route','!'],['happy','Happy success','The answer is ready','✦'],
  ['excited','Excited success','A wonderful result!','✶'],['proud','Proud','Mission successfully delivered','♔']
 ];
-const ACTIVE=new Set(['researching','opening','typing','submitting','running','waiting_for_reply']);
+const ACTIVE=new Set(['researching','opening','typing','submitting','running','waiting_for_reply','rendering_media']);
 let state='idle',roster=[],tasks=[],activeTaskId=null,chosenTask=null,explicitPreview=false;
 let stateTimer=null,lastInteraction=Date.now(),lastCompleted=null,requestInFlight=false,videoOk=false;
 const moodDesc=Object.fromEntries(MOODS.map(m=>[m[0],m[2]]));
 const prettyName=s=>(s||'').replaceAll('_',' ').toUpperCase();
 function moodForTask(task){
  if(!task)return Date.now()-lastInteraction>90000?'sleeping':'idle';
- if(task.state==='researching'||task.state==='typing'||task.state==='opening'||task.state==='submitting')return 'processing';
+ if(task.state==='researching'||task.state==='typing'||task.state==='opening'||task.state==='submitting'||task.state==='rendering_media')return 'processing';
  if(task.state==='running')return 'thinking';
  if(task.state==='waiting_for_reply'||task.state==='awaiting_operator')return 'waiting';
  if(task.state==='failed')return 'failed';
