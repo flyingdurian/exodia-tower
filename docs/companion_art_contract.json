@@ -8,7 +8,8 @@
     "width": 1448,
     "height": 1086,
     "status": "owner_approved_reference_pending_repo_import",
-    "target_repository_path": "orchestrator/frontend/companions/benchmarks/albedo_mission_complete_v1.png"
+    "target_repository_path": "orchestrator/frontend/companions/benchmarks/albedo_mission_complete_v1.png",
+    "library_path": "/Exodia Tower/Benchmarks/Albedo - approved mission-complete benchmark.png"
   },
   "visual_style": {
     "finish": "premium luminous sci-fi anime",
