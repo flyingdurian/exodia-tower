@@ -10,7 +10,7 @@ const labels={
   thinking:'Thinking',failed:'Task failed',frustration:'Regrouping',
   happy:'Successful',excited:'Celebrating',proud:'Mission complete'
 };
-let active='idle',activeId='',lastMediaKey='',lastSpokenId='',lastAgent='kiko',lastRenderedAnswer='';
+let active='',activeId='',lastMediaKey='',lastSpokenId='',lastAgent='kiko',lastRenderedAnswer='';
 function expression(state){
  if(!STATES.includes(state)||active===state)return;
  active=state;
