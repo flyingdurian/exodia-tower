@@ -8,6 +8,8 @@ def test_albedo_is_the_primary_dashboard():
         assert result.status_code==200
         assert 'ALBEDO' in result.text
         assert 'Holographic terminal' in result.text
+        assert 'moodList' not in result.text
+        assert 'albedo_experience.mjs' in result.text
         assert 'albedo_command.js' in result.text
         assert c.get('/operations-legacy').status_code==200
 

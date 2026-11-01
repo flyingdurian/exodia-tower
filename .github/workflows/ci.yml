@@ -36,3 +36,6 @@ jobs:
           path: orchestrator/app_data/qa_albedo/*.png
           if-no-files-found: ignore
           retention-days: 7
+      - run: node --check orchestrator/frontend/albedo_experience.mjs
+      - run: node --check orchestrator/frontend/companion_voice.mjs
+      - run: node --test orchestrator/tests/companion_voice.test.mjs
