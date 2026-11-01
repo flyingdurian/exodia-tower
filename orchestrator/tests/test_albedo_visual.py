@@ -24,6 +24,9 @@ def test_portrait_expression_transitions_in_browser():
     browser=await p.chromium.launch(headless=True,args=['--no-sandbox'])
     try:
      page=await browser.new_page(viewport={'width':1600,'height':980})
+     # Isolate visual-state testing from leftover mutable SQLite task history.
+     await page.route('**/api/command/tasks',lambda route:route.fulfill(
+       status=200,content_type='application/json',body='{"tasks":[]}'))
      await page.goto('http://127.0.0.1:8897/',wait_until='domcontentloaded')
      await page.wait_for_selector('#expressionFace',state='attached',timeout=15000)
      # Without the optional expression-pack ZIP, the selected agent portrait
