@@ -1,4 +1,4 @@
-import {AlbedoMotionStage} from './albedo_motion.mjs';
+/* Production-mode expression transitions; no active cutout rig. */
 /* Exodia Tower — Albedo live command stage.
  * Stage uses existing multi-frame video, real task events and independent scene VFX.
  * Production-quality articulated character art is NOT claimed.
@@ -15,19 +15,8 @@ const UI={
   terminalStatus:$('#terminalStatus'),playback:$('#playbackInfo'),toggle:$('#motionToggle')
 };
 const HEADER={'X-Exodia-Client':'exodia-dashboard'};
-const motionStage=new AlbedoMotionStage(UI.rig,UI.video);
+const motionStage={setState(){},setPaused(){},initialize(){return Promise.resolve(false)},ready:false};
 window.__exodiaMotionDebug=()=>motionStage.snapshot();
-motionStage.onStatus=info=>{
- if(info.loading){UI.playback.textContent=info.loading;return;}
- if(info.ready){
-   UI.playback.textContent=(info.mode==='articulated proof'?'Articulated body + face · ':'Idle motion video · ')+
-      (info.intent||'Live animated preview')+
-      ' · '+(info.layers||0)+' draft layers';
-   if(info.missing?.length)UI.diagnostic.textContent='Art QA: '+info.missing.length+' layer(s) need repaint or registration.';
- }else{
-   UI.playback.textContent='Rig unavailable: '+info.error+' · idle video fallback';
- }
-};
 const MOODS=[
  ['idle','Idle','Ready for your command','✧'],['sleeping','Sleeping','Resting between missions','☾'],
  ['processing','Processing','Connecting the task systems','⚙'],['waiting','Waiting','Awaiting the model response','◌'],
@@ -53,28 +42,20 @@ function setMood(next,{preview=false}={}){
  if(!moodDesc[next])next='idle';
  if(stateTimer){clearTimeout(stateTimer);stateTimer=null}
  state=next;UI.hero.dataset.state=next;UI.label.textContent=prettyName(next);
- motionStage.setState(next);
+ // The still expression controller observes moodLabel and updates the approved portrait.
  UI.description.textContent=moodDesc[next];
  UI.overlay.textContent=next==='sleeping'?'Z  z  z':next==='thinking'?'✧ ANALYZING ✧':
  next==='processing'?'✧ COMPUTING ✧':next==='waiting'?'◌ AWAITING RESPONSE ◌':
  next==='failed'?'MISSION INTERRUPTED':next==='frustration'?'REASSESSING…':
  next==='happy'?'✦ MISSION COMPLETE ✦':next==='excited'?'✧ BRILLIANT ✧':
  next==='proud'?'✦ WELL DONE ✦':'';
- document.querySelectorAll('.mood').forEach(x=>x.classList.toggle('active',x.dataset.mood===next));
+ // Expression selection is automatic; no developer previews.
  explicitPreview=preview;
  if(!preview){
    if(next==='happy')stateTimer=setTimeout(()=>setMood('excited'),2000);
    if(next==='excited')stateTimer=setTimeout(()=>setMood('proud'),2200);
    if(next==='failed')stateTimer=setTimeout(()=>setMood('frustration'),2500);
  }
-}
-for(const [id,label,desc,mark] of MOODS){
- const btn=document.createElement('button');btn.type='button';btn.className='mood';btn.dataset.mood=id;
- const img=document.createElement('img');img.src='/assets/companions/thumbs/kiko.webp';img.alt='';
- const caption=document.createElement('span');caption.textContent=mark+' '+label;
- btn.title=desc+' (stage preview)';btn.append(img,caption);
- btn.addEventListener('click',()=>{lastInteraction=Date.now();setMood(id,{preview:true});inform('Showing '+label+' articulated motion choreography. Registered art is still in pre-production.');});
- UI.moodList.append(btn);
 }
 function element(tag,cls,text){
  const e=document.createElement(tag);
@@ -257,21 +238,8 @@ $('#openWebSessions').addEventListener('click',async()=>{
  catch(e){inform(e.message,true);}
 });
 let paused=false;
-UI.video.addEventListener('playing',()=>{videoOk=true;});
-UI.video.addEventListener('error',()=>{UI.playback.textContent='Motion clip unavailable; approved portrait fallback active';});
-$('#motionToggle').addEventListener('click',()=>{
- paused=!paused;
- motionStage.setPaused(paused);
- if(paused){$('#motionToggle').textContent='Resume motion';document.body.classList.add('motion-paused');}
- else{$('#motionToggle').textContent='Pause motion';document.body.classList.remove('motion-paused');}
-});
-const motionQuery=window.matchMedia('(prefers-reduced-motion: reduce)');
-if(motionQuery.matches){motionStage.setPaused(true);$('#motionToggle').textContent='Resume motion';paused=true;}
 setMood('idle');renderAnswer(null);
-motionStage.initialize().then(ok=>{
-  if(ok)inform('Articulated Albedo motion loaded. Use the expression states to inspect visible body and facial motion.');
-  else inform('Art rig unavailable; idle clip still plays. Inspect diagnostics.',true);
-});
+// Rejected cutout/rig stage is intentionally inactive in the public dashboard.
 await refreshModels();
 try{await loadTasks({initial:true})}catch(e){inform('Cannot load tasks: '+e.message,true);}
 setInterval(async()=>{

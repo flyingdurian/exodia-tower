@@ -3,39 +3,32 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/><title>Albedo · Exodia Tower</title>
 <link rel="stylesheet" href="/assets/albedo_command.css?v=1"/>
-<script type="module" src="/assets/albedo_command.js?v=1"></script></head>
+<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script></head>
 <body>
 <div class="app-shell">
 <header class="masthead"><a href="/" class="logo" aria-label="Exodia Tower home"><span class="brand-mark">✦</span><span><b>EXODIA TOWER</b><small>AI COMPANION COMMAND CENTER</small></span></a>
 <nav class="top-nav" aria-label="Primary"><a href="/" aria-current="page">◈ Command</a><a href="/operations-legacy">◉ Operations</a><a href="/companions">✦ Companions</a><a href="/art-studio">✧ Art Studio</a><a href="/puppet-lab">♙ Rig Lab</a></nav>
 <div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span></div></header>
 <main class="command-grid">
-<aside class="moods card" aria-label="Albedo animation states">
-<div class="section-kicker">COMPANION / EMOTIONS</div><h2>Albedo <span class="flourish">✧</span></h2><p class="muted">Central Command · expressive state direction</p>
-<div class="mood-list" id="moodList" aria-label="Preview an animation state"></div>
-<div class="tiny-note">These controls preview the live stage. A real task overrides the preview state. Production skeletal motion remains in development.</div>
-<div class="companion-mini"><img src="/assets/companions/thumbs/kiko.webp" alt="Albedo approved portrait" loading="lazy"/><div><b>ALBEDO</b><small>Formerly Kiko Prime</small></div></div>
-</aside>
 <section class="hero-col">
 <div class="hero card" id="hero" data-state="idle"><div class="scene-grid"></div>
 <div class="hero-title"><span class="section-kicker">EXODIA TOWER · HEART OF COMMAND</span><h1>ALBEDO<span>✧</span></h1><p>Your companion, connected to the whole tower.</p></div>
 <div class="halo halo-back"></div>
-<div class="character-wrap" id="characterWrap">
-<canvas id="albedoRig" class="hero-rig" width="1122" height="1402" hidden aria-label="Articulated Albedo motion study"></canvas>
-<video id="albedoVideo" class="hero-video" autoplay muted loop playsinline preload="metadata" poster="/assets/companions/portraits/kiko.webp" aria-label="Animated Albedo illustration">
-<source src="/assets/companions/clips/kiko/idle.mp4" type="video/mp4"/></video>
-<div class="character-effects"><span class="star s1">✧</span><span class="star s2">✦</span><span class="star s3">✧</span><span class="star s4">✦</span></div></div>
+<div class="character-wrap still-stage" id="characterWrap">
+<img id="albedoPortrait" class="albedo-still" src="/assets/companions/expressions/albedo_prime_portrait.webp" alt="Albedo's approved illustration" onerror="this.onerror=null;this.src='/assets/companions/portraits/kiko.webp'"/>
+<div id="expressionCard" class="expression-card"><div id="expressionFace" class="expression-face" aria-hidden="true"></div><span id="expressionName">IDLE</span></div>
+<div class="character-effects"><span class="star s1">✧</span><span class="star s2">✦</span></div></div>
 <div class="halo halo-front"></div><div class="orbit-ring orbit-one"></div><div class="orbit-ring orbit-two"></div>
 <div class="energy-floor"></div><div class="stage-status"><span class="status-orb"></span><b id="moodLabel">IDLE</b><span id="moodDescription">Ready for your command</span></div>
 <div class="hero-overlay" id="heroOverlay" aria-live="polite"></div>
 </div>
-<div class="hero-foot"><span><span class="live-dot"></span> MOTION PLAYBACK</span><span id="playbackInfo">Multi-frame idle footage · event-driven VFX and state direction</span><button type="button" id="motionToggle" class="text-button" aria-label="Pause or play character motion">Pause motion</button></div>
+<div class="hero-foot"><span><span class="live-dot"></span> LIVE COMPANION</span><span>Expressions respond automatically to task activity</span></div>
 </section>
 <section class="output-col">
 <div class="response card"><div class="response-top"><div><div class="section-kicker">ALBEDO / RESPONSE DISPLAY</div><h2>Holographic terminal</h2></div><span class="terminal-live" id="terminalStatus">STANDBY</span></div>
 <div class="response-screen"><div class="terminal-rail"></div><div id="responsePrompt" class="request-bubble" hidden></div>
 <div class="answer-frame" id="answerFrame" aria-live="polite"><div class="welcome"><div class="welcome-glyph">✦</div><b>Awaiting your first command</b><p>Select a model and submit a task. Albedo will display the result here.</p></div></div>
-<div class="attachment" id="attachment" hidden><img id="responseImage" alt="Attached task image"/><span>Media attached to this task</span></div>
+<div class="media-gallery" id="mediaGallery" aria-label="Generated media"></div><div class="attachment" id="attachment" hidden><img id="responseImage" alt="Attached task image"/><span>Media attached to this task</span></div>
 <div class="source-list" id="sourceList"></div></div>
 <div class="response-bottom"><span id="answerProvider">NO MODEL RESULT</span><span id="answerTiming"></span></div>
 </div>
@@ -54,6 +47,7 @@
 <label for="companion">ASSIGNED AGENT</label><select id="companion" aria-label="Assigned companion"></select>
 <label for="prompt">YOUR COMMAND</label><textarea id="prompt" maxlength="12000" required placeholder="Ask Albedo anything…"></textarea>
 <label class="research-check"><input type="checkbox" id="liveResearch"/><span>Public web research (Ollama only)</span></label>
+<div class="speech-config"><div class="speech-row"><label class="research-check"><input id="autoSpeech" type="checkbox"/>Speak answers automatically</label><button type="button" id="speakNow">▶ Speak</button><button type="button" id="stopSpeech">■</button></div><label for="voiceChoice">COMPANION VOICE</label><select id="voiceChoice"><option value="">Automatic local voice</option></select><small id="speechStatus">Local browser speech</small></div>
 <button type="submit" class="send" id="sendTask">Send command <span>➤</span></button></form>
 <div class="feedback" id="feedback" role="status"></div>
 </section>
@@ -62,6 +56,6 @@
 <section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
 </aside>
 </main>
-<footer class="site-footer">EXODIA TOWER · ALBEDO LIVE COMMAND STAGE <span id="stageDisclaimer">Active articulated preview · artwork QA incomplete</span></footer>
+<footer class="site-footer">EXODIA TOWER · ALBEDO LIVE COMMAND STAGE <span id="stageDisclaimer">Expression portraits change automatically · articulated cutouts disabled</span></footer>
 </div>
 </body></html>
