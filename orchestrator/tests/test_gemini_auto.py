@@ -179,7 +179,7 @@ def test_actual_gemini_wrapper_handles_image_first_without_markdown(tmp_path):
             super().__init__();self.results=['Old answer'];self.media_reads=0
         async def evaluate(self,script,arg=None):
             if arg is not None:
-                return {'base64':base64.b64encode(b'\\x89PNG\\r\\n\\x1a\\nIMAGE').decode('ascii'),
+                return {'base64':base64.b64encode(b'\x89PNG\r\n\x1a\nIMAGE').decode('ascii'),
                         'type':'image/png'}
             self.media_reads+=1
             return [{'kind':'image','src':'blob:gemini-image-123','width':512,'height':512}] if self.sent else []
