@@ -42,6 +42,13 @@ captures a local-only screenshot under `debug_snapshots/`.
 the task tab and use the **Deliver through companion** panel to enter the
 result. Exodia stores it as `operator_supplied`, closes that tab, updates the
 agent's success state, and shows the formatted answer in its terminal.
+For generated images, you may download a PNG/JPEG/WebP directly from your
+ChatGPT tab, attach it in the same handoff panel (max 8 MiB), and choose
+**Deliver through companion**. Exodia uploads the image to the task's
+local artifacts folder and displays it once in the companion terminal.
+For image-only responses, the interface supplies a truthful
+"Generated image attached by operator" note.
+
 Alternatively, choose **Cancel task** to close that task's tab.
 
 ## Invariants and limitations
