@@ -107,7 +107,7 @@ def test_task_dispatch_automatically_delivers_real_gemini_label(monkeypatch):
         for part in ('typing','submitting','waiting_for_reply'):
             phase(part)
             await asyncio.sleep(.003)
-        return {'answer':'Gemini synthetic answer','source':'gemini_visible_browser','automatic_output':True,'timings':{'total_s':3.2,'first_text_s':0.4,'typing_s':0.05,'stream_completion_s':2.7}}
+        return {'answer':'Gemini synthetic answer','source':'gemini_visible_browser','automatic_output':True,'timings':{'total_s':3.2,'first_text_s':0.4,'typing_s':0.05,'stream_completion_s':2.7},'media':[{'kind':'image','url':'/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png','bytes':1200}]}
     monkeypatch.setattr(server.router.sessions,'send_prompt_robust',answer)
     headers={'X-Exodia-Client':'exodia-dashboard'}
     with TestClient(server.app) as client:
@@ -122,6 +122,8 @@ def test_task_dispatch_automatically_delivers_real_gemini_label(monkeypatch):
             time.sleep(.02)
         assert row['state']=='answered',row
         assert row['answer']=='Gemini synthetic answer'
+        assert row['media'][0]['kind']=='image'
+        assert row['artifact']=='/artifacts/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.png'
         assert row['metrics']['total_s']==3.2
         assert row['metrics']['first_text_s']==0.4
         assert row['provider']=='gemini'
