@@ -54,3 +54,12 @@
 .task-stage[data-state=sleeping] .workstation-display{background:radial-gradient(circle,#283b70,#0b162c)}.task-stage[data-state=excited] .computer-symbol{animation:twinkle .55s infinite}
 @keyframes computerScan{0%{transform:translateX(-115%)}100%{transform:translateX(430%)}}
 @media(max-width:740px){.task-stage{height:650px}.performance-portrait .expression-face{width:245px;height:245px}.workstation-display{height:125px}}
+
+/* Playful workstation idle loop; a different timeline from model-processing work. */
+.computer-mini-game{position:absolute;inset:13px 18px 13px auto;width:90px;opacity:0;pointer-events:none;transition:opacity .2s;border:1px solid #6989b887;border-radius:7px;background:radial-gradient(circle at 70% 35%,#294f6e,#061c40)}
+.task-stage[data-state=idle] .computer-mini-game,.task-stage[data-state=sleeping] .computer-mini-game{opacity:.9}
+.game-sprite{position:absolute;left:12px;bottom:21px;width:11px;height:11px;border-radius:3px;background:#9beaff;box-shadow:0 0 10px #8edcff;animation:gamePatrol 2.6s ease-in-out infinite alternate}
+.game-target{position:absolute;right:15px;top:18px;font-style:normal;font-size:18px;color:#fce29c;animation:twinkle 2s ease-in-out infinite}
+.game-caption{position:absolute;bottom:4px;right:6px;font-size:6px;letter-spacing:.09em;color:#9db8dd}
+@keyframes gamePatrol{0%{transform:translate(0,0)}25%{transform:translate(18px,-18px)}55%{transform:translate(35px,0)}80%{transform:translate(48px,-24px)}100%{transform:translate(57px,0)}}
+@media(prefers-reduced-motion:reduce){.game-sprite,.game-target{animation:none}}
