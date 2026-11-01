@@ -47,6 +47,7 @@ const labels={
   happy:'Successful',excited:'Celebrating',proud:'Mission complete'
 };
 let active='',activeId='',lastMediaKey='',lastSpokenId='',lastAgent='kiko',lastRenderedAnswer='';
+let lastAttentionId='';
 let atlasAvailable=false,agents=[];
 const EPOCH=Date.now();
 const computerStates={
@@ -197,6 +198,12 @@ async function refreshDelivery(){
      task.state==='failed'?'failed':
      ['queued','cooldown','opening','typing','submitting','researching'].includes(task.state)?'processing':'idle');
   renderMedia(task);
+  if(task.state==='answered'&&lastAttentionId!==id){
+    lastAttentionId=id;
+    const terminal=document.querySelector('.response');
+    terminal?.classList.add('response-handoff');
+    setTimeout(()=>terminal?.classList.remove('response-handoff'),3700);
+  }
   if(task.state==='answered'&&lastSpokenId!==id){
    // Read only tasks completed after this page opened; history is never auto-played.
    if(Date.parse(task.updated_at||0)<EPOCH){lastSpokenId=id;return;}
