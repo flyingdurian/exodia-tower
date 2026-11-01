@@ -15,6 +15,7 @@ from app.config import Settings
 from app.core.cache import SpeedrunnerCache
 from app.core.router import Router
 from app.automation.multi_wrapper import SessionError, OperatorActionRequired, PROVIDERS
+from app.automation.chatgpt_bridge import ChatGPTSubmissionBridge
 from app.rag.engine import CrystalArchives
 from app.monitoring.logger import EventLog
 from app.companions.director import CompanionDirector
@@ -31,6 +32,7 @@ cache = SpeedrunnerCache(settings.database)
 archive = CrystalArchives(settings.database, settings.index_root, dense=__import__("app.config", fromlist=["enabled"]).enabled("DENSE_SEARCH"))
 events = EventLog()
 router = Router(settings, archive, cache, events)
+chatgpt_tasks=ChatGPTSubmissionBridge(router.sessions,max_tabs=2,start_spacing=1.5)
 director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
@@ -56,6 +58,7 @@ class AskBody(BaseModel):
 
 @app.on_event('shutdown')
 async def stop_browser_sessions():
+    await chatgpt_tasks.close()
     await router.close_sessions()
     await asyncio.gather(*(runner.close() for runner in web_adapters.values()))
 
@@ -161,7 +164,8 @@ async def companion_react(agent_id: str, body: ReactionBody):
 @app.get('/api/web/sessions')
 async def web_sessions():
     return {'models':router.sessions.snapshot(),
-            'automatic_extraction':{'gemini':True,'chatgpt':False,'deepseek':False}}
+            'automatic_extraction':{'gemini':True,'chatgpt':False,'deepseek':False},
+             'chatgpt_bridge':chatgpt_tasks.snapshot()}
 
 @app.post('/api/web/sessions/start')
 async def start_web_sessions(x_exodia_client: str = Header(default='')):
@@ -429,6 +433,27 @@ async def _complete_web_task(task_id: str):
         events.publish('alert','Configured browser workflow failed',
                        f"{task['agent_id']}:configured_web")
 
+async def _submit_chatgpt_task(task_id: str):
+    """Automatically send a task to ChatGPT; never extract consumer-site output."""
+    task=inbox.get(task_id)
+    def on_phase(stage):
+        inbox.update(task_id,'state',stage)
+        director.react(task['agent_id'],'working')
+        events.publish('task','ChatGPT prompt submission',f"{task['agent_id']}:{stage}")
+    try:
+        await chatgpt_tasks.submit(task_id,task['prompt'],phase=on_phase)
+        inbox.update(task_id,'state','awaiting_operator')
+        events.publish('task','ChatGPT prompt sent; operator handoff pending',
+                       f"{task['agent_id']}:chatgpt")
+    except Exception as exc:
+        message=str(exc) if isinstance(exc,(SessionError,ValueError)) else (
+            'ChatGPT browser dispatch failed; inspect its window and screenshots.')
+        inbox.update(task_id,'error',message[:700])
+        inbox.update(task_id,'state','failed')
+        director.react(task['agent_id'],'alert')
+        events.publish('alert','ChatGPT prompt dispatch failed',
+                       f"{task['agent_id']}:chatgpt")
+
 async def _complete_gemini_task(task_id: str):
     """Gemini browser roundtrip, tied to companion task-state lifecycle."""
     task=inbox.get(task_id)
@@ -466,8 +491,9 @@ async def command_providers():
     return {'ollama':await local_model.status(),
             'configured_web':web_adapter.snapshot(),
             'configured_slots':{key:runner.snapshot() for key,runner in web_adapters.items()},
+             'chatgpt':chatgpt_tasks.snapshot(),
             'gemini':router.sessions.snapshot()['gemini'],
-            'website_workspaces':'manual_only_except_gemini'}
+            'website_workspaces':'gemini_auto;_chatgpt_auto_submit_only'}
 
 @app.get('/api/command/tasks')
 async def command_list():
@@ -506,6 +532,14 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
         active_generations.add(job)
         job.add_done_callback(active_generations.discard)
         events.publish('task','Gemini browser task started',f"{body.agent_id}:gemini")
+    elif body.model_choice=='chatgpt':
+        t=inbox.update(t['id'],'state','opening')
+        director.react(body.agent_id,'working')
+        job=asyncio.create_task(_submit_chatgpt_task(t['id']))
+        active_generations.add(job)
+        job.add_done_callback(active_generations.discard)
+        events.publish('task','ChatGPT browser prompt dispatch started',
+                       f"{body.agent_id}:chatgpt")
     else:
         director.react(body.agent_id,'thinking')
         events.publish('task','Manual website task created',f"{body.agent_id}:{body.model_choice}")
@@ -516,7 +550,7 @@ async def command_prepare(task_id:str,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
     try:t=inbox.get(task_id)
     except KeyError:raise HTTPException(404,detail='Task not found')
-    if t['provider'] in ('ollama','gemini') or t['provider'] in web_adapters:raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
+    if t['provider'] in ('ollama','gemini','chatgpt') or t['provider'] in web_adapters:raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
     if t['state']!='draft':raise HTTPException(409,detail='Already prepared')
     try:info=await router.models.generate(t['prompt'],t['provider'])
     except (SessionError,ValueError) as e:raise HTTPException(409,detail=str(e))
@@ -530,12 +564,30 @@ async def command_response(task_id:str,body:CompanionTaskAnswer,x_exodia_client:
     try:t=inbox.get(task_id)
     except KeyError:raise HTTPException(404,detail='Task not found')
     if t['state']!='awaiting_operator':raise HTTPException(409,detail='Prepare the prompt first')
-    try:router.models.record_operator_response(t['provider'],body.answer)
+    try:
+        if t['provider']=='chatgpt':
+            await chatgpt_tasks.complete(task_id,body.answer)
+        else:
+            router.models.record_operator_response(t['provider'],body.answer)
     except (SessionError,ValueError) as e:raise HTTPException(409,detail=str(e))
     inbox.update(task_id,'answer',body.answer.strip())
     saved=inbox.update(task_id,'state','answered')
     director.react(t['agent_id'],'success')
     events.publish('success','Operator-delivered response',f"{t['agent_id']}:{t['provider']}")
+    return saved
+
+@app.post('/api/command/tasks/{task_id}/cancel')
+async def command_cancel(task_id:str,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:task=inbox.get(task_id)
+    except KeyError:raise HTTPException(404,detail='Task not found')
+    if task['provider']!='chatgpt' or task['state']!='awaiting_operator':
+        raise HTTPException(409,detail='Only pending ChatGPT review tasks can be cancelled')
+    try:await chatgpt_tasks.cancel(task_id)
+    except SessionError as exc:raise HTTPException(409,detail=str(exc)) from exc
+    saved=inbox.update(task_id,'state','cancelled')
+    director.react(task['agent_id'],'rest')
+    events.publish('task','ChatGPT review cancelled',f"{task['agent_id']}:chatgpt")
     return saved
 
 @app.post('/api/command/tasks/{task_id}/artifact')
