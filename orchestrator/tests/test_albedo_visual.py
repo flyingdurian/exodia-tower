@@ -25,7 +25,11 @@ def test_portrait_expression_transitions_in_browser():
     try:
      page=await browser.new_page(viewport={'width':1600,'height':980})
      await page.goto('http://127.0.0.1:8897/',wait_until='domcontentloaded')
-     await page.wait_for_selector('#expressionFace',timeout=15000)
+     await page.wait_for_selector('#expressionFace',state='attached',timeout=15000)
+     # Without the optional expression-pack ZIP, the selected agent portrait
+     # remains visible and state changes still update the expression controller.
+     assert await page.locator('#expressionFace').count()==1
+     assert await page.locator('#agentPortrait').count()==1
      assert await page.locator('.mood').count()==0
      assert await page.locator('#albedoRig').count()==0
      assert await page.locator('#albedoVideo').count()==0
