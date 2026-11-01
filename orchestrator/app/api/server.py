@@ -78,6 +78,10 @@ async def automation_demo():
 async def art_studio():
     return FileResponse(settings.root/'frontend'/'kiko_art_lab.html')
 
+@app.get('/companion-art-qa')
+async def companion_art_qa():
+    return FileResponse(settings.root/'frontend'/'companion_art_qa.html')
+
 @app.get('/puppet-lab')
 async def puppet_lab():
     return FileResponse(settings.root/'frontend'/'puppet_lab.html')
