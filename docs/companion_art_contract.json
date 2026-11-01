@@ -1,0 +1,271 @@
+{
+  "schema_version": "exodia.companion-art/v1",
+  "date": "2026-11-01",
+  "benchmark": {
+    "name": "albedo_mission_complete_v1",
+    "source_filename": "albedo_s_mission_complete_command_center.png",
+    "sha256": "bfc233740851980021ea0b479a1b4254574f6ca614e3a1e9cbb7bd66c03dc409",
+    "width": 1448,
+    "height": 1086,
+    "status": "owner_approved_reference_pending_repo_import",
+    "target_repository_path": "orchestrator/frontend/companions/benchmarks/albedo_mission_complete_v1.png"
+  },
+  "visual_style": {
+    "finish": "premium luminous sci-fi anime",
+    "albedo_hair": "silver-lavender; saturated pink rejected",
+    "albedo_eyes": "violet",
+    "colors": [
+      "indigo",
+      "violet",
+      "lavender",
+      "soft cyan",
+      "mint",
+      "gold"
+    ],
+    "identity_locked_from_benchmark": "face, hairstyle, floral metallic accessory, upper outfit, chest crystal",
+    "unseen_details_require_review": [
+      "back",
+      "boots",
+      "rear joints",
+      "full outfit silhouette"
+    ]
+  },
+  "fleet": [
+    {
+      "id": "kiko",
+      "name": "Albedo"
+    },
+    {
+      "id": "router",
+      "name": "Riven"
+    },
+    {
+      "id": "memory",
+      "name": "Mira"
+    },
+    {
+      "id": "archives",
+      "name": "Lyra"
+    },
+    {
+      "id": "inventory",
+      "name": "Pip"
+    },
+    {
+      "id": "vault",
+      "name": "Aurelia"
+    },
+    {
+      "id": "ninja",
+      "name": "Nyx"
+    },
+    {
+      "id": "cache",
+      "name": "Mochi"
+    },
+    {
+      "id": "strategy",
+      "name": "Orion"
+    },
+    {
+      "id": "nova",
+      "name": "Nova"
+    }
+  ],
+  "emotions": [
+    {
+      "id": "happy",
+      "label": "Happy"
+    },
+    {
+      "id": "excited",
+      "label": "Excited"
+    },
+    {
+      "id": "laugh",
+      "label": "Laugh"
+    },
+    {
+      "id": "smile",
+      "label": "Smile"
+    },
+    {
+      "id": "thinking",
+      "label": "Thinking"
+    },
+    {
+      "id": "curious",
+      "label": "Curious"
+    },
+    {
+      "id": "surprised",
+      "label": "Surprised"
+    },
+    {
+      "id": "confused",
+      "label": "Confused"
+    },
+    {
+      "id": "determined",
+      "label": "Determined"
+    },
+    {
+      "id": "serious",
+      "label": "Serious"
+    },
+    {
+      "id": "sad",
+      "label": "Sad"
+    },
+    {
+      "id": "disappointed",
+      "label": "Disappointed"
+    },
+    {
+      "id": "pouting",
+      "label": "Pouting"
+    },
+    {
+      "id": "angry",
+      "label": "Angry"
+    },
+    {
+      "id": "hurt",
+      "label": "Hurt"
+    },
+    {
+      "id": "bored",
+      "label": "Bored"
+    },
+    {
+      "id": "sleepy",
+      "label": "Sleepy"
+    },
+    {
+      "id": "dizzy",
+      "label": "Dizzy"
+    },
+    {
+      "id": "pain",
+      "label": "Pain"
+    },
+    {
+      "id": "cheerful_wink",
+      "label": "Cheerful Wink"
+    }
+  ],
+  "actions": [
+    {
+      "id": "idle",
+      "label": "Idle"
+    },
+    {
+      "id": "walk",
+      "label": "Walk"
+    },
+    {
+      "id": "run",
+      "label": "Run"
+    },
+    {
+      "id": "jump",
+      "label": "Jump"
+    },
+    {
+      "id": "sit",
+      "label": "Sit"
+    },
+    {
+      "id": "work_computer",
+      "label": "Work (computer)"
+    },
+    {
+      "id": "typing_working",
+      "label": "Typing (working)"
+    },
+    {
+      "id": "pointing",
+      "label": "Pointing"
+    },
+    {
+      "id": "explaining",
+      "label": "Explaining"
+    },
+    {
+      "id": "celebrating",
+      "label": "Celebrating"
+    },
+    {
+      "id": "stretching",
+      "label": "Stretching"
+    },
+    {
+      "id": "sleeping",
+      "label": "Sleeping"
+    },
+    {
+      "id": "waking_up",
+      "label": "Waking up"
+    }
+  ],
+  "turnaround": [
+    {
+      "id": "front",
+      "label": "Front"
+    },
+    {
+      "id": "front_angle",
+      "label": "Front angle"
+    },
+    {
+      "id": "side",
+      "label": "Side"
+    },
+    {
+      "id": "back",
+      "label": "Back"
+    },
+    {
+      "id": "back_angle",
+      "label": "Back angle"
+    }
+  ],
+  "details": [
+    {
+      "id": "face_and_eyes",
+      "label": "Face & eyes"
+    },
+    {
+      "id": "accessories",
+      "label": "Accessories"
+    },
+    {
+      "id": "outfit_details",
+      "label": "Outfit details"
+    },
+    {
+      "id": "boots",
+      "label": "Boots"
+    }
+  ],
+  "production": {
+    "individual_expressions": "not_started",
+    "rigged_action_clips": "not_started",
+    "full_turnaround": "not_started",
+    "detail_masters": "not_started",
+    "skinned_model": "not_started",
+    "reference_scene": "approved_only"
+  },
+  "minimums": {
+    "full_body_master_height_px": 2048,
+    "expression_image_height_px": 1024,
+    "walk_keyframes": 8
+  },
+  "forbidden_shortcuts": [
+    "cropped low-resolution sprite atlas",
+    "static whole-body wobble",
+    "polygon-mask cutout joints",
+    "generated contact sheet used as face asset",
+    "invented rig validation"
+  ]
+}
