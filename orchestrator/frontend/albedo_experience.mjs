@@ -117,6 +117,7 @@ function captureExpressionState(){
 const label=$('#moodLabel');
 if(label)new MutationObserver(captureExpressionState).observe(label,{childList:true,characterData:true,subtree:true});
 captureExpressionState();
+document.documentElement.dataset.expressionControllerReady='1';
 function element(tag,cls,text){
  const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=String(text);return e;
 }

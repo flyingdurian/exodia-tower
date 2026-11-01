@@ -36,6 +36,9 @@ def test_portrait_expression_transitions_in_browser():
      assert await page.locator('.mood').count()==0
      assert await page.locator('#albedoRig').count()==0
      assert await page.locator('#albedoVideo').count()==0
+     await page.wait_for_function(
+       "()=>document.documentElement.dataset.expressionControllerReady==='1'",
+       timeout=10000)
      await page.wait_for_function("()=>document.querySelector('#expressionName')?.textContent==='Ready'",timeout=3000)
      before=await page.locator('#expressionFace').evaluate('(el)=>getComputedStyle(el).backgroundPosition')
      await page.locator('#moodLabel').evaluate("(el)=>el.textContent='SLEEPING'")
