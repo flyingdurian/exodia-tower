@@ -11,18 +11,42 @@
 <div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span></div></header>
 <main class="command-grid">
 <section class="hero-col">
-<div class="hero card" id="hero" data-state="idle"><div class="scene-grid"></div>
-<div class="hero-title"><span class="section-kicker">EXODIA TOWER · HEART OF COMMAND</span><h1>ALBEDO<span>✧</span></h1><p>Your companion, connected to the whole tower.</p></div>
-<div class="halo halo-back"></div>
-<div class="character-wrap still-stage" id="characterWrap">
-<img id="albedoPortrait" class="albedo-still" src="/assets/companions/expressions/albedo_prime_portrait.webp" alt="Albedo's approved illustration" onerror="this.onerror=null;this.src='/assets/companions/portraits/kiko.webp'"/>
-<div id="expressionCard" class="expression-card"><div id="expressionFace" class="expression-face" aria-hidden="true"></div><span id="expressionName">IDLE</span></div>
-<div class="character-effects"><span class="star s1">✧</span><span class="star s2">✦</span></div></div>
-<div class="halo halo-front"></div><div class="orbit-ring orbit-one"></div><div class="orbit-ring orbit-two"></div>
-<div class="energy-floor"></div><div class="stage-status"><span class="status-orb"></span><b id="moodLabel">IDLE</b><span id="moodDescription">Ready for your command</span></div>
-<div class="hero-overlay" id="heroOverlay" aria-live="polite"></div>
+<div class="hero card task-stage" id="hero" data-state="idle">
+  <div class="scene-grid"></div>
+  <div class="stage-topline">
+    <span class="section-kicker">LIVE COMPANION · TASK WORKSTATION</span>
+    <span class="stage-online"><span class="online-pip"></span> ACTIVE</span>
+  </div>
+  <div class="stage-identity">
+    <h1 id="agentStageName">Albedo</h1><p id="agentStageRole">Central Command</p>
+  </div>
+  <div class="companion-performance" id="characterWrap">
+    <div id="expressionCard" class="expression-card performance-portrait" aria-label="Current companion facial expression">
+      <div id="expressionFace" class="expression-face" role="img" aria-label="Albedo's expression"></div>
+      <img id="agentPortrait" src="/assets/companions/portraits/kiko.webp" alt="Selected companion portrait" hidden/>
+      <span id="expressionName" class="subtle-emotion-label">Ready</span>
+    </div>
+    <div class="stage-ambient"><span>✧</span><span>✦</span></div>
+  </div>
+  <div class="stage-workstation">
+    <div class="workstation-topbar"><span class="workstation-pill"></span> COMPANION CONSOLE <span class="workstation-right" id="computerModel">STANDBY</span></div>
+    <div class="workstation-display" id="taskComputer">
+      <div class="workstation-display-content">
+        <div id="computerSymbol" class="computer-symbol"><span>✦</span></div>
+        <div id="computerTitle" class="computer-title">All systems ready</div>
+        <div id="computerSubtitle" class="computer-subtitle">Awaiting your command</div>
+        <div class="computer-progress"><i></i></div>
+      </div>
+    </div>
+    <div class="workstation-bottom">
+      <span class="workstation-led"></span><span id="moodLabel">IDLE</span>
+      <span id="moodDescription">Ready for your command</span>
+      <span class="result-pointer" id="resultPointer" hidden>VIEW RESULT <span>➜</span></span>
+    </div>
+  </div>
+  <div class="hero-overlay" id="heroOverlay" aria-live="polite"></div>
 </div>
-<div class="hero-foot"><span><span class="live-dot"></span> LIVE COMPANION</span><span>Expressions respond automatically to task activity</span></div>
+<div class="hero-foot"><span><span class="live-dot"></span> AUTOMATIC EXPRESSIONS</span><span>Task states drive the companion, no manual controls</span></div>
 </section>
 <section class="output-col">
 <div class="response card"><div class="response-top"><div><div class="section-kicker">ALBEDO / RESPONSE DISPLAY</div><h2>Holographic terminal</h2></div><span class="terminal-live" id="terminalStatus">STANDBY</span></div>
@@ -56,6 +80,6 @@
 <section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
 </aside>
 </main>
-<footer class="site-footer">EXODIA TOWER · ALBEDO LIVE COMMAND STAGE <span id="stageDisclaimer">Expression portraits change automatically · articulated cutouts disabled</span></footer>
+<footer class="site-footer">EXODIA TOWER · COMPANION TASK STATION <span id="stageDisclaimer">Expression portraits change automatically · articulated cutouts disabled</span></footer>
 </div>
 </body></html>

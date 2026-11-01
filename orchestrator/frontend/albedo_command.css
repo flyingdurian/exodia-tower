@@ -21,3 +21,36 @@
 .media-gallery .media-info{font-size:11px;display:flex;justify-content:space-between;gap:8px;margin-top:8px}
 @media(max-width:1170px){.command-grid{grid-template-columns:1fr 1fr}.control-col{grid-column:1/3;display:grid;grid-template-columns:1fr 1fr}}
 @media(max-width:770px){.command-grid{display:flex;flex-direction:column}.control-col{display:flex}.hero{height:550px}}
+
+/* Task-stage redesign: one active agent, one real-time computer, no baked UI. */
+.task-stage{height:min(780px,calc(100vh - 135px));min-height:580px;display:flex;flex-direction:column;align-items:stretch;background:radial-gradient(ellipse 75% 45% at 50% 36%,#4d4aa299,transparent),linear-gradient(160deg,#101c43,#151743 65%,#20143e);overflow:hidden}
+.task-stage .scene-grid{opacity:.35}.stage-topline{position:relative;z-index:7;display:flex;align-items:center;justify-content:space-between;padding:18px 18px 0}
+.stage-online{font-size:10px;color:#9df7c8;letter-spacing:.07em}
+.stage-identity{z-index:7;text-align:center;margin:12px 0 0;position:relative}
+.stage-identity h1{margin:0;font-family:Cinzel,Georgia,serif;font-size:clamp(25px,3vw,39px);letter-spacing:.09em;color:#f6edff;text-shadow:0 0 18px #6eb0e0}
+.stage-identity p{margin:4px 0;font-size:11px;color:#b3c4e9}
+.companion-performance{z-index:5;flex:1;min-height:245px;display:grid;place-items:center;position:relative;overflow:hidden}
+.performance-portrait{position:relative!important;right:auto!important;bottom:auto!important;z-index:2!important;border:0!important;background:radial-gradient(ellipse,#41477d55,transparent 70%)!important;box-shadow:none!important;min-width:0!important;width:min(90%,410px);height:100%;max-height:355px;display:grid;place-items:center;padding:8px!important;overflow:hidden}
+.performance-portrait .expression-face{width:clamp(190px,21vw,280px);height:clamp(190px,21vw,280px);max-width:100%;background-size:500% 200%;background-position:0 0;border:3px solid #b9bcff66;border-radius:50%;box-shadow:0 0 65px #9cb7ff88, inset 0 0 19px #e5d6ff4d;image-rendering:auto}
+.performance-portrait #agentPortrait{width:min(300px,100%);height:min(300px,80%);object-fit:cover;object-position:50% 24%;border-radius:50%;border:2px solid #b7a9f0;box-shadow:0 0 55px #8382dd80}
+.performance-portrait #agentPortrait[hidden],.performance-portrait #expressionFace[hidden]{display:none}
+.performance-portrait .subtle-emotion-label{display:block;position:absolute;bottom:0;left:50%;transform:translateX(-50%);border:1px solid #a7a4ed;background:#17264ddc;padding:6px 14px;border-radius:18px;font-size:11px;color:#e6d3ff;white-space:nowrap}
+.stage-ambient{position:absolute;inset:0;pointer-events:none;color:#efddff}.stage-ambient span{position:absolute;font-size:27px;animation:twinkle 2s infinite}.stage-ambient span:first-child{left:11%;top:31%}.stage-ambient span:last-child{right:13%;top:18%;animation-delay:1s}
+.stage-workstation{position:relative;z-index:6;margin:0 15px 13px;border:1px solid #819fe0a8;border-radius:15px;padding:10px;background:linear-gradient(135deg,#142450ed,#091b41f5);box-shadow:0 12px 35px #020920af,0 0 25px #768be244}
+.workstation-topbar{font-size:10px;font-weight:750;letter-spacing:.1em;color:#b5cdf4;display:flex;align-items:center;gap:7px}
+.workstation-pill,.workstation-led{width:9px;height:9px;background:#68eac0;border-radius:50%;box-shadow:0 0 11px #56d5ba}
+.workstation-right{margin-left:auto;color:#a6efdf;font-size:9px}
+.workstation-display{height:130px;margin:9px 0;background:linear-gradient(145deg,#09182c,#14275b);border:1px solid #5184c9;border-radius:9px;overflow:hidden;display:grid;place-items:center;position:relative}
+.workstation-display:before{content:'';position:absolute;inset:0;opacity:.25;background:repeating-linear-gradient(0deg,transparent 0 6px,#86bbff0b 6px 7px);pointer-events:none}
+.workstation-display-content{text-align:center;padding:8px 12px;z-index:1}
+.computer-symbol{display:inline-block;font-size:25px;color:#a5efff;text-shadow:0 0 15px #99cfff;transition:transform .2s}.computer-title{font-size:15px;font-weight:800;margin:2px}.computer-subtitle{font-size:10px;color:#91aee0;margin-top:4px}
+.computer-progress{margin:10px auto 0;width:min(270px,60%);height:3px;background:#47649c;border-radius:2px;overflow:hidden}
+.computer-progress i{display:block;background:#7edeea;height:100%;width:28%;border-radius:2px}
+.workstation-bottom{display:flex;align-items:center;gap:9px;font-size:10px;color:#b8ceec}.workstation-bottom #moodLabel{font-weight:850;color:#e9f2ff}.workstation-bottom #moodDescription{margin-left:auto}
+.result-pointer{background:#1d6b69;border:1px solid #62f3ca;color:#d5fff6;border-radius:8px;padding:6px;font-weight:750;cursor:pointer}
+.task-stage[data-state=processing] .computer-progress i,.task-stage[data-state=thinking] .computer-progress i,.task-stage[data-state=waiting] .computer-progress i{animation:computerScan 1.8s linear infinite}
+.task-stage[data-state=happy] .computer-symbol,.task-stage[data-state=proud] .computer-symbol{color:#8dffbf;text-shadow:0 0 30px #37ff9d}
+.task-stage[data-state=failed] .computer-symbol,.task-stage[data-state=frustration] .computer-symbol{color:#ffafba}
+.task-stage[data-state=sleeping] .workstation-display{background:radial-gradient(circle,#283b70,#0b162c)}.task-stage[data-state=excited] .computer-symbol{animation:twinkle .55s infinite}
+@keyframes computerScan{0%{transform:translateX(-115%)}100%{transform:translateX(430%)}}
+@media(max-width:740px){.task-stage{height:650px}.performance-portrait .expression-face{width:245px;height:245px}.workstation-display{height:125px}}
