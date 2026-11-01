@@ -79,3 +79,6 @@
 .handoff-actions .send{font-size:12px;flex:1;min-width:180px}
 .handoff-actions .outline-button{width:auto;padding:10px 13px}
 .handoff-info{font-size:11px;color:#96c5e9;margin-top:10px}
+
+.chatgpt-handoff input[type=file]{width:100%;padding:9px;margin:4px 0 10px;background:#0b1c40;border:1px dashed #7894d3;border-radius:8px;color:#b9d4f2;font-size:12px}
+.chatgpt-handoff input[type=file]::file-selector-button{border:1px solid #7a98d7;border-radius:7px;background:#203d74;color:#edfbff;padding:7px 11px;margin-right:10px;cursor:pointer}
