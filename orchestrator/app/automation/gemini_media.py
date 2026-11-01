@@ -15,7 +15,7 @@ class MediaCaptureError(RuntimeError):pass
 GENERATOR_SCOPE="model-response, .model-response, [data-message-author-role='model']"
 MEDIA_SCRIPT=r"""() => {
   const nodes=[...document.querySelectorAll(
-    'model-response img, model-response video, .model-response img, .model-response video, [data-message-author-role="model"] img, [data-message-author-role="model"] video'
+    'model-response img, model-response video, .model-response img, .model-response video, [data-message-author-role="model"] img, [data-message-author-role="model"] video, generated-image img, generated-image video, image-generation img, image-generation video, [data-test-id*="generated-image"] img, [data-test-id*="generated-video"] video'
   )];
   return nodes.filter(n=>{
     const rect=n.getBoundingClientRect();
@@ -81,7 +81,13 @@ async def await_media_answer(page,*,text_selector:str,stop_selector:str,
         signature=([m.get('src') for m in new],fresh_text)
         if signature!=last_signature:
             last_signature=signature;last_change=monotonic()
-        if (new or fresh_text) and not generating and monotonic()-last_change>=stable:
+        # Generated media may arrive long after Gemini emits a short introductory sentence.
+        # Never treat that sentence as successful image/video completion.
+        final_text_only=bool(re.search(
+          r"(can(?:not|'t) (?:generate|create|make)|unable to (?:generate|create)|"
+          r"couldn(?:'t|ot) (?:generate|create)|sorry.{0,70}(?:image|video))",
+          fresh_text,re.I|re.S))
+        if (new or final_text_only) and not generating and monotonic()-last_change>=stable:
             return MediaResult(fresh_text,new[:4])
         await asyncio.sleep(poll)
     raise MediaCaptureError('No completed new generated image/video or text detected before timeout')
@@ -111,6 +117,22 @@ async def store_media(page,candidates:list[dict],destination:Path,*,max_bytes:in
                             'width':candidate.get('width') or None,
                             'height':candidate.get('height') or None})
         except Exception as exc:
+            # Signed Gemini media can use cross-origin URLs that are viewable by the
+            # page but cannot be fetched as bytes because of CORS. Preserve at
+            # least the visible image as a marked preview, without inventing a
+            # full-quality download.
+            if kind=='image':
+                try:
+                    target=destination/(secrets.token_hex(16)+'.png')
+                    locator=page.locator('model-response img, generated-image img, image-generation img').last
+                    await locator.screenshot(path=str(target),timeout=8000)
+                    raw=target.read_bytes()
+                    if validate_bytes(raw,'image')=='.png':
+                        records.append({'kind':'image','url':'/artifacts/'+target.name,
+                                        'bytes':len(raw),'quality':'preview',
+                                        'reason':type(exc).__name__})
+                        continue
+                except Exception:pass
             records.append({'kind':kind,'status':'capture_failed',
                             'reason':type(exc).__name__})
     return records
