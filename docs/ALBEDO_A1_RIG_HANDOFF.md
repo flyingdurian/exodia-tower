@@ -33,7 +33,7 @@ cd orchestrator
 
 ## Acceptance / next stage
 
-**Structural gate PASS:** 35 joints, normalized weights, inverse binding, 13 clips, rig not marked production-ready. Four new tests passed locally on Python 3.13. Model import passed with `trimesh`.
+**Structural gate PASS:** 35 joints, normalized weights, inverse binding, 13 clips, rig not marked production-ready. Five new tests passed locally on Python 3.13, including numerical verification that the weighted leg surface deforms under the walk curve. Model import passed with `trimesh`.
 
 **Browser runtime gate UNVERIFIED:** headless Chromium installation exists but the execution environment blocks local URL navigation (`ERR_BLOCKED_BY_ADMINISTRATOR`). No claim of end-to-end interactive WebGL acceptance.
 

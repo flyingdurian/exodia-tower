@@ -74,3 +74,55 @@ def test_approval_is_not_faked(model, tmp_path):
     report=checker.inspect(tampered)
     assert not report['valid']
     assert any('unapproved' in e for e in report['errors'])
+
+
+def test_weighted_leg_surface_actually_deforms_under_walk_curve():
+    """Evaluate skin transforms numerically; animation tracks alone aren't proof."""
+    import math
+
+    def qmul(a, b):
+        ax, ay, az, aw = a; bx, by, bz, bw = b
+        return (aw*bx+ax*bw+ay*bz-az*by, aw*by-ax*bz+ay*bw+az*bx,
+                aw*bz+ax*by-ay*bx+az*bw, aw*bw-ax*bx-ay*by-az*bz)
+
+    def rot(q, vec):
+        v = (vec[0], vec[1], vec[2], 0.0)
+        conjugate = (-q[0], -q[1], -q[2], q[3])
+        return qmul(qmul(q, v), conjugate)[:3]
+
+    def posed(t):
+        angles, offsets = builder.posture('walk', t)
+        centers, orient = {}, {}
+        identity = (0., 0., 0., 1.)
+        for name, parent, delta in builder.BONES:
+            pq = orient[parent] if parent else identity
+            pc = centers[parent] if parent else (0., 0., 0.)
+            off = offsets.get(name, (0, 0, 0))
+            local = tuple(delta[i]+off[i] for i in range(3))
+            moved = rot(pq, local)
+            centers[name] = tuple(pc[i]+moved[i] for i in range(3))
+            orient[name] = qmul(pq, angles.get(name, identity))
+        return centers, orient
+
+    def skin(vertex_index, frame):
+        centers, orientations = posed(frame)
+        xyz = builder.V[vertex_index*3:vertex_index*3+3]
+        ids = builder.J[vertex_index*4:vertex_index*4+4]
+        ws = builder.W[vertex_index*4:vertex_index*4+4]
+        out = [0.,0.,0.]
+        for jid, weight in zip(ids, ws):
+            if weight == 0:continue
+            name = builder.BONES[jid][0]
+            bound = builder.ABS[name]
+            local = [xyz[i]-bound[i] for i in range(3)]
+            new_point = rot(orientations[name], local)
+            for i in range(3):out[i] += weight*(centers[name][i]+new_point[i])
+        return out
+
+    wanted = {builder.INDEX['thigh_L'], builder.INDEX['knee_L']}
+    candidates = [i for i in range(len(builder.V)//3)
+                  if set(builder.J[i*4:i*4+2]) == wanted
+                  and 0.1 < builder.W[i*4+1] < .9]
+    assert len(candidates) >= 10
+    displacement=max(math.dist(skin(i,0),skin(i,.25)) for i in candidates)
+    assert displacement > .1, ('Walk clip does not visibly deform the weighted leg', displacement)
