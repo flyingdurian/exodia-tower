@@ -59,6 +59,8 @@
   <p>Review the result in your open ChatGPT task tab. To deliver it through the selected AI companion, supply the response below. This version does not automatically extract consumer ChatGPT output.</p>
   <label for="chatgptResultText">RESPONSE TO DELIVER</label>
   <textarea id="chatgptResultText" maxlength="100000" rows="5" placeholder="Copy the answer from the ChatGPT tab into Exodia…"></textarea>
+  <label for="chatgptArtifact">OPTIONAL DOWNLOADED IMAGE · PNG, JPEG OR WEBP · MAX 8 MIB</label>
+  <input type="file" id="chatgptArtifact" accept="image/png,image/jpeg,image/webp"/>
   <div class="handoff-actions">
     <button type="button" id="chatgptImport" class="send">Deliver through companion</button>
     <button type="button" id="chatgptCancel" class="outline-button">Cancel task</button>
