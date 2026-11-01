@@ -11,6 +11,10 @@ class Input:
  async def click(self,timeout=8000):
   self.page.focus=True
  async def is_enabled(self):return True
+class Hidden:
+ def __init__(self,page):self.page=page;self.first=self
+ async def is_visible(self,timeout=650):return False
+ async def click(self,timeout=12000):raise AssertionError('hidden send was clicked')
 class Submit(Input):
  async def click(self,timeout=12000):
   if self.page.click_fails:raise TimeoutError('ambiguous click')
@@ -19,17 +23,20 @@ class Submit(Input):
 class Keys:
  def __init__(self,page):self.page=page
  async def press(self,key):self.page.pressed.append(key)
- async def insert_text(self,text):self.page.typed=text
+ async def insert_text(self,text):self.page.typed=text;self.page.method='insert_text'
+ async def type(self,text,delay=0):self.page.typed=text;self.page.method='keyboard_type';self.page.delay=delay
 class FakePage:
  def __init__(self):
   self.url='https://chatgpt.com';self.keyboard=Keys(self);self.focus=False
-  self.typed='';self.sent=0;self.pressed=[];self.blocked=False
-  self.click_fails=False;self.closed=False;self.shots=0
+  self.typed='';self.sent=0;self.pressed=[];self.blocked=False;self.hide_send=False
+  self.click_fails=False;self.closed=False;self.shots=0;self.method=''
  async def goto(self,url,**kwargs):self.url=url
  def locator(self,selector):
   if selector in ('div.markdown','[data-message-author-role="assistant"]'):
    raise AssertionError('Automated consumer output extraction is prohibited here')
-  if 'send' in selector.lower() or 'Send' in selector:return Submit(self)
+  if 'send' in selector.lower() or 'Send' in selector:
+   if self.hide_send:return Hidden(self)
+   return Submit(self)
   return Input(self)
  async def screenshot(self,**kwargs):self.shots+=1
  async def close(self):self.closed=True
@@ -57,6 +64,8 @@ def test_chatgpt_submit_two_isolated_tabs_and_manual_completion(tmp_path):
   assert all(p.sent==1 for p in context.created)
   assert first['status']=='awaiting_operator' and not first['automatic_output']
   assert first['submission']=='send_clicked_unverified'
+  assert first['typing_method']=='keyboard_type'
+  assert context.created[0].method=='keyboard_type' and context.created[0].delay==0
   assert 'typing' in phases and 'submitting' in phases
   assert bridge.snapshot()['pending_count']==2
   with pytest.raises(OperatorActionRequired,match='pending review'):
@@ -83,6 +92,38 @@ def test_submit_fails_closed_and_takes_debug_screenshot_when_composer_missing(tm
   tab=factory.contexts[0].created[0]
   assert tab.sent==0 and tab.closed and tab.shots==1
   assert not bridge.tasks
+  await sessions.close()
+ asyncio.run(run())
+
+def test_long_prompt_uses_insert_text_and_still_skips_output(tmp_path):
+ async def run():
+  factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
+  bridge=ChatGPTSubmissionBridge(sessions,start_spacing=0)
+  prompt='Design a display. '*20
+  assert len(prompt.strip())>=250
+  result=await bridge.submit('long',prompt)
+  page=factory.contexts[0].created[0]
+  assert page.method=='insert_text' and page.typed==prompt.strip() and page.sent==1
+  assert result['automatic_output'] is False and result['typing_method']=='insert_text'
+  await sessions.close()
+ asyncio.run(run())
+
+def test_missing_send_button_presses_enter_once_without_reading_reply(tmp_path):
+ async def run():
+  factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
+  bridge=ChatGPTSubmissionBridge(sessions,start_spacing=0)
+  await sessions.initialize_one('chatgpt')
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original();page.hide_send=True;return page
+  ctx.new_page=make_page
+  result=await bridge.submit('enter','Review this layout')
+  page=ctx.created[0]
+  assert page.sent==0 and page.pressed.count('Enter')==1
+  assert result['submission']=='enter_submitted_unverified'
+  assert result['automatic_output'] is False
+  assert not page.closed
   await sessions.close()
  asyncio.run(run())
 

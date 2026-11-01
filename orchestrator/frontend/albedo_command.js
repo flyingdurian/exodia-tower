@@ -151,7 +151,7 @@ function renderAnswer(task){
  UI.terminalStatus.textContent=state==='answered'?'RESPONSE READY':ACTIVE.has(state)?'LIVE · '+prettyName(state):state==='failed'?'TASK FAILED':'STANDBY';
  UI.provider.textContent=task?(task.provider+' / '+prettyName(task.state)):'NO MODEL RESULT';
  const m=task?.metrics||{};
- UI.timing.textContent=Number.isFinite(m.total_s)?('Time '+m.total_s+'s · first text '+m.first_text_s+'s'):'';
+  UI.timing.textContent=Number.isFinite(m.total_s)?('Time '+m.total_s+'s'+(Number.isFinite(m.first_text_s)?' · first text '+m.first_text_s+'s':'')):'';
  if(!task){
   const wrap=element('div','welcome');wrap.append(element('div','welcome-glyph','✦'),element('b','','Awaiting your first command'),element('p','','Choose a model and send a task. Albedo will display the result here.'));UI.answer.append(wrap);return;
  }
@@ -228,7 +228,7 @@ async function refreshModels(){
   for(const a of roster){const op=element('option','',a.name);op.value=a.id;UI.companion.append(op);}
   UI.companion.value='kiko';
   const status=await api('/api/command/providers');
-  const items=[['Gemini browser','Manual guest login optional'],['Ollama',status.ollama?.connected?'Ready':'Offline'],['Web slots',Object.values(status.configured_slots||{}).filter(c=>c.configured).length+' configured']];
+  const items=[['Gemini browser','Automatic reply'],['ChatGPT','Auto send · manual result'],['Ollama',status.ollama?.connected?'Ready':'Offline'],['Web slots',Object.values(status.configured_slots||{}).filter(c=>c.configured).length+' configured']];
   const container=$('#providerStatus');container.replaceChildren();
   for(const [name,value] of items){const row=element('div','');row.append(element('span','',name),element('strong','',value));container.append(row);}
  }catch(e){UI.diagnostic.textContent='Provider status unavailable: '+e.message;}

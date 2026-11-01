@@ -32,7 +32,7 @@ class ProviderSpec:
     response_selector: str
 
 PROVIDERS = {
-    "chatgpt": ProviderSpec("https://chatgpt.com","div#prompt-textarea","button[data-testid='send-button']","div.markdown"),
+    "chatgpt": ProviderSpec("https://chatgpt.com","textarea[name='prompt'], div#prompt-textarea","button[data-testid='send-button']","div.markdown"),
     "gemini": ProviderSpec("https://gemini.google.com","rich-textarea p","button.send-button","message-content"),
     "deepseek": ProviderSpec("https://chat.deepseek.com","textarea#chat-input","div.chat-submit-button","div.ds-markdown"),
 }
