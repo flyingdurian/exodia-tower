@@ -167,6 +167,14 @@ async def web_sessions():
             'automatic_extraction':{'gemini':True,'chatgpt':False,'deepseek':False},
              'chatgpt_bridge':chatgpt_tasks.snapshot()}
 
+@app.post('/api/web/sessions/{model_choice}/start')
+async def start_one_web_session(model_choice:str,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    if model_choice not in PROVIDERS:raise HTTPException(422,detail='Unknown browser provider')
+    try:return {'model':model_choice,
+                'session':await router.sessions.initialize_one(model_choice)}
+    except SessionError as exc:raise HTTPException(503,detail=str(exc)) from exc
+
 @app.post('/api/web/sessions/start')
 async def start_web_sessions(x_exodia_client: str = Header(default='')):
     if x_exodia_client!='exodia-dashboard':
