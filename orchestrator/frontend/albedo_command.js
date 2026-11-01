@@ -6,8 +6,8 @@
  */
 const $=s=>document.querySelector(s);
 const UI={
-  moodList:$('#moodList'),hero:$('#hero'),label:$('#moodLabel'),description:$('#moodDescription'),
-  overlay:$('#heroOverlay'),video:$('#albedoVideo'),rig:$('#albedoRig'),prompt:$('#prompt'),model:$('#model'),
+  hero:$('#hero'),label:$('#moodLabel'),description:$('#moodDescription'),
+  overlay:$('#heroOverlay'),prompt:$('#prompt'),model:$('#model'),
   companion:$('#companion'),research:$('#liveResearch'),answer:$('#answerFrame'),
   promptBubble:$('#responsePrompt'),provider:$('#answerProvider'),timing:$('#answerTiming'),
   image:$('#responseImage'),attachment:$('#attachment'),sources:$('#sourceList'),
@@ -15,8 +15,6 @@ const UI={
   terminalStatus:$('#terminalStatus'),playback:$('#playbackInfo'),toggle:$('#motionToggle')
 };
 const HEADER={'X-Exodia-Client':'exodia-dashboard'};
-const motionStage={setState(){},setPaused(){},initialize(){return Promise.resolve(false)},ready:false};
-window.__exodiaMotionDebug=()=>motionStage.snapshot();
 const MOODS=[
  ['idle','Idle','Ready for your command','✧'],['sleeping','Sleeping','Resting between missions','☾'],
  ['processing','Processing','Connecting the task systems','⚙'],['waiting','Waiting','Awaiting the model response','◌'],
