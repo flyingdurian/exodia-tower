@@ -71,7 +71,7 @@ def test_gemini_automatic_types_submits_waits_and_returns_new_reply(tmp_path):
         metrics=output['timings']
         assert metrics['total_s']>=metrics['first_text_s']
         assert metrics['typing_method']=='keyboard_type'
-        assert states==["opening","typing","submitting","waiting_for_reply"]
+        assert states==["opening","queued","typing","submitting","waiting_for_reply"]
         page=factory.contexts[0].pages[0]
         assert page.typed=="Summarize this article"
         assert page.sent==1
