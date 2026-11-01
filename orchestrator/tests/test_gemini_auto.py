@@ -170,3 +170,33 @@ def test_large_prompt_uses_faster_input_event_instead_of_character_events(tmp_pa
         assert output['timings']['typing_method']=='insert_text'
         await manager.close()
     asyncio.run(run())
+
+def test_actual_gemini_wrapper_handles_image_first_without_markdown(tmp_path):
+    """The actual send_prompt_robust entrypoint must not require text output."""
+    import base64
+    class ImagePage(FakePage):
+        def __init__(self):
+            super().__init__();self.results=['Old answer'];self.media_reads=0
+        async def evaluate(self,script,arg=None):
+            if arg is not None:
+                return {'base64':base64.b64encode(b'\\x89PNG\\r\\n\\x1a\\nIMAGE').decode('ascii'),
+                        'type':'image/png'}
+            self.media_reads+=1
+            return [{'kind':'image','src':'blob:gemini-image-123','width':512,'height':512}] if self.sent else []
+    class ImageFactory(Factory):
+        async def launch_persistent_context(self,**kwargs):
+            self.arguments.append(kwargs)
+            context=Context();context.pages=[ImagePage()]
+            self.contexts.append(context)
+            return context
+    async def run():
+        factory=ImageFactory()
+        manager=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        result=await manager.send_prompt_robust('gemini','Generate an image of a red bicycle')
+        assert result['answer']
+        assert result['media'][0]['kind']=='image'
+        assert result['media'][0]['url'].startswith('/artifacts/')
+        assert (tmp_path/'app_data'/'artifacts').exists()
+        assert result['timings']['total_s']>=1.5
+        await manager.close()
+    asyncio.run(run())
