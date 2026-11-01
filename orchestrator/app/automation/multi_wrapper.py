@@ -69,7 +69,9 @@ class MultiWebSessionManager:
     def snapshot(self):
         return {name:{"status":self._status[name], "url":spec.url,
                       "profile":f"session_data/{name}", "pending_prompt":name in self._pending,
-                      "mode":"automatic_text" if name=="gemini" else "operator_assisted",
+                      "mode":("automatic_text" if name=="gemini" else
+                              "automatic_submit_manual_result" if name=="chatgpt" else
+                              "operator_assisted"),
                       "error":self._last_error[name],
                       "last_timings":self._last_timings[name],
                       "actual_user_agent":self._browser_ua[name],

@@ -53,7 +53,20 @@
 <div class="response-screen"><div class="terminal-rail"></div><div id="responsePrompt" class="request-bubble" hidden></div>
 <div class="answer-frame" id="answerFrame" aria-live="polite"><div class="welcome"><div class="welcome-glyph">✦</div><b>Awaiting your first command</b><p>Select a model and submit a task. Albedo will display the result here.</p></div></div>
 <div class="media-gallery" id="mediaGallery" aria-label="Generated media"></div>
-<div class="source-list" id="sourceList"></div></div>
+<div class="source-list" id="sourceList"></div>
+<section class="chatgpt-handoff" id="chatgptHandoff" hidden>
+  <div class="handoff-title">CHATGPT · SUBMISSION SENT</div>
+  <p>Review the result in your open ChatGPT task tab. To deliver it through the selected AI companion, supply the response below. This version does not automatically extract consumer ChatGPT output.</p>
+  <label for="chatgptResultText">RESPONSE TO DELIVER</label>
+  <textarea id="chatgptResultText" maxlength="100000" rows="5" placeholder="Copy the answer from the ChatGPT tab into Exodia…"></textarea>
+  <label for="chatgptArtifact">OPTIONAL DOWNLOADED IMAGE · PNG, JPEG OR WEBP · MAX 8 MIB</label>
+  <input type="file" id="chatgptArtifact" accept="image/png,image/jpeg,image/webp"/>
+  <div class="handoff-actions">
+    <button type="button" id="chatgptImport" class="send">Deliver through companion</button>
+    <button type="button" id="chatgptCancel" class="outline-button">Cancel task</button>
+  </div>
+  <div id="chatgptHandoffStatus" role="status" class="handoff-info">The task browser tab remains open until this task is completed or cancelled.</div>
+</section></div>
 <div class="response-bottom"><span id="answerProvider">NO MODEL RESULT</span><span id="answerTiming"></span></div>
 </div>
 <div class="quick-tools card"><span class="section-kicker">QUICK MISSIONS</span><div class="mission-list">
@@ -66,7 +79,7 @@
 <form id="dispatch" class="task-form"><label for="model">MODEL SELECTION</label><select id="model">
 <option value="gemini">Gemini · automatic browser</option><option value="ollama">Ollama · automatic local</option>
 <option value="custom_web">Web browser A · configured</option><option value="web_slot_2">Web browser B · configured</option><option value="web_slot_3">Web browser C · configured</option>
-<option value="chatgpt">ChatGPT · supervised</option><option value="deepseek">DeepSeek · supervised</option>
+<option value="chatgpt">ChatGPT · auto send / manual result</option><option value="deepseek">DeepSeek · supervised</option>
 </select>
 <label for="companion">ASSIGNED AGENT</label><select id="companion" aria-label="Assigned companion"></select>
 <label for="prompt">YOUR COMMAND</label><textarea id="prompt" maxlength="12000" required placeholder="Ask Albedo anything…"></textarea>
@@ -76,7 +89,7 @@
 <div class="feedback" id="feedback" role="status"></div>
 </section>
 <section class="card logs"><div class="aside-heading"><span class="section-kicker">MISSION HISTORY</span><button type="button" class="text-button" id="refreshTasks">Refresh</button></div><div class="task-list" id="taskList"><div class="muted">No tasks yet.</div></div></section>
-<section class="card model-status"><div class="aside-heading"><span class="section-kicker">ENGINE STATUS</span><span class="live-dot"></span></div><div id="providerStatus" class="status-list">Checking providers…</div><button type="button" id="openWebSessions" class="outline-button">Open browser sessions</button></section>
+<section class="card model-status"><div class="aside-heading"><span class="section-kicker">ENGINE STATUS</span><span class="live-dot"></span></div><div id="providerStatus" class="status-list">Checking providers…</div><button type="button" id="openChatgptSession" class="outline-button">Open ChatGPT browser</button><button type="button" id="openWebSessions" class="outline-button">Open all browser sessions</button></section>
 <section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
 </aside>
 </main>

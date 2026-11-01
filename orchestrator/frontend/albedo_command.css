@@ -67,3 +67,18 @@
 .response.response-handoff{animation:handoffGlow 1.1s ease-in-out 3;border-color:#9be8dd}
 @keyframes handoffGlow{0%,100%{box-shadow:0 0 15px #47dabc30}50%{box-shadow:0 0 32px #71eac6aa,inset 0 0 14px #35bdac39}}
 @media(prefers-reduced-motion:reduce){.response.response-handoff{animation:none;border-color:#7bc9be}}
+
+/* ChatGPT task-scoped operator handoff: visible only after automatic Send. */
+.chatgpt-handoff{border:1px solid #7e8dcb;border-radius:12px;background:linear-gradient(145deg,#111c3d,#182750);padding:15px;margin:12px 14px 17px}
+.chatgpt-handoff[hidden]{display:none}
+.handoff-title{font-size:12px;font-weight:850;color:#cbe9ff;letter-spacing:.13em}
+.chatgpt-handoff p{color:#bbceef;font-size:12px;line-height:1.55;margin:9px 0 14px}
+.chatgpt-handoff label{display:block;color:#a7c4fc;font-size:10px;letter-spacing:.08em;margin-bottom:6px}
+.chatgpt-handoff textarea{width:100%;min-height:115px;max-height:240px;resize:vertical;background:#07132c;border:1px solid #5b75ae;border-radius:8px;color:#ebf4ff;padding:10px;font:inherit;font-size:13px}
+.handoff-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.handoff-actions .send{font-size:12px;flex:1;min-width:180px}
+.handoff-actions .outline-button{width:auto;padding:10px 13px}
+.handoff-info{font-size:11px;color:#96c5e9;margin-top:10px}
+
+.chatgpt-handoff input[type=file]{width:100%;padding:9px;margin:4px 0 10px;background:#0b1c40;border:1px dashed #7894d3;border-radius:8px;color:#b9d4f2;font-size:12px}
+.chatgpt-handoff input[type=file]::file-selector-button{border:1px solid #7a98d7;border-radius:7px;background:#203d74;color:#edfbff;padding:7px 11px;margin-right:10px;cursor:pointer}

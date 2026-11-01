@@ -22,9 +22,10 @@ const MOODS=[
  ['frustration','Frustration','Reassessing the failed route','!'],['happy','Happy success','The answer is ready','✦'],
  ['excited','Excited success','A wonderful result!','✶'],['proud','Proud','Mission successfully delivered','♔']
 ];
-const ACTIVE=new Set(['researching','opening','typing','submitting','running','waiting_for_reply','rendering_media']);
+const ACTIVE=new Set(['researching','opening','queued','cooldown','typing','submitting','running','waiting_for_reply','rendering_media']);
 let state='idle',roster=[],tasks=[],activeTaskId=null,chosenTask=null,explicitPreview=false;
 let stateTimer=null,lastInteraction=Date.now(),lastCompleted=null,requestInFlight=false,videoOk=false;
+let handoffTaskId=null;
 const moodDesc=Object.fromEntries(MOODS.map(m=>[m[0],m[2]]));
 const prettyName=s=>(s||'').replaceAll('_',' ').toUpperCase();
 function moodForTask(task){
@@ -134,6 +135,16 @@ function getStock(answer,question){
 function renderAnswer(task){
  UI.answer.replaceChildren();
  UI.promptBubble.hidden=!task;UI.promptBubble.textContent=task?.prompt||'';
+ const supervised=task?.provider==='chatgpt'&&task?.state==='awaiting_operator';
+ const handoff=$('#chatgptHandoff');
+ if(handoff){
+   handoff.hidden=!supervised;
+   if(supervised&&handoffTaskId!==task.id){
+     handoffTaskId=task.id;
+     $('#chatgptResultText').value='';
+     $('#chatgptHandoffStatus').textContent='ChatGPT prompt submitted. Import the response when it is ready.';
+   }
+ }
  // All media is rendered once by the dedicated media-gallery module.
  UI.sources.replaceChildren();
  const state=task?.state||'idle';
@@ -145,7 +156,16 @@ function renderAnswer(task){
   const wrap=element('div','welcome');wrap.append(element('div','welcome-glyph','✦'),element('b','','Awaiting your first command'),element('p','','Choose a model and send a task. Albedo will display the result here.'));UI.answer.append(wrap);return;
  }
  if(task.state==='failed'){const w=element('div','stat-card');w.append(element('div','stat-name','MISSION FAILED'),element('p','',task.error||'The provider did not finish the task. Review the diagnostics.'));UI.answer.append(w);UI.diagnostic.textContent=task.error||'Task failed';return;}
- if(task.state!=='answered'||!task.answer){const w=element('div','welcome');w.append(element('div','welcome-glyph','✧'),element('b','',prettyName(task.state)),element('p','','Albedo is '+(moodDesc[moodForTask(task)]||'working')+'. Your response will appear here automatically.'));UI.answer.append(w);return;}
+ if(task.state!=='answered'||!task.answer){
+  const w=element('div','welcome');
+  const waiting=task.provider==='chatgpt'&&task.state==='awaiting_operator';
+  w.append(element('div','welcome-glyph',waiting?'◉':'✧'),
+    element('b','',waiting?'ChatGPT prompt submitted':prettyName(task.state)),
+    element('p','',waiting?
+      'The ChatGPT tab is open for review. Deliver the response using the handoff panel below; automatic output extraction is not enabled.':
+      'Your companion is '+(moodDesc[moodForTask(task)]||'working')+'.'));
+  UI.answer.append(w);return;
+ }
  const answer=String(task.answer);
  const data=getStock(answer,task.prompt)||getWeather(answer,task.prompt);
  if(data){
@@ -224,12 +244,55 @@ $('#dispatch').addEventListener('submit',async event=>{
   explicitPreview=false;lastCompleted=null;lastInteraction=Date.now();
   inform('Task dispatched to '+(roster.find(a=>a.id===payload.agent_id)?.name||payload.agent_id)+'.');
   await loadTasks();selectTask(task.id);
-  if(['chatgpt','deepseek'].includes(task.provider))inform('This provider requires supervised preparation. Open Advanced operations to continue.');
+  if(task.provider==='chatgpt')inform('ChatGPT browser prompt is being submitted. Review the browser tab after it is sent.');
+  else if(task.provider==='deepseek')inform('DeepSeek requires supervised prompt preparation in Advanced operations.');
  }catch(e){inform(e.message,true);UI.diagnostic.textContent=e.message;}
  finally{requestInFlight=false;send.disabled=false;}
 });
 document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{UI.prompt.value=b.dataset.prompt;UI.prompt.focus();lastInteraction=Date.now();}));
 $('#refreshTasks').addEventListener('click',()=>loadTasks().catch(e=>inform(e.message,true)));
+$('#openChatgptSession').addEventListener('click',async()=>{
+ try{
+   await api('/api/web/sessions/chatgpt/start',{method:'POST'});
+   inform('ChatGPT browser is open. Complete sign-in manually if prompted.');
+ }catch(e){inform(e.message,true);}
+});
+$('#chatgptImport').addEventListener('click',async()=>{
+ const task=tasks.find(x=>x.id===activeTaskId);
+ if(!task||task.provider!=='chatgpt'||task.state!=='awaiting_operator')return;
+ const file=$('#chatgptArtifact').files?.[0];
+ const answer=$('#chatgptResultText').value.trim()||(file?'Generated image attached by operator.':'');
+ if(!answer){$('#chatgptHandoffStatus').textContent='Enter a ChatGPT response or choose a downloaded image.';return;}
+ if(file&&(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>8*1024*1024)){
+   $('#chatgptHandoffStatus').textContent='Use PNG, JPEG or WebP under 8 MiB.';return;
+ }
+ const btn=$('#chatgptImport');btn.disabled=true;
+ try{
+   await post('/api/command/tasks/'+encodeURIComponent(task.id)+'/response',{answer});
+   let attachmentError=null;
+   if(file){
+     try{
+       await api('/api/command/tasks/'+encodeURIComponent(task.id)+'/artifact',{
+          method:'POST',headers:{'Content-Type':file.type},body:file});
+     }catch(error){attachmentError=error.message;}
+   }
+   inform(attachmentError?'ChatGPT text delivered; image upload failed: '+attachmentError:
+     'ChatGPT response delivered through the assigned companion.',Boolean(attachmentError));
+   handoffTaskId=null;
+   $('#chatgptArtifact').value='';
+   await loadTasks();selectTask(task.id);
+ }catch(e){$('#chatgptHandoffStatus').textContent=e.message;}
+ finally{btn.disabled=false;}
+});
+$('#chatgptCancel').addEventListener('click',async()=>{
+ const task=tasks.find(x=>x.id===activeTaskId);
+ if(!task||task.provider!=='chatgpt'||task.state!=='awaiting_operator')return;
+ try{
+   await api('/api/command/tasks/'+encodeURIComponent(task.id)+'/cancel',{method:'POST'});
+   inform('ChatGPT task cancelled; its temporary tab has been closed.');
+   await loadTasks();selectTask(task.id);
+ }catch(e){$('#chatgptHandoffStatus').textContent=e.message;}
+});
 $('#openWebSessions').addEventListener('click',async()=>{
  try{await api('/api/web/sessions/start',{method:'POST'});inform('Browser workspaces opened; sign in if the provider requires it.');}
  catch(e){inform(e.message,true);}

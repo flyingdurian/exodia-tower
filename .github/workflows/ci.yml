@@ -28,7 +28,7 @@ jobs:
       - run: node --check orchestrator/frontend/albedo_motion.mjs
       - run: node --test orchestrator/tests/albedo_motion.test.mjs
       - run: python -m playwright install --with-deps chromium
-      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py -q
+      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py -q
       - uses: actions/upload-artifact@v4
         if: always()
         with:
