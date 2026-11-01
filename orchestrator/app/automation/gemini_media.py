@@ -112,6 +112,7 @@ async def store_media(page,candidates:list[dict],destination:Path,*,max_bytes:in
     destination.mkdir(parents=True,exist_ok=True)
     records=[]
     seen_sources=set()
+    seen_hashes=set()
     for candidate in candidates[:4]:
         if candidate.get('src') in seen_sources:continue
         seen_sources.add(candidate.get('src'))
@@ -127,12 +128,16 @@ async def store_media(page,candidates:list[dict],destination:Path,*,max_bytes:in
             data=base64.b64decode(response['base64'],validate=True)
             if len(data)>max_bytes:raise MediaCaptureError('Media too large')
             ext=validate_bytes(data,kind)
+            digest=hashlib.sha256(data).hexdigest()
+            # Distinct Gemini media URLs can resolve to identical file bytes.
+            if digest in seen_hashes:continue
             name=secrets.token_hex(16)+ext
             target=destination/name
             target.write_bytes(data)
+            seen_hashes.add(digest)
             records.append({'kind':kind,'url':'/artifacts/'+name,
                             'bytes':len(data),
-                            'sha256':hashlib.sha256(data).hexdigest(),
+                            'sha256':digest,
                             'width':candidate.get('width') or None,
                             'height':candidate.get('height') or None})
         except Exception as exc:
@@ -141,20 +146,34 @@ async def store_media(page,candidates:list[dict],destination:Path,*,max_bytes:in
             # least the visible image as a marked preview, without inventing a
             # full-quality download.
             if kind=='image':
+                # The last page image is not necessarily the generated result.
+                # Locator queries also traverse Playwright's open shadow roots.
+                target=destination/(secrets.token_hex(16)+'.png')
                 try:
-                    target=destination/(secrets.token_hex(16)+'.png')
-                    locator=page.locator(
-                        'model-response img, .model-response img, '
-                        'generated-image img, image-generation img, '
-                        '[data-test-id*="generated-image"] img').last
-                    await locator.screenshot(path=str(target),timeout=8000)
+                    images=page.locator('img')
+                    index=await images.evaluate_all(
+                        """(elements, source) => elements.findIndex(el =>
+                          el.currentSrc === source || el.getAttribute('src') === source)""",
+                        src)
+                    if index<0:
+                        raise MediaCaptureError('Generated image missing from task tab')
+                    await images.nth(index).screenshot(path=str(target),timeout=8000)
                     raw=target.read_bytes()
-                    if validate_bytes(raw,'image')=='.png':
-                        records.append({'kind':'image','url':'/artifacts/'+target.name,
-                                        'bytes':len(raw),'quality':'preview',
-                                        'reason':type(exc).__name__})
+                    if len(raw)>max_bytes:
+                        raise MediaCaptureError('Media preview too large')
+                    validate_bytes(raw,'image')
+                    digest=hashlib.sha256(raw).hexdigest()
+                    if digest in seen_hashes:
+                        target.unlink(missing_ok=True)
                         continue
-                except Exception:pass
+                    seen_hashes.add(digest)
+                    records.append({'kind':'image','url':'/artifacts/'+target.name,
+                                    'bytes':len(raw),'sha256':digest,
+                                    'quality':'preview',
+                                    'reason':type(exc).__name__})
+                    continue
+                except Exception:
+                    target.unlink(missing_ok=True)
             records.append({'kind':kind,'status':'capture_failed',
                             'reason':type(exc).__name__})
     return records

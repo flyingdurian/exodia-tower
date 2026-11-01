@@ -55,3 +55,56 @@ def test_old_media_is_not_reported_as_new():
     stop_selector='#stop',baseline=p.media,baseline_count=1,baseline_text='old',
     timeout=.06,poll=.005,stable=.01)
  asyncio.run(run())
+
+
+def test_distinct_urls_with_same_media_bytes_are_saved_once(tmp_path):
+ async def run():
+  page=FakePage()
+  candidates=[
+   {'kind':'image','src':'blob:first','width':512,'height':512},
+   {'kind':'image','src':'blob:second','width':512,'height':512},
+  ]
+  stored=await store_media(page,candidates,tmp_path)
+  assert len(stored)==1
+  assert len(list(tmp_path.glob('*.png')))==1
+  assert stored[0]['sha256']
+ asyncio.run(run())
+
+def test_fallback_screenshots_exact_generated_source_not_last_image(tmp_path):
+ class ImageNode:
+  def __init__(self,source):self.source=source
+  async def screenshot(self,*,path,timeout):
+   from pathlib import Path
+   Path(path).write_bytes(bytes.fromhex('89504e470d0a1a0a')+self.source.encode())
+ class ImageNodes:
+  def __init__(self):self.sources=['blob:old','blob:new','blob:unrelated-last']
+  async def evaluate_all(self,script,source):
+   return self.sources.index(source) if source in self.sources else -1
+  def nth(self,index):return ImageNode(self.sources[index])
+ class ScreenshotPage:
+  def locator(self,selector):
+   assert selector=='img'
+   return ImageNodes()
+  async def evaluate(self,script,arg=None):
+   raise RuntimeError('CORS denied generated image fetch')
+ async def run():
+  stored=await store_media(ScreenshotPage(),
+   [{'kind':'image','src':'blob:new','width':512,'height':512}],tmp_path)
+  assert len(stored)==1 and stored[0]['quality']=='preview'
+  assert (tmp_path/stored[0]['url'].split('/')[-1]).read_bytes().endswith(b'blob:new')
+  assert len(list(tmp_path.iterdir()))==1
+ asyncio.run(run())
+
+def test_screenshot_fallback_refuses_unmatched_image(tmp_path):
+ class MissingNodes:
+  async def evaluate_all(self,script,source):return -1
+  def nth(self,index):raise AssertionError('must not screenshot unrelated image')
+ class MissingPage:
+  def locator(self,selector):return MissingNodes()
+  async def evaluate(self,script,arg=None):raise RuntimeError('CORS blocked')
+ async def run():
+  records=await store_media(MissingPage(),
+   [{'kind':'image','src':'blob:missing'}],tmp_path)
+  assert records==[{'kind':'image','status':'capture_failed','reason':'RuntimeError'}]
+  assert list(tmp_path.iterdir())==[]
+ asyncio.run(run())
