@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Albedo · A2 Visual Review</title><style>
+:root{font:14px/1.5 system-ui;color:#efeaff;background:#090f27}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 30% 0,#333468,#090f27 65%)}main{max-width:1350px;margin:auto;padding:20px}h1{font:500 44px Georgia,serif}.banner,.panel{border:1px solid #777fc8;border-radius:13px;background:#17204a;padding:14px;margin:14px 0}.banner{border-color:#bc83a4;color:#ffd3d3}label{display:inline-block;padding:10px;margin:6px;background:#232f59;border-radius:8px;cursor:pointer}input[type=file]{display:block}button{padding:9px 12px;margin:5px;color:#d9fcf7;background:#253d60;border:1px solid #8b94c5;border-radius:8px;cursor:pointer}.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px}.image{height:580px;max-height:70vh;display:grid;place-items:center;background:#090f24;border:1px solid #656ead;border-radius:12px;position:relative;overflow:hidden}.image img{width:100%;height:100%;object-fit:contain}.image .overlay{position:absolute;inset:0}.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:8px}.checks label{margin:0;padding:10px}.status{font-size:12px;color:#c4d1ed}@media(max-width:770px){.compare{grid-template-columns:1fr}.image{height:360px}}</style></head><body><main>
+<p>EXODIA TOWER · ALBEDO · A2 VISUAL MODEL GATE</p><h1>Identity Before Animation</h1><div class="banner"><strong>NOT APPROVED FOR PRODUCTION.</strong> The old technical mannequin is excluded. Inspect genuine, unanimated, five-angle 3D model renders before any rig integration.</div>
+<div class="panel"><h3>Upload for local inspection</h3><label>Approved full-body concept <input id="ref" type="file" accept="image/png"></label><label>Five independent model renders <input id="shots" type="file" multiple accept="image/png"></label><p class="status" id="status">Nothing uploaded. Files remain in the browser; no server upload.</p><div id="angles"></div></div>
+<div class="compare"><div class="panel"><h3>Owner-approved illustration</h3><div class="image" id="approved">Original 3D identity reference not loaded</div></div><div class="panel"><h3>Actual 3D model — unanimated</h3><div class="image" id="candidate">No candidate view</div></div></div>
+<div class="panel"><label for="opacity">Front view overlay (alignment only)</label><input id="opacity" type="range" min="0" max="100" value="0"><output id="op">0%</output><p>Opacity does not verify likeness. The approved turnaround source has only three images; the model must provide all five camera views.</p></div>
+<div class="panel"><h3>Manual identity and costume inspection</h3><div id="checks" class="checks"></div><p class="status" id="decision">No visual acceptance is implied by these controls.</p></div>
+<script type="module">
+const views=['front','front_angle','side','back_angle','back'],criteria=['Face identity','Silver-lavender hair','Violet eyes','Flower and gold ornament','Collar crystal','White/lilac/black/gold outfit','Draped cloth panels','Boots','Anatomical proportions','Side/back consistency','Silhouette and face readability','No cropped sprite surfaces'];
+const $$=id=>document.getElementById(id),files=new Map();let ref=null,angle='front',urlRefs=[];
+function objectUrl(f){const u=URL.createObjectURL(f);urlRefs.push(u);return u}
+function img(file){const im=new Image();im.alt=file.name;im.src=objectUrl(file);return im}
+function update(){
+ const a=$$('approved'),b=$$('candidate');a.replaceChildren();b.replaceChildren();
+ if(ref)a.append(img(ref));else a.textContent='Load the approved full-body painting';
+ const shot=files.get(angle);if(shot)b.append(img(shot));else b.textContent='Missing '+angle+' render';
+ const active=angle==='front'&&ref&&shot;$$('opacity').disabled=!active;$$('opacity').value=0;$$('op').textContent='0%';
+ $$('status').textContent=[...files.keys()].length+'/5 distinct angle filenames loaded · visual likeness still requires owner review';
+ $$('decision').textContent=$$('checks').querySelectorAll('input:checked').length+'/'+criteria.length+' inspected · NOT PRODUCTION APPROVED';
+ for(const btn of $$('angles').children)btn.setAttribute('aria-pressed',String(btn.dataset.view===angle))
+}
+for(const v of views){const b=document.createElement('button');b.type='button';b.dataset.view=v;b.textContent=v.replaceAll('_',' ');b.onclick=()=>{angle=v;update()};$$('angles').append(b)}
+for(const c of criteria){const lab=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.onchange=update;lab.append(input,' '+c);$$('checks').append(lab)}
+$$('ref').onchange=e=>{ref=e.target.files?.[0]||null;update()};
+$$('shots').onchange=e=>{files.clear();for(const f of e.target.files||[]){const stem=f.name.toLowerCase().replace(/\.png$/,'');if(views.includes(stem))files.set(stem,f)}update()};
+$$('opacity').oninput=e=>{const dest=$$('candidate');dest.querySelector('.overlay')?.remove();const v=Number(e.target.value);$$('op').textContent=v+'%';if(v&&ref&&files.has('front')){const i=img(ref);i.className='overlay';i.style.opacity=String(v/100);dest.append(i)}};
+window.addEventListener('pagehide',()=>urlRefs.forEach(URL.revokeObjectURL));update();
+</script></div></main></body></html>

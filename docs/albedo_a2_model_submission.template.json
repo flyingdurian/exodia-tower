@@ -1,0 +1,33 @@
+{
+  "schema": "exodia.albedo-lookdev/v1",
+  "character_id": "kiko",
+  "candidate_kind": "full_body_3d",
+  "visual_review_state": "pending",
+  "reference_sha256": {
+    "mission": "bfc233740851980021ea0b479a1b4254574f6ca614e3a1e9cbb7bd66c03dc409",
+    "front": "ddf1cc58e770d7cc99ffc3b2bd5a04ec77f720b05b8c96baf214090c899fb082",
+    "turnaround": "787fa6009d504083a927c81c97dec1b01f3add6e1a6f5dacd7516f4789abf480"
+  },
+  "model": "albedo.glb",
+  "review_views": {
+    "front": "front.png",
+    "front_angle": "front_angle.png",
+    "side": "side.png",
+    "back_angle": "back_angle.png",
+    "back": "back.png"
+  },
+  "art_review": {
+    "face_identity": "pending",
+    "silver_lavender_hair": "pending",
+    "violet_eyes": "pending",
+    "flower_and_gold_ornament": "pending",
+    "crystal_and_collar": "pending",
+    "white_lilac_black_gold_costume": "pending",
+    "draped_panels": "pending",
+    "boots": "pending",
+    "anatomical_proportions": "pending",
+    "side_and_back_consistency": "pending",
+    "silhouette_and_facial_readability": "pending",
+    "no_cropped_2d_surfaces": "pending"
+  }
+}
