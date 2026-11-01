@@ -23,7 +23,7 @@ MEDIA_SCRIPT=r"""() => {
     // alone misses generated content living inside open shadow roots.
     const nodes=root.querySelectorAll('*');
     for(const el of nodes){
-      const admitted=inside || (el.matches&&el.matches(SELECTOR));
+      const admitted=inside || (el.matches&&el.matches(SELECTOR)) || (el.closest&&el.closest(SELECTOR));
       if(admitted && (el.tagName==='IMG'||el.tagName==='VIDEO')){
         const bounds=el.getBoundingClientRect();
         const width=el.naturalWidth||el.videoWidth||bounds.width;
