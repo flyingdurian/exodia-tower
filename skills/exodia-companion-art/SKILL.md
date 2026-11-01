@@ -47,3 +47,7 @@ Previously generated pink-haired 20-emotion composite boards were exploratory ST
 
 ## References
 `docs/COMPANION_ART_BIBLE.md`; `docs/companion_art_contract.json`; `docs/ANIMATION_CONTRACT.md`; `docs/A1_ART_PRODUCTION_GATE.md`; `docs/ART_PRODUCTION_A1_3_2.md`.
+
+## 2026-11-01 — High-definition 2D Wave 1 staging
+
+Four independent 1K+ illustrations (Happy, Thinking, Serious, Typing/Working) are supplied via a separate downloadable artifact package and require visual acceptance. The existing 4-direction deck stills remain small-scale navigation prototypes, not completed walk animation. The fail-closed installer in `orchestrator/tools/import_albedo_wave1.py` places the approved-source review files only into `frontend/companions/review/kiko_wave1`. Do not promote unreviewed art to the live stage or rest of fleet. See `docs/ALBEDO_2D_HD_WAVE1.md`.
