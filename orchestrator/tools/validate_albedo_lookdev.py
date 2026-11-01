@@ -29,7 +29,9 @@ def inspect_glb(p):
     return {'meshes':len(meshes),'materials':len(g.get('materials',[])),
             'textures':len(g.get('textures',[])),
             'primitives':sum(len(m.get('primitives',[])) for m in meshes),
-            'engineering_proxy':g.get('asset',{}).get('extras',{}).get('production_ready') is False}
+            'engineering_proxy':(g.get('asset',{}).get('extras',{}).get('production_ready') is False or
+            g.get('extras',{}).get('production_ready') is False or
+            'engineering proxy' in g.get('asset',{}).get('generator','').lower())}
 def inspect_png(p):
     with p.open('rb') as f: hdr=f.read(24)
     if len(hdr)<24 or hdr[:8]!=b'\x89PNG\r\n\x1a\n' or hdr[12:16]!=b'IHDR':
