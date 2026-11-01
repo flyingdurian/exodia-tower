@@ -200,3 +200,40 @@ def test_actual_gemini_wrapper_handles_image_first_without_markdown(tmp_path):
         assert result['timings']['total_s']>=1.5
         await manager.close()
     asyncio.run(run())
+
+def test_two_simultaneous_gemini_jobs_use_separate_tabs_and_close(tmp_path):
+    class DisposablePage(FakePage):
+        def __init__(self):
+            super().__init__()
+            self.closed=False
+        async def close(self):self.closed=True
+    class TabContext(Context):
+        def __init__(self):
+            super().__init__()
+            self.jobs=[]
+        async def new_page(self):
+            page=DisposablePage()
+            self.jobs.append(page)
+            return page
+    class TabFactory(Factory):
+        async def launch_persistent_context(self,**kwargs):
+            self.arguments.append(kwargs)
+            context=TabContext()
+            self.contexts.append(context)
+            return context
+    async def run():
+        factory=TabFactory()
+        manager=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        outputs=await asyncio.gather(
+            manager.send_prompt_robust('gemini','Question A'),
+            manager.send_prompt_robust('gemini','Question B'),
+        )
+        ctx=factory.contexts[0]
+        assert len(ctx.jobs)==2
+        assert [page.typed for page in ctx.jobs]==['Question A','Question B']
+        assert all(page.sent==1 and page.closed for page in ctx.jobs)
+        assert all(result['answer']=='Streaming Gemini result [1].' for result in outputs)
+        assert manager.snapshot()['gemini']['running_tasks']==0
+        assert ctx.closed is False
+        await manager.close()
+    asyncio.run(run())
