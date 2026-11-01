@@ -1,0 +1,96 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Albedo · 3D Skeletal Rig A1 (Engineering QA)</title>
+<style>
+:root{color-scheme:dark;font:14px/1.5 system-ui;color:#ede9ff;background:#060c21}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse 55vw 55vh at 50% 35%,#27225d,#090e2e 70%,#060c21)}main{max-width:1440px;margin:auto;padding:25px}h1{font:500 clamp(30px,5vw,47px) Georgia,serif;letter-spacing:.1em;margin:4px 0}.lead{color:#c3c7ed;max-width:1020px}.tag{font-weight:700;font-size:11px;letter-spacing:.17em;color:#a6e7dc}.panel{background:#12183e;border:1px solid #6c6dc1;border-radius:16px;padding:16px;box-shadow:0 18px 40px #05082070}.workbench{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,340px);gap:16px;margin-top:20px}.viewport{position:relative;min-height:650px;overflow:hidden;border-radius:12px;background:#070b25}.viewport canvas{display:block;width:100%;height:650px}.overlay{position:absolute;left:16px;top:15px;font-size:12px;color:#cef8ef;pointer-events:none}.caption{position:absolute;bottom:12px;left:15px;font-size:11px;color:#e3cb9d;pointer-events:none}.controls{display:flex;flex-direction:column;gap:16px}label{display:block;color:#afbfe8;font-size:12px;margin-bottom:7px}select,input,button{width:100%;padding:10px 12px;color:#edf1ff;background:#202956;border:1px solid #696fbe;border-radius:9px}button{cursor:pointer}button:hover{border-color:#82fff0}.views{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.views button{padding:8px 5px;font-size:11px}.views button[aria-pressed=true]{border-color:#64edc8;background:#244b56}.row{display:flex;gap:8px;align-items:center}.row input[type=checkbox]{width:auto}.reference{min-height:175px;background:linear-gradient(#25254c,#0c153a);border:1px dashed #8888b3;border-radius:10px;display:grid;place-items:center;overflow:hidden}.reference img{max-height:250px;max-width:100%;object-fit:contain}.reference small{color:#9da9d2;padding:16px;text-align:center}.info{color:#bdcbef;font-size:12px;line-height:1.7}.info strong{color:white}.warn{color:#ffd3ab}.status{color:#9ff6dd}.rowbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}.source{color:#bcd4ed}.hint{font-size:11px;color:#9aadd3}.sr-only{position:absolute;left:-9999px}@media(max-width:850px){.workbench{grid-template-columns:1fr}.viewport,.viewport canvas{height:490px;min-height:490px}main{padding:12px}}
+</style></head><body><main>
+<div class="rowbar"><a class="source" href="/companion-art-qa">← Albedo Art QA</a><span class="tag">EXODIA TOWER · CHARACTER A1 · DEVELOPMENT ONLY</span></div>
+<h1>Albedo / Skeletal Rig Lab</h1>
+<p class="lead">Live WebGL2 rendering of a <strong>genuinely skinned 3D GLB</strong> with authored joint curves. It is a <strong>technical volume proxy</strong>, not the approved final visual model. The silver-lavender character master must replace this proxy through an actual 3D modeling and skin-weighting pass before production deployment. No crop-based body animation.</p>
+<div class="workbench"><section class="panel"><div class="viewport"><canvas id="canvas" aria-label="Experimental skinned humanoid in three-dimensional animation"></canvas><div class="overlay" id="overlay">Loading weighted GLB…</div><div class="caption">35 BONES · SKIN WEIGHTS · 13 ACTION CLIPS · NO SPRITE MOTION</div></div></section>
+<aside class="panel controls"><section><label for="action">REAL SKELETAL ACTION CLIP</label><select id="action" aria-label="Action"></select></section>
+<section><label>MODEL CAMERA / TURNAROUND</label><div class="views" id="views"><button type="button" data-angle="0" aria-pressed="true">Front</button><button type="button" data-angle="45">Front angle</button><button type="button" data-angle="90">Side</button><button type="button" data-angle="180">Back</button><button type="button" data-angle="225">Back angle</button></div></section>
+<section class="row"><button id="pause" type="button">Pause</button><label for="bones" class="row" style="margin:0;min-width:125px"><input id="bones" type="checkbox" checked> Show joints</label></section>
+<section><label for="speed">Playback speed</label><input id="speed" type="range" min="0.25" max="1.75" step="0.05" value="1"></section>
+<section><label for="ref">APPROVED FULL-BODY MASTER / COMPARISON</label><input id="ref" type="file" accept="image/png,image/webp"><div class="reference" id="reference"><small>Choose the owner-approved Albedo master PNG locally. The art is never uploaded to this rig lab.</small></div></section>
+<div class="info" id="info" role="status">Loading…</div><p class="hint">Disable animation if you prefer reduced motion. This lab is intentionally isolated from live command tasks and provider sessions.</p></aside></div>
+</main>
+<script type="module">
+const canvas=document.querySelector('#canvas'),info=document.querySelector('#info'),overlay=document.querySelector('#overlay');
+const action=document.querySelector('#action'),views=document.querySelector('#views'),speed=document.querySelector('#speed');
+const gl=canvas.getContext('webgl2',{antialias:true,alpha:false});
+const requestedReduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let playing=!requestedReduced, angle=0,clock=0,last=0,loaded=null,showBones=true;
+const ACTIONS=['idle','walk','run','jump','sit','work_computer','typing_working','pointing','explaining','celebrating','stretching','sleeping','waking_up'];
+for(const id of ACTIONS){const o=document.createElement('option');o.value=id;o.textContent=id.replaceAll('_',' ');action.append(o)}
+action.addEventListener('change',()=>{clock=0;overlay.textContent='CLIP · '+action.value.replaceAll('_',' ').toUpperCase()});
+for(const b of views.querySelectorAll('button'))b.onclick=()=>{angle=Number(b.dataset.angle);for(const i of views.querySelectorAll('button'))i.setAttribute('aria-pressed',String(i===b))};
+document.querySelector('#pause').onclick=()=>{playing=!playing;document.querySelector('#pause').textContent=playing?'Pause':'Play'};
+if(requestedReduced)document.querySelector('#pause').textContent='Play';
+document.querySelector('#bones').onchange=e=>showBones=e.target.checked;
+let refUrl;document.querySelector('#ref').onchange=e=>{if(refUrl)URL.revokeObjectURL(refUrl);const file=e.target.files?.[0];if(!file)return;refUrl=URL.createObjectURL(file);const img=new Image();img.src=refUrl;img.alt='Operator-selected reference image';document.querySelector('#reference').replaceChildren(img)};
+const I=()=>new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+function multiply(a,b){const m=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)m[c*4+r]+=a[k*4+r]*b[c*4+k];return m}
+function trs(t,q){const [x,y,z,w]=q,xx=x*x,yy=y*y,zz=z*z,xy=x*y,xz=x*z,yz=y*z,wx=w*x,wy=w*y,wz=w*z;
+ const m=new Float32Array([1-2*(yy+zz),2*(xy+wz),2*(xz-wy),0,2*(xy-wz),1-2*(xx+zz),2*(yz+wx),0,2*(xz+wy),2*(yz-wx),1-2*(xx+yy),0, t[0],t[1],t[2],1]);return m}
+function translation(x,y,z){const m=I();m[12]=x;m[13]=y;m[14]=z;return m}
+function rotateY(deg){const c=Math.cos(deg*Math.PI/180),s=Math.sin(deg*Math.PI/180);return new Float32Array([c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1])}
+function perspective(fov,aspect,near,far){const f=1/Math.tan(fov/2),m=new Float32Array(16);m[0]=f/aspect;m[5]=f;m[10]=(far+near)/(near-far);m[11]=-1;m[14]=2*far*near/(near-far);return m}
+function mixQ(a,b,t){const o=a.map((x,i)=>x+(b[i]-x)*t),len=Math.hypot(...o)||1;return o.map(x=>x/len)}
+function parseGlb(buf){const dv=new DataView(buf);if(dv.getUint32(0,true)!==0x46546c67||dv.getUint32(4,true)!==2)throw Error('Invalid glTF binary');
+ const jlen=dv.getUint32(12,true),js=new TextDecoder().decode(new Uint8Array(buf,20,jlen)),g=JSON.parse(js),binary=20+jlen+8;
+ const typed={5126:Float32Array,5125:Uint32Array,5123:Uint16Array};const counts={SCALAR:1,VEC3:3,VEC4:4,MAT4:16};
+ function accessor(i){const a=g.accessors[i],v=g.bufferViews[a.bufferView],T=typed[a.componentType],c=counts[a.type],o=binary+(v.byteOffset||0)+(a.byteOffset||0);if(!T||v.byteStride)throw Error('Unsupported GLB accessor format');return new T(buf.slice(o,o+a.count*c*T.BYTES_PER_ELEMENT))}
+ return {g,accessor}}
+function shader(type,source){const sh=gl.createShader(type);gl.shaderSource(sh,source);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh));return sh}
+function program(v,f){const pr=gl.createProgram();gl.attachShader(pr,shader(gl.VERTEX_SHADER,v));gl.attachShader(pr,shader(gl.FRAGMENT_SHADER,f));gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(pr));return pr}
+const VS=`#version 300 es
+precision highp float;precision highp int;
+layout(location=0) in vec3 p;layout(location=1) in vec3 n;layout(location=2) in uvec4 j;layout(location=3) in vec4 w;
+uniform mat4 bones[35];uniform mat4 camera;uniform mat4 turn;out vec3 normal;
+void main(){mat4 skin=bones[int(j.x)]*w.x+bones[int(j.y)]*w.y+bones[int(j.z)]*w.z+bones[int(j.w)]*w.w;vec4 posed=skin*vec4(p,1.0);gl_Position=camera*turn*posed;normal=normalize(mat3(turn*skin)*n);}`;
+const FS=`#version 300 es
+precision mediump float;in vec3 normal;uniform vec4 tint;out vec4 outColor;
+void main(){vec3 n=normalize(normal);float key=max(dot(n,normalize(vec3(-0.4,0.8,1.0))),0.0);float fill=max(dot(n,normalize(vec3(0.7,0.3,-1.0))),0.0);outColor=vec4(tint.rgb*(0.52+0.40*key+0.12*fill),1.0);}`;
+const LINESVS=`#version 300 es
+precision highp float;layout(location=0) in vec3 p;uniform mat4 camera;uniform mat4 turn;void main(){gl_Position=camera*turn*vec4(p,1);}`;
+const LINESFS=`#version 300 es
+precision mediump float;out vec4 outColor;void main(){outColor=vec4(0.6,1.0,0.8,1.0);}`;
+function bufferData(target,array,usage=gl.STATIC_DRAW){const b=gl.createBuffer();gl.bindBuffer(target,b);gl.bufferData(target,array,usage);return b}
+function attr(loc,data,size,integer=false){gl.bindBuffer(gl.ARRAY_BUFFER,bufferData(gl.ARRAY_BUFFER,data));if(integer)gl.vertexAttribIPointer(loc,size,gl.UNSIGNED_SHORT,0,0);else gl.vertexAttribPointer(loc,size,gl.FLOAT,false,0,0);gl.enableVertexAttribArray(loc)}
+function setup({g,accessor}){const pr=program(VS,FS),linesPr=program(LINESVS,LINESFS);const root=g.meshes[0].primitives[0].attributes;
+ const vao=gl.createVertexArray();gl.bindVertexArray(vao);attr(0,accessor(root.POSITION),3);attr(1,accessor(root.NORMAL),3);attr(2,accessor(root.JOINTS_0),4,true);attr(3,accessor(root.WEIGHTS_0),4);
+ const draws=g.meshes[0].primitives.map(p=>({buffer:bufferData(gl.ELEMENT_ARRAY_BUFFER,accessor(p.indices)),count:accessor(p.indices).length,material:p.material}));
+ const skin=g.skins[0],bind=accessor(skin.inverseBindMatrices),bonesLen=skin.joints.length;
+ if(bonesLen!==35)throw Error('Wrong skeleton joint count');
+ const anim=new Map(g.animations.map(a=>[a.name,{...a,channels:a.channels.map(c=>{const s=a.samplers[c.sampler];return {node:c.target.node,path:c.target.path,times:accessor(s.input),values:accessor(s.output)}})}]));
+ const linesVAO=gl.createVertexArray();gl.bindVertexArray(linesVAO);const lineBuffer=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,lineBuffer);gl.bufferData(gl.ARRAY_BUFFER,35*2*3*4,gl.DYNAMIC_DRAW);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);gl.enableVertexAttribArray(0);
+ return {pr,linesPr,vao,draws,skin,bind,bonesLen,g,anim,linesVAO,lineBuffer};}
+function pose(o,actionId,t){const {g,anim,skin,bind}=o,clip=anim.get(actionId);if(!clip)throw Error('No action '+actionId);
+ const states=g.nodes.map(n=>({t:n.translation||[0,0,0],q:[0,0,0,1]}));
+ for(const ch of clip.channels){const xs=ch.times,n=ch.path==='rotation'?4:3;let i=0;while(i<xs.length-2&&t>xs[i+1])i++;
+ const a=xs[i],b=xs[i+1],f=Math.max(0,Math.min(1,(t-a)/Math.max(.0001,b-a))),v=ch.values;
+ const s1=Array.from(v.slice(i*n,(i+1)*n)),s2=Array.from(v.slice((i+1)*n,(i+2)*n));
+ states[ch.node][ch.path==='rotation'?'q':'t']=n===4?mixQ(s1,s2,f):s1.map((x,k)=>x+(s2[k]-x)*f);}
+ const worlds=[];const visit=(i,mat)=>{const n=g.nodes[i],local=trs(states[i].t,states[i].q);const world=multiply(mat,local);worlds[i]=world;for(const child of n.children||[])visit(child,world)};
+ for(const root of g.scenes[g.scene].nodes)if(root!==g.nodes.length-1)visit(root,I());
+ const jointMats=new Float32Array(skin.joints.length*16),lines=[];
+ for(let k=0;k<skin.joints.length;k++){const idx=skin.joints[k],inv=new Float32Array(bind.slice(k*16,(k+1)*16));jointMats.set(multiply(worlds[idx],inv),k*16);
+ const parent= g.nodes.findIndex(n=>(n.children||[]).includes(idx));if(parent>=0){const a=worlds[parent],b=worlds[idx];lines.push(a[12],a[13],a[14],b[12],b[13],b[14]);}}
+ return {jointMats,lines:new Float32Array(lines)}}
+function draw(now){if(!gl||!loaded)return;const dt=Math.min(.05,Math.max(0,(now-last)/1000));last=now;if(playing)clock=(clock+dt*Number(speed.value))%1;
+ const width=canvas.clientWidth,height=canvas.clientHeight,dpr=Math.min(devicePixelRatio||1,2);if(canvas.width!==Math.floor(width*dpr)||canvas.height!==Math.floor(height*dpr)){canvas.width=Math.floor(width*dpr);canvas.height=Math.floor(height*dpr);gl.viewport(0,0,canvas.width,canvas.height)}
+ gl.clearColor(.024,.035,.12,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
+ const proj=perspective(Math.PI/3,width/height,.1,100),view=multiply(translation(0,-1.55,-5.9),I()),camera=multiply(proj,view),turn=rotateY(angle);
+ const o=loaded,frame=pose(o,action.value,clock);
+ gl.useProgram(o.pr);gl.uniformMatrix4fv(gl.getUniformLocation(o.pr,'camera'),false,camera);gl.uniformMatrix4fv(gl.getUniformLocation(o.pr,'turn'),false,turn);gl.uniformMatrix4fv(gl.getUniformLocation(o.pr,'bones[0]'),false,frame.jointMats);gl.bindVertexArray(o.vao);
+ for(const d of o.draws){const color=o.g.materials[d.material].pbrMetallicRoughness.baseColorFactor;gl.uniform4fv(gl.getUniformLocation(o.pr,'tint'),color);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,d.buffer);gl.drawElements(gl.TRIANGLES,d.count,gl.UNSIGNED_INT,0)}
+ if(showBones){gl.disable(gl.DEPTH_TEST);gl.useProgram(o.linesPr);gl.uniformMatrix4fv(gl.getUniformLocation(o.linesPr,'camera'),false,camera);gl.uniformMatrix4fv(gl.getUniformLocation(o.linesPr,'turn'),false,turn);gl.bindVertexArray(o.linesVAO);gl.bindBuffer(gl.ARRAY_BUFFER,o.lineBuffer);gl.bufferData(gl.ARRAY_BUFFER,frame.lines,gl.DYNAMIC_DRAW);gl.drawArrays(gl.LINES,0,frame.lines.length/3);gl.enable(gl.DEPTH_TEST)}
+ requestAnimationFrame(draw)}
+(async()=>{try{if(!gl)throw Error('WebGL2 unavailable — open in current Chrome');
+ const r=await fetch('/assets/companions/production/kiko/albedo_rig_proof.glb');if(!r.ok)throw Error('Rig GLB missing. Open /albedo-rig-a1 to generate it.');
+ loaded=setup(parseGlb(await r.arrayBuffer()));
+ overlay.textContent='WEIGHTED GLB ACTIVE';overlay.className='overlay status';
+ info.innerHTML='<strong>35 actual glTF skeleton joints</strong><br>6,972 weighted 3D vertices · 12,800 surface triangles<br>13 playable joint-animated actions<br><span class="warn">Not production art. IK, facial morphs, artist-approved deform weights and cloth physics remain pending.</span>';
+ requestAnimationFrame(draw);
+}catch(e){overlay.textContent='RIG FAILED: '+e.message;info.textContent=e.stack||e.message;document.documentElement.dataset.rigError=e.message;}})();
+</script></body></html>
