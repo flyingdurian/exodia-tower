@@ -58,7 +58,9 @@ def media_intent(prompt:str)->bool:
     return bool(re.search(r'\b(generate|create|draw|make|design|render|produce|illustrate|animate)\b'
                           r'.{0,100}\b(image|picture|photo|artwork|illustration|video|clip|animation)\b'
                           r'|\b(image|video)\b.{0,50}\b(generate|creation)\b',
-                          prompt,re.I|re.S))
+                          prompt,re.I|re.S)
+                or re.search(r'\b(draw|illustrate|paint|render)\s+(?:me\s+)?(?:a|an|the)\b',
+                             prompt,re.I))
 
 def validate_bytes(binary:bytes,kind:str)->str:
     if kind=="image":
