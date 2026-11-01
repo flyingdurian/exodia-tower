@@ -79,7 +79,7 @@ function selectAgentStage(id){
    const showAtlas=id==='kiko'&&atlasAvailable;
    face.hidden=!showAtlas;
    portrait.hidden=showAtlas;
-   if(!showAtlas){portrait.src=info.portrait||'/assets/companions/portraits/kiko.webp';portrait.alt=info.name+' portrait';}
+   if(!showAtlas){portrait.src=info.thumbnail||info.portrait||'/assets/companions/thumbs/kiko.webp';portrait.alt=info.name+' portrait';}
  }
 }
 async function loadAgentRoster(){
