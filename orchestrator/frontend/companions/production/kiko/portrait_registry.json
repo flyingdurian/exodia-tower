@@ -22,7 +22,8 @@
     ],
     "operations_deck_sprite_family": "separate",
     "avoid_pixel_warp": true,
-    "avoid_eye_cross_dissolve": true
+    "avoid_eye_cross_dissolve": true,
+    "animation_loops": "deferred"
   },
   "release": {
     "enabled": false,
@@ -30,7 +31,8 @@
     "verified_by": null,
     "report_sha256": null,
     "approved_registry_sha256": null,
-    "note": "Do not activate until all 33 portraits and three loop families are audited and owner integration signoff is recorded."
+    "note": "Static-only release: animated loops deferred. Do not activate until all 33 native 1536x1920 portraits, image SHA-256 hashes, reviewed anchors and owner approvals pass.",
+    "mode": "static_portraits"
   },
   "states": {
     "neutral": {
