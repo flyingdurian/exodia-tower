@@ -11,3 +11,49 @@ Run locally (with original core-five review PNGs and hash-bound search-region JS
 python orchestrator/tools/audit_portrait_anchors.py --registry path/to/core5_registry.json --search-regions path/to/search_regions.json --asset-root path/to/core5_images --report core5_audit_report.json
 ```
 A nonzero result is an expected hard gate, **not** permission to clone or fabricate states. The actual review package includes proof and hashes for two provisional reanchored images.
+
+## Separate owner approval ledger — fail closed
+
+The CV audit has two distinct evidence classes: pixel measurements (potentially
+unreliable around violet costumes, hair, collars, and shoulders), and independently
+reviewed production acceptance. `search_regions.review_status=owner_confirmed`
+alone cannot unlock the queue; synthetic drawings can otherwise accidentally
+appear compliant.
+
+To be eligible for a five-of-five PASS, each core-state registry entry must have
+unique `original_source_sha256`, `source_kind=independent_standalone_native`,
+and `native_canvas=[1536,1920]`. The caller must supply an independently
+verified approval ledger using `--owner-approval-ledger path/to/ledger.json`.
+Its `states` entries must bind to the actual `image_sha256` and
+`original_source_sha256`, and include a genuine nonempty
+`approval_reference`, `anatomy_pose_review=completed`, and true
+`eye_landmarks_reviewed`, `shoulder_landmarks_reviewed`, and
+`distinct_state_reviewed`. Only record these after actual human inspection
+of exact source files and output pixels. No approval ledger is present at this
+checkpoint. Machine-readable claims alone are not proof of owner consent.
+
+Example command, only **after** authentic review evidence exists:
+
+```bash
+python orchestrator/tools/audit_portrait_anchors.py \
+  --registry path/to/native_core5_registry.json \
+  --search-regions path/to/sha_bound_landmark_regions.json \
+  --asset-root path/to/native_standalone_images \
+  --owner-approval-ledger path/to/authenticated_owner_review.json \
+  --report core5_anchor_audit.json
+```
+
+## Current review-only comparison
+
+`python orchestrator/tools/build_core5_review.py` produces a SHA-verified
+diagnostic from the four committed **prototype previews** and visibly marks
+Pointing absent. The cyan/gold guide lines are desired **target** coordinates,
+NOT measured facial or anatomical landmarks. Its JSON report intentionally
+contains null measurements and false production acceptance. The original
+1122×1402 concept sources (including true Pointing) were not attached to
+this repository checkpoint; even if supplied, they remain concept art, not
+native 1536×1920 production masters. The GitHub portrait-registry workflow
+uploads the diagnostic board and inventory as review artifacts.
+
+The 28-state generation queue must remain blocked until all five real native
+masters and approvals have been independently verified.
