@@ -1,0 +1,114 @@
+{
+  "schema": "exodia.core5-gate1-source-access/v1",
+  "date": "2026-11-02",
+  "status": "BLOCKED_RAW_SOURCE_NOT_MATERIALIZABLE",
+  "library_evidence": {
+    "name": "EXODIA_TOWER_HANDOFF_WITH_CORE5_SOURCES_2026-11-02.zip",
+    "library_path": "/EXODIA Command/EXODIA_TOWER_HANDOFF_WITH_CORE5_SOURCES_2026-11-02.zip",
+    "reported_size_bytes": 13938835,
+    "raw_byte_materialization": "FAILED",
+    "exact_error": "This Project file does not have an authorized raw-byte materialization path."
+  },
+  "verified_original_source_count": 0,
+  "measured_original_count": 0,
+  "measured_corrected_count": 0,
+  "native_production_masters": 0,
+  "owner_approved": 0,
+  "comparison_status": "UNAVAILABLE_PENDING_FIVE_ORIGINALS",
+  "states": {
+    "idle": {
+      "original_filename": "albedo_in_a_celestial_orbital_halo.png",
+      "expected_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "actual_sha256": null,
+      "expected_canvas": [
+        1122,
+        1402
+      ],
+      "actual_canvas": null,
+      "measured_eye_y_px": null,
+      "measured_shoulder_y_px": null,
+      "eye_delta_px": null,
+      "shoulder_delta_px": null,
+      "calibrated_preview_sha256": null,
+      "anatomy_review": "pending_original_file",
+      "status": "BLOCKED_NOT_MEASURED",
+      "production_pass": false
+    },
+    "working": {
+      "original_filename": "albedo_s_celestial_holographic_workstation.png",
+      "expected_sha256": "ec8e85610853591a0a46cdfac97c302b7359851681678ca4c64b179677ab7287",
+      "actual_sha256": null,
+      "expected_canvas": [
+        1122,
+        1402
+      ],
+      "actual_canvas": null,
+      "measured_eye_y_px": null,
+      "measured_shoulder_y_px": null,
+      "eye_delta_px": null,
+      "shoulder_delta_px": null,
+      "calibrated_preview_sha256": null,
+      "anatomy_review": "pending_original_file",
+      "status": "BLOCKED_NOT_MEASURED",
+      "production_pass": false
+    },
+    "explaining": {
+      "original_filename": "albedo_s_luminous_arcane_explanation.png",
+      "expected_sha256": "162c999377522e4c93df8b7d286072d2ca8cc82cfa51b0af64410c174768a134",
+      "actual_sha256": null,
+      "expected_canvas": [
+        1122,
+        1402
+      ],
+      "actual_canvas": null,
+      "measured_eye_y_px": null,
+      "measured_shoulder_y_px": null,
+      "eye_delta_px": null,
+      "shoulder_delta_px": null,
+      "calibrated_preview_sha256": null,
+      "anatomy_review": "pending_original_file",
+      "status": "BLOCKED_NOT_MEASURED",
+      "production_pass": false
+    },
+    "monitoring": {
+      "original_filename": "albedo_in_a_celestial_command_halo.png",
+      "expected_sha256": "4f75754980023b7596f7b0b9ccf9d36e695d936d40fb0efd7233c725d4be8d46",
+      "actual_sha256": null,
+      "expected_canvas": [
+        1122,
+        1402
+      ],
+      "actual_canvas": null,
+      "measured_eye_y_px": null,
+      "measured_shoulder_y_px": null,
+      "eye_delta_px": null,
+      "shoulder_delta_px": null,
+      "calibrated_preview_sha256": null,
+      "anatomy_review": "pending_original_file",
+      "status": "BLOCKED_NOT_MEASURED",
+      "production_pass": false
+    },
+    "pointing": {
+      "original_filename": "albedo_s_celestial_pointing_portrait.png",
+      "expected_sha256": "d55da7f4ca4e93a5d40592e97fe5c04cc6e3d9aaa8cbe8f24c64ee7e08de3b62",
+      "actual_sha256": null,
+      "expected_canvas": [
+        1122,
+        1402
+      ],
+      "actual_canvas": null,
+      "measured_eye_y_px": null,
+      "measured_shoulder_y_px": null,
+      "eye_delta_px": null,
+      "shoulder_delta_px": null,
+      "calibrated_preview_sha256": null,
+      "anatomy_review": "pending_original_file",
+      "status": "BLOCKED_NOT_MEASURED",
+      "production_pass": false
+    }
+  },
+  "production_release_enabled": false,
+  "generated_28_states": 0,
+  "next_action": "Place the handoff ZIP as a directly mounted conversation attachment or copy to local filesystem; then execute recover_core5_sources.py and calibrate_core5_concepts.py with authentic per-image landmark annotations.",
+  "note": "Values are expected handoff provenance, not newly verified pixels. No synthetic measurements, old Idle replacements or false native 1536x1920 art were used."
+}
