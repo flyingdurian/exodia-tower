@@ -1,0 +1,57 @@
+{
+  "schema": "exodia.core5-human-landmarks/v1",
+  "status": "PENDING_INDIVIDUAL_ANATOMICAL_REVIEW",
+  "note": "Coordinates intentionally null. Inspect the exact original image and locate the true visible iris centers and upper anatomical shoulder points. Never enter desired targets as measurements.",
+  "states": {
+    "idle": {
+      "source_file": "albedo_in_a_celestial_orbital_halo.png",
+      "source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "review_status": "pending",
+      "left_eye_xy": null,
+      "right_eye_xy": null,
+      "left_shoulder_xy": null,
+      "right_shoulder_xy": null,
+      "head_width_px": null
+    },
+    "working": {
+      "source_file": "albedo_s_celestial_holographic_workstation.png",
+      "source_sha256": "ec8e85610853591a0a46cdfac97c302b7359851681678ca4c64b179677ab7287",
+      "review_status": "pending",
+      "left_eye_xy": null,
+      "right_eye_xy": null,
+      "left_shoulder_xy": null,
+      "right_shoulder_xy": null,
+      "head_width_px": null
+    },
+    "explaining": {
+      "source_file": "albedo_s_luminous_arcane_explanation.png",
+      "source_sha256": "162c999377522e4c93df8b7d286072d2ca8cc82cfa51b0af64410c174768a134",
+      "review_status": "pending",
+      "left_eye_xy": null,
+      "right_eye_xy": null,
+      "left_shoulder_xy": null,
+      "right_shoulder_xy": null,
+      "head_width_px": null
+    },
+    "monitoring": {
+      "source_file": "albedo_in_a_celestial_command_halo.png",
+      "source_sha256": "4f75754980023b7596f7b0b9ccf9d36e695d936d40fb0efd7233c725d4be8d46",
+      "review_status": "pending",
+      "left_eye_xy": null,
+      "right_eye_xy": null,
+      "left_shoulder_xy": null,
+      "right_shoulder_xy": null,
+      "head_width_px": null
+    },
+    "pointing": {
+      "source_file": "albedo_s_celestial_pointing_portrait.png",
+      "source_sha256": "d55da7f4ca4e93a5d40592e97fe5c04cc6e3d9aaa8cbe8f24c64ee7e08de3b62",
+      "review_status": "pending",
+      "left_eye_xy": null,
+      "right_eye_xy": null,
+      "left_shoulder_xy": null,
+      "right_shoulder_xy": null,
+      "head_width_px": null
+    }
+  }
+}
