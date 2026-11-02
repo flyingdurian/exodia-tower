@@ -1,0 +1,131 @@
+{
+  "schema": "exodia.albedo-prototype-preview/v1",
+  "character_id": "kiko",
+  "canvas": {
+    "width": 1536,
+    "height": 1920,
+    "aspect_ratio": "4:5"
+  },
+  "mode": "visual_workbench_only",
+  "production_release_enabled": false,
+  "states": {
+    "idle": {
+      "label": "Awaiting command",
+      "description": "Available for a new mission",
+      "activity": "STANDBY",
+      "path": "idle.png",
+      "sha256": "3a866c13f0e3aaa6dceb410a192f508e587707d3a42b796106c658025285e742",
+      "canvas": [
+        1536,
+        1920
+      ],
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "original_source": "albedo_s_serene_cosmic_idle_pose.png",
+      "source_sha256": "bc33f4d940d3512f8237c8387a433700d7fe75ecbee41c67df7df2750cc21818",
+      "asset_family": "prototype_only",
+      "approval": "UNAPPROVED_PROTOTYPE",
+      "normalization": "contain_lanczos_pad_scaled_as_needed",
+      "is_action_accurate": true,
+      "caveat": "Concept-state preview, not signed production artwork"
+    },
+    "working": {
+      "label": "Working",
+      "description": "Typing at the command console",
+      "activity": "PROCESSING",
+      "path": "working.png",
+      "sha256": "d9623f16e327cfed54a89fa76d48f207f8df29acf5e23b2bc5a44bbc6a9df8df",
+      "canvas": [
+        1536,
+        1920
+      ],
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "original_source": "albedo_s_celestial_holographic_workstation.png",
+      "source_sha256": "ec8e85610853591a0a46cdfac97c302b7359851681678ca4c64b179677ab7287",
+      "asset_family": "prototype_only",
+      "approval": "UNAPPROVED_PROTOTYPE",
+      "normalization": "contain_lanczos_pad_scaled_as_needed",
+      "is_action_accurate": true,
+      "caveat": "Concept-state preview, not signed production artwork"
+    },
+    "explaining": {
+      "label": "Explaining",
+      "description": "Presenting mission guidance",
+      "activity": "COMMUNICATING",
+      "path": "explaining.png",
+      "sha256": "d3eb66f024cec16be45b94afa1847b1495e55f6b55b4c0bf4eab7dfccc869c1f",
+      "canvas": [
+        1536,
+        1920
+      ],
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "original_source": "albedo_s_luminous_arcane_explanation.png",
+      "source_sha256": "162c999377522e4c93df8b7d286072d2ca8cc82cfa51b0af64410c174768a134",
+      "asset_family": "prototype_only",
+      "approval": "UNAPPROVED_PROTOTYPE",
+      "normalization": "contain_lanczos_pad_scaled_as_needed",
+      "is_action_accurate": true,
+      "caveat": "Concept-state preview, not signed production artwork"
+    },
+    "monitoring": {
+      "label": "Monitoring",
+      "description": "Observing the Operations Deck",
+      "activity": "OBSERVING",
+      "path": "monitoring.png",
+      "sha256": "7a1d38265c90c4e6190da8d40549d74d594e9f23589f0ebdc17e5f86c6669649",
+      "canvas": [
+        1536,
+        1920
+      ],
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "original_source": "albedo_in_a_celestial_command_halo.png",
+      "source_sha256": "4f75754980023b7596f7b0b9ccf9d36e695d936d40fb0efd7233c725d4be8d46",
+      "asset_family": "prototype_only",
+      "approval": "UNAPPROVED_PROTOTYPE",
+      "normalization": "contain_lanczos_pad_scaled_as_needed",
+      "is_action_accurate": true,
+      "caveat": "Concept-state preview, not signed production artwork"
+    },
+    "pointing": {
+      "label": "Pointing",
+      "description": "Directing attention to a target",
+      "activity": "DIRECTING",
+      "path": "pointing.png",
+      "sha256": "70c8022e39e2f60a906facf52874a44767617750eb027a43f338751d85a3aca3",
+      "canvas": [
+        1536,
+        1920
+      ],
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "original_source": "celestial_albedo_in_radiant_regalia.png",
+      "source_sha256": "341613a6acca68fe8aa18548434b8a35553015195f9b1cbcaa1c3e23c734a7ea",
+      "asset_family": "prototype_only",
+      "approval": "UNAPPROVED_PROTOTYPE",
+      "normalization": "contain_lanczos_pad_scaled_as_needed",
+      "is_action_accurate": false,
+      "caveat": "Gesture representative only; dedicated pointing-finger master still needed"
+    }
+  },
+  "order": [
+    "idle",
+    "working",
+    "explaining",
+    "monitoring",
+    "pointing"
+  ],
+  "notice": "PROTOTYPE ONLY \u2014 includes low-resolution source scaling and a representative Pointing gesture; no owner approval is asserted."
+}

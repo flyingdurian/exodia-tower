@@ -1,6 +1,7 @@
 """Queue and stage four independently rendered Albedo action portraits.
---approve only checks EXISTING owner approval and image-bound landmarks.
---commit invokes the existing atomic single-file importer. Never invent signoff.
+
+Does not invent human landmarks/approvals. --approve validates existing evidence,
+never generates owner signoff. --commit invokes the existing atomic importer.
 """
 import argparse
 import hashlib
@@ -20,15 +21,19 @@ BAD_NAMES = ('collage', 'board', 'contact', 'atlas', 'slice', 'crop', 'grid', 'm
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from portrait_normalization import normalize_portrait
 
+
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
 
 def load(path):
     return json.loads(path.read_text(encoding='utf-8'))
 
+
 def save(path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2) + '\n', encoding='utf-8')
+
 
 def validate_queue(queue, manifest, registry):
     rows = queue.get('states')
@@ -43,6 +48,7 @@ def validate_queue(queue, manifest, registry):
         if registry['states'][key]['category'] != 'action' or manifest['entries'][key]['filename'] != 'incoming/' + key + '.png':
             raise ValueError('registry_state_mapping_mismatch:' + key)
     return rows
+
 
 def validate_original(image, declaration):
     if not image.is_file() or not declaration.is_file() or image.is_symlink() or declaration.is_symlink():
@@ -68,6 +74,7 @@ def validate_original(image, declaration):
         raise ValueError('independent_original_hash_or_provenance_mismatch')
     return meta, [w,h], digest
 
+
 def preapproval(key, staging, original_sha):
     r = staging / 'registration' / (key + '.json')
     a = staging / 'approvals' / (key + '.json')
@@ -86,6 +93,7 @@ def preapproval(key, staging, original_sha):
         and isinstance(approval.get('owner_confirmation_reference'),str)
         and len(approval.get('owner_confirmation_reference','')) >= 8
         and approval.get('owner_confirmation_reference') == reg.get('owner_confirmation_reference'))
+
 
 def queue_batch(queue_path=QUEUE, staging=STAGING, production=PRODUCTION,
                 source_dir=None, approve=False, commit=False):
@@ -159,16 +167,28 @@ def queue_batch(queue_path=QUEUE, staging=STAGING, production=PRODUCTION,
             'verified_total':verified,'target':33,'committed_this_run':sum(v['status']=='COMMITTED' for v in reports),
             'release_enabled':load(registry_file)['release']['enabled']}
 
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--queue',type=Path,default=QUEUE)
     p.add_argument('--staging-root',type=Path,default=STAGING)
     p.add_argument('--registry-root',type=Path,default=PRODUCTION)
     p.add_argument('--source-dir',type=Path)
-    p.add_argument('--approve',action='store_true',help='Only validate existing owner review; never auto-author approval')
+    p.add_argument('--approve',action='store_true',help='Only validate existing signed owner review; never auto-author approval')
     p.add_argument('--commit',action='store_true')
+    p.add_argument('--prototype',action='store_true',help='Build 1536x1920 padded prototype previews ONLY; no production registry writes')
+    p.add_argument('--prototype-source-root',type=Path,default=ROOT,help='Folder of individual concept source images for the prototype builder')
     p.add_argument('--report',type=Path)
     args=p.parse_args()
+    if args.prototype:
+        from build_albedo_prototype_assets import build
+        try:
+            report=build(args.prototype_source_root,ROOT,ROOT/'orchestrator/frontend/prototype_assets/albedo')
+            print(f'[PROTOTYPE] {len(report["states"])} preview portraits ready; production untouched')
+            return 0
+        except (OSError,ValueError) as exc:
+            print('[FAIL] '+str(exc),file=sys.stderr)
+            return 2
     try:
         result=queue_batch(args.queue,args.staging_root,args.registry_root,args.source_dir,args.approve,args.commit)
     except (ValueError,OSError,KeyError) as exc:
@@ -179,6 +199,6 @@ def main():
     print(f"[INFO] {result['verified_total']}/33 verified",file=sys.stderr)
     print(json.dumps(result,indent=2))
     if args.report:save(args.report,result)
-    return 0
+    return 0  # Queue processing success is not production acceptance.
 
 if __name__=='__main__':raise SystemExit(main())

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10112c">
+<title>EXODIA Tower · Albedo Visual Workbench</title>
+<link rel="stylesheet" href="./test_workbench.css">
+<script type="module" src="./test_workbench.mjs"></script>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon">✧</div><div><strong>EXODIA <span>TOWER</span></strong><small>OPERATIONS / CHARACTER LAB</small></div></div>
+    <div class="top-center">AI COMPANION <b>·</b> VISUAL STATE WORKBENCH <span>V1.0</span></div>
+    <div class="top-right"><i class="live-dot"></i><span>LOCAL PREVIEW</span><span class="clock" id="clock">00:00</span></div>
+  </header>
+  <main class="dashboard">
+    <aside class="state-rail" aria-label="Choose companion state">
+      <p class="eyebrow">01 / STATE LIBRARY</p>
+      <h2>Albedo's activities</h2>
+      <p class="rail-copy">Test every supported action without touching the production registry.</p>
+      <nav id="stateMenu" class="state-menu"></nav>
+      <div class="rail-bottom"><div class="small-line"></div><b>STATE DRIVER</b><span>Manual selection or automatic loop</span><label class="toggle"><input id="autoCycle" type="checkbox"/> Auto-demo every 4s</label><div class="kbd-tip">Keyboard: <kbd>←</kbd> <kbd>→</kbd> to switch</div></div>
+    </aside>
+
+    <section class="hero" aria-label="Interactive portrait display">
+      <div class="hero-grid"></div><div class="hero-glow"></div>
+      <div class="stage-meta"><span>LIVE COMPANION / TASK WORKSTATION</span><div><i class="live-dot"></i> PREVIEW ACTIVE</div></div>
+      <div class="hero-title"><p>CELESTIAL OPERATIVE // A1</p><h1>Albedo</h1><span>Central Command · Living Companion</span></div>
+      <div class="portrait-zone">
+        <div class="ornament orbit orbit-one"></div><div class="ornament orbit orbit-two"></div><div class="star star-a">✦</div><div class="star star-b">✧</div><div class="star star-c">✦</div>
+        <div class="reticle reticle-left"><div class="reticle-line"></div><span>SOUL SIGNATURE</span><strong>ALB-001</strong></div>
+        <div id="portraitFrame" class="portrait-frame" role="img" aria-label="Loading Albedo portrait"><div class="portrait-loading">Preparing preview…</div></div>
+        <div class="reticle reticle-right"><div class="reticle-line"></div><span>INNER STATE</span><strong id="innerState">STANDBY</strong></div>
+        <div id="gestureBeam" class="gesture-beam" hidden><i></i><span>FOCUS TARGET</span></div>
+      </div>
+      <div class="stage-bottom"><div class="status-chip"><i class="live-dot"></i><span id="statusLabel">Awaiting command</span></div><p id="statusText">The companion is ready for a new mission.</p><div class="stage-note">Only whole-portrait opacity changes. Zero image panning or cutout deformation.</div></div>
+      <div class="cosmic-footer"><span>✦ STARLINK STABLE</span><span>CONSTELLATION: LYRA</span><span>◉ HEARTBEAT 01</span></div>
+    </section>
+
+    <aside class="inspector" aria-label="Asset inspector and simulation controls">
+      <p class="eyebrow">02 / LIVE TELEMETRY</p><h2>State inspector</h2><p class="rail-copy">See which source is loaded, validate its canvas and preview quality, and inspect transitions.</p>
+      <section class="side-card">
+        <div class="card-heading">CURRENT STATE <span id="stateKey">IDLE</span></div>
+        <div class="big-state" id="stateTitle">Awaiting command</div>
+        <p id="actionDetails">Standing by for a command</p>
+        <div class="signal"><span>EMOTION SIGNAL</span><b>LIVE</b></div><div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+      <section class="side-card technical">
+        <div class="card-heading">ASSET READINESS <span class="proto-tag">PROTOTYPE</span></div>
+        <dl><dt>Canvas</dt><dd>1536 × 1920</dd><dt>Format</dt><dd>PNG · 4:5</dd><dt>Rendering</dt><dd>Contain + pad</dd><dt>Motion</dt><dd>Opacity only</dd><dt>Provenance</dt><dd id="sourceName">Loading…</dd><dt>SHA-256</dt><dd class="sha" id="assetHash">Verifying…</dd></dl>
+      </section>
+      <section class="side-card interactive">
+        <div class="card-heading">TRANSITION CONTROL</div>
+        <label for="transitionSpeed">Cross-fade <b id="speedValue">240 ms</b></label><input id="transitionSpeed" type="range" min="0" max="650" step="10" value="240"/>
+        <div class="quick-actions"><button id="restart" class="secondary">Restart Idle</button><button id="copyDebug" class="secondary">Copy Telemetry</button></div>
+        <label class="toggle small-toggle"><input type="checkbox" id="ambientMotion" checked /> Animated cosmic ambience</label>
+      </section>
+      <div class="nonproduction"><span>!</span><div><b>VISUAL TEST ONLY</b><p>No production approvals, no 3D rig, no altered gameplay. Pointing is representative art pending its dedicated pose.</p></div></div>
+    </aside>
+  </main>
+  <footer class="footer-bar"><span id="loadStatus">Loading five Albedo previews…</span><div><span class="footer-led"></span> UI STATE ENGINE ONLINE <span class="footer-divider">|</span> <span id="frameCount">0 / 5</span> STATES TESTED</div></footer>
+</div>
+</body></html>
