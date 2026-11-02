@@ -1,0 +1,43 @@
+{
+  "schema": "exodia.albedo-core-actions-batch/v1",
+  "batch_id": "ALBEDO-CORE-ACTIONS-B01",
+  "character_id": "kiko",
+  "automatic_approval": false,
+  "required_source": "Independent high-resolution standalone original; collage extraction and upscaling prohibited",
+  "states": [
+    {
+      "key": "working",
+      "priority": 1,
+      "source_file": "working.png",
+      "reference_only": "albedo_s_celestial_holographic_workstation.png",
+      "reference_size": [
+        1122,
+        1402
+      ]
+    },
+    {
+      "key": "explaining",
+      "priority": 2,
+      "source_file": "explaining.png",
+      "reference_only": "albedo_s_luminous_arcane_explanation.png",
+      "reference_size": [
+        1122,
+        1402
+      ]
+    },
+    {
+      "key": "monitoring",
+      "priority": 3,
+      "source_file": "monitoring.png",
+      "reference_only": null,
+      "reference_size": null
+    },
+    {
+      "key": "pointing",
+      "priority": 4,
+      "source_file": "pointing.png",
+      "reference_only": null,
+      "reference_size": null
+    }
+  ]
+}

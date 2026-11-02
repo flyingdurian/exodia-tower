@@ -7,6 +7,9 @@ on:
       - 'orchestrator/tools/ingest_static_portraits.py'
       - 'orchestrator/tools/ingest_standalone_portrait.py'
       - 'orchestrator/tools/portrait_normalization.py'
+      - 'orchestrator/tools/ingest_core_action_batch.py'
+      - 'orchestrator/tests/test_core_action_batch.py'
+      - 'assets/staging_intake/core_actions_batch.json'
       - 'orchestrator/tests/test_portrait_normalization.py'
       - 'orchestrator/tests/test_ingest_standalone_portrait.py'
       - 'assets/staging_intake/manifest_template.json'
@@ -23,6 +26,9 @@ on:
       - 'orchestrator/tools/ingest_static_portraits.py'
       - 'orchestrator/tools/ingest_standalone_portrait.py'
       - 'orchestrator/tools/portrait_normalization.py'
+      - 'orchestrator/tools/ingest_core_action_batch.py'
+      - 'orchestrator/tests/test_core_action_batch.py'
+      - 'assets/staging_intake/core_actions_batch.json'
       - 'orchestrator/tests/test_portrait_normalization.py'
       - 'orchestrator/tests/test_ingest_standalone_portrait.py'
       - 'assets/staging_intake/manifest_template.json'
@@ -43,7 +49,7 @@ jobs:
       - name: Install QA dependencies
         run: python -m pip install "Pillow>=11,<13" "pytest>=8,<10"
       - name: Run registry regression tests
-        run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py orchestrator/tests/test_static_portrait_release.py orchestrator/tests/test_standalone_only_gate.py orchestrator/tests/test_ingest_standalone_portrait.py orchestrator/tests/test_portrait_normalization.py
+        run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py orchestrator/tests/test_static_portrait_release.py orchestrator/tests/test_standalone_only_gate.py orchestrator/tests/test_ingest_standalone_portrait.py orchestrator/tests/test_portrait_normalization.py orchestrator/tests/test_core_action_batch.py
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
       - name: Run production-intake audit (missing art expected to fail closed)
@@ -62,11 +68,18 @@ jobs:
           import json
           r=json.load(open("portrait_registry_report.json"))
           assert r["status"]=="FAILED" and not r["production_ready"]
-          assert r["states_verified"]==0 and r["loops_verified"]==0
+          assert 0 <= r["states_verified"] <= 33 and r["loops_verified"]==0
+          assert r["states_verified"] == sum(item["status"]=="PASSED" for item in r["states"].values())
+          registry=json.load(open("orchestrator/frontend/companions/production/kiko/portrait_registry.json"))
+          assert registry["release"]["enabled"] is False
           print("PASS: production art remains blocked; no false approvals")
           PY
+      - name: Audit priority action queue (no unreviewed commits)
+        run: python orchestrator/tools/ingest_core_action_batch.py --report core_actions_batch_report.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: albedo-registry-audit
-          path: portrait_registry_report.json
+          path: |
+            portrait_registry_report.json
+            core_actions_batch_report.json
