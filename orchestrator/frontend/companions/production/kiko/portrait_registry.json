@@ -45,7 +45,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "happy": {
       "label": "Happy",
@@ -57,7 +58,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "triumphant_halo"
     },
     "joyful": {
       "label": "Joyful",
@@ -69,7 +71,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "triumphant_halo"
     },
     "excited": {
       "label": "Excited",
@@ -81,7 +84,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "triumphant_halo"
     },
     "gentle": {
       "label": "Gentle",
@@ -93,7 +97,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "smiling_closed": {
       "label": "Smiling Closed",
@@ -105,7 +110,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "laughing": {
       "label": "Laughing",
@@ -117,7 +123,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "triumphant_halo"
     },
     "amused": {
       "label": "Amused",
@@ -129,7 +136,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "confident": {
       "label": "Confident",
@@ -141,7 +149,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "serious": {
       "label": "Serious",
@@ -153,7 +162,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "focused": {
       "label": "Focused",
@@ -165,7 +175,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "thinking": {
       "label": "Thinking",
@@ -177,7 +188,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "curious": {
       "label": "Curious",
@@ -189,7 +201,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "surprised": {
       "label": "Surprised",
@@ -201,7 +214,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "warning_pulse"
     },
     "concerned": {
       "label": "Concerned",
@@ -213,7 +227,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "warning_pulse"
     },
     "worried": {
       "label": "Worried",
@@ -225,7 +240,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "warning_pulse"
     },
     "sad": {
       "label": "Sad",
@@ -237,7 +253,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "disappointed": {
       "label": "Disappointed",
@@ -249,7 +266,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "angered": {
       "label": "Angered",
@@ -261,7 +279,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "strain_glitch"
     },
     "blushing": {
       "label": "Blushing",
@@ -273,7 +292,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "idle": {
       "label": "Idle",
@@ -285,7 +305,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "working": {
       "label": "Working",
@@ -297,7 +318,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "monitoring": {
       "label": "Monitoring",
@@ -309,7 +331,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "pointing": {
       "label": "Pointing",
@@ -321,7 +344,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "explaining": {
       "label": "Explaining",
@@ -333,7 +357,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "celebrating": {
       "label": "Celebrating",
@@ -345,7 +370,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "triumphant_halo"
     },
     "defeat": {
       "label": "Defeat",
@@ -357,7 +383,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "strain_glitch"
     },
     "stretching": {
       "label": "Stretching",
@@ -369,7 +396,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "sleeping": {
       "label": "Sleeping",
@@ -381,7 +409,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "waking_up": {
       "label": "Waking Up",
@@ -393,7 +422,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     },
     "tantrum": {
       "label": "Tantrum",
@@ -405,7 +435,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "strain_glitch"
     },
     "thinking_deeper": {
       "label": "Thinking Deeper",
@@ -417,7 +448,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "focus_resonance"
     },
     "awaiting_command": {
       "label": "Awaiting Command",
@@ -429,7 +461,8 @@
       "registration_sha256": null,
       "owner_approval_reference": null,
       "verified_by": null,
-      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json"
+      "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
+      "signal_overlay": "none"
     }
   },
   "loops": {
@@ -487,5 +520,15 @@
     "rendering_media": "working",
     "researching": "working",
     "running": "thinking_deeper"
-  }
+  },
+  "signal_overlay_schema": "exodia.companion-signal/v1",
+  "signal_set": [
+    "none",
+    "warning_pulse",
+    "focus_resonance",
+    "strain_glitch",
+    "triumphant_halo",
+    "casting_arcana",
+    "low_hp"
+  ]
 }

@@ -10,5 +10,6 @@ if(await manager.initialize()){
   if(mood)new MutationObserver(refresh).observe(mood,{childList:true,characterData:true,subtree:true});
   if(companion)companion.addEventListener('change',refresh);
   refresh();
+  window.addEventListener('exodia:companion-signal',event=>manager.setSignal(event.detail||{}));
  }
 }

@@ -1,3 +1,4 @@
+import {signalForState,applySignalLayer} from './signal_overlay.mjs';
 /** EXODIA verified static-portrait state controller: no per-state transforms. */
 export const SCHEMA='exodia.portrait-state-registry/v1';
 export const REGISTRY_URL='/assets/companions/production/kiko/portrait_registry.json';
@@ -34,6 +35,7 @@ export class PortraitStateManager {
   constructor({doc=globalThis.document,fetcher=globalThis.fetch?.bind(globalThis),manifestUrl=REGISTRY_URL}={}){
     this.doc=doc;this.fetcher=fetcher;this.manifestUrl=manifestUrl;this.registry=null;
     this.layer=null;this.images=[];this.current='';this.front=0;this.sequence=0;this.cache=new Map();
+    this.signalLayer=null;this.signal='none';this.telemetry={hp:1,alert:false,specialCasting:false,strained:false};
   }
   async initialize(){
     if(!this.fetcher)return false;
@@ -57,18 +59,21 @@ export class PortraitStateManager {
     this.layer.setAttribute('role','img');this.layer.setAttribute('aria-label','Albedo portrait');
     for(let i=0;i<2;i++){const img=this.doc.createElement('img');img.className='exodia-portrait-state-frame';
       img.alt='';img.setAttribute('aria-hidden','true');this.layer.appendChild(img);this.images.push(img);}
+    this.signalLayer=this.doc.createElement('div');this.signalLayer.className='exodia-signal-layer';applySignalLayer(this.signalLayer,'none');
+    this.layer.appendChild(this.signalLayer);
     card.appendChild(this.layer);return true;
   }
   fallback(){
     ++this.sequence;this.current='';
     if(this.layer)this.layer.hidden=true;
+    this.signal='none';applySignalLayer(this.signalLayer,'none');
     this.card?.classList.remove('portrait-registry-active');
   }
   async setState(raw,agentId='kiko'){
     if(!this.layer||agentId!=='kiko'){this.fallback();return false;}
     const state=resolveState(raw,this.registry),item=this.registry.states[state];
     if(!eligible(this.registry,item)){this.fallback();return false;}
-    if(this.current===state&&!this.layer.hidden)return true;
+    if(this.current===state&&!this.layer.hidden){this.setSignal();return true;}
     const token=++this.sequence;
     let src=this.cache.get(state);
     if(!src){
@@ -88,8 +93,9 @@ export class PortraitStateManager {
     newImg.style.transition='opacity '+duration+'ms ease-in-out';
     old.style.transition='opacity '+duration+'ms ease-in-out';
     old.style.opacity='0';newImg.style.opacity='1';
-    this.front=incoming;this.current=state;
+    this.front=incoming;this.current=state;this.setSignal();
     return true;
   }
+  setSignal(telemetry={}){this.telemetry={...this.telemetry,...telemetry};this.signal=signalForState(this.registry,this.current,this.telemetry);applySignalLayer(this.signalLayer,this.signal);return this.signal;}
   destroy(){this.fallback();this.layer?.remove();for(const x of this.cache.values())URL.revokeObjectURL(x);this.cache.clear();}
 }
