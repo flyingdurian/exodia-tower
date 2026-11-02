@@ -72,7 +72,41 @@ def recover(bundle: Path, out_dir: Path, *, expected=LOCKED):
             with z.open(member) as stream: data = stream.read(MAX_MEMBER+1)
             report['manifests'].append({'path':member.filename,
                                         'sha256':digest(data),'size_bytes':len(data)})
-        if len(valid) == len(expected):
+        # A handoff's specifically named canonical manifest is authoritative
+        # too. Reject inconsistent claims before allowing extraction. Generic
+        # synthetic-test manifests are not mistaken for this schema.
+        canonical = [m for m in manifests if
+                     PurePosixPath(m.filename).name ==
+                     'EXODIA_CORE5_SOURCE_MANIFEST_2026-11-02.json']
+        manifest_valid = True
+        if len(canonical) > 1:
+            raise ValueError('multiple_canonical_asset_manifests')
+        if canonical:
+            with z.open(canonical[0]) as stream:
+                raw_manifest = stream.read(MAX_MEMBER+1)
+            try:
+                canonical_data = json.loads(raw_manifest)
+            except (json.JSONDecodeError,UnicodeDecodeError) as ex:
+                raise ValueError('unreadable_canonical_asset_manifest') from ex
+            sources = canonical_data.get('sources',{})
+            report['canonical_manifest_verification'] = {}
+            for state,(filename,wanted) in expected.items():
+                meta = sources.get(state) or {}
+                passed = (
+                    meta.get('filename') == 'sources/'+filename and
+                    meta.get('sha256') == wanted and
+                    meta.get('dimensions') == list(CONCEPT_SIZE) and
+                    meta.get('format') == 'PNG' and
+                    meta.get('release_approved') is False and
+                    meta.get('dual_anchor_certified') is False)
+                manifest_valid = manifest_valid and passed
+                report['canonical_manifest_verification'][state] = (
+                    'MATCH' if passed else 'MISMATCH')
+            if not manifest_valid:
+                report['errors']=['canonical_manifest_inconsistent_with_original_sources']
+        else:
+            report['canonical_manifest_verification']='NOT_INCLUDED'
+        if len(valid) == len(expected) and manifest_valid:
             out_dir.mkdir(parents=True,exist_ok=True)
             for filename, data in valid.items():
                 target = out_dir / filename
