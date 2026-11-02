@@ -1,0 +1,58 @@
+name: Albedo portrait registry gate
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths:
+      - 'orchestrator/tools/portrait_registry_audit.py'
+      - 'orchestrator/tests/test_portrait_registry_audit.py'
+      - 'orchestrator/tests/portrait_state_manager.test.mjs'
+      - 'orchestrator/frontend/portrait_state_manager.mjs'
+      - 'orchestrator/frontend/portrait_state_boot.mjs'
+      - 'orchestrator/frontend/companions/production/kiko/portrait_registry.json'
+      - '.github/workflows/portrait-registry.yml'
+  pull_request:
+    paths:
+      - 'orchestrator/tools/portrait_registry_audit.py'
+      - 'orchestrator/frontend/portrait_state_manager.mjs'
+      - 'orchestrator/frontend/companions/production/kiko/portrait_registry.json'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install QA dependencies
+        run: python -m pip install "Pillow>=11,<13" "pytest>=8,<10"
+      - name: Run registry regression tests
+        run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py
+      - name: Run state-manager tests
+        run: node --test orchestrator/tests/portrait_state_manager.test.mjs
+      - name: Run production-intake audit (missing art expected to fail closed)
+        shell: bash
+        run: |
+          set +e
+          python orchestrator/tools/portrait_registry_audit.py orchestrator/frontend/companions/production/kiko/portrait_registry.json --report portrait_registry_report.json > /tmp/exodia_portrait_audit.txt
+          status=$?
+          set -e
+          if [ "$status" -ne 1 ]; then
+            cat /tmp/exodia_portrait_audit.txt
+            echo "FAIL: registry should stay blocked until approved assets are committed."
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          r=json.load(open("portrait_registry_report.json"))
+          assert r["status"]=="FAILED" and not r["production_ready"]
+          assert r["states_verified"]==0 and r["loops_verified"]==0
+          print("PASS: production art remains blocked; no false approvals")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: albedo-registry-audit
+          path: portrait_registry_report.json
