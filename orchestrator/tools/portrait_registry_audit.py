@@ -25,6 +25,24 @@ def image_audit(path,sha):
     if not isinstance(sha,str) or not re.fullmatch("[0-9a-f]{64}",sha):e.append("missing_sha256")
     elif digest(path)!=sha:e.append("sha256_mismatch")
     return e
+def standalone_provenance(source, image_sha):
+    """Reject board crops by provenance; source authenticity still needs human inspection."""
+    if not isinstance(source,dict):return ["standalone_provenance_missing"]
+    errors=[]
+    if source.get("schema")!="exodia.independent-portrait-source/v1":errors.append("invalid_standalone_source_schema")
+    if source.get("source_kind")!="independent_standalone_native":errors.append("source_not_independent_standalone")
+    if source.get("derived_from_composite") is not False:errors.append("composite_source_prohibited")
+    if source.get("native_canvas")!=[1536,1920]:errors.append("source_not_native_1536x1920")
+    if source.get("original_sha256")!=image_sha:errors.append("original_image_sha_mismatch")
+    if source.get("source_method") not in ("independent_image_render","standalone_artist_export"):errors.append("source_method_not_standalone")
+    if source.get("human_source_review")!="completed":errors.append("independent_source_review_missing")
+    name=source.get("original_filename")
+    if not isinstance(name,str) or not name.lower().endswith(".png") or Path(name).name!=name:
+        errors.append("original_filename_invalid")
+    elif any(token in name.lower() for token in ("collage","grid","board","atlas","contact","slice","crop","montage","thumbnail","upscale","reframe","normalized")):
+        errors.append("derived_composite_filename_disallowed")
+    return errors
+
 def landmarks(meta,sha,spec):
     e=[]
     if meta.get("image_sha256")!=sha:e.append("landmarks_not_bound_to_image")
@@ -51,7 +69,10 @@ def asset(root,entry,spec):
     if not r.is_file():e.append("registration_missing")
     else:
         if digest(r)!=entry.get("registration_sha256"):e.append("registration_sha256_mismatch")
-        try:e.extend(landmarks(json.loads(r.read_text()),entry.get("sha256"),spec))
+        try:
+            data=json.loads(r.read_text())
+            e.extend(landmarks(data,entry.get("sha256"),spec))
+            e.extend(standalone_provenance(data.get("source_provenance"),entry.get("sha256")))
         except Exception as ex:e.append("registration_invalid_"+str(ex))
     if not isinstance(entry.get("owner_approval_reference"),str) or len(entry["owner_approval_reference"])<8:e.append("approval_not_documented")
     if not entry.get("verified_by"):e.append("reviewer_missing")

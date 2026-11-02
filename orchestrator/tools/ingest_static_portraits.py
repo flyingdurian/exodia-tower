@@ -1,7 +1,7 @@
 """Static Albedo portrait importer. Never manufactures images, landmarks or approvals."""
 import argparse,json,shutil,tempfile
 from pathlib import Path
-from portrait_registry_audit import audit,within,digest,image_audit
+from portrait_registry_audit import audit,within,digest,image_audit,standalone_provenance
 
 def ingest(source:Path,destination:Path,ledger_path:Path,commit=False):
     source=source.resolve();destination=destination.resolve()
@@ -27,6 +27,16 @@ def ingest(source:Path,destination:Path,ledger_path:Path,commit=False):
             image_sha=digest(image);registration_sha=digest(registered)
             if image_audit(image,image_sha):
                 missing.append(key+':invalid_native_image');continue
+            try:
+                annotation=json.loads(registered.read_text())
+            except (OSError,ValueError):
+                missing.append(key+':registration_json_invalid');continue
+            provenance=annotation.get('source_provenance')
+            source_errors=standalone_provenance(provenance,image_sha)
+            if source_errors or row.get('source_provenance')!=provenance:
+                missing.append(key+':standalone_source_rejected:'+
+                               ','.join(source_errors or ['ledger_provenance_mismatch']))
+                continue
             if row.get('image_sha256')!=image_sha or row.get('registration_sha256')!=registration_sha:
                 missing.append(key+':approval_file_hash_mismatch');continue
             if row.get('approved_by')!='owner' or not isinstance(row.get('owner_confirmation_reference'),str) or len(row['owner_confirmation_reference'].strip())<8 or not row.get('reviewed_by'):
