@@ -2,7 +2,7 @@
 import argparse,json,hashlib
 from pathlib import Path
 import cv2,numpy as np
-from audit_portrait_anchors import measure_png,SIZE,EYE_Y,SHOULDER_Y
+from audit_portrait_anchors import measure_png,SIZE,EYE_Y,SHOULDER_Y,CORE
 def reanchor(source,output,search):
     m=measure_png(source,search);dy=m['shoulder_y_px']-m['eye_y_px']
     if dy<250:raise ValueError('uncertain_vertical_anchor_separation')
@@ -26,7 +26,7 @@ def reanchor(source,output,search):
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--source',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--search',type=Path,required=True);p.add_argument('--state',choices=['idle','pointing'],required=True)
+    p.add_argument('--search',type=Path,required=True);p.add_argument('--state',choices=CORE,required=True)
     p.add_argument('--report',type=Path);a=p.parse_args()
     hints=json.loads(a.search.read_text())['states'][a.state]
     result=reanchor(a.source,a.output,hints);print(json.dumps(result,indent=2))
