@@ -1,0 +1,52 @@
+{
+  "schema": "exodia.portrait-motion/v2",
+  "agent_id": "kiko",
+  "state": "idle",
+  "asset_stage": "candidate_review_only",
+  "source_art_type": "independently_authored_native_frames",
+  "camera": {
+    "translate_px": [
+      0,
+      0
+    ],
+    "zoom": 1,
+    "rotation_deg": 0,
+    "crop": null
+  },
+  "fps": 24,
+  "motion_mask": "motion_mask_1536x1920.png",
+  "locked_anchor_boxes": {
+    "left_eye_corner": [
+      540,
+      550,
+      24,
+      24
+    ],
+    "right_eye_corner": [
+      955,
+      550,
+      24,
+      24
+    ],
+    "hair_ornament": [
+      1150,
+      260,
+      24,
+      24
+    ],
+    "left_shoulder": [
+      390,
+      940,
+      24,
+      24
+    ],
+    "right_shoulder": [
+      1120,
+      940,
+      24,
+      24
+    ]
+  },
+  "frames": [],
+  "note": "EXAMPLE ONLY: five coordinates are synthetic, not authoritative Albedo measurements. Empty frames cannot pass."
+}

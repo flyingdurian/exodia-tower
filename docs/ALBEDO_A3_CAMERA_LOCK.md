@@ -1,3 +1,9 @@
+# REJECTED FOR PRODUCTION — owner superseding directive 2026-11-01
+
+Any earlier conditionally approved small-camera-lock storyboard GIFs are rejected in full as production animation. Historical artifact ONLY. New V2 native standards supersede these storyboard methods. See `docs/ALBEDO_NATIVE_MOTION_GATE_V2.md`.
+
+---
+
 # Albedo A3 — Stationary Camera & Native Loop Acceptance (2026-11-01)
 
 The owner approved the visual concept of Idle, Working and Explaining portrait loops **conditional on the camera not flying around**. Inspection of the actual A2 source GIF cells found genuine horizontal position drift of approximately **15–28 pixels** (source images are only about 200 px wide). This was a source storyboard extraction problem, not a harmless screen-recording effect.

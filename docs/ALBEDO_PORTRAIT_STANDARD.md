@@ -61,3 +61,6 @@ Run: `python orchestrator/tools/portrait_standard.py check PATH_TO_PNG path_to_m
 5. Animated loops have independent painted poses, no static whole-body wiggle or duplicate frames.
 6. Inspect state switching at desktop/mobile; no layout shift; owner visual approval required.
 7. Do not promote unapproved adaptations or concept-board crops to production or other fleet agents.
+## Superseding V2 high-resolution fluid motion gate (2026-11-01)
+
+The old minimum 4–8 frame portrait loop language in this historical specification is SUPERSEDED for production: **24–30fps** requires **≥72 unique Idle frames over ≥3 seconds** and **≥48 unique Working/Explaining frames over ≥2 seconds**. Every frame is original native 1536×1920 PNG, no CSS/camera transforms or corrected storyboards, zero changes to locked eye corners, ornament and shoulder anchor regions; only localized microgesture regions may change. See `docs/ALBEDO_NATIVE_MOTION_GATE_V2.md` and `orchestrator/tools/validate_portrait_motion.py`. The old A3 GIF proofs have been rejected as production animation.
