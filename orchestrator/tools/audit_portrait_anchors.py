@@ -40,9 +40,13 @@ def measure_png(path,regions):
     return dict(eye_y_px=round(sum(a['y'] for a in eyes)/2,3),
                 shoulder_y_px=round(sum(a['y'] for a in shoulders)/2,3),
                 eyes=eyes,shoulders=shoulders)
-def audit(registry_path,regions_path,asset_root=None):
+def audit(registry_path,regions_path,asset_root=None,approval_ledger_path=None):
     reg=json.loads(Path(registry_path).read_text())
     zones=json.loads(Path(regions_path).read_text()).get('states',{})
+    # Search region owner_confirmed is not production authorization.
+    # Human-reviewed SHA-bound approval is an independent input.
+    approvals=(json.loads(Path(approval_ledger_path).read_text()).get('states',{})
+               if approval_ledger_path else {})
     root=Path(asset_root or Path(registry_path).parent).resolve()
     results={};originals={}
     for name,e in reg['states'].items():
@@ -61,6 +65,8 @@ def audit(registry_path,regions_path,asset_root=None):
                 else:
                     try:
                         m=measure_png(file,searched);out.update(m)
+                        out['eye_delta_px']=round(m['eye_y_px']-EYE_Y,3)
+                        out['shoulder_delta_px']=round(m['shoulder_y_px']-SHOULDER_Y,3)
                         if abs(m['eye_y_px']-EYE_Y)>TOL_EYE:errors.append('eye_anchor_out_of_range')
                         if abs(m['shoulder_y_px']-SHOULDER_Y)>TOL_SHOULDER:errors.append('shoulder_anchor_out_of_range')
                     except (ValueError,KeyError) as ex:errors.append('pixel_detection_'+str(ex))
@@ -69,6 +75,21 @@ def audit(registry_path,regions_path,asset_root=None):
         if e.get('distinct_source_verified') is not True:
             errors.append('distinct_master_not_verified')
         original=e.get('original_source_sha256')
+        if not isinstance(original,str) or not re.fullmatch(r'[a-f0-9]{64}',original):
+            errors.append('original_source_sha256_missing_or_invalid')
+        if (e.get('source_kind')!='independent_standalone_native'
+                or e.get('native_canvas')!=list(SIZE)):
+            errors.append('native_standalone_source_not_verified')
+        approval=approvals.get(name) or {}
+        expected_sha=out.get('sha256')
+        if (not expected_sha or approval.get('image_sha256')!=expected_sha
+                or approval.get('original_source_sha256')!=original
+                or not approval.get('approval_reference')
+                or approval.get('anatomy_pose_review')!='completed'
+                or approval.get('eye_landmarks_reviewed') is not True
+                or approval.get('shoulder_landmarks_reviewed') is not True
+                or approval.get('distinct_state_reviewed') is not True):
+            errors.append('owner_hash_bound_approval_missing')
         if original:
             if original in originals:
                 errors.append('cloned_original_source')
@@ -82,13 +103,15 @@ def audit(registry_path,regions_path,asset_root=None):
       anchor_targets={'canvas':list(SIZE),'eye_y':EYE_Y,'eye_tolerance_px':TOL_EYE,
                       'shoulder_y':SHOULDER_Y,'shoulder_tolerance_px':TOL_SHOULDER},
       core_pass=passed,full_batch_unlocked=passed,core_states=core,
+      approval_ledger_supplied=approval_ledger_path is not None,
       checked_count=len(results),passed_count=sum(v['status']=='PASS' for v in results.values()),
-      states=results,warning='CV searches are pixel observations, not general facial recognition; require owner confirmation.')
+      states=results,warning='Pixel gradients cannot prove anatomical shoulder identity; genuine owner-reviewed SHA-bound ledger and independent visual inspection mandatory. Metadata alone is not proof.'
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--registry',type=Path,required=True);p.add_argument('--search-regions',type=Path,required=True)
     p.add_argument('--asset-root',type=Path);p.add_argument('--report',type=Path)
-    a=p.parse_args();report=audit(a.registry,a.search_regions,a.asset_root)
+    p.add_argument('--owner-approval-ledger',type=Path,help='Externally reviewed hash-bound five-state sign-off; omit to remain fail closed')
+    a=p.parse_args();report=audit(a.registry,a.search_regions,a.asset_root,a.owner_approval_ledger)
     print(json.dumps(report,indent=2))
     if a.report:
         a.report.parent.mkdir(parents=True,exist_ok=True)
