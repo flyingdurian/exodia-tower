@@ -62,27 +62,56 @@ def calibrate(state,source,annotations,output):
         if src is None or (src.shape[1],src.shape[0])!=CONCEPT_SIZE:
             raise ValueError('invalid_source_canvas')
         background=tuple(int(v) for v in src[0,0])
-        preview=cv2.warpAffine(src,np.float32([[scale,0,tx],[0,scale,ty]]),
-            SIZE,flags=cv2.INTER_LANCZOS4,borderMode=cv2.BORDER_CONSTANT,
-            borderValue=background)
         output.parent.mkdir(parents=True,exist_ok=True)
-        if not cv2.imwrite(str(output),preview):raise ValueError('write_failed')
-        regions={}
-        for key,xy in zip(
-            ('left_eye_search','right_eye_search','left_shoulder_search','right_shoulder_search'),
-            eyes+shoulders):
-            regions[key]=[round(scale*xy[0]+tx),round(scale*xy[1]+ty)]
+        feedback=[]
+        pixels=None
+        regions=None
+        # Only one similarity transform per output. Each iteration re-renders
+        # FROM THE VERIFIED ORIGINAL, never from another resampled preview.
+        for iteration in range(8):
+            tx=SIZE[0]/2-scale*face_x
+            preview=cv2.warpAffine(src,np.float32([[scale,0,tx],[0,scale,ty]]),
+                SIZE,flags=cv2.INTER_LANCZOS4,borderMode=cv2.BORDER_CONSTANT,
+                borderValue=background)
+            if not cv2.imwrite(str(output),preview):raise ValueError('write_failed')
+            regions={}
+            for key,xy in zip(
+                ('left_eye_search','right_eye_search','left_shoulder_search','right_shoulder_search'),
+                eyes+shoulders):
+                regions[key]=[round(scale*xy[0]+tx),round(scale*xy[1]+ty)]
+            try:
+                pixels=measure_png(output,regions)
+            except (ValueError,KeyError) as ex:
+                feedback.append({'iteration':iteration,'pixel_scan_error':str(ex)})
+                pixels=None
+                break
+            measured_eye=pixels['eye_y_px']
+            measured_shoulder=pixels['shoulder_y_px']
+            feedback.append({'iteration':iteration,
+              'scale':round(scale,8),
+              'eye_y_px':measured_eye,'shoulder_y_px':measured_shoulder,
+              'eye_delta_px':round(measured_eye-EYE,3),
+              'shoulder_delta_px':round(measured_shoulder-SHOULDER,3)})
+            if abs(measured_eye-EYE)<=2 and abs(measured_shoulder-SHOULDER)<=2:
+                break
+            correction=(SHOULDER-EYE)/(measured_shoulder-measured_eye)
+            if not .9<correction<1.1 or not .7<scale*correction<1.9:
+                feedback.append({'stop':'unsafe_pixel_feedback_scale'})
+                break
+            # Correct both observed landmark positions via uniform scale
+            # and translation, without anisotropic warp or body edits.
+            ty=EYE-correction*(measured_eye-ty)
+            scale*=correction
         record.update(status='REVIEW_PREVIEW_ONLY',preview_path=output.name,
             preview_sha256=sha(output),preview_canvas=list(SIZE),
             original_canvas=list(CONCEPT_SIZE),
-            scale=round(scale,6),translation_xy=[round(tx,3),round(ty,3)],
+            scale=round(scale,8),translation_xy=[round(tx,3),round(ty,3)],
             predicted_eye_y=round(scale*face_y+ty,3),
             predicted_shoulder_y=round(scale*body_y+ty,3),
             predicted_head_width_px=round(scale*head_width,2),
             input_anatomy_review_status=annotations.get('review_status','pending'),
-            output_search_regions=regions)
-        try:
-            pixels=measure_png(output,regions)
+            output_search_regions=regions,feedback_iterations=feedback)
+        if pixels is not None:
             record.update(pixel_scan=pixels,
                 measured_eye_y=pixels['eye_y_px'],
                 measured_shoulder_y=pixels['shoulder_y_px'],
@@ -90,8 +119,8 @@ def calibrate(state,source,annotations,output):
                 shoulder_delta_px=round(pixels['shoulder_y_px']-SHOULDER,3))
             record['provisional_numeric_match']=(
                 abs(record['eye_delta_px'])<=2 and abs(record['shoulder_delta_px'])<=2)
-        except (ValueError,KeyError) as ex:
-            record['pixel_scan_error']=str(ex)
+        else:
+            record['pixel_scan_error']='No independently detected pixel landmarks'
             record['provisional_numeric_match']=False
         warnings=[]
         if abs(record['predicted_head_width_px']-HEAD_WIDTH)>HEAD_WIDTH*.1:
