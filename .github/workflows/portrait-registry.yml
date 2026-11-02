@@ -69,7 +69,7 @@ jobs:
           r=json.load(open("portrait_registry_report.json"))
           assert r["status"]=="FAILED" and not r["production_ready"]
           assert 0 <= r["states_verified"] <= 33 and r["loops_verified"]==0
-          assert r["states_verified"] == sum(item["status"]=="PASSED" for item in r["states"].values())
+          assert r["states_verified"] == sum(item["passed"] is True for item in r["states"].values())
           registry=json.load(open("orchestrator/frontend/companions/production/kiko/portrait_registry.json"))
           assert registry["release"]["enabled"] is False
           print("PASS: production art remains blocked; no false approvals")
