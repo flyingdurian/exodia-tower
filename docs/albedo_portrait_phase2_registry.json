@@ -1,0 +1,128 @@
+{
+  "schema": "exodia.albedo.portrait-phase2/v1",
+  "character_id": "kiko",
+  "release_ready": false,
+  "approved_fleet_style": true,
+  "master": {
+    "width": 1536,
+    "height": 1920,
+    "ratio": "4:5",
+    "eye": [
+      0.5,
+      0.33
+    ],
+    "head_fraction": 0.4,
+    "safe_margin": 0.055
+  },
+  "emotions": [
+    "happy",
+    "excited",
+    "laugh",
+    "smile",
+    "thinking",
+    "curious",
+    "surprised",
+    "confused",
+    "determined",
+    "serious",
+    "sad",
+    "disappointed",
+    "pouting",
+    "angry",
+    "hurt",
+    "bored",
+    "sleepy",
+    "dizzy",
+    "pain",
+    "cheerful_wink"
+  ],
+  "actions": [
+    "idle",
+    "walk",
+    "run",
+    "jump",
+    "sit",
+    "work_computer",
+    "typing_working",
+    "pointing",
+    "explaining",
+    "celebrating",
+    "stretching",
+    "sleeping",
+    "waking_up"
+  ],
+  "other_states": [
+    "awaiting_command",
+    "monitoring",
+    "defeat",
+    "tantrum"
+  ],
+  "loops": {
+    "idle": {
+      "min_frames": 4,
+      "ms": 650
+    },
+    "working": {
+      "min_frames": 4,
+      "ms": 470
+    },
+    "explaining": {
+      "min_frames": 4,
+      "ms": 550
+    }
+  },
+  "source_boards": [
+    {
+      "name": "albedo_exodia_tower_portrait_review.png",
+      "sha256_prefix": "17a3f1308be2293f3cac"
+    },
+    {
+      "name": "albedo_s_neon_portrait_review_board.png",
+      "sha256_prefix": "92bc46363077858bb0df"
+    },
+    {
+      "name": "albedo_portrait_loops_review_board.png",
+      "sha256_prefix": "686bbe9fe56f9006cf26"
+    },
+    {
+      "name": "albedo_s_mission_complete_command_center.png",
+      "sha256_prefix": "bfc233740851980021ea"
+    }
+  ],
+  "existing_wave1_canvas": {
+    "happy": [
+      1199,
+      1312
+    ],
+    "thinking": [
+      1312,
+      1199
+    ],
+    "serious": [
+      1312,
+      1199
+    ],
+    "typing_working": [
+      1536,
+      1024
+    ]
+  },
+  "storyboard_cells": {
+    "idle": [
+      200,
+      248
+    ],
+    "working": [
+      200,
+      256
+    ],
+    "explaining": [
+      200,
+      274
+    ]
+  },
+  "accepted_native_portraits": 0,
+  "accepted_native_loops": 0,
+  "operations_deck": "separate_asset_family",
+  "warning": "Storyboards and legacy reframes are never high-definition approved portrait assets."
+}
