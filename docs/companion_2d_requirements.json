@@ -64,7 +64,26 @@
     "base_hero_image": "approved_high_resolution_albedo",
     "large_circle_from_low_resolution_atlas": "forbidden",
     "expression_indicators_under_100px": "temporary_review_only",
-    "actual_runtime_status_must_come_from_task_events": true
+    "actual_runtime_status_must_come_from_task_events": true,
+    "portrait_standard": {
+      "schema": "exodia.portrait-4x5/v1",
+      "canvas_px": [
+        1536,
+        1920
+      ],
+      "aspect_ratio": "4:5",
+      "eye_midpoint": [
+        0.5,
+        0.33
+      ],
+      "head_width_fraction": 0.4,
+      "safe_margin_fraction": 0.055,
+      "consistent_character_scale_required": true,
+      "per_state_crop_or_zoom_forbidden": true,
+      "ambient_motion_separate": true,
+      "animations_all_frames_same_canvas": true,
+      "all_fleet_applies": true
+    }
   },
   "actions": {
     "ids": [

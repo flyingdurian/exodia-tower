@@ -1,0 +1,5 @@
+/* Opt-in fixed portrait frame for future approved 4:5 masters only. */
+.exodia-portrait-4x5 { --portrait-width: 380px; width: min(100%, var(--portrait-width)); aspect-ratio: 4 / 5; overflow: hidden; display: grid; place-items: center; position: relative; }
+.exodia-portrait-4x5 > img, .exodia-portrait-4x5 > picture > img, .exodia-portrait-4x5 > video { width: 100%; height: 100%; object-fit: contain; object-position: center center; display: block; transform: none; }
+@media (max-width:620px) { .exodia-portrait-4x5 { --portrait-width: min(100vw - 40px,340px); } }
+@media (prefers-reduced-motion:reduce) { .exodia-portrait-4x5 *, .exodia-portrait-ambient * { animation: none!important; transition: none!important; } }

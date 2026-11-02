@@ -1,0 +1,8 @@
+/* Static frame; only opacity crossfades between whole approved portraits. */
+#expressionCard.portrait-registry-active{opacity:1!important;transform:none!important}
+.exodia-portrait-state-layer{position:relative;z-index:12;width:min(100%,280px);aspect-ratio:4/5;max-height:100%;overflow:hidden;border-radius:12px;isolation:isolate}
+.exodia-portrait-state-layer[hidden]{display:none!important}
+.exodia-portrait-state-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center center;transform:none!important;filter:none;pointer-events:none;opacity:0}
+#expressionCard.portrait-registry-active #expressionFace,#expressionCard.portrait-registry-active #agentPortrait{display:none!important}
+@media(max-width:740px){.exodia-portrait-state-layer{width:min(100%,260px)}}
+@media(prefers-reduced-motion:reduce){.exodia-portrait-state-frame{transition:none!important}}

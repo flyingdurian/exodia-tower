@@ -1,0 +1,245 @@
+{
+  "schema": "exodia.standalone-intake-manifest/v1",
+  "character_id": "kiko",
+  "character_label": "Albedo",
+  "native_canvas": [
+    1536,
+    1920
+  ],
+  "aspect_ratio": "4:5",
+  "registry_reference": "orchestrator/frontend/companions/production/kiko/portrait_registry.json",
+  "entries": {
+    "neutral": {
+      "label": "Neutral",
+      "category": "expression",
+      "filename": "incoming/neutral.png",
+      "registration_filename": "registration/neutral.json",
+      "approval_filename": "approvals/neutral.json"
+    },
+    "happy": {
+      "label": "Happy",
+      "category": "expression",
+      "filename": "incoming/happy.png",
+      "registration_filename": "registration/happy.json",
+      "approval_filename": "approvals/happy.json"
+    },
+    "joyful": {
+      "label": "Joyful",
+      "category": "expression",
+      "filename": "incoming/joyful.png",
+      "registration_filename": "registration/joyful.json",
+      "approval_filename": "approvals/joyful.json"
+    },
+    "excited": {
+      "label": "Excited",
+      "category": "expression",
+      "filename": "incoming/excited.png",
+      "registration_filename": "registration/excited.json",
+      "approval_filename": "approvals/excited.json"
+    },
+    "gentle": {
+      "label": "Gentle",
+      "category": "expression",
+      "filename": "incoming/gentle.png",
+      "registration_filename": "registration/gentle.json",
+      "approval_filename": "approvals/gentle.json"
+    },
+    "smiling_closed": {
+      "label": "Smiling Closed",
+      "category": "expression",
+      "filename": "incoming/smiling_closed.png",
+      "registration_filename": "registration/smiling_closed.json",
+      "approval_filename": "approvals/smiling_closed.json"
+    },
+    "laughing": {
+      "label": "Laughing",
+      "category": "expression",
+      "filename": "incoming/laughing.png",
+      "registration_filename": "registration/laughing.json",
+      "approval_filename": "approvals/laughing.json"
+    },
+    "amused": {
+      "label": "Amused",
+      "category": "expression",
+      "filename": "incoming/amused.png",
+      "registration_filename": "registration/amused.json",
+      "approval_filename": "approvals/amused.json"
+    },
+    "confident": {
+      "label": "Confident",
+      "category": "expression",
+      "filename": "incoming/confident.png",
+      "registration_filename": "registration/confident.json",
+      "approval_filename": "approvals/confident.json"
+    },
+    "serious": {
+      "label": "Serious",
+      "category": "expression",
+      "filename": "incoming/serious.png",
+      "registration_filename": "registration/serious.json",
+      "approval_filename": "approvals/serious.json"
+    },
+    "focused": {
+      "label": "Focused",
+      "category": "expression",
+      "filename": "incoming/focused.png",
+      "registration_filename": "registration/focused.json",
+      "approval_filename": "approvals/focused.json"
+    },
+    "thinking": {
+      "label": "Thinking",
+      "category": "expression",
+      "filename": "incoming/thinking.png",
+      "registration_filename": "registration/thinking.json",
+      "approval_filename": "approvals/thinking.json"
+    },
+    "curious": {
+      "label": "Curious",
+      "category": "expression",
+      "filename": "incoming/curious.png",
+      "registration_filename": "registration/curious.json",
+      "approval_filename": "approvals/curious.json"
+    },
+    "surprised": {
+      "label": "Surprised",
+      "category": "expression",
+      "filename": "incoming/surprised.png",
+      "registration_filename": "registration/surprised.json",
+      "approval_filename": "approvals/surprised.json"
+    },
+    "concerned": {
+      "label": "Concerned",
+      "category": "expression",
+      "filename": "incoming/concerned.png",
+      "registration_filename": "registration/concerned.json",
+      "approval_filename": "approvals/concerned.json"
+    },
+    "worried": {
+      "label": "Worried",
+      "category": "expression",
+      "filename": "incoming/worried.png",
+      "registration_filename": "registration/worried.json",
+      "approval_filename": "approvals/worried.json"
+    },
+    "sad": {
+      "label": "Sad",
+      "category": "expression",
+      "filename": "incoming/sad.png",
+      "registration_filename": "registration/sad.json",
+      "approval_filename": "approvals/sad.json"
+    },
+    "disappointed": {
+      "label": "Disappointed",
+      "category": "expression",
+      "filename": "incoming/disappointed.png",
+      "registration_filename": "registration/disappointed.json",
+      "approval_filename": "approvals/disappointed.json"
+    },
+    "angered": {
+      "label": "Angered",
+      "category": "expression",
+      "filename": "incoming/angered.png",
+      "registration_filename": "registration/angered.json",
+      "approval_filename": "approvals/angered.json"
+    },
+    "blushing": {
+      "label": "Blushing",
+      "category": "expression",
+      "filename": "incoming/blushing.png",
+      "registration_filename": "registration/blushing.json",
+      "approval_filename": "approvals/blushing.json"
+    },
+    "idle": {
+      "label": "Idle",
+      "category": "action",
+      "filename": "incoming/idle.png",
+      "registration_filename": "registration/idle.json",
+      "approval_filename": "approvals/idle.json"
+    },
+    "working": {
+      "label": "Working",
+      "category": "action",
+      "filename": "incoming/working.png",
+      "registration_filename": "registration/working.json",
+      "approval_filename": "approvals/working.json"
+    },
+    "monitoring": {
+      "label": "Monitoring",
+      "category": "action",
+      "filename": "incoming/monitoring.png",
+      "registration_filename": "registration/monitoring.json",
+      "approval_filename": "approvals/monitoring.json"
+    },
+    "pointing": {
+      "label": "Pointing",
+      "category": "action",
+      "filename": "incoming/pointing.png",
+      "registration_filename": "registration/pointing.json",
+      "approval_filename": "approvals/pointing.json"
+    },
+    "explaining": {
+      "label": "Explaining",
+      "category": "action",
+      "filename": "incoming/explaining.png",
+      "registration_filename": "registration/explaining.json",
+      "approval_filename": "approvals/explaining.json"
+    },
+    "celebrating": {
+      "label": "Celebrating",
+      "category": "action",
+      "filename": "incoming/celebrating.png",
+      "registration_filename": "registration/celebrating.json",
+      "approval_filename": "approvals/celebrating.json"
+    },
+    "defeat": {
+      "label": "Defeat",
+      "category": "action",
+      "filename": "incoming/defeat.png",
+      "registration_filename": "registration/defeat.json",
+      "approval_filename": "approvals/defeat.json"
+    },
+    "stretching": {
+      "label": "Stretching",
+      "category": "action",
+      "filename": "incoming/stretching.png",
+      "registration_filename": "registration/stretching.json",
+      "approval_filename": "approvals/stretching.json"
+    },
+    "sleeping": {
+      "label": "Sleeping",
+      "category": "action",
+      "filename": "incoming/sleeping.png",
+      "registration_filename": "registration/sleeping.json",
+      "approval_filename": "approvals/sleeping.json"
+    },
+    "waking_up": {
+      "label": "Waking Up",
+      "category": "action",
+      "filename": "incoming/waking_up.png",
+      "registration_filename": "registration/waking_up.json",
+      "approval_filename": "approvals/waking_up.json"
+    },
+    "tantrum": {
+      "label": "Tantrum",
+      "category": "action",
+      "filename": "incoming/tantrum.png",
+      "registration_filename": "registration/tantrum.json",
+      "approval_filename": "approvals/tantrum.json"
+    },
+    "thinking_deeper": {
+      "label": "Thinking Deeper",
+      "category": "action",
+      "filename": "incoming/thinking_deeper.png",
+      "registration_filename": "registration/thinking_deeper.json",
+      "approval_filename": "approvals/thinking_deeper.json"
+    },
+    "awaiting_command": {
+      "label": "Awaiting Command",
+      "category": "action",
+      "filename": "incoming/awaiting_command.png",
+      "registration_filename": "registration/awaiting_command.json",
+      "approval_filename": "approvals/awaiting_command.json"
+    }
+  },
+  "notes": "Template only; no images or approvals are supplied. Standalone native originals required. Composite board slicing banned."
+}

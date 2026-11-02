@@ -21,3 +21,7 @@ The importer validates the exact four image paths, SHA-256 of original and displ
 ## Remaining gates
 
 Three of twenty expression illustrations and one of thirteen action illustrations are HD candidates; seventeen emotions and twelve action illustrations remain to be independently authored. Genuine frame-by-frame walk and idle cycles, true right-facing sprite art, and task-driven behavior must also be produced and accepted. No fleet-wide rollout before owner visual acceptance. 3D remains deferred.
+
+## PORTRAIT STANDARD UPDATE — 2026-11-01
+
+New emotions, action/status portraits and every authored animation frame must be 1536×1920 (4:5) with consistent face/shoulder registration. Current mixed Wave 1 source dimensions cannot be production released; review-only reframing is not visual acceptance. See docs/ALBEDO_PORTRAIT_STANDARD.md. Historical originals are preserved.
