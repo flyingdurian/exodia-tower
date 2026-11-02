@@ -41,7 +41,12 @@ export class PortraitStateManager {
       const response=await this.fetcher(this.manifestUrl,{cache:'no-store'});
       if(!response.ok)return false;
       const r=await response.json();
-      if(!registryValid(r)||r.release?.enabled!==true)return false;
+      if(!registryValid(r)||r.release?.enabled!==true||
+         r.release?.mode!=='static_portraits'||
+         typeof r.release?.owner_static_release_reference!=='string'||
+         r.release.owner_static_release_reference.length<8||
+         !Object.values(r.states).every(item=>eligible(r,item))||
+         new Set(Object.values(r.states).map(item=>item.sha256)).size!==33)return false;
       this.registry=r;return true;
     }catch(_){return false;}
   }
