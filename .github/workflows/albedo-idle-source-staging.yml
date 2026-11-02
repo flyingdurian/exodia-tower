@@ -1,0 +1,133 @@
+name: Albedo Idle standalone source staging
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths:
+      - '.github/workflows/albedo-idle-source-staging.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch-and-stage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install portrait QA dependencies
+        run: python -m pip install "Pillow>=11,<13"
+      - name: Download true standalone original into repository staging
+        env:
+          IDLE_SOURCE_URL: https://d8j0ntlcm91z4.cloudfront.net/user_3JEbazkCX92Kd0K6P0PCEPoIKXS/hf_20261102_172341_73d2785e-5e91-4c1e-9f88-5f627a1bd580.png
+        run: |
+          mkdir -p assets/staging_intake/incoming assets/staging_intake/registration assets/staging_intake/approvals
+          curl --fail --location --retry 3 --connect-timeout 20 --max-time 120 "$IDLE_SOURCE_URL" -o assets/staging_intake/incoming/idle.png
+          python - <<'PY'
+          from pathlib import Path
+          import json, hashlib
+          from PIL import Image
+          from sys import path
+          path.insert(0, 'orchestrator/tools')
+          from portrait_normalization import normalize_portrait
+          src = Path('assets/staging_intake/incoming/idle.png')
+          sha = hashlib.sha256(src.read_bytes()).hexdigest()
+          with Image.open(src) as im:
+              if im.format != 'PNG': raise SystemExit('FAIL: source is not a PNG')
+              w,h = im.size
+          if w<1536 or h<1920:raise SystemExit(f'FAIL: {w}x{h} would need forbidden upscaling')
+          data,transform=normalize_portrait(src)
+          provenance = {
+            'schema':'exodia.independent-portrait-source/v1',
+            'source_kind':'independent_standalone_native',
+            'derived_from_composite':False,
+            'native_canvas':[w,h],
+            'original_sha256':sha,
+            'original_filename':'idle.png',
+            'source_method':'independent_image_render',
+            'human_source_review':'pending',
+            'generation_job_id':'73d2785e-5e91-4c1e-9f88-5f627a1bd580',
+            'generation_model':'nano_banana_flash'
+          }
+          registration = {
+            'image_status':'PENDING_COORDINATE_REVIEW',
+            'state_key':'idle',
+            'source_image_sha256':sha,
+            'source_provenance':provenance,
+            'source_points_px':None,
+            'method':'pending_actual_image_landmark_measurement',
+            'human_review':'pending',
+            'owner_confirmation_reference':None,
+            'suggested_eye_y_target_after_normalization_px':633.6,
+            'suggested_head_width_after_normalization_px':614.4,
+            'normalization_transform_candidate':transform,
+            'notice':'Targets are NOT measured landmarks; do not use for production verification.'
+          }
+          approval = {
+            'schema':'exodia.portrait-static-approval-record/v1',
+            'state_key':'idle','category':'action',
+            'source_image_sha256':sha,
+            'source_provenance':provenance,
+            'allow_normalization':True,
+            'normalized_visual_review':'pending',
+            'approved_by':None,
+            'owner_confirmation_reference':None,
+            'reviewed_by':None,
+            'status':'PENDING_OWNER_ARTWORK_AND_LANDMARK_APPROVAL'
+          }
+          root=Path('assets/staging_intake')
+          (root/'registration/idle.json').write_text(json.dumps(registration,indent=2)+'\n')
+          (root/'approvals/idle.json').write_text(json.dumps(approval,indent=2)+'\n')
+          (root/'idle_source_telemetry.json').write_text(json.dumps({
+            'source_canvas':[w,h], 'source_sha256':sha,
+            'normalized_canvas':transform['output_canvas'],
+            'normalized_sha256':transform['output_sha256'],
+            'normalization_transform':transform,
+            'status':'STAGED_FOR_REVIEW_NOT_PRODUCTION'
+          },indent=2)+'\n')
+          print(f'SOURCE_STAGED=assets/staging_intake/incoming/idle.png')
+          print(f'ORIGINAL_SIZE={w}x{h}')
+          print(f'ORIGINAL_SHA256={sha}')
+          print(f'NORMALIZED_SHA256={transform["output_sha256"]}')
+          PY
+      - name: Run required normalized ingestion command (fail closed until image approval)
+        shell: bash
+        run: |
+          set +e
+          python orchestrator/tools/ingest_standalone_portrait.py --state idle --source assets/staging_intake/incoming/idle.png --normalize --commit --report assets/staging_intake/idle_ingestion_attempt.json > /tmp/idle_ingest.stdout 2> /tmp/idle_ingest.stderr
+          exit_code=$?
+          set -e
+          echo "INGEST_EXIT_CODE=$exit_code"
+          cat /tmp/idle_ingest.stderr
+          cat /tmp/idle_ingest.stdout
+          if [ "$exit_code" -ne 1 ]; then
+            echo "ERROR: Expected the production approval gate to block pending-review art"
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('assets/staging_intake/idle_ingestion_attempt.json').read_text())
+          assert r['status']=='FAILED' and r['committed'] is False
+          print('PASS: unreviewed artwork was not promoted to production')
+          PY
+      - name: Save source original and pending metadata to development branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f assets/staging_intake/incoming/idle.png
+          git add -f assets/staging_intake/registration/idle.json assets/staging_intake/approvals/idle.json
+          git add -f assets/staging_intake/idle_source_telemetry.json assets/staging_intake/idle_ingestion_attempt.json
+          git commit -m "assets(albedo): stage high-resolution original Idle and pending registration [no production release]"
+          git push origin HEAD:development/exodia-foundation
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: albedo-idle-intake-attempt
+          path: |
+            assets/staging_intake/idle_source_telemetry.json
+            assets/staging_intake/idle_ingestion_attempt.json
+          if-no-files-found: warn
