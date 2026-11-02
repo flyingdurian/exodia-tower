@@ -94,3 +94,23 @@ def test_missing_five_way_annotations_keep_batch_locked(tmp_path):
     assert report['production_anchor_audit']['full_batch_unlocked'] is False
     assert report['generated_28_states']==0
     assert (tmp_path/'comparison.png').is_file()
+
+def test_canonical_handoff_manifest_must_match_locked_originals(tmp_path):
+    bundle,expected=make_package(tmp_path)
+    # Rewrite fixture archive, supplying the real canonical schema with an
+    # intentional misleading SHA. The verifier must reject the whole batch.
+    b=tmp_path/'canonical.zip'
+    with zipfile.ZipFile(bundle) as source,zipfile.ZipFile(b,'w') as target:
+        for member in source.infolist():
+            target.writestr(member,source.read(member.filename))
+        body={'sources':{
+            state:{'filename':'sources/'+filename,
+                   'sha256':('f'*64 if state=='pointing' else wanted),
+                   'dimensions':[1122,1402],'format':'PNG',
+                   'release_approved':False,'dual_anchor_certified':False}
+            for state,(filename,wanted) in expected.items()}}
+        target.writestr('EXODIA_CORE5_SOURCE_MANIFEST_2026-11-02.json',json.dumps(body))
+    result=recover.recover(b,tmp_path/'untrusted',expected=expected)
+    assert result['status']=='FAIL'
+    assert result['canonical_manifest_verification']['pointing']=='MISMATCH'
+    assert not (tmp_path/'untrusted').exists()
