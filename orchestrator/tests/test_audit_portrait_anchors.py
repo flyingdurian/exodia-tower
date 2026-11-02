@@ -46,3 +46,23 @@ def test_unreviewed_sources_never_unlock(tmp_path):
     report=audit(r,h)
     assert report['full_batch_unlocked'] is False
     assert 'search_regions_not_owner_reviewed' in report['states']['idle']['errors']
+
+def test_synthetic_perfect_pixels_cannot_unlock_without_native_provenance_and_owner_ledger(tmp_path):
+    # Synthetic detection is a useful unit test, never production certification.
+    data={};regions={}
+    for key in CORE:
+        p=tmp_path/(key+'.png');digest=draw(p)
+        data[key]=dict(path=p.name,sha256=digest,distinct_source_verified=True)
+        regions[key]=hints(digest)
+    reg=tmp_path/'reg.json';h=tmp_path/'regions.json'
+    reg.write_text(json.dumps({'states':data}))
+    h.write_text(json.dumps({'states':regions}))
+    report=audit(reg,h)
+    assert report['core_pass'] is False
+    assert report['full_batch_unlocked'] is False
+    assert report['approval_ledger_supplied'] is False
+    for key in CORE:
+        errors=report['states'][key]['errors']
+        assert 'owner_hash_bound_approval_missing' in errors
+        assert 'native_standalone_source_not_verified' in errors
+        assert 'original_source_sha256_missing_or_invalid' in errors
