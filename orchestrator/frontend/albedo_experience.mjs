@@ -1,41 +1,75 @@
-import {VoiceDirector,readableSpeech} from './companion_voice.mjs';
+import {VoiceDirector,readableSpeech,splitSpeechChunks} from './companion_voice.mjs';
 
 /* Public Exodia companion UX: portrait expression plates, generated media,
  * and opt-in instant system speech. No debug puppet preview or fake talk wobble. */
 const $=selector=>document.querySelector(selector);
 const voice=new VoiceDirector();
-let neuralAudio=null,voiceVersion=0;
+let neuralAudio=null,neuralAbort=null,voiceVersion=0;
 function stopNeural(){
  voiceVersion++;
+ if(neuralAbort){neuralAbort.abort();neuralAbort=null;}
  if(neuralAudio){neuralAudio.pause();URL.revokeObjectURL(neuralAudio.src);neuralAudio=null;}
+}
+async function fetchNeuralChunk(text,agent,signal){
+ const res=await fetch('/api/voice/speak',{
+    method:'POST',signal,
+    headers:{'X-Exodia-Client':'exodia-dashboard','Content-Type':'application/json'},
+    body:JSON.stringify({agent_id:agent,text})});
+ if(!res.ok){
+    let problem='Neural TTS unavailable';try{problem=(await res.json()).detail||problem}catch{}
+    throw Error(problem);
+ }
+ return res.blob();
+}
+function playNeuralChunk(blob,version){
+ return new Promise((resolve,reject)=>{
+   if(version!==voiceVersion){resolve(false);return;}
+   const src=URL.createObjectURL(blob);
+   const audio=new Audio(src);
+   neuralAudio=audio;
+   const cleanup=()=>{
+     URL.revokeObjectURL(src);
+     if(neuralAudio===audio)neuralAudio=null;
+   };
+   audio.onended=()=>{cleanup();resolve(true);};
+   audio.onpause=()=>{if(version!==voiceVersion){cleanup();resolve(false);}};
+   audio.onerror=()=>{cleanup();reject(Error('Audio playback failed'));};
+   audio.play().catch(error=>{cleanup();reject(error);});
+ });
 }
 async function speakCompanion(text,agent,{manual=false}={}){
  if(!manual&&!voice.auto)return false;
- const spoken=readableSpeech(text,950);
+ const spoken=readableSpeech(text,1300);
  if(!spoken)return false;
  stopNeural();
  if($('#ttsEngine')?.value==='system')return voice.speak(spoken,{manual:true});
  voice.cancel();
  const version=voiceVersion;
+ const chunks=splitSpeechChunks(spoken,220,1300);
+ const controller=new AbortController();
+ neuralAbort=controller;
  voiceStatus('Preparing natural companion voice…');
  try{
-   const res=await fetch('/api/voice/speak',{
-      method:'POST',headers:{'X-Exodia-Client':'exodia-dashboard','Content-Type':'application/json'},
-      body:JSON.stringify({agent_id:agent,text:spoken})});
-   if(!res.ok){
-      let problem='Neural TTS unavailable';try{problem=(await res.json()).detail||problem}catch{}
-      throw Error(problem);
+   const preload=chunk=>fetchNeuralChunk(chunk,agent,controller.signal)
+     .then(blob=>({blob}),error=>({error}));
+   let pending=preload(chunks[0]);
+   for(let index=0;index<chunks.length;index++){
+     const loaded=await pending;
+     if(loaded.error)throw loaded.error;
+     if(version!==voiceVersion)return false;
+     pending=index+1<chunks.length
+       ?preload(chunks[index+1])
+       :null;
+     voiceStatus(`Speaking with local neural voice… ${index+1}/${chunks.length}`);
+     if(!await playNeuralChunk(loaded.blob,version))return false;
    }
-   const blob=await res.blob();
    if(version!==voiceVersion)return false;
-   const src=URL.createObjectURL(blob);
-   neuralAudio=new Audio(src);
-   neuralAudio.onended=()=>{if(version===voiceVersion){voiceStatus('Speech complete');URL.revokeObjectURL(src);neuralAudio=null;}};
-   neuralAudio.onerror=()=>voiceStatus('Audio playback failed');
-   await neuralAudio.play();
-   voiceStatus('Speaking with local neural voice…');
+   neuralAbort=null;
+   voiceStatus('Speech complete');
    return true;
  }catch(e){
+   if(version!==voiceVersion||e.name==='AbortError')return false;
+   neuralAbort=null;
    voiceStatus(e.message+' · Choose system fallback or start Kokoro.');
    return false;
  }

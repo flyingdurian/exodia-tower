@@ -19,6 +19,29 @@ export function readableSpeech(raw,max=1300){
  .replace(/\b(?:1D|5D|1M|6M|YTD|MAX)\b(?:\s+|$)/g,'')
  .replace(/\s+/g,' ').trim().slice(0,max);
 }
+export function splitSpeechChunks(raw,maxChunk=220,maxTotal=1300){
+ const content=readableSpeech(raw,maxTotal);
+ if(!content)return [];
+ const sentences=content.match(/[^.!?]+(?:[.!?]+["']?|$)/g)||[content];
+ const chunks=[];
+ let current='';
+ const flush=()=>{if(current){chunks.push(current);current='';}};
+ for(const sentenceValue of sentences){
+  let sentence=sentenceValue.trim();
+  while(sentence.length>maxChunk){
+   flush();
+   let cut=sentence.lastIndexOf(' ',maxChunk);
+   if(cut<Math.floor(maxChunk*.55))cut=maxChunk;
+   chunks.push(sentence.slice(0,cut).trim());
+   sentence=sentence.slice(cut).trim();
+  }
+  if(!sentence)continue;
+  if(current&&current.length+1+sentence.length>maxChunk)flush();
+  current=current?current+' '+sentence:sentence;
+ }
+ flush();
+ return chunks;
+}
 export function chooseVoice(voices,agent,override=''){
  const list=voices.filter(v=>/^en(?:-|_)/i.test(v.lang||''));
  if(!list.length)return voices[0]||null;
