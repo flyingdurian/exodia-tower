@@ -55,4 +55,5 @@ def test_banned_slicer_files_are_gone_and_live_gate_stays_closed():
     assert not (ROOT/"orchestrator/tests/test_slice_master_boards.py").exists()
     assert not (ROOT/".github/workflows/exodia-grid-slicer.yml").exists()
     assert not (ROOT/"docs/ALBEDO_APPROVED_BOARD_EXTRACTION.md").exists()
+    assert "APPROVED MASTER BOARD SLICING GATE" not in (ROOT/"skills/exodia-companion-art/SKILL.md").read_text()
     assert audit(REG)["production_ready"] is False
