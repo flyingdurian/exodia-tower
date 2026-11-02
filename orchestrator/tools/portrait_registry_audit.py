@@ -92,17 +92,39 @@ def audit(registry):
         errors=asset(root,entry,spec)
         if entry.get("category")!=("expression" if name in EXPRESSIONS else "action"):errors.append("wrong_category")
         states[name]={"passed":not errors,"errors":errors}
-    loops={name:{"errors":loop(root,entry)} for name,entry in d["loops"].items()}
-    npass=sum(v["passed"] for v in states.values());lpass=sum(not v["errors"] for v in loops.values())
-    enabled=d.get("release",{}).get("enabled") is True
-    if not enabled:e.append("release_disabled")
+    # No visual state is allowed to alias another state's PNG hash.
+    seen={}
+    for key,entry in d["states"].items():
+        sha=entry.get("sha256")
+        if entry.get("status")=="verified" and isinstance(sha,str) and re.fullmatch("[0-9a-f]{64}",sha):
+            if sha in seen:
+                states[key]["errors"].append("duplicate_static_image_sha256")
+                states[key]["passed"]=False
+                states[seen[sha]]["errors"].append("duplicate_static_image_sha256")
+                states[seen[sha]]["passed"]=False
+            else:seen[sha]=key
+    mode=d.get("release",{}).get("mode")
+    if mode not in ("static_portraits","static_and_loops"):e.append("unknown_release_mode")
+    if mode=="static_and_loops":
+        loops={name:{"errors":loop(root,entry)} for name,entry in d["loops"].items()}
+    else:
+        loops={name:{"status":"DEFERRED","errors":[]} for name in d["loops"]}
+    npass=sum(v["passed"] for v in states.values())
+    lpass=sum(not v["errors"] for v in loops.values()) if mode=="static_and_loops" else 0
+    if d.get("release",{}).get("enabled") is not True:e.append("release_disabled")
+    owner_release=d.get("release",{}).get("owner_static_release_reference")
+    if not isinstance(owner_release,str) or len(owner_release.strip())<8:e.append("owner_static_release_confirmation_missing")
     if npass!=33:e.append("verified_states_"+str(npass)+"_of_33")
-    if lpass!=3:e.append("verified_loops_"+str(lpass)+"_of_3")
-    return {"schema":SCHEMA,"status":"PASSED" if not e else "FAILED","production_ready":not e,
-      "canvas":[1536,1920],"eye_y_target_px":633.6,"head_width_target_px":614.4,
-      "states_checked":33,"states_verified":npass,"loops_checked":3,"loops_verified":lpass,
-      "errors":e,"states":states,"loops":loops,
-      "warning":"Human landmark annotations bound to image SHA; automated geometry checks do not detect faces or authenticate consent."}
+    if mode=="static_and_loops" and lpass!=3:e.append("verified_loops_"+str(lpass)+"_of_3")
+    passed=not e
+    return {"schema":SCHEMA,"status":"PASSED" if passed else "FAILED",
+      "production_ready":passed,"static_release_pass":passed and mode=="static_portraits",
+      "release_mode":mode,"canvas":[1536,1920],"eye_y_target_px":633.6,
+      "head_width_target_px":614.4,"states_checked":33,"states_verified":npass,
+      "loops_checked":3,"loops_verified":lpass,"errors":e,
+      "states":states,"loops":loops,
+      "warning":"The validator checks human-reviewed image-bound landmarks but cannot detect facial features or authenticate approval."}
+
 def main():
     p=argparse.ArgumentParser();p.add_argument("registry",type=Path);p.add_argument("--report",type=Path)
     args=p.parse_args();result=audit(args.registry)
