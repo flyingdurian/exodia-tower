@@ -16,3 +16,7 @@ python orchestrator/tools/ingest_standalone_portrait.py --state idle --source as
 Default dry-run prints \`[PASS]\`/\`[FAIL]\` messages and JSON telemetry. The CLI computes eye midpoint y and head width from reviewed coordinates (target eye-line **633.6±2px**, eye midpoint x **768±8px**, head width **614.4±4px**). It does **not** automatically detect faces or prove artistic origin. The importer copies an individually verified PNG and registration atomically, records its hashes in the existing registry, retains original source files, and leaves \`release.enabled=false\` until all 33 pass a separate audit and global owner approval.
 
 These directories contain no approved art at initialization; empty directories are represented with .gitkeep. Incoming image and human-approval files are intentionally excluded from source control.
+
+
+## Authorized high-resolution normalization exception
+See `docs/EXODIA_AUTHORIZED_NORMALIZATION.md`. `--normalize` accepts only reviewed, independent higher-resolution originals; never collage crops, upscaled images, or self-declared landmark targets. Preserve original SHA-256 and commit source original plus normalized derivative.

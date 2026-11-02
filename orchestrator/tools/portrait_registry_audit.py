@@ -25,23 +25,50 @@ def image_audit(path,sha):
     if not isinstance(sha,str) or not re.fullmatch("[0-9a-f]{64}",sha):e.append("missing_sha256")
     elif digest(path)!=sha:e.append("sha256_mismatch")
     return e
-def standalone_provenance(source, image_sha):
-    """Reject board crops by provenance; source authenticity still needs human inspection."""
+def standalone_provenance(source,image_sha):
     if not isinstance(source,dict):return ["standalone_provenance_missing"]
     errors=[]
     if source.get("schema")!="exodia.independent-portrait-source/v1":errors.append("invalid_standalone_source_schema")
-    if source.get("source_kind")!="independent_standalone_native":errors.append("source_not_independent_standalone")
+    normalized=source.get("source_kind")=="independent_standalone_normalized"
+    if source.get("source_kind") not in ("independent_standalone_native","independent_standalone_normalized"):
+        errors.append("source_not_independent_standalone")
     if source.get("derived_from_composite") is not False:errors.append("composite_source_prohibited")
-    if source.get("native_canvas")!=[1536,1920]:errors.append("source_not_native_1536x1920")
-    if source.get("original_sha256")!=image_sha:errors.append("original_image_sha_mismatch")
+    if normalized:
+        original=source.get("original_canvas")
+        if not isinstance(original,list) or len(original)!=2 or any(type(v)!=int for v in original) or original[0]<1536 or original[1]<1920:
+            errors.append("source_not_high_resolution")
+        if source.get("normalized_canvas")!=[1536,1920]:errors.append("normalized_canvas_invalid")
+        if source.get("normalized_sha256")!=image_sha:errors.append("normalized_sha256_mismatch")
+        if source.get("original_sha256")==image_sha:errors.append("normalized_identical_to_source")
+        if source.get("normalization_method")!="center_crop_lanczos_downsample":errors.append("normalization_method_invalid")
+        if not isinstance(source.get("original_artifact_path"),str):errors.append("original_artifact_path_missing")
+        if not isinstance(source.get("normalization_transform"),dict):errors.append("normalization_transform_missing")
+        if source.get("normalization_visual_review")!="completed":errors.append("normalized_composition_review_missing")
+    else:
+        if source.get("native_canvas")!=[1536,1920]:errors.append("source_not_native_1536x1920")
+        if source.get("original_sha256")!=image_sha:errors.append("original_image_sha_mismatch")
     if source.get("source_method") not in ("independent_image_render","standalone_artist_export"):errors.append("source_method_not_standalone")
     if source.get("human_source_review")!="completed":errors.append("independent_source_review_missing")
     name=source.get("original_filename")
     if not isinstance(name,str) or not name.lower().endswith(".png") or Path(name).name!=name:
         errors.append("original_filename_invalid")
-    elif any(token in name.lower() for token in ("collage","grid","board","atlas","contact","slice","crop","montage","thumbnail","upscale","reframe","normalized")):
+    elif any(t in name.lower() for t in ("collage","grid","board","atlas","contact","slice","crop","montage","thumbnail","upscale","reframe","normalized")):
         errors.append("derived_composite_filename_disallowed")
     return errors
+
+def normalized_asset_audit(root,provenance,image_sha):
+    if not isinstance(provenance,dict) or provenance.get("source_kind")!="independent_standalone_normalized":return []
+    from portrait_normalization import normalize_portrait
+    try:
+        source=within(root,provenance["original_artifact_path"])
+        if not source.is_file():return ["normalized_original_missing"]
+        if digest(source)!=provenance.get("original_sha256"):return ["normalized_original_sha256_mismatch"]
+        import hashlib
+        normalized,transform=normalize_portrait(source)
+        if hashlib.sha256(normalized).hexdigest()!=image_sha:return ["normalized_reproduction_sha256_mismatch"]
+        if transform!=provenance.get("normalization_transform"):return ["normalized_transform_mismatch"]
+        return []
+    except Exception as exc:return ["normalized_source_validation_failed_"+str(exc)]
 
 def landmarks(meta,sha,spec):
     e=[]
@@ -73,6 +100,7 @@ def asset(root,entry,spec):
             data=json.loads(r.read_text())
             e.extend(landmarks(data,entry.get("sha256"),spec))
             e.extend(standalone_provenance(data.get("source_provenance"),entry.get("sha256")))
+            e.extend(normalized_asset_audit(root,data.get("source_provenance"),entry.get("sha256")))
         except Exception as ex:e.append("registration_invalid_"+str(ex))
     if not isinstance(entry.get("owner_approval_reference"),str) or len(entry["owner_approval_reference"])<8:e.append("approval_not_documented")
     if not entry.get("verified_by"):e.append("reviewer_missing")
