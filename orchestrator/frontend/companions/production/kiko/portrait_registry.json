@@ -38,7 +38,7 @@
     "neutral": {
       "label": "Neutral",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/neutral.png",
       "sha256": null,
       "registration_path": "registration/expressions/neutral.json",
@@ -46,12 +46,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "happy": {
       "label": "Happy",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/happy.png",
       "sha256": null,
       "registration_path": "registration/expressions/happy.json",
@@ -59,12 +61,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "triumphant_halo"
+      "signal_overlay": "triumphant_halo",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "joyful": {
       "label": "Joyful",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/joyful.png",
       "sha256": null,
       "registration_path": "registration/expressions/joyful.json",
@@ -72,12 +76,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "triumphant_halo"
+      "signal_overlay": "triumphant_halo",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "excited": {
       "label": "Excited",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/excited.png",
       "sha256": null,
       "registration_path": "registration/expressions/excited.json",
@@ -85,12 +91,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "triumphant_halo"
+      "signal_overlay": "triumphant_halo",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "gentle": {
       "label": "Gentle",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/gentle.png",
       "sha256": null,
       "registration_path": "registration/expressions/gentle.json",
@@ -98,12 +106,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "smiling_closed": {
       "label": "Smiling Closed",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/smiling_closed.png",
       "sha256": null,
       "registration_path": "registration/expressions/smiling_closed.json",
@@ -111,12 +121,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "laughing": {
       "label": "Laughing",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/laughing.png",
       "sha256": null,
       "registration_path": "registration/expressions/laughing.json",
@@ -124,12 +136,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "triumphant_halo"
+      "signal_overlay": "triumphant_halo",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "amused": {
       "label": "Amused",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/amused.png",
       "sha256": null,
       "registration_path": "registration/expressions/amused.json",
@@ -137,12 +151,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "confident": {
       "label": "Confident",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/confident.png",
       "sha256": null,
       "registration_path": "registration/expressions/confident.json",
@@ -150,12 +166,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "serious": {
       "label": "Serious",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/serious.png",
       "sha256": null,
       "registration_path": "registration/expressions/serious.json",
@@ -163,12 +181,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "focused": {
       "label": "Focused",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/focused.png",
       "sha256": null,
       "registration_path": "registration/expressions/focused.json",
@@ -176,12 +196,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "thinking": {
       "label": "Thinking",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/thinking.png",
       "sha256": null,
       "registration_path": "registration/expressions/thinking.json",
@@ -189,12 +211,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "curious": {
       "label": "Curious",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/curious.png",
       "sha256": null,
       "registration_path": "registration/expressions/curious.json",
@@ -202,12 +226,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "surprised": {
       "label": "Surprised",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/surprised.png",
       "sha256": null,
       "registration_path": "registration/expressions/surprised.json",
@@ -215,12 +241,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "warning_pulse"
+      "signal_overlay": "warning_pulse",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "concerned": {
       "label": "Concerned",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/concerned.png",
       "sha256": null,
       "registration_path": "registration/expressions/concerned.json",
@@ -228,12 +256,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "warning_pulse"
+      "signal_overlay": "warning_pulse",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "worried": {
       "label": "Worried",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/worried.png",
       "sha256": null,
       "registration_path": "registration/expressions/worried.json",
@@ -241,12 +271,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "warning_pulse"
+      "signal_overlay": "warning_pulse",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "sad": {
       "label": "Sad",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/sad.png",
       "sha256": null,
       "registration_path": "registration/expressions/sad.json",
@@ -254,12 +286,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "disappointed": {
       "label": "Disappointed",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/disappointed.png",
       "sha256": null,
       "registration_path": "registration/expressions/disappointed.json",
@@ -267,12 +301,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "angered": {
       "label": "Angered",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/angered.png",
       "sha256": null,
       "registration_path": "registration/expressions/angered.json",
@@ -280,12 +316,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "strain_glitch"
+      "signal_overlay": "strain_glitch",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "blushing": {
       "label": "Blushing",
       "category": "expression",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/expressions/blushing.png",
       "sha256": null,
       "registration_path": "registration/expressions/blushing.json",
@@ -293,12 +331,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "idle": {
       "label": "Idle",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/idle.png",
       "sha256": null,
       "registration_path": "registration/actions/idle.json",
@@ -306,12 +346,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "working": {
       "label": "Working",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/working.png",
       "sha256": null,
       "registration_path": "registration/actions/working.json",
@@ -319,12 +361,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "monitoring": {
       "label": "Monitoring",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/monitoring.png",
       "sha256": null,
       "registration_path": "registration/actions/monitoring.json",
@@ -332,12 +376,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "pointing": {
       "label": "Pointing",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/pointing.png",
       "sha256": null,
       "registration_path": "registration/actions/pointing.json",
@@ -347,12 +393,14 @@
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
       "signal_overlay": "focus_resonance",
       "master_regeneration_required": true,
-      "regeneration_note": "Requires original standalone image with anatomically correct index-finger pointing pose; representative preview not production-eligible."
+      "regeneration_note": "Requires original standalone image with anatomically correct index-finger pointing pose; representative preview not production-eligible.",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "explaining": {
       "label": "Explaining",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/explaining.png",
       "sha256": null,
       "registration_path": "registration/actions/explaining.json",
@@ -360,12 +408,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "celebrating": {
       "label": "Celebrating",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/celebrating.png",
       "sha256": null,
       "registration_path": "registration/actions/celebrating.json",
@@ -373,12 +423,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "triumphant_halo"
+      "signal_overlay": "triumphant_halo",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "defeat": {
       "label": "Defeat",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/defeat.png",
       "sha256": null,
       "registration_path": "registration/actions/defeat.json",
@@ -386,12 +438,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "strain_glitch"
+      "signal_overlay": "strain_glitch",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "stretching": {
       "label": "Stretching",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/stretching.png",
       "sha256": null,
       "registration_path": "registration/actions/stretching.json",
@@ -399,12 +453,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "sleeping": {
       "label": "Sleeping",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/sleeping.png",
       "sha256": null,
       "registration_path": "registration/actions/sleeping.json",
@@ -412,12 +468,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "waking_up": {
       "label": "Waking Up",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/waking_up.png",
       "sha256": null,
       "registration_path": "registration/actions/waking_up.json",
@@ -425,12 +483,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "tantrum": {
       "label": "Tantrum",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/tantrum.png",
       "sha256": null,
       "registration_path": "registration/actions/tantrum.json",
@@ -438,12 +498,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "strain_glitch"
+      "signal_overlay": "strain_glitch",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "thinking_deeper": {
       "label": "Thinking Deeper",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/thinking_deeper.png",
       "sha256": null,
       "registration_path": "registration/actions/thinking_deeper.json",
@@ -451,12 +513,14 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     "awaiting_command": {
       "label": "Awaiting Command",
       "category": "action",
-      "status": "missing",
+      "status": "pending_production_art",
       "path": "frames/actions/awaiting_command.png",
       "sha256": null,
       "registration_path": "registration/actions/awaiting_command.json",
@@ -464,7 +528,9 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "none"
+      "signal_overlay": "none",
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     }
   },
   "loops": {
@@ -552,5 +618,25 @@
     "role": "locked_authoring_targets",
     "measured_production_anchor_certification": false,
     "require_owner_approval_for_each_state": true
-  }
+  },
+  "art_governance": {
+    "schema": "exodia.unique-state-master/v1",
+    "effective_date": "2026-11-02",
+    "permanent_bans": [
+      "label_swapped_duplicates",
+      "same_original_portrait_reuse",
+      "collage_slicing",
+      "composite_summary_board_art_extraction",
+      "color_only_or_text_only_derivatives"
+    ],
+    "release_rule": "Only independently authored, uniquely posed/expressed, real dual-anchor measured and owner-reviewed originals may be verified.",
+    "pending_status": "pending_production_art"
+  },
+  "core_review_scope": [
+    "idle",
+    "working",
+    "explaining",
+    "monitoring",
+    "pointing"
+  ]
 }

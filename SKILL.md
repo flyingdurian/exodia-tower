@@ -20,3 +20,8 @@ Each of the 33 production portraits must originate as a truly independent, stand
 Metadata alone does not prove source authenticity or owner consent; reviewers must inspect the original standalone file and the actual approval evidence. Missing or suspicious provenance MUST fail the importer and independent registry audit. No live promotion until all 33 pass. Deferred animation loops and Operations Deck sprites remain separate. Preserve live provider workflows.
 
 See docs/EXODIA_STANDALONE_ASSET_ONLY.md.
+
+## EXODIA_UNIQUE_STATE_ART_ONLY — permanent 2026-11-02
+The 33-state proxy contact sheet and cloned/relabelled 28 portrait assets are rejected. Ban reuse of any base portrait image for another state with just changed captions, palettes, overlay effects or minor edits. No collage board slicing or source extraction.
+A state without a genuinely independently authored expression or action pose, measured dual anchors (eyes and shoulders), verified original source identity, and owner sign-off MUST be `pending_production_art` with null approved hashes. Every verified original SHA-256 must be unique and each registration requires independent state_specific_visual_review='completed' based on real inspection. Do not fabricate approval or measure against target numbers alone.
+Restrict the workbench to Idle, Working, Explaining, Monitoring, and true pointing-hand Pointing. If genuine Pointing art is not present in that runtime, show an unavailable slot; never display the old inaccurate proxy. Production release remains blocked.

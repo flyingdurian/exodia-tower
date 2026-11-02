@@ -141,6 +141,28 @@ def audit(registry):
         errors=asset(root,entry,spec)
         if entry.get("category")!=("expression" if name in EXPRESSIONS else "action"):errors.append("wrong_category")
         states[name]={"passed":not errors,"errors":errors}
+    # Reject reused original sources even when exported PNGs differ by labels, tint or recompression.
+    original_seen={}
+    for state_key,state in d['states'].items():
+        if state.get('status')!='verified':continue
+        try:
+            registration=json.loads(within(root,state['registration_path']).read_text())
+            src_hash=registration.get('source_provenance',{}).get('original_sha256')
+            if not isinstance(src_hash,str) or not re.fullmatch('[0-9a-f]{64}',src_hash):
+                states[state_key]['errors'].append('original_source_hash_missing')
+                states[state_key]['passed']=False
+            elif src_hash in original_seen:
+                other=original_seen[src_hash]
+                for state_name in (state_key,other):
+                    states[state_name]['errors'].append('cloned_original_source_hash')
+                    states[state_name]['passed']=False
+            else:original_seen[src_hash]=state_key
+            if registration.get('state_specific_visual_review')!='completed':
+                states[state_key]['errors'].append('distinct_pose_or_expression_review_missing')
+                states[state_key]['passed']=False
+        except Exception:
+            states[state_key]['errors'].append('uniqueness_evidence_unavailable')
+            states[state_key]['passed']=False
     # No visual state is allowed to alias another state's PNG hash.
     seen={}
     for key,entry in d["states"].items():

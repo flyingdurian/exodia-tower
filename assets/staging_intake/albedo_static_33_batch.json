@@ -21,8 +21,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "happy",
@@ -36,8 +38,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "triumphant_halo",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "joyful",
@@ -51,8 +55,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "triumphant_halo",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "excited",
@@ -66,8 +72,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "triumphant_halo",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "gentle",
@@ -81,8 +89,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "smiling_closed",
@@ -96,8 +106,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "laughing",
@@ -111,8 +123,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "triumphant_halo",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "amused",
@@ -126,8 +140,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "confident",
@@ -141,8 +157,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "serious",
@@ -156,8 +174,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "focused",
@@ -171,8 +191,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "thinking",
@@ -186,8 +208,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "curious",
@@ -201,8 +225,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "surprised",
@@ -216,8 +242,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "warning_pulse",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "concerned",
@@ -231,8 +259,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "warning_pulse",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "worried",
@@ -246,8 +276,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "warning_pulse",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "sad",
@@ -261,8 +293,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "disappointed",
@@ -276,8 +310,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "angered",
@@ -291,8 +327,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "strain_glitch",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "blushing",
@@ -306,8 +344,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "idle",
@@ -321,8 +361,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "working",
@@ -336,8 +378,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "monitoring",
@@ -351,8 +395,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "pointing",
@@ -366,8 +412,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": true
+      "status": "pending_production_art",
+      "point_master_regeneration_required": true,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "explaining",
@@ -381,8 +429,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "celebrating",
@@ -396,8 +446,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "triumphant_halo",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "defeat",
@@ -411,8 +463,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "strain_glitch",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "stretching",
@@ -426,8 +480,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "sleeping",
@@ -441,8 +497,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "waking_up",
@@ -456,8 +514,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "tantrum",
@@ -471,8 +531,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "strain_glitch",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "thinking_deeper",
@@ -486,8 +548,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "focus_resonance",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     },
     {
       "state_key": "awaiting_command",
@@ -501,8 +565,10 @@
       "eye_line_y_px": 633.6,
       "head_width_px": 614.4,
       "signal_overlay": "none",
-      "status": "waiting_for_independent_standalone_and_owner_approval",
-      "point_master_regeneration_required": false
+      "status": "pending_production_art",
+      "point_master_regeneration_required": false,
+      "unique_master_verified": false,
+      "dual_anchor_verified": false
     }
   ]
 }

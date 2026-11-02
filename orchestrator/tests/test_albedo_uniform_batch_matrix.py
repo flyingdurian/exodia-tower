@@ -21,3 +21,11 @@ def test_all_33_states_are_explicitly_queued():
     assert {x['state_key'] for x in q['states']}==set(r['states'])
     assert q['auto_owner_approval'] is False
     assert all(x['signal_overlay']==r['states'][x['state_key']]['signal_overlay'] for x in q['states'])
+
+
+def test_pending_33_and_no_fake_released_states():
+    data=json.loads(REG.read_text())
+    assert all(v['status']=='pending_production_art' for v in data['states'].values())
+    assert all(v['sha256'] is None for v in data['states'].values())
+    assert all(v['unique_master_verified'] is False for v in data['states'].values())
+    assert data['release']['enabled'] is False
