@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10122a"><title>EXODIA Tower · Core Five Live Review</title>
+<style>
+:root{color-scheme:dark;--bg:#0a0d22;--panel:#131a37;--stroke:#44537c;--text:#f3efff;--muted:#a3b2d6;--accent:#c4afff;--cyan:#7af3e7;--warning:#f2cb85;font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 49% -25%,#353269,#0a0d22 60%);color:var(--text)}
+a{color:#d9c9ff}.app{max-width:1660px;min-height:100vh;margin:auto;padding:18px;display:flex;flex-direction:column;gap:13px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--stroke);background:#171b3e;border-radius:12px;padding:12px 19px}
+.brand{font-family:Georgia,serif;font-size:22px;letter-spacing:.055em}.brand span{color:#c2a9ff}
+.sub{font-size:10px;color:var(--muted);letter-spacing:.15em}.locked{color:#f7c28f;border:1px solid #94735f;padding:7px 11px;border-radius:8px;font-size:11px;font-weight:700}
+.stage-grid{display:grid;grid-template-columns:minmax(215px,270px) minmax(300px,1fr) minmax(260px,325px);gap:14px;flex:1;min-height:730px}
+.panel{background:linear-gradient(160deg,#182147,#11182f);border:1px solid #43527d;border-radius:14px;padding:20px;min-width:0}
+h1,h2{font-family:Georgia,serif;margin:3px 0 12px;font-weight:500}h1{font-size:35px}h2{font-size:25px}.eyebrow{color:#9fb2da;letter-spacing:.15em;font-size:10px;font-weight:800;margin:0}.muted{color:var(--muted);font-size:12px;line-height:1.7}
+#stateMenu{display:grid;gap:10px;margin-top:22px}.choice{font:inherit;border:1px solid #414f79;background:#1c264a;color:var(--text);border-radius:10px;padding:14px 13px;text-align:left;cursor:pointer;min-height:61px}
+.choice:hover{border-color:#aa9afa}.choice[aria-pressed=true]{border-color:#c9b4ff;background:#353365;box-shadow:inset 3px 0 #dbc8ff}
+.choice b{display:block;font-size:13px}.choice small{display:block;color:#b0bce1;font-size:10px}.choice[disabled]{opacity:.48;cursor:not-allowed}
+.import{margin-top:25px;border-top:1px solid #44537c;padding-top:16px}.import label{font-size:11px;font-weight:700;color:#ced4f6}.import input{max-width:100%;font-size:11px;margin:10px 0}.action{background:#7463c3;border:1px solid #b6a3f8;border-radius:8px;padding:8px 13px;color:white;cursor:pointer;font-weight:700}.action:disabled{opacity:.45;cursor:not-allowed}
+.scene{position:relative;display:flex;flex-direction:column;align-items:center;overflow:hidden;background:radial-gradient(ellipse at 49% 39%,#3c3f78,#1e2352 49%,#0e1635);isolation:isolate}
+.scene:before{content:'';position:absolute;inset:0;background-image:linear-gradient(#9f9dce16 1px,transparent 1px),linear-gradient(90deg,#9f9dce16 1px,transparent 1px);background-size:80px 80px;pointer-events:none}
+.scene-top{width:100%;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:7px;color:#c0c5eb;font-size:10px;letter-spacing:.14em}
+.aura{position:absolute;width:460px;height:460px;top:29%;border-radius:50%;border:1px solid #927fdb90;box-shadow:0 0 95px #837ee85c, inset 0 0 80px #b7a2f31a;animation:pulse 4s ease-in-out infinite;pointer-events:none}
+.scene[data-activity=working] .aura{border-color:#75f0d5;box-shadow:0 0 98px #50c0af5c}
+.scene[data-activity=monitoring] .aura{border-style:dashed;box-shadow:0 0 95px #88c3e86b}
+.scene[data-activity=warning] .aura{border-color:#eea87b;box-shadow:0 0 115px #e0a05a50}
+@keyframes pulse{50%{opacity:.58;transform:scale(1.06)}}.title{text-align:center;z-index:1;margin:8px 0 10px}.title h1{margin:0;font-size:clamp(29px,3.5vw,51px)}.title p{font-size:10px;letter-spacing:.18em;color:#b4c3eb;margin:5px}
+.portrait-viewport{position:relative;z-index:2;width:min(72%,370px);aspect-ratio:4/5;overflow:hidden;border-radius:160px 160px 24px 24px;border:1px solid #af9cfa;box-shadow:0 0 54px #bca1ff4a,0 24px 48px #04091f90;background:#191d42;flex:none}
+.portrait-viewport img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;opacity:0;transform:none!important;filter:none!important;pointer-events:none}
+.portrait-viewport img[aria-hidden=false]{opacity:1}.no-preview{position:absolute;inset:0;display:grid;place-items:center;color:#cbbcef;text-align:center;padding:20px;font-size:13px}
+.scene-info{z-index:2;text-align:center;min-height:102px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:11px 20px}.scene-info b{letter-spacing:.08em}.scene-info p{color:#b6c5ed;min-height:38px;font-size:12px;margin:5px 0}.scene-footer{z-index:1;display:flex;gap:18px;color:#9bb6df;font-size:10px;border-top:1px solid #60709b6b;margin-top:auto;padding-top:15px}
+.data{margin:15px 0}.data dt{color:#96a9d2;font-size:10px;letter-spacing:.06em;margin:10px 0 2px}.data dd{margin:0;overflow-wrap:anywhere;font-size:12px}.code{font:11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:#d4c5f9}
+.metric-list{display:grid;grid-template-columns:1fr auto;gap:6px;font-size:12px;margin:14px 0;border-top:1px solid #46537e;padding-top:12px}.metric-list span{color:#a9bae0}.metric-list b{text-align:right;font-variant-numeric:tabular-nums}
+.caution{margin:17px 0 0;border-left:3px solid var(--warning);background:#4a362845;padding:12px;color:#f0d8b9;font-size:11px;line-height:1.5}
+#status{font-size:12px;color:#b3e7e5;min-height:34px;overflow-wrap:anywhere}.footer{display:flex;justify-content:space-between;font-size:10px;color:#9caed8;gap:10px}
+@media(max-width:1100px){.stage-grid{grid-template-columns:220px minmax(260px,1fr)}.inspector{grid-column:1/-1}.inspector .data{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px}.inspector .data dt{margin:0}.scene{min-height:700px}}
+@media(max-width:650px){.app{padding:9px}.top{align-items:flex-start;flex-wrap:wrap}.brand{font-size:19px}.stage-grid{grid-template-columns:1fr;min-height:0}.rail{padding:14px}.rail h2{font-size:21px}#stateMenu{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:10px}.choice{padding:8px 3px;text-align:center;min-height:58px}.choice b{font-size:10px}.choice small{display:none}.import{margin-top:14px}.scene{min-height:640px}.portrait-viewport{width:min(77%,330px)}.aura{width:310px;height:310px}.inspector{grid-column:auto}.inspector .data{display:block}.footer{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.aura{animation:none!important}}
+</style>
+<script type="module" src="/assets/core5_review_workbench.mjs"></script></head>
+<body><div class="app">
+<header class="top"><div><div class="brand">✧ EXODIA <span>TOWER</span></div><div class="sub">ALBEDO / VERIFIED FIVE-STATE ART REVIEW</div></div><div class="locked" id="lockLabel">PRODUCTION RELEASE LOCKED</div><a href="/">← Live command center</a></header>
+<main class="stage-grid">
+<aside class="panel rail"><p class="eyebrow">01 / POSE LIBRARY</p><h2>Five distinct states</h2><p class="muted">Reviewer controls only. All artwork in this room remains unapproved and independent of the live task-release registry.</p>
+<nav id="stateMenu" aria-label="Preview states"></nav>
+<section class="import"><label for="reviewZip">Import the exact verified Gate 1 visual review ZIP</label><input id="reviewZip" type="file" accept=".zip,application/zip"><button class="action" id="importButton" type="button">Import 5 verified previews</button><p id="status" role="status">Checking for already imported review art…</p><label><input id="observeTasks" type="checkbox"> Follow live task state (read-only)</label></section>
+</aside>
+<section class="panel scene" id="scene" data-activity="idle" aria-label="Fixed camera character stage">
+<div class="aura"></div><div class="scene-top"><span>ALBEDO / CORE-FIVE REVIEW STAGE</span><span id="liveMode">LOCAL ART REVIEW</span></div><div class="title"><p>CELESTIAL COMMAND OPERATIVE</p><h1>Albedo</h1></div>
+<div id="portraitFrame" class="portrait-viewport" role="img" aria-label="Review portrait not loaded"><div id="emptyPreview" class="no-preview">Import verified concept artwork to enable the five-state viewer.</div></div>
+<div class="scene-info"><b id="stateTitle">AWAITING REVIEW</b><p id="stateCaption">Artwork has no owner production approval.</p></div><div class="scene-footer"><span>✧ FIXED CAMERA</span><span>◉ SHA CHECKED</span><span>⚠ REVIEW ONLY</span></div>
+</section>
+<aside class="panel inspector"><p class="eyebrow">02 / MEASUREMENT AUDIT</p><h2>State inspector</h2><dl class="data"><dt>Artwork classification</dt><dd id="assetClass">Not loaded</dd><dt>Original filename</dt><dd id="sourceFile">—</dd><dt>Original SHA-256</dt><dd id="sourceSha" class="code">—</dd><dt>Review PNG SHA-256</dt><dd id="previewSha" class="code">—</dd><dt>Source → Review canvas</dt><dd id="dims">—</dd></dl>
+<div class="metric-list"><span>Eye midpoint / delta</span><b id="eyeValue">—</b><span>Shoulder baseline / delta</span><b id="shoulderValue">—</b><span>Estimated head width</span><b id="headValue">—</b><span>Numerical anchors</span><b id="geometryValue">—</b><span>Owner acceptance</span><b>NOT APPROVED</b></div>
+<div class="caution">A pixel midpoint PASS does not verify shoulder anatomy, camera proportions, independent native artwork, or approval. Working's estimated head width is ~693 px versus the canonical 614.4 ±4 px.</div>
+<p class="muted">The import route can only load the five exact SHA-bound concept review PNGs. A later native-art production manifest will use a separate, stricter authority chain.</p></aside></main>
+<footer class="footer"><span>Backed by the existing local FastAPI instance; no provider behavior has been changed.</span><span id="visited">0 / 5 states inspected</span></footer>
+</div></body></html>
