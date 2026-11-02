@@ -5,6 +5,9 @@ on:
     paths:
       - 'orchestrator/tools/portrait_registry_audit.py'
       - 'orchestrator/tools/ingest_static_portraits.py'
+      - 'orchestrator/tools/ingest_standalone_portrait.py'
+      - 'orchestrator/tests/test_ingest_standalone_portrait.py'
+      - 'assets/staging_intake/manifest_template.json'
       - 'orchestrator/tests/test_standalone_only_gate.py'
       - 'orchestrator/tests/test_portrait_registry_audit.py'
       - 'orchestrator/tests/portrait_state_manager.test.mjs'
@@ -16,6 +19,9 @@ on:
     paths:
       - 'orchestrator/tools/portrait_registry_audit.py'
       - 'orchestrator/tools/ingest_static_portraits.py'
+      - 'orchestrator/tools/ingest_standalone_portrait.py'
+      - 'orchestrator/tests/test_ingest_standalone_portrait.py'
+      - 'assets/staging_intake/manifest_template.json'
       - 'orchestrator/tests/test_standalone_only_gate.py'
       - 'orchestrator/frontend/portrait_state_manager.mjs'
       - 'orchestrator/frontend/companions/production/kiko/portrait_registry.json'
@@ -33,7 +39,7 @@ jobs:
       - name: Install QA dependencies
         run: python -m pip install "Pillow>=11,<13" "pytest>=8,<10"
       - name: Run registry regression tests
-        run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py orchestrator/tests/test_static_portrait_release.py orchestrator/tests/test_standalone_only_gate.py
+        run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py orchestrator/tests/test_static_portrait_release.py orchestrator/tests/test_standalone_only_gate.py orchestrator/tests/test_ingest_standalone_portrait.py
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
       - name: Run production-intake audit (missing art expected to fail closed)

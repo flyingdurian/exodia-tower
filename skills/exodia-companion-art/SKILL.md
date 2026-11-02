@@ -102,3 +102,7 @@ Each of the 33 production portraits must originate as a truly independent, stand
 Metadata alone does not prove source authenticity or owner consent; reviewers must inspect the original standalone file and the actual approval evidence. Missing or suspicious provenance MUST fail the importer and independent registry audit. No live promotion until all 33 pass. Deferred animation loops and Operations Deck sprites remain separate. Preserve live provider workflows.
 
 See docs/EXODIA_STANDALONE_ASSET_ONLY.md.
+
+
+## Single-file standalone portrait staging (2026-11-02)
+Use assets/staging_intake/manifest_template.json for 33 exact state keys and orchestrator/tools/ingest_standalone_portrait.py for one native 1536x1920 PNG at a time. Require human-reviewed source provenance and seven image-bound coordinates, image and registration hashes, matching real owner approval, and a non-destructive dry-run. --commit atomically installs only a verified state and NEVER enables the global 33-state live release. Never automatically synthesize face measurements or source assets. See docs/EXODIA_STANDALONE_SINGLE_FILE_INTAKE.md.
