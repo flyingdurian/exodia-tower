@@ -51,3 +51,9 @@ Previously generated pink-haired 20-emotion composite boards were exploratory ST
 ## 2026-11-01 — High-definition 2D Wave 1 staging
 
 Four independent 1K+ illustrations (Happy, Thinking, Serious, Typing/Working) are supplied via a separate downloadable artifact package and require visual acceptance. The existing 4-direction deck stills remain small-scale navigation prototypes, not completed walk animation. The fail-closed installer in `orchestrator/tools/import_albedo_wave1.py` places the approved-source review files only into `frontend/companions/review/kiko_wave1`. Do not promote unreviewed art to the live stage or rest of fleet. See `docs/ALBEDO_2D_HD_WAVE1.md`.
+
+## LOCKED — 4:5 PORTRAIT CONTINUITY (2026-11-01)
+All 10 companions: every emotion, action, status and every real animation frame must use 1536 × 1920 native pixels (4:5), eye midpoint (50%,33%), approx 40% head-width proportion, and 5.5% safe margin around hair, hands and headpiece.
+The portrait remains a centered fixed-size slot. No per-state zoom, nonuniform stretch, object-fit cover, or zoom-cropped image. Separate the atmospheric animated UI from portrait art. 4+ genuinely distinct, registered frames for Idle/Typing/Explaining loops.
+Wave 1 originals (1199×1312, 1312×1199 and 1536×1024) are source-noncompliant and may only be reframed for review; consistent canvas size alone does NOT fix apparent head size. New artwork must be authored to the canonical canvas, and pass identity/anatomy and user acceptance review.
+Authoritative standard: docs/ALBEDO_PORTRAIT_STANDARD.md. Gate: orchestrator/tools/portrait_standard.py. Operations Deck sprite dimensions stay separate.
