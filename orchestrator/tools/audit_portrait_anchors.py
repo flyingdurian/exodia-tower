@@ -105,7 +105,7 @@ def audit(registry_path,regions_path,asset_root=None,approval_ledger_path=None):
       core_pass=passed,full_batch_unlocked=passed,core_states=core,
       approval_ledger_supplied=approval_ledger_path is not None,
       checked_count=len(results),passed_count=sum(v['status']=='PASS' for v in results.values()),
-      states=results,warning='Pixel gradients cannot prove anatomical shoulder identity; genuine owner-reviewed SHA-bound ledger and independent visual inspection mandatory. Metadata alone is not proof.'
+      states=results,warning='Pixel gradients cannot prove anatomical shoulder identity; genuine owner-reviewed SHA-bound ledger and independent visual inspection mandatory. Metadata alone is not proof.')
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('--registry',type=Path,required=True);p.add_argument('--search-regions',type=Path,required=True)
