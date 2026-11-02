@@ -1,0 +1,9 @@
+{
+  "status": "FAILED",
+  "state_key": "idle",
+  "errors": [
+    "standalone_source_missing_or_symlink"
+  ],
+  "committed": false,
+  "live_release_enabled": false
+}
