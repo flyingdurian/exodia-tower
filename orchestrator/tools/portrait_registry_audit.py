@@ -1,0 +1,113 @@
+"""Exodia: fail-closed 33-state PNG/geometry/SHA intake; no auto face detection."""
+import argparse, hashlib, json, re
+from pathlib import Path
+from PIL import Image
+SCHEMA="exodia.portrait-state-registry/v1"
+EXPRESSIONS=("neutral happy joyful excited gentle smiling_closed laughing amused confident serious focused thinking curious surprised concerned worried sad disappointed angered blushing").split()
+ACTIONS=("idle working monitoring pointing explaining celebrating defeat stretching sleeping waking_up tantrum thinking_deeper awaiting_command").split()
+LOOPS=("idle_breathing working_computer explaining_talk_gesture").split()
+SIZE=(1536,1920)
+def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def within(root,rel):
+    if not isinstance(rel,str) or not rel or "\\" in rel or ":" in rel:raise ValueError("invalid_path")
+    path=(root/rel).resolve()
+    if Path(rel).is_absolute() or ".." in Path(rel).parts or not path.is_relative_to(root.resolve()):raise ValueError("unsafe_path")
+    return path
+def image_audit(path,sha):
+    e=[]
+    if not path.is_file():return ["file_missing"]
+    try:
+        with Image.open(path) as im:
+            if im.format!="PNG":e.append("not_png")
+            if im.size!=SIZE:e.append("wrong_canvas_"+str(im.size))
+            im.verify()
+    except Exception as ex:return ["invalid_png_"+str(ex)]
+    if not isinstance(sha,str) or not re.fullmatch("[0-9a-f]{64}",sha):e.append("missing_sha256")
+    elif digest(path)!=sha:e.append("sha256_mismatch")
+    return e
+def landmarks(meta,sha,spec):
+    e=[]
+    if meta.get("image_sha256")!=sha:e.append("landmarks_not_bound_to_image")
+    if meta.get("method")!="human_annotated_from_actual_image" or meta.get("human_review")!="completed":e.append("human_landmarks_not_verified")
+    if not isinstance(meta.get("owner_confirmation_reference"),str) or len(meta["owner_confirmation_reference"])<8:e.append("no_owner_confirmation_reference")
+    pts=meta.get("points_px")
+    keys=["left_outer_eye","right_outer_eye","head_left_edge","head_right_edge","ornament_attachment","left_shoulder","right_shoulder"]
+    if not isinstance(pts,dict) or any(x not in pts for x in keys):return e+["missing_seven_landmarks"]
+    for key in keys:
+        point=pts[key]
+        if not isinstance(point,list) or len(point)!=2 or not all(type(x) in (int,float) for x in point) or not (0<=point[0]<1536 and 0<=point[1]<1920):return e+["invalid_landmark_"+key]
+    a,b=pts["left_outer_eye"],pts["right_outer_eye"]
+    if a[0]>=b[0]:e.append("eye_order_invalid")
+    measured={"eye_y":(a[1]+b[1])/2,"eye_x":(a[0]+b[0])/2,"head_width":pts["head_right_edge"][0]-pts["head_left_edge"][0]}
+    for key,target,tol in [("eye_y",633.6,2),("eye_x",768,8),("head_width",614.4,4)]:
+        if abs(measured[key]-target)>tol:e.append(key+"_out_of_range_"+str(round(measured[key],2)))
+    return e
+def asset(root,entry,spec):
+    e=[]
+    if entry.get("status")!="verified":e.append("not_verified")
+    try:p=within(root,entry.get("path"));r=within(root,entry.get("registration_path"))
+    except Exception as ex:return ["invalid_path_"+str(ex)]
+    e.extend(image_audit(p,entry.get("sha256")))
+    if not r.is_file():e.append("registration_missing")
+    else:
+        if digest(r)!=entry.get("registration_sha256"):e.append("registration_sha256_mismatch")
+        try:e.extend(landmarks(json.loads(r.read_text()),entry.get("sha256"),spec))
+        except Exception as ex:e.append("registration_invalid_"+str(ex))
+    if not isinstance(entry.get("owner_approval_reference"),str) or len(entry["owner_approval_reference"])<8:e.append("approval_not_documented")
+    if not entry.get("verified_by"):e.append("reviewer_missing")
+    return e
+def loop(root,entry):
+    e=[]
+    if entry.get("status")!="verified" or not entry.get("production_ready"):e.append("loop_not_approved")
+    try:p=within(root,entry.get("manifest_path"))
+    except Exception as ex:return ["loop_path_invalid_"+str(ex)]
+    if not p.is_file():return e+["loop_manifest_missing"]
+    if digest(p)!=entry.get("manifest_sha256"):e.append("loop_manifest_sha256_mismatch")
+    try:data=json.loads(p.read_text());frames=data["frames"]
+    except Exception as ex:return e+["invalid_loop_manifest_"+str(ex)]
+    if not isinstance(frames,list) or len(frames)<entry["min_frames"]:return e+["insufficient_frames"]
+    hashes=set()
+    for i,f in enumerate(frames):
+        try:
+            errors=image_audit(within(root,f.get("path")),f.get("sha256"))
+            if f.get("sha256") in hashes:errors.append("duplicate_hash")
+            hashes.add(f.get("sha256"))
+        except Exception as ex:errors=["invalid_path_"+str(ex)]
+        e.extend("frame_"+str(i)+"_"+x for x in errors)
+    if data.get("pixel_lock_audit")!="passed" or data.get("seam_audit")!="passed":e.append("motion_validation_required")
+    if not entry.get("owner_approval_reference"):e.append("owner_loop_approval_missing")
+    return e
+def audit(registry):
+    d=json.loads(registry.read_text());root=registry.parent
+    e=[]
+    if d.get("schema")!=SCHEMA or d.get("character_id")!="kiko":e.append("schema_or_agent_wrong")
+    if set(d.get("states",{}))!=set(EXPRESSIONS+ACTIONS):e.append("not_exactly_33_states")
+    if set(d.get("loops",{}))!=set(LOOPS):e.append("not_exactly_three_loops")
+    spec=d.get("canvas",{})
+    if (spec.get("width"),spec.get("height"),spec.get("aspect_ratio"))!=(1536,1920,"4:5"):e.append("wrong_master_spec")
+    if (spec.get("eye_line_target_px"),spec.get("head_width_target_px"),spec.get("eye_midpoint_target_x_px"))!=(633.6,614.4,768):e.append("wrong_anchor_targets")
+    if e:return {"status":"FAILED","production_ready":False,"errors":e}
+    states={}
+    for name,entry in d["states"].items():
+        errors=asset(root,entry,spec)
+        if entry.get("category")!=("expression" if name in EXPRESSIONS else "action"):errors.append("wrong_category")
+        states[name]={"passed":not errors,"errors":errors}
+    loops={name:{"errors":loop(root,entry)} for name,entry in d["loops"].items()}
+    npass=sum(v["passed"] for v in states.values());lpass=sum(not v["errors"] for v in loops.values())
+    enabled=d.get("release",{}).get("enabled") is True
+    if not enabled:e.append("release_disabled")
+    if npass!=33:e.append("verified_states_"+str(npass)+"_of_33")
+    if lpass!=3:e.append("verified_loops_"+str(lpass)+"_of_3")
+    return {"schema":SCHEMA,"status":"PASSED" if not e else "FAILED","production_ready":not e,
+      "canvas":[1536,1920],"eye_y_target_px":633.6,"head_width_target_px":614.4,
+      "states_checked":33,"states_verified":npass,"loops_checked":3,"loops_verified":lpass,
+      "errors":e,"states":states,"loops":loops,
+      "warning":"Human landmark annotations bound to image SHA; automated geometry checks do not detect faces or authenticate consent."}
+def main():
+    p=argparse.ArgumentParser();p.add_argument("registry",type=Path);p.add_argument("--report",type=Path)
+    args=p.parse_args();result=audit(args.registry)
+    output=json.dumps(result,indent=2)
+    print(output)
+    if args.report:args.report.parent.mkdir(parents=True,exist_ok=True);args.report.write_text(output+"\n")
+    return 0 if result["production_ready"] else 1
+if __name__=="__main__":raise SystemExit(main())
