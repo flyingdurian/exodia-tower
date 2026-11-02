@@ -27,6 +27,7 @@ on:
       - 'orchestrator/frontend/portrait_state_boot.mjs'
       - 'orchestrator/frontend/companions/production/kiko/portrait_registry.json'
       - '.github/workflows/portrait-registry.yml'
+      - 'orchestrator/tools/build_core5_review.py'
   pull_request:
     paths:
       - 'orchestrator/tools/portrait_registry_audit.py'
@@ -71,6 +72,16 @@ jobs:
           PY
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
+      - name: Build SHA-verified review-only Core-Five preview board
+        run: |
+          python orchestrator/tools/build_core5_review.py --out-png core5_preview_review.png --out-json core5_preview_diagnostic.json
+          python - <<'PY'
+          import json
+          d=json.load(open('core5_preview_diagnostic.json'))
+          assert d['preview_only_count']==4 and d['unavailable_count']==1
+          assert d['five_of_five_production_pass'] is False and d['released_28_states'] is False
+          print('PASS: preview-only board, missing Pointing; 28-state gate locked')
+          PY
       - name: Run production-intake audit (missing art expected to fail closed)
         shell: bash
         run: |
@@ -102,3 +113,5 @@ jobs:
           path: |
             portrait_registry_report.json
             core_actions_batch_report.json
+            core5_preview_review.png
+            core5_preview_diagnostic.json
