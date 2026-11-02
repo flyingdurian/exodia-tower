@@ -29,7 +29,11 @@
       "approval": "UNAPPROVED_PROTOTYPE",
       "normalization": "contain_lanczos_pad_scaled_as_needed",
       "is_action_accurate": true,
-      "caveat": "Concept-state preview, not signed production artwork"
+      "caveat": "Concept-state preview, not signed production artwork",
+      "production_status": "pending_production_art",
+      "visual_proxy": false,
+      "anchor_status": "pending_measured_dual_anchor_verification",
+      "availability": "prototype_preview"
     },
     "working": {
       "label": "Working",
@@ -51,7 +55,11 @@
       "approval": "UNAPPROVED_PROTOTYPE",
       "normalization": "contain_lanczos_pad_scaled_as_needed",
       "is_action_accurate": true,
-      "caveat": "Concept-state preview, not signed production artwork"
+      "caveat": "Concept-state preview, not signed production artwork",
+      "production_status": "pending_production_art",
+      "visual_proxy": false,
+      "anchor_status": "pending_measured_dual_anchor_verification",
+      "availability": "prototype_preview"
     },
     "explaining": {
       "label": "Explaining",
@@ -73,7 +81,11 @@
       "approval": "UNAPPROVED_PROTOTYPE",
       "normalization": "contain_lanczos_pad_scaled_as_needed",
       "is_action_accurate": true,
-      "caveat": "Concept-state preview, not signed production artwork"
+      "caveat": "Concept-state preview, not signed production artwork",
+      "production_status": "pending_production_art",
+      "visual_proxy": false,
+      "anchor_status": "pending_measured_dual_anchor_verification",
+      "availability": "prototype_preview"
     },
     "monitoring": {
       "label": "Monitoring",
@@ -95,29 +107,31 @@
       "approval": "UNAPPROVED_PROTOTYPE",
       "normalization": "contain_lanczos_pad_scaled_as_needed",
       "is_action_accurate": true,
-      "caveat": "Concept-state preview, not signed production artwork"
+      "caveat": "Concept-state preview, not signed production artwork",
+      "production_status": "pending_production_art",
+      "visual_proxy": false,
+      "anchor_status": "pending_measured_dual_anchor_verification",
+      "availability": "prototype_preview"
     },
     "pointing": {
       "label": "Pointing",
-      "description": "Directing attention to a target",
-      "activity": "DIRECTING",
-      "path": "pointing.png",
-      "sha256": "70c8022e39e2f60a906facf52874a44767617750eb027a43f338751d85a3aca3",
+      "description": "True pointing-hand master pending remote upload",
+      "activity": "PENDING ART",
+      "availability": "pending_master",
+      "path": null,
+      "sha256": null,
       "canvas": [
         1536,
         1920
       ],
-      "source_canvas": [
-        1122,
-        1402
-      ],
-      "original_source": "celestial_albedo_in_radiant_regalia.png",
-      "source_sha256": "341613a6acca68fe8aa18548434b8a35553015195f9b1cbcaa1c3e23c734a7ea",
+      "original_source": null,
+      "source_sha256": null,
       "asset_family": "prototype_only",
-      "approval": "UNAPPROVED_PROTOTYPE",
-      "normalization": "contain_lanczos_pad_scaled_as_needed",
+      "approval": "PENDING_PRODUCTION_ART",
+      "production_status": "pending_production_art",
+      "visual_proxy": false,
       "is_action_accurate": false,
-      "caveat": "Gesture representative only; dedicated pointing-finger master still needed"
+      "caveat": "Retired the false pointing image. Genuine extended-finger art is in the cleaned local review package, not uploaded to this branch."
     }
   },
   "order": [
@@ -127,5 +141,5 @@
     "monitoring",
     "pointing"
   ],
-  "notice": "PROTOTYPE ONLY \u2014 includes low-resolution source scaling and a representative Pointing gesture; no owner approval is asserted."
+  "notice": "4 distinct core previews available. Fifth Pointing state is disabled until the genuine pointing-hand candidate is uploaded. No proxies."
 }

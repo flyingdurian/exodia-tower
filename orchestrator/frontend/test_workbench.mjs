@@ -14,7 +14,7 @@ function addStates(reg){
     button.className='state-button';button.type='button';button.dataset.state=state;
     button.setAttribute('aria-pressed','false');
     button.innerHTML=`<span class="glyph">${icons[state]}</span><span class="detail"><strong>${item.label}</strong><small>${descriptions[state]}</small></span><span class="arrow">›</span>`;
-    button.addEventListener('click',()=>go(index));
+    if(item.availability==='pending_master'){button.disabled=true;button.title='Pending true pointing-hand standalone art';button.classList.add('pending-art')}else button.addEventListener('click',()=>go(index));
     $('stateMenu').append(button);
   });
 }
@@ -34,6 +34,10 @@ function renderState(state){
 async function go(index){
   selected=(index+PROTOTYPE_STATES.length)%PROTOTYPE_STATES.length;
   const state=PROTOTYPE_STATES[selected];
+  if(manager.registry?.states[state]?.availability==='pending_master'){
+    $('loadStatus').textContent='Pointing pending a genuine distinct master; old proxy purged.';
+    return;
+  }
   try {
     $('loadStatus').textContent=`Checking ${state} asset SHA-256…`;
     const success=await manager.setState(state);

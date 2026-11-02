@@ -5,12 +5,17 @@ export const PROTOTYPE_STATES = Object.freeze(['idle', 'working', 'explaining', 
 export function validPrototypeRegistry(registry) {
   if (registry?.schema !== PROTOTYPE_SCHEMA || registry?.production_release_enabled !== false ||
       registry?.canvas?.width !== 1536 || registry?.canvas?.height !== 1920) return false;
-  return PROTOTYPE_STATES.every(k =>
-    registry.states?.[k]?.approval === 'UNAPPROVED_PROTOTYPE' &&
+  return Object.keys(registry.states||{}).length===5 && PROTOTYPE_STATES.every(k =>
+    k==='pointing' ? (registry.states[k]?.approval==='PENDING_PRODUCTION_ART' &&
+      registry.states[k]?.availability==='pending_master' &&
+      registry.states[k]?.path===null && registry.states[k]?.sha256===null)
+    : (registry.states?.[k]?.approval === 'UNAPPROVED_PROTOTYPE' &&
+       registry.states?.[k]?.availability === 'prototype_preview' &&
+       registry.states?.[k]?.visual_proxy === false &&
     registry.states?.[k]?.canvas?.[0] === 1536 &&
     registry.states?.[k]?.canvas?.[1] === 1920 &&
     /^[a-f0-9]{64}$/i.test(registry.states[k].sha256) &&
-    registry.states[k].path === `${k}.png`);
+    registry.states[k].path === `${k}.png`));
 }
 
 export class PrototypePortraitStateManager {
@@ -54,6 +59,7 @@ export class PrototypePortraitStateManager {
   async load(state) {
     const entry = this.registry?.states?.[state];
     if (!entry || !PROTOTYPE_STATES.includes(state)) throw new Error(`Unknown preview state: ${state}`);
+    if(entry.availability==='pending_master')throw new Error(`${state}: pending real pointing-hand source; refusing proxy`);
     if (this.cache.has(state)) return this.cache.get(state);
     const imageUrl = new URL(entry.path, new URL(this.url, location.href)).href;
     const res = await this.fetcher(imageUrl, {cache: 'no-store'});

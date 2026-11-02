@@ -37,6 +37,8 @@ test('valid 5-state preview registry cannot impersonate the 33-state production 
  assert.deepEqual(Object.keys(registry.states),PROTOTYPE_STATES);
  const bad=structuredClone(registry);bad.production_release_enabled=true;
  assert.equal(validPrototypeRegistry(bad),false);
+ assert.equal(registry.states.pointing.path,null);
+ assert.equal(registry.states.pointing.availability,'pending_master');
 });
 
 test('all 5 images have a separate hashed path and can transition in place',async()=>{
@@ -44,14 +46,15 @@ test('all 5 images have a separate hashed path and can transition in place',asyn
  const manager=new PrototypePortraitStateManager({manifestUrl:'https://exodia.local/prototype_assets/albedo/prototype_registry.json',fetcher:fromFixture,container:target});
  await manager.initialize();
  assert.equal(target.images.length,2);
- for(const state of PROTOTYPE_STATES){
+ for(const state of PROTOTYPE_STATES.filter(s=>s!=='pointing')){
   assert.equal(await manager.setState(state),true);
   assert.equal(manager.current,state);
   assert.equal(target.lastEvent.detail.state,state);
   assert.equal(target.images.filter(x=>x.style.opacity==='1').length,1);
  }
- assert.equal(manager.cache.size,5);
- assert.equal(manager.events.length,5);
+ assert.equal(manager.cache.size,4);
+ assert.equal(manager.events.length,4);
+ await assert.rejects(()=>manager.setState('pointing'),/pending real pointing-hand source/);
  manager.clear();
  assert.equal(manager.cache.size,0);
 });
