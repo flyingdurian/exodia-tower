@@ -1,0 +1,35 @@
+{
+  "source_canvas": [
+    1856,
+    2304
+  ],
+  "source_sha256": "84be5d2f9c6a33eb7bf7ac45b951e5ce241fbf41c44e758fbb3ca7123af12a4a",
+  "normalized_canvas": [
+    1536,
+    1920
+  ],
+  "normalized_sha256": "e4d80d1081c4ee9bbb155ddb28f134d94206aa91fd6a0b424a5147ff0cc4a9af",
+  "normalization_transform": {
+    "schema": "exodia.portrait-normalization/v1",
+    "method": "center_crop_lanczos_downsample",
+    "source_canvas": [
+      1856,
+      2304
+    ],
+    "crop_box": [
+      6,
+      0,
+      1849,
+      2304
+    ],
+    "output_canvas": [
+      1536,
+      1920
+    ],
+    "scale_x": 0.8334237655995659,
+    "scale_y": 0.8333333333333334,
+    "source_sha256": "84be5d2f9c6a33eb7bf7ac45b951e5ce241fbf41c44e758fbb3ca7123af12a4a",
+    "output_sha256": "e4d80d1081c4ee9bbb155ddb28f134d94206aa91fd6a0b424a5147ff0cc4a9af"
+  },
+  "status": "STAGED_FOR_REVIEW_NOT_PRODUCTION"
+}

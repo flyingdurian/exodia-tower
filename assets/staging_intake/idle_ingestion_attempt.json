@@ -1,0 +1,9 @@
+{
+  "status": "FAILED",
+  "state_key": "idle",
+  "errors": [
+    "normalized_visual_approval_required"
+  ],
+  "committed": false,
+  "live_release_enabled": false
+}
