@@ -1,0 +1,24 @@
+name: Exodia grid slicer preflight tests
+on:
+  push:
+    paths:
+      - 'orchestrator/tools/slice_master_boards.py'
+      - 'orchestrator/tests/test_slice_master_boards.py'
+      - '.github/workflows/exodia-grid-slicer.yml'
+  pull_request:
+    paths:
+      - 'orchestrator/tools/slice_master_boards.py'
+      - 'orchestrator/tests/test_slice_master_boards.py'
+      - '.github/workflows/exodia-grid-slicer.yml'
+jobs:
+  slicer_gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install image-audit dependencies
+        run: python -m pip install Pillow pytest
+      - name: Verify extraction labels and release rejection gates
+        run: python -m pytest -q orchestrator/tests/test_slice_master_boards.py
