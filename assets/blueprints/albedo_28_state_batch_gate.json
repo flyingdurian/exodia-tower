@@ -1,0 +1,8 @@
+{
+  "schema": "exodia.pending-28-distinct-states/v1",
+  "status": "BLOCKED_AWAITING_5_OF_5_PIXEL_ANCHOR_AUDIT",
+  "generated_states": 0,
+  "no_proxies": true,
+  "no_relabelled_duplicates": true,
+  "prerequisite": "All five core states pass CV pixel measurements, source SHA and owner approval."
+}

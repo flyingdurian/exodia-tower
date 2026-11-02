@@ -1,0 +1,22 @@
+{
+  "schema": "exodia.immutable-dual-anchor/v1",
+  "character": "albedo",
+  "canvas": [
+    1536,
+    1920
+  ],
+  "aspect_ratio": "4:5",
+  "eye_line_y_px": 633.6,
+  "eye_tolerance_px": 2,
+  "shoulder_baseline_y_px": 980,
+  "shoulder_tolerance_px": 2,
+  "horizontal_center_x_px": 768,
+  "gold_reference_states": [
+    "working",
+    "explaining",
+    "monitoring"
+  ],
+  "gate": "all_core_five_image_scanned_reviewed_distinct_sources_PASS",
+  "batch_28_locked": true,
+  "rule": "Target position is not evidence. Actual image pixel scans and independent owner visual confirmation mandatory."
+}

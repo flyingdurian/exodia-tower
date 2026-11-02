@@ -4,6 +4,11 @@ on:
     branches: [development/exodia-foundation]
     paths:
       - 'orchestrator/tools/portrait_registry_audit.py'
+      - 'orchestrator/tools/audit_portrait_anchors.py'
+      - 'orchestrator/tools/reanchor_core5_preview.py'
+      - 'orchestrator/tests/test_audit_portrait_anchors.py'
+      - 'assets/blueprints/albedo_anchor_blueprint_v1.json'
+      - 'assets/blueprints/albedo_28_state_batch_gate.json'
       - 'orchestrator/tools/ingest_static_portraits.py'
       - 'orchestrator/tools/ingest_standalone_portrait.py'
       - 'orchestrator/tools/portrait_normalization.py'
@@ -51,9 +56,19 @@ jobs:
         with:
           node-version: '22'
       - name: Install QA dependencies
-        run: python -m pip install "Pillow>=11,<13" "pytest>=8,<10"
+        run: python -m pip install "Pillow>=11,<13" "pytest>=8,<10" "opencv-python-headless>=4.10,<5"
       - name: Run registry regression tests
         run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py orchestrator/tests/test_static_portrait_release.py orchestrator/tests/test_standalone_only_gate.py orchestrator/tests/test_ingest_standalone_portrait.py orchestrator/tests/test_portrait_normalization.py orchestrator/tests/test_core_action_batch.py
+      - name: Strict dual-anchor regression and 28-state generation gate
+        run: |
+          python -m pytest -q orchestrator/tests/test_audit_portrait_anchors.py
+          python - <<'PY'
+          import json
+          p=json.load(open('assets/blueprints/albedo_28_state_batch_gate.json'))
+          assert p['status']=='BLOCKED_AWAITING_5_OF_5_PIXEL_ANCHOR_AUDIT'
+          assert p['generated_states']==0
+          print('PASS: no unreviewed 28-state generation was started')
+          PY
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
       - name: Run production-intake audit (missing art expected to fail closed)

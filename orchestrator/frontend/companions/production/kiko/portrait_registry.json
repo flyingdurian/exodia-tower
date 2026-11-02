@@ -617,7 +617,11 @@
     "horizontal_center_x_px": 768,
     "role": "locked_authoring_targets",
     "measured_production_anchor_certification": false,
-    "require_owner_approval_for_each_state": true
+    "require_owner_approval_for_each_state": true,
+    "eye_tolerance_px": 2,
+    "shoulder_baseline_y_px": 980,
+    "shoulder_tolerance_px": 2,
+    "gate": "core_five_pixel_scan_owner_review_and_uniqueness_required"
   },
   "art_governance": {
     "schema": "exodia.unique-state-master/v1",
