@@ -1,3 +1,7 @@
+## 2026-11-01 — OWNER'S SUPERSEDING 2D DELIVERY DIRECTION
+
+High-fidelity 3D character sculpting/rigging is DEFERRED to a future project. The current approved task is separate 2D painted image masters for 20 facial emotions and 13 action poses, plus transparent directional sprite sets and authored sprite animation frames for roaming and idle behaviors on the Operations Deck. **Do not claim crop-derived 100px thumbnails are individually authored high-definition images.** Keep them out of a large hero portrait and reject static whole-body wiggles as movement animation. Visual benchmark hashes, complete requirements, and release gates are in `docs/ALBEDO_2D_PIVOT.md` and `docs/companion_2d_requirements.json`.
+
 # Exodia Tower — Companion Art & Rigging Skill
 Status: owner-approved visual benchmark LOCKED; individual production assets and genuine rigs NOT YET APPROVED.
 Updated: 2026-11-01. Applies to all 10 companions.
@@ -43,3 +47,7 @@ Previously generated pink-haired 20-emotion composite boards were exploratory ST
 
 ## References
 `docs/COMPANION_ART_BIBLE.md`; `docs/companion_art_contract.json`; `docs/ANIMATION_CONTRACT.md`; `docs/A1_ART_PRODUCTION_GATE.md`; `docs/ART_PRODUCTION_A1_3_2.md`.
+
+## 2026-11-01 — High-definition 2D Wave 1 staging
+
+Four independent 1K+ illustrations (Happy, Thinking, Serious, Typing/Working) are supplied via a separate downloadable artifact package and require visual acceptance. The existing 4-direction deck stills remain small-scale navigation prototypes, not completed walk animation. The fail-closed installer in `orchestrator/tools/import_albedo_wave1.py` places the approved-source review files only into `frontend/companions/review/kiko_wave1`. Do not promote unreviewed art to the live stage or rest of fleet. See `docs/ALBEDO_2D_HD_WAVE1.md`.
