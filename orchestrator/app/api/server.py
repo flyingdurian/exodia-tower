@@ -86,6 +86,45 @@ async def companion_art_qa():
 async def puppet_lab():
     return FileResponse(settings.root/'frontend'/'puppet_lab.html')
 
+
+# Owner-local, unapproved five-state artwork review. This does not mutate the
+# production portrait registry and does not dispatch an AI provider task.
+@app.get('/core5-review')
+async def albedo_core5_review():
+    return FileResponse(settings.root/'frontend'/'core5_review_workbench.html')
+
+@app.get('/api/albedo/core5/review-manifest')
+async def albedo_core5_review_manifest():
+    from app.companions.core5_review_assets import current_manifest
+    return current_manifest(settings.root)
+
+@app.get('/api/albedo/core5/review-assets/{state}')
+async def albedo_core5_review_asset(state: str):
+    from app.companions.core5_review_assets import local_asset
+    file=local_asset(settings.root,state)
+    if not file:
+        raise HTTPException(404,detail='Unverified or missing Core-Five review image')
+    return FileResponse(file,media_type='image/png',headers={
+        'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'})
+
+@app.post('/api/albedo/core5/review-import')
+async def albedo_core5_review_import(request: Request,
+                                     x_exodia_client:str=Header(default='')):
+    if x_exodia_client!='exodia-dashboard':
+        raise HTTPException(403,detail='Local operator authorization required')
+    if request.headers.get('content-type','').split(';')[0] not in (
+        'application/zip','application/octet-stream'):
+        raise HTTPException(415,detail='Upload the actual Gate 1 review ZIP')
+    from app.companions.core5_review_assets import import_review_zip,MAX_BUNDLE
+    if int(request.headers.get('content-length','0') or '0')>MAX_BUNDLE:
+        raise HTTPException(413,detail='Review archive exceeds 65 MiB')
+    payload=await request.body()
+    if len(payload)>MAX_BUNDLE:raise HTTPException(413,detail='Review archive too large')
+    try:
+        return await asyncio.to_thread(import_review_zip,settings.root,payload)
+    except (ValueError, OSError) as exc:
+        raise HTTPException(422,detail=str(exc)) from exc
+
 @app.get('/legacy')
 async def legacy():return FileResponse(settings.root/'frontend'/'index.html')
 
