@@ -131,6 +131,124 @@ def reframe_legacy_review(source: Path, destination: Path) -> dict:
     }
 
 
+
+# Explicitly approved postprocessing adapter: normalized 4:5 VISUAL masters only.
+# This is not a proof of native detail, independent authorship, or image landmarks.
+def _canonical_sha256(record: dict) -> str:
+    return hashlib.sha256(json.dumps(record, sort_keys=True, separators=(',', ':')).encode('utf-8')).hexdigest()
+
+
+def _soft_edge_pad(image: Image.Image, offset: tuple[int,int], size=(WIDTH,HEIGHT)) -> Image.Image:
+    """Pad by extending nearest boundary colours and feathering the join, no crop."""
+    x,y=offset
+    w,h=image.size
+    if x<0 or y<0 or x+w>size[0] or y+h>size[1]:
+        raise ValueError('Cannot satisfy mapping without cropping; HALTED')
+    out=Image.new('RGB',size)
+    out.paste(image,(x,y))
+    if y:
+        out.paste(image.crop((0,0,w,1)).resize((w,y)),(x,0))
+    bottom=size[1]-(y+h)
+    if bottom:
+        out.paste(image.crop((0,h-1,w,h)).resize((w,bottom)),(x,y+h))
+    if x:
+        out.paste(out.crop((x,0,x+1,size[1])).resize((x,size[1])),(0,0))
+    right=size[0]-(x+w)
+    if right:
+        out.paste(out.crop((x+w-1,0,x+w,size[1])).resize((right,size[1])),(x+w,0))
+    backdrop=out.filter(ImageFilter.GaussianBlur(65))
+    from PIL import ImageDraw
+    alpha=Image.new('L',size,0)
+    ImageDraw.Draw(alpha).rectangle((x+18,y+18,x+w-18,y+h-18),fill=255)
+    alpha=alpha.filter(ImageFilter.GaussianBlur(14))
+    backdrop.paste(out,(0,0),alpha)
+    return backdrop
+
+
+def normalize_generated(source: Path, destination: Path, landmarks: dict, metadata_path: Path) -> dict:
+    """High-quality 4:5 generator normalization with honest source provenance.
+
+    Numeric eye/head PASS checks evaluate a transform of user/artist measurements,
+    NOT automatic feature detection. The normalized image is for visual review
+    and does not authorize animation sequences or production rollout.
+    """
+    with Image.open(source) as original:
+        original.load()
+        if original.format != 'PNG':
+            raise ValueError('Generated source must be PNG')
+        sw,sh=original.size
+        im=ImageOps.exif_transpose(original).convert('RGB')
+    if not (600<=sw<=WIDTH and 750<=sh<=HEIGHT):
+        raise ValueError('Source dimensions outside normalization window')
+    if abs(sw/sh-RATIO)>0.001:
+        raise ValueError('Generator aspect deviates from 4:5; HALTED')
+    if landmarks.get('method')!='manual_visual_estimate':
+        raise ValueError('Landmark provenance must say manual_visual_estimate')
+    for key in ('eye_midpoint_source_px','head_bounds_x_source_px'):
+        value=landmarks.get(key)
+        if not (isinstance(value,list) and len(value)==2 and all(type(z) in (int,float) for z in value)):
+            raise ValueError('Missing source landmarks: '+key)
+    ex,ey=landmarks['eye_midpoint_source_px']
+    left,right=landmarks['head_bounds_x_source_px']
+    if not (0<ex<sw and 0<ey<sh and 0<=left<right<=sw):
+        raise ValueError('Landmark values outside original image')
+    desired_eye_x,desired_eye_y=WIDTH*EYE_TARGET[0],HEIGHT*EYE_TARGET[1]
+    desired_head=WIDTH*HEAD_WIDTH_TARGET
+    ideal_scale=desired_head/(right-left)
+    ow,oh=round(sw*ideal_scale),round(sh*ideal_scale)
+    sx,sy=ow/sw,oh/sh
+    x=round(desired_eye_x-ex*sx)
+    y=round(desired_eye_y-ey*sy)
+    if x<0 or y<0 or x+ow>WIDTH or y+oh>HEIGHT:
+        raise ValueError('Cannot simultaneously satisfy anchors without cropping; HALTED')
+    if abs(sx-sy)>0.001:
+        raise ValueError('Anisotropic stretching forbidden')
+    mapped_x,mapped_y=x+ex*sx,y+ey*sy
+    mapped_head=(right-left)*sx
+    if abs(mapped_x-desired_eye_x)>1.0 or abs(mapped_y-desired_eye_y)>1.0 or abs(mapped_head-desired_head)>1.0:
+        raise ValueError('Mapped eye/head targets not within one pixel')
+    content=im.resize((ow,oh),Image.Resampling.LANCZOS)
+    final=_soft_edge_pad(content,(x,y))
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    final.save(destination,format='PNG',optimize=True)
+    registration={
+        'source_landmarks':landmarks,'source_sha256':fingerprint(source),
+        'output_sha256':fingerprint(destination),
+        'interpolation':'Pillow Lanczos',
+        'transform':{'scale_x':sx,'scale_y':sy,'offset_x':x,'offset_y':y},
+        'mapped':{'eye_x_px':mapped_x,'eye_y_px':mapped_y,'head_width_px':mapped_head},
+        'source_method':'upsampled_from_generated_4x5',
+        'landmark_verified_from_pixels':False}
+    meta={'standard':STANDARD_ID,'kind':'emotion','character_id':'kiko',
+          'status':'candidate_pending_review','human_visual_review':'pending',
+          'registration':{'eye_x':mapped_x/WIDTH,'eye_y':mapped_y/HEIGHT,
+                          'head_width':mapped_head/WIDTH},
+          'legacy_reframe':False,'provenance':'normalized_generated_4x5',
+          'source_is_native_render':False,
+          'registration_sha256':_canonical_sha256(registration)}
+    checked=validate_master(destination,meta)
+    passed=not checked['errors']
+    report={'rule':'EXODIA_STRICT_INSTRUCTION_COMPLIANCE',
+            'scope':'normalized_visual_master_only',
+            'status':'PASSED' if passed else 'FAILED',
+            'source_px':[sw,sh],'output_px':[WIDTH,HEIGHT],
+            'original_sha256':registration['source_sha256'],
+            'normalized_sha256':registration['output_sha256'],
+            'requested_eye_line_px':desired_eye_y,'mapped_eye_line_px':mapped_y,
+            'requested_head_width_px':desired_head,'mapped_head_width_px':mapped_head,
+            'registration_sha256':meta['registration_sha256'],
+            'registration_verified_from_image':False,
+            'source_native_resolution':False,
+            'visual_approval_pending':True,
+            'sequence_generation_authorized':False,
+            'technical_check':checked,
+            'transform':registration['transform'],
+            'errors':checked['errors'],
+            'note':'Only output dimensions and mapping of provisional manually annotated landmarks pass. Resampling adds no native detail or proof of actual eye/head locations.'}
+    metadata_path.parent.mkdir(parents=True,exist_ok=True)
+    metadata_path.write_text(json.dumps({'metadata':meta,'registration':registration,'telemetry':report},indent=2)+'\n',encoding='utf-8')
+    return report
+
 def main():
     parser = argparse.ArgumentParser(description='Exodia fixed portrait canvas gate')
     sub = parser.add_subparsers(dest='command', required=True)
@@ -140,7 +258,20 @@ def main():
     legacy = sub.add_parser('reframe-review')
     legacy.add_argument('image', type=Path)
     legacy.add_argument('output', type=Path)
+    normal=sub.add_parser('normalize-generated')
+    normal.add_argument('source_png', type=Path)
+    normal.add_argument('output_png', type=Path)
+    normal.add_argument('source_landmarks', type=Path)
+    normal.add_argument('metadata_output', type=Path)
     args = parser.parse_args()
+    if args.command == 'normalize-generated':
+        report=normalize_generated(args.source_png,args.output_png,
+            json.loads(args.source_landmarks.read_text(encoding='utf-8')),
+            args.metadata_output)
+        print(json.dumps(report,indent=2))
+        if report['status']!='PASSED':
+            raise SystemExit(1)
+        return
     if args.command == 'check':
         report = validate_master(args.image, json.loads(args.metadata.read_text(encoding='utf8')))
     else:
