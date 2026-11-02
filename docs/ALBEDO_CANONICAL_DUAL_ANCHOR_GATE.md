@@ -4,7 +4,7 @@ Canvas **1536×1920** (4:5). Eye-line **y=633.6 ±2 px**; upper-shoulder baselin
 
 `orchestrator/tools/audit_portrait_anchors.py` reads actual iris pigment and shoulder-edge pixels within image-bound search regions, rejects absent/ambiguous signals and checks distinct source hashes. It explicitly requires owner-reviewed search regions. This is *not* a general-purpose facial landmark detector; automated numeric output is not sufficient proof of a physically correct shoulder or anatomy.
 
-`orchestrator/tools/reanchor_core5_preview.py` generates provisional rigid whole-image scale/translation previews for Idle and true Pointing, without changing production assets. The script never sets approval flags. Local inspection measured Idle/Pointing near target after transform, but all five lack reviewed image-bound landmarks; gold Working/Explaining/Monitoring fail the new strict geometry, so the full 28-state batch must not start.
+`orchestrator/tools/reanchor_core5_preview.py` generates provisional rigid whole-image scale/translation previews for any of the five Core-Five states (including style references), without changing production assets. It requires real image-bound search regions and does not make normalized concepts into production masters. The script never sets approval flags. Local inspection measured Idle/Pointing near target after transform, but all five lack reviewed image-bound landmarks; gold Working/Explaining/Monitoring fail the new strict geometry, so the full 28-state batch must not start.
 
 Run locally (with original core-five review PNGs and hash-bound search-region JSON):
 ```bash
