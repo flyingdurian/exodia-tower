@@ -47,3 +47,6 @@ The browser smoke test uses system Chromium via `executable_path='/usr/bin/chrom
 | Final production art authorization | Blocked pending real art and visual review |
 
 **Do not replace the live task stage or mark the ten-companion fleet as ready.**
+## Named reference boards (corrected)
+
+The review ZIP includes all five benchmarks, with verified SHA-256 prefixes: Expressions & Emotions `92bc46363077858bb0df`; Actions Set A `7b489427ca55c9c0d6f1`; Actions Set B Revised `17a3f1308be2293f3cac`; portrait loops `686bbe9fe56f9006cf26`; original command benchmark `bfc233740851980021ea`. They remain visual concept boards, not individually approved 4:5 masters.

@@ -73,19 +73,28 @@
   },
   "source_boards": [
     {
-      "name": "albedo_exodia_tower_portrait_review.png",
-      "sha256_prefix": "17a3f1308be2293f3cac"
-    },
-    {
       "name": "albedo_s_neon_portrait_review_board.png",
+      "role": "emotions_approved_concept.png",
       "sha256_prefix": "92bc46363077858bb0df"
     },
     {
+      "name": "albedo_s_futuristic_portrait_production_board.png",
+      "role": "actions_set_A_approved_concept.png",
+      "sha256_prefix": "7b489427ca55c9c0d6f1"
+    },
+    {
+      "name": "albedo_exodia_tower_portrait_review.png",
+      "role": "actions_set_B_revised_approved_concept.png",
+      "sha256_prefix": "17a3f1308be2293f3cac"
+    },
+    {
       "name": "albedo_portrait_loops_review_board.png",
+      "role": "loops_approved_concept.png",
       "sha256_prefix": "686bbe9fe56f9006cf26"
     },
     {
       "name": "albedo_s_mission_complete_command_center.png",
+      "role": "original_command_benchmark.png",
       "sha256_prefix": "bfc233740851980021ea"
     }
   ],

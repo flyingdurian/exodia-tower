@@ -3,8 +3,9 @@ import argparse,hashlib,json,shutil,tempfile,zipfile
 from pathlib import Path,PurePosixPath
 DEST=Path('frontend/companions/review/kiko_wave2')
 REFERENCE={
- 'assets/benchmarks/emotions_approved_concept.png':'17a3f1308be2293f3cac',
- 'assets/benchmarks/portrait_review_approved_concept.png':'92bc46363077858bb0df',
+ 'assets/benchmarks/emotions_approved_concept.png':'92bc46363077858bb0df',
+ 'assets/benchmarks/actions_set_A_approved_concept.png':'7b489427ca55c9c0d6f1',
+ 'assets/benchmarks/actions_set_B_revised_approved_concept.png':'17a3f1308be2293f3cac',
  'assets/benchmarks/loops_approved_concept.png':'686bbe9fe56f9006cf26',
  'assets/benchmarks/original_command_benchmark.png':'bfc233740851980021ea'}
 
