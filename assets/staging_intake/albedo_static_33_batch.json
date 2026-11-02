@@ -1,0 +1,508 @@
+{
+  "schema": "exodia.albedo-static-library-batch/v1",
+  "batch_id": "ALBEDO-ALL-33-B01",
+  "locked_profile": "albedo-gold-front-v1",
+  "production_release_enabled": false,
+  "imported_from_verified_production_assets": 0,
+  "queue_count": 33,
+  "prototype_previews_in_separate_asset_family": true,
+  "auto_owner_approval": false,
+  "source_policy": "Independent original standalone portrait only; prototype previews are not production sources.",
+  "states": [
+    {
+      "state_key": "neutral",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/neutral.png",
+      "target_path": "frames/expressions/neutral.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "happy",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/happy.png",
+      "target_path": "frames/expressions/happy.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "triumphant_halo",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "joyful",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/joyful.png",
+      "target_path": "frames/expressions/joyful.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "triumphant_halo",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "excited",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/excited.png",
+      "target_path": "frames/expressions/excited.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "triumphant_halo",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "gentle",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/gentle.png",
+      "target_path": "frames/expressions/gentle.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "smiling_closed",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/smiling_closed.png",
+      "target_path": "frames/expressions/smiling_closed.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "laughing",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/laughing.png",
+      "target_path": "frames/expressions/laughing.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "triumphant_halo",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "amused",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/amused.png",
+      "target_path": "frames/expressions/amused.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "confident",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/confident.png",
+      "target_path": "frames/expressions/confident.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "serious",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/serious.png",
+      "target_path": "frames/expressions/serious.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "focused",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/focused.png",
+      "target_path": "frames/expressions/focused.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "thinking",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/thinking.png",
+      "target_path": "frames/expressions/thinking.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "curious",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/curious.png",
+      "target_path": "frames/expressions/curious.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "surprised",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/surprised.png",
+      "target_path": "frames/expressions/surprised.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "warning_pulse",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "concerned",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/concerned.png",
+      "target_path": "frames/expressions/concerned.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "warning_pulse",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "worried",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/worried.png",
+      "target_path": "frames/expressions/worried.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "warning_pulse",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "sad",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/sad.png",
+      "target_path": "frames/expressions/sad.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "disappointed",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/disappointed.png",
+      "target_path": "frames/expressions/disappointed.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "angered",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/angered.png",
+      "target_path": "frames/expressions/angered.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "strain_glitch",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "blushing",
+      "category": "expression",
+      "source_path": "assets/staging_intake/incoming/blushing.png",
+      "target_path": "frames/expressions/blushing.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "idle",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/idle.png",
+      "target_path": "frames/actions/idle.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "working",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/working.png",
+      "target_path": "frames/actions/working.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "monitoring",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/monitoring.png",
+      "target_path": "frames/actions/monitoring.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "pointing",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/pointing.png",
+      "target_path": "frames/actions/pointing.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": true
+    },
+    {
+      "state_key": "explaining",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/explaining.png",
+      "target_path": "frames/actions/explaining.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "celebrating",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/celebrating.png",
+      "target_path": "frames/actions/celebrating.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "triumphant_halo",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "defeat",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/defeat.png",
+      "target_path": "frames/actions/defeat.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "strain_glitch",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "stretching",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/stretching.png",
+      "target_path": "frames/actions/stretching.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "sleeping",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/sleeping.png",
+      "target_path": "frames/actions/sleeping.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "waking_up",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/waking_up.png",
+      "target_path": "frames/actions/waking_up.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "tantrum",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/tantrum.png",
+      "target_path": "frames/actions/tantrum.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "strain_glitch",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "thinking_deeper",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/thinking_deeper.png",
+      "target_path": "frames/actions/thinking_deeper.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "focus_resonance",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    },
+    {
+      "state_key": "awaiting_command",
+      "category": "action",
+      "source_path": "assets/staging_intake/incoming/awaiting_command.png",
+      "target_path": "frames/actions/awaiting_command.png",
+      "expected_canvas": [
+        1536,
+        1920
+      ],
+      "eye_line_y_px": 633.6,
+      "head_width_px": 614.4,
+      "signal_overlay": "none",
+      "status": "waiting_for_independent_standalone_and_owner_approval",
+      "point_master_regeneration_required": false
+    }
+  ]
+}

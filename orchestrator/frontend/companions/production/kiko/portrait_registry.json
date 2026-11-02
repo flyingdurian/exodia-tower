@@ -345,7 +345,9 @@
       "owner_approval_reference": null,
       "verified_by": null,
       "approved_style_reference": "docs/albedo_portrait_phase2_registry.json",
-      "signal_overlay": "focus_resonance"
+      "signal_overlay": "focus_resonance",
+      "master_regeneration_required": true,
+      "regeneration_note": "Requires original standalone image with anatomically correct index-finger pointing pose; representative preview not production-eligible."
     },
     "explaining": {
       "label": "Explaining",
@@ -530,5 +532,25 @@
     "triumphant_halo",
     "casting_arcana",
     "low_hp"
-  ]
+  ],
+  "layout_profile": {
+    "schema": "exodia.companion-portrait-layout/v1",
+    "id": "albedo-gold-front-v1",
+    "benchmark_states": [
+      "working",
+      "explaining",
+      "monitoring"
+    ],
+    "canvas_px": [
+      1536,
+      1920
+    ],
+    "aspect_ratio": "4:5",
+    "eye_line_y_px": 633.6,
+    "head_width_px": 614.4,
+    "horizontal_center_x_px": 768,
+    "role": "locked_authoring_targets",
+    "measured_production_anchor_certification": false,
+    "require_owner_approval_for_each_state": true
+  }
 }
