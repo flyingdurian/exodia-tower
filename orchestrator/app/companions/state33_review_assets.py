@@ -302,6 +302,7 @@ def import_art(root: Path, archive: bytes) -> dict:
                 for state,(row,data,original) in verified.items():
                     (stage / (state + '.png')).write_bytes(data)
                     (stage / (state + '_original.png')).write_bytes(original)
+                    (stage / (state + '_original.png')).write_bytes(original)
                 images = target / 'images'
                 sources = target / 'sources'
                 images.mkdir(parents=True,exist_ok=True)
