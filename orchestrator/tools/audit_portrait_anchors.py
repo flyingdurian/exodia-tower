@@ -80,6 +80,33 @@ def audit(registry_path,regions_path,asset_root=None,approval_ledger_path=None):
         if (e.get('source_kind')!='independent_standalone_native'
                 or e.get('native_canvas')!=list(SIZE)):
             errors.append('native_standalone_source_not_verified')
+        else:
+            # Native source status now REQUIRES enhanced geometry evidence,
+            # independently of two convenient midline PASS numbers.
+            from core5_geometry_gate import validate_independent_measurements
+            head_zone=searched.get('head_edges_px') if searched else None
+            head_ok=(isinstance(head_zone,list) and len(head_zone)==2 and
+                     all(type(v) in (int,float) for v in head_zone))
+            if not head_ok or 'eyes' not in out or 'shoulders' not in out:
+                errors.append('native_head_and_independent_landmarks_missing')
+            else:
+                measured={
+                    'pixel_measurement_independent':True,
+                    'anatomical_labels_human_verified':(
+                        searched.get('anatomy_review_status')=='owner_confirmed'),
+                    'eyes':[[v['x'],v['y']] for v in out['eyes']],
+                    'shoulders':[[v['x'],v['y']] for v in out['shoulders']],
+                    'head_width_px':head_zone[1]-head_zone[0],
+                    'center_x_px':(out['eyes'][0]['x']+out['eyes'][1]['x'])/2}
+                g=validate_independent_measurements(measured,source_approved=True)
+                out['enhanced_native_geometry']=g
+                if g['status']!='PASS':
+                    errors.extend('native_geometry_'+x for x in g['errors'])
+                if (not searched.get('head_edges_image_sha256') or
+                     searched['head_edges_image_sha256']!=out.get('sha256')):
+                    errors.append('head_edges_not_bound_to_image_sha256')
+            if not e.get('independent_generation_job_id'):
+                errors.append('native_generation_job_provenance_missing')
         approval=approvals.get(name) or {}
         expected_sha=out.get('sha256')
         if (not expected_sha or approval.get('image_sha256')!=expected_sha
