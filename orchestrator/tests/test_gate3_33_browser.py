@@ -54,8 +54,12 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                         "()=>window.__exodia33?.selected==='angered'",timeout=7000)
                     assert await page.locator('.hero').get_attribute('data-signal')=='strain_glitch'
                     assert await page.locator('#artStatusTag').inner_text()=='PENDING_INDEPENDENT_ART'
-                    assert await page.locator('.portrait-missing-layer').filter(
-                        has_text='ANGERED').count()==1
+                    missing=page.locator('.portrait-missing-layer').filter(has_text='ANGERED')
+                    assert await missing.count()==1
+                    assert await missing.is_visible(), 'Missing art must be visibly identified'
+                    assert not await page.locator('.portrait-loading').count()
+                    assert frame_after['y']+frame_after['height'] <= 960, (
+                        'Desktop portrait pushed below fold by expanded state controls',frame_after)
                     frame_after=await page.locator('#portraitFrame').bounding_box()
                     assert abs(frame['height']-frame_after['height'])<1
                     assert abs(frame['width']-frame_after['width'])<1
@@ -79,6 +83,8 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await mobile.wait_for_function(
                         "()=>window.__exodia33?.selected==='celebrating'",timeout=7000)
                     assert await mobile.locator('.hero').get_attribute('data-signal')=='triumphant_halo'
+                    assert await mobile.locator('.portrait-missing-layer').filter(has_text='CELEBRATING').is_visible()
+                    assert not await mobile.locator('.portrait-loading').count()
                     mobile_state=await mobile.evaluate("""() => ({
                       scrollWidth:document.documentElement.scrollWidth,
                       viewportWidth:window.innerWidth,
