@@ -96,6 +96,31 @@ jobs:
                      for s in registry['states'].values() if s.get('tentative_visual_reference'))
           print('PASS: 28-state review generation authorized, zero created, production remains locked')
           PY
+      - name: Audit 28-state generation queue (native art missing expected fail)
+        shell: bash
+        run: |
+          set +e
+          python orchestrator/tools/audit_33_state_candidates.py --project-root orchestrator --report 28_review_audit_report.json > /tmp/exodia_28_art_audit.txt
+          audit_code=$?
+          set -e
+          if [ "$audit_code" -ne 1 ]; then
+            echo "FAIL: uncreated native assets must not be declared production ready."
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          q=json.load(open('assets/review/albedo_core5/authorized_28_state_art_queue.json'))
+          r=json.load(open('28_review_audit_report.json'))
+          assert q['count']==28 and len(q['states'])==28
+          assert len({row['state_key'] for row in q['states']})==28
+          assert all(row['generation_status']=='authorized_not_generated' and not row['source_sha256']
+                     for row in q['states'])
+          assert len({row['raw_generation_prompt'] for row in q['states']})==28
+          assert r['states_expected']==28 and r['candidate_image_count']==0
+          assert r['provisional_numeric_pass_count']==0
+          assert r['production_release_enabled'] is False
+          print('PASS: 28 independently directed jobs queued, 0 invented masters')
+          PY
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
       - name: Build SHA-verified review-only Core-Five preview board
@@ -141,3 +166,4 @@ jobs:
             core_actions_batch_report.json
             core5_preview_review.png
             core5_preview_diagnostic.json
+            28_review_audit_report.json
