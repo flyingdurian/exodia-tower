@@ -32,6 +32,10 @@ on:
       - 'assets/review/albedo_core5/source_anatomy_annotation_template.json'
       - 'assets/review/albedo_core5/source_access_report.json'
       - 'assets/review/albedo_core5/authorized_28_state_art_queue.json'
+      - 'assets/review/albedo_core5/gate4_generated_review_candidates.json'
+      - 'assets/review/albedo_core5/gate4_native_review_art_actual_report.json'
+      - 'orchestrator/tools/gate4_ingest_independent_render.py'
+      - 'orchestrator/app_data/albedo_33_review/**'
       - 'orchestrator/tools/audit_33_state_candidates.py'
       - 'orchestrator/tests/test_gate3_33_states.py'
       - '.github/workflows/portrait-registry.yml'
@@ -84,7 +88,10 @@ jobs:
           import json
           p=json.load(open('assets/blueprints/albedo_28_state_batch_gate.json'))
           assert p['status']=='REVIEW_ART_GENERATION_AUTHORIZED_PRODUCTION_LOCKED'
-          assert p['generated_states']==0
+          from pathlib import Path
+          image=Path('orchestrator/app_data/albedo_33_review/images/celebrating.png')
+          count=int(image.is_file())
+          assert p['generated_states']==count
           assert p['native_core_five_certified_count']==0
           assert p['production_release_enabled'] is False
           assert p['review_generation_approved_count']==28
@@ -94,7 +101,7 @@ jobs:
           assert len([s for s in registry['states'].values() if s.get('tentative_visual_reference')])==5
           assert all(not s['tentative_visual_reference']['owner_visual_approved_native_master']
                      for s in registry['states'].values() if s.get('tentative_visual_reference'))
-          print('PASS: 28-state review generation authorized, zero created, production remains locked')
+          print(f'PASS: 28-state review generation authorized, {count} actual image files; production remains locked')
           PY
       - name: Audit 28-state generation queue (native art missing expected fail)
         shell: bash
@@ -113,13 +120,28 @@ jobs:
           r=json.load(open('28_review_audit_report.json'))
           assert q['count']==28 and len(q['states'])==28
           assert len({row['state_key'] for row in q['states']})==28
-          assert all(row['generation_status']=='authorized_not_generated' and not row['source_sha256']
-                     for row in q['states'])
+          from pathlib import Path
+          from hashlib import sha256
+          count=sum(row['generation_status']=='generated_unapproved_native_candidate'
+                    for row in q['states'])
+          assert q['generated_count']==count
+          for row in q['states']:
+              if row['generation_status']=='generated_unapproved_native_candidate':
+                  image=Path('orchestrator/app_data/albedo_33_review/images')/(row['state_key']+'.png')
+                  original=Path('orchestrator/app_data/albedo_33_review/sources')/(row['state_key']+'_original.png')
+                  assert image.is_file() and original.is_file()
+                  assert sha256(image.read_bytes()).hexdigest()==row['output_sha256']
+                  assert sha256(original.read_bytes()).hexdigest()==row['source_sha256']
+                  assert row['production_status']=='pending_production_art'
+              else:
+                  assert row['generation_status']=='authorized_not_generated'
+                  assert not row['source_sha256']
           assert len({row['raw_generation_prompt'] for row in q['states']})==28
-          assert r['states_expected']==28 and r['candidate_image_count']==0
+          assert r['states_expected']==28 and r['candidate_image_count']==count
+          assert r['originals_sha_checked_count']==count
           assert r['provisional_numeric_pass_count']==0
           assert r['production_release_enabled'] is False
-          print('PASS: 28 independently directed jobs queued, 0 invented masters')
+          print(f'PASS: 28 distinct jobs, {count} verified originals, no invented masters')
           PY
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
