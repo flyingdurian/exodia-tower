@@ -1,0 +1,40 @@
+{
+  "schema": "exodia.gate4-sha-bound-human-review-pending/v1",
+  "status": "ASSISTANT_SELECTED_SEARCH_WINDOWS_NOT_OWNER_VERIFIED",
+  "notes": "Search windows were visually placed on the actual 1536x1920 Celebrating PNG. The original image hash is verified, but CV iris color and Sobel shoulder edges are not independent human anatomical certifications. Do not set owner_confirmed or record a head-width PASS.",
+  "states": {
+    "celebrating": {
+      "source_sha256": "cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e",
+      "original_source_sha256": "25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759",
+      "left_eye_search": [
+        690,
+        524
+      ],
+      "right_eye_search": [
+        890,
+        515
+      ],
+      "left_shoulder_search": [
+        520,
+        867
+      ],
+      "right_shoulder_search": [
+        1030,
+        871
+      ],
+      "review_status": "assistant_provisional_not_owner_confirmed",
+      "anatomy_review_status": "pending_owner_anatomical_validation",
+      "head_edges_px": null,
+      "head_edges_image_sha256": null,
+      "pose_visual_review": "new_celebratory_fist_and_crystal_confirmed_as_candidate_only",
+      "source_resolution": [
+        1856,
+        2304
+      ],
+      "normalized_resolution": [
+        1536,
+        1920
+      ]
+    }
+  }
+}
