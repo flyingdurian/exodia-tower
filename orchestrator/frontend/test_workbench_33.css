@@ -60,3 +60,22 @@
 
 /* Missing art is a first-class real state, not a fade-hidden image placeholder. */
 .portrait-missing-layer{opacity:1!important;visibility:visible!important}
+
+/* Legible empty-state proof. This overlay contains no counterfeit portrait
+   pixels; it must remain readable on 1600px desktop captures and on mobile. */
+.portrait-display-layer{z-index:4}
+.portrait-display-layer .portrait-missing-layer{
+ z-index:5;opacity:1!important;
+ background:radial-gradient(ellipse at 48% 35%,#293363 0%,#192143 78%);
+ border:1px dashed #b7a1e4;
+ text-shadow:0 1px 2px #0d0b24;
+}
+.portrait-display-layer .portrait-missing-layer b{
+ color:#fff4ff!important;font-size:20px;font-weight:700;letter-spacing:.07em;
+}
+.portrait-display-layer .portrait-missing-layer p{
+ color:#e6e0ff!important;font-size:12px;font-weight:500;
+}
+.portrait-display-layer .portrait-missing-layer small{
+ color:#ffe0a1!important;font-size:10px;font-weight:750;
+}
