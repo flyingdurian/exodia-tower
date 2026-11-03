@@ -61,8 +61,8 @@ def audit_28(project_root, annotations_path=None):
                 if im.format!='PNG' or im.size!=SIZE:
                     reasons.append('output_not_native_1536x1920')
             with Image.open(original) as im:
-                if im.format!='PNG' or im.width<SIZE[0] or
-                        im.height<SIZE[1] or im.width*5!=im.height*4:
+                if (im.format!='PNG' or im.width<SIZE[0] or
+                        im.height<SIZE[1] or im.width*5!=im.height*4):
                     reasons.append('original_not_independent_high_resolution_4_to_5')
             if source_sha in source_hashes or output_sha in image_hashes:
                 reasons.append('duplicate_source_or_output_sha')
