@@ -98,6 +98,19 @@ def ingest_one(root: Path, job: dict) -> dict:
         raise ValueError('job_is_not_a_completed_art_file')
     if job.get('generator_model') != 'nano_banana_2_1' or not job.get('generator_job_id'):
         raise ValueError('unknown_generation_provenance')
+    request = job.get('generation_request')
+    if (not isinstance(request,dict) or request.get('model')!=job['generator_model']
+            or request.get('aspect_ratio')!='4:5' or request.get('resolution')!='2k'
+            or not isinstance(request.get('prompt'),str)
+            or len(request['prompt'])<300
+            or request.get('reference_original_sha256s')!=[
+                '4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d',
+                'd55da7f4ca4e93a5d40592e97fe5c04cc6e3d9aaa8cbe8f24c64ee7e08de3b62']):
+        raise ValueError('generation_request_provenance_incomplete')
+    job_input_hash = digest(json.dumps(request,sort_keys=True,ensure_ascii=False,
+                                       separators=(',',':')).encode('utf-8'))
+    if job.get('generation_input_manifest_sha256') and job['generation_input_manifest_sha256']!=job_input_hash:
+        raise ValueError('generation_prompt_manifest_hash_mismatch')
     store = root / STORE_RELATIVE
     original_path = store/'sources'/(name+'_original.png')
     output_path = store/'images'/(name+'.png')
@@ -121,7 +134,7 @@ def ingest_one(root: Path, job: dict) -> dict:
       'image_sha256': image_hash,
       'generator_job_id': job['generator_job_id'],
       'generator_model': job['generator_model'],
-      'generation_input_manifest_sha256': job['generation_input_manifest_sha256'],
+      'generation_input_manifest_sha256': job_input_hash,
       'source_dimensions': job['original_dimensions'],
       'normalization': {
         'kind': 'symmetric_center_crop_then_uniform_lanczos',
