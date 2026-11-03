@@ -91,7 +91,9 @@ def manifest(root: Path) -> dict:
     prod = _registry(root)
     core = core5_review_assets.current_manifest(root)
     idx = _index(root)
-    order = list(prod['states'])
+    # UI is deliberately Core-Five-first; the signed production registry's
+    # canonical state keyset and order remain untouched.
+    order = list(CORE) + [name for name in prod['states'] if name not in CORE]
     core_reference = set(CORE)
     queued = {x['state_key']: x for x in queue['states']}
     if set(order) != core_reference.union(queued) or len(order) != 33:
