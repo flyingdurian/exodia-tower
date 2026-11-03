@@ -1,0 +1,87 @@
+name: EXODIA Gate 4 — Stage verified standalone native review art
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths:
+      - 'assets/review/albedo_core5/gate4_generated_review_candidates.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: exodia-gate4-authentic-art-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  stage-real-images:
+    if: github.ref == 'refs/heads/development/exodia-foundation'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development/exodia-foundation
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed artwork verification environment
+        run: python -m pip install 'Pillow==12.3.0'
+      - name: Download original provider bytes and verify exact hashes
+        run: |
+          python orchestrator/tools/gate4_ingest_independent_render.py --repo-root .
+      - name: Audit verified image and fail-closed owner metadata
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          from PIL import Image
+          base=Path('orchestrator/app_data/albedo_33_review')
+          source=base/'sources'/'celebrating_original.png'
+          output=base/'images'/'celebrating.png'
+          index=json.loads((base/'review_index.json').read_text())
+          row=index['states']['celebrating']
+          assert source.is_file() and output.is_file()
+          assert hashlib.sha256(source.read_bytes()).hexdigest()==row['source_sha256']
+          assert hashlib.sha256(output.read_bytes()).hexdigest()==row['image_sha256']
+          with Image.open(source) as im:assert im.format=='PNG' and im.size==(1856,2304)
+          with Image.open(output) as im:assert im.format=='PNG' and im.size==(1536,1920)
+          assert row['owner_approved'] is False
+          assert row['production_status']=='pending_production_art'
+          assert row['geometry_status']=='PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT'
+          batch=json.loads(Path('assets/blueprints/albedo_28_state_batch_gate.json').read_text())
+          assert batch['generated_states']==1 and batch['production_release_enabled'] is False
+          registry=json.loads(Path('orchestrator/frontend/companions/production/kiko/portrait_registry.json').read_text())
+          assert registry['release']['enabled'] is False
+          assert all(x['status']=='pending_production_art' for x in registry['states'].values())
+          print('PASS: exactly one real independently generated 2K Albedo review candidate is staged; zero owner approvals')
+          PY
+      - name: Persist only reviewed candidate original and normalized image on development
+        shell: bash
+        run: |
+          git config user.name 'exodia-art-qa[bot]'
+          git config user.email 'exodia-art-qa[bot]@users.noreply.github.com'
+          git add -f -- \
+            orchestrator/app_data/albedo_33_review/sources/celebrating_original.png \
+            orchestrator/app_data/albedo_33_review/images/celebrating.png \
+            orchestrator/app_data/albedo_33_review/review_index.json \
+            assets/review/albedo_core5/authorized_28_state_art_queue.json \
+            assets/review/albedo_core5/gate4_native_review_art_actual_report.json \
+            assets/blueprints/albedo_28_state_batch_gate.json
+          if git diff --cached --quiet; then
+            echo 'All exact art hashes already recorded; no duplicate commit'
+          else
+            git commit -m "art(albedo): stage one real independently rendered Celebrating 2K review original"
+            git push origin HEAD:development/exodia-foundation
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: albedo-gate4-real-celebrating-review
+          path: |
+            orchestrator/app_data/albedo_33_review/sources/celebrating_original.png
+            orchestrator/app_data/albedo_33_review/images/celebrating.png
+            orchestrator/app_data/albedo_33_review/review_index.json
+            assets/review/albedo_core5/gate4_native_review_art_actual_report.json
+          if-no-files-found: ignore
+          retention-days: 30
