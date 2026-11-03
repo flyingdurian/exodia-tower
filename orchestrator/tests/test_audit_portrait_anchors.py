@@ -66,3 +66,39 @@ def test_synthetic_perfect_pixels_cannot_unlock_without_native_provenance_and_ow
         assert 'owner_hash_bound_approval_missing' in errors
         assert 'native_standalone_source_not_verified' in errors
         assert 'original_source_sha256_missing_or_invalid' in errors
+
+def test_native_master_cannot_bypass_headwidth_and_human_anatomical_checks(tmp_path):
+    # Synthetic image and metadata must NOT unlock production despite matched
+    # midpoint pixel detections and a falsely asserted 'native' flag.
+    p=tmp_path/'idle.png';digest=draw(p)
+    r=tmp_path/'r.json';h=tmp_path/'h.json'
+    r.write_text(json.dumps({'states':{'idle':{
+        'path':'idle.png','sha256':digest,
+        'distinct_source_verified':True,
+        'original_source_sha256':digest,
+        'source_kind':'independent_standalone_native',
+        'native_canvas':[1536,1920],
+        'independent_generation_job_id':'fixture-not-real'}}}))
+    regions=hints(digest)
+    regions['head_edges_px']=[355,1045]  # FALSE: 690 px head
+    regions['head_edges_image_sha256']=digest
+    regions['anatomy_review_status']='pending'
+    h.write_text(json.dumps({'states':{'idle':regions}}))
+    out=audit(r,h)
+    errors=out['states']['idle']['errors']
+    assert 'native_geometry_head_width_out_of_range' in errors
+    assert 'native_geometry_anatomical_identity_unverified' in errors
+    assert 'owner_hash_bound_approval_missing' in errors
+    assert not out['full_batch_unlocked']
+
+def test_native_master_missing_head_edges_is_rejected_independent_of_eye_shoulder_pass(tmp_path):
+    p=tmp_path/'idle.png';digest=draw(p)
+    reg=tmp_path/'r.json';zones=tmp_path/'z.json'
+    reg.write_text(json.dumps({'states':{'idle':{
+        'path':'idle.png','sha256':digest,'distinct_source_verified':True,
+        'source_kind':'independent_standalone_native',
+        'native_canvas':[1536,1920],'original_source_sha256':digest,
+        'independent_generation_job_id':'fixture'}}}))
+    zones.write_text(json.dumps({'states':{'idle':hints(digest)}}))
+    out=audit(reg,zones)
+    assert 'native_head_and_independent_landmarks_missing' in out['states']['idle']['errors']
