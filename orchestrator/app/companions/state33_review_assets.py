@@ -141,6 +141,33 @@ def manifest(root: Path) -> dict:
                 item['source_sha256'] = row['source_sha256']
                 item['source_filename'] = row['source_filename']
                 item['geometry_status'] = 'PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT'
+                if name=='celebrating':
+                    evidence_path=(root.parent/'assets'/'review'/'albedo_core5'/
+                                   'gate4_celebrating_actual_landmark_fail.json')
+                    if evidence_path.is_file():
+                        proof=json.loads(evidence_path.read_text(encoding='utf-8'))
+                        if (proof.get('output_sha256')==row['image_sha256']
+                                and proof.get('original_sha256')==row['source_sha256']
+                                and proof.get('checks',{}).get('owner_visual_approved') is False):
+                            measurements=proof['actual_pixel_measurements']
+                            item['measurements']={
+                                'eye_y':measurements['eye_mid_y_px'],
+                                'shoulder_y':measurements['shoulder_mid_y_px'],
+                                'eye_delta':measurements['eye_delta_px'],
+                                'shoulder_delta':measurements['shoulder_delta_px'],
+                                'head_width_px':measurements['head_width_px'],
+                                'center_x_px':measurements['eye_center_x_px'],
+                                'center_delta_px':measurements['center_delta_px'],
+                                'iris_left':measurements['iris_left'],
+                                'iris_right':measurements['iris_right'],
+                                'shoulder_left':measurements['shoulder_left'],
+                                'shoulder_right':measurements['shoulder_right'],
+                                'eye_separation_px':measurements['eye_separation_px'],
+                                'eye_asymmetry_px':measurements['eye_vertical_asymmetry_px'],
+                                'shoulder_asymmetry_px':measurements['shoulder_vertical_asymmetry_px'],
+                                'numeric_provisional_pass':False,
+                            }
+                            item['geometry_status']='ACTUAL_PIXELS_GEOMETRY_FAIL_OWNER_UNREVIEWED'
         states[name] = item
     ready = sum(x['image_url'] is not None for x in states.values())
     core_ready = sum(states[x]['image_url'] is not None for x in CORE)
