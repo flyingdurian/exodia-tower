@@ -105,8 +105,19 @@ function detail(item){
   ?eye.toFixed(2)+' / '+sh.toFixed(2)+' (provisional only)'
   :'NOT MEASURED';
  $('headWidth').textContent=Number.isFinite(item.measurements?.head_width_px)
-  ?item.measurements.head_width_px.toFixed(2)+'px (unapproved concept)'
-  :'NOT MEASURED';
+  ?item.measurements.head_width_px.toFixed(2)+'px (unapproved)'
+  :'NOT CERTIFIED';
+ $('geometryVerdict').textContent=item.geometry_status==='ACTUAL_PIXELS_GEOMETRY_FAIL_OWNER_UNREVIEWED'
+  ?'FAIL · real pixels, owner unreviewed':item.geometry_status;
+ const coords=pt=>pt&&Number.isFinite(pt.x)&&Number.isFinite(pt.y)
+  ?'('+pt.x.toFixed(1)+', '+pt.y.toFixed(1)+')':null;
+ const m=item.measurements||{};
+ $('irisDetail').textContent=coords(m.iris_left)&&coords(m.iris_right)
+  ?coords(m.iris_left)+' / '+coords(m.iris_right):'Not measured';
+ $('shoulderDetail').textContent=coords(m.shoulder_left)&&coords(m.shoulder_right)
+  ?coords(m.shoulder_left)+' / '+coords(m.shoulder_right):'Not measured';
+ $('centerDetail').textContent=Number.isFinite(m.center_x_px)
+  ?m.center_x_px.toFixed(2)+' (Δ '+m.center_delta_px.toFixed(2)+'px)':'Not measured';
  $('frameCount').textContent=visited.size+' / 33';
  document.querySelectorAll('[data-state]').forEach(el=>
   el.setAttribute('aria-pressed',String(el.dataset.state===item.key)));
