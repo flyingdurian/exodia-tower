@@ -44,8 +44,10 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.goto('http://127.0.0.1:8909/test-workbench',
                                     wait_until='domcontentloaded')
                     await page.wait_for_function(
-                      "()=>window.__exodia33?.selected==='neutral'",timeout=15000)
+                      "()=>window.__exodia33?.selected==='idle'",timeout=15000)
                     assert await page.locator('.state-button').count()==33
+                    assert await page.locator('.state-group-heading').count()==2
+                    assert await page.locator('.state-button').first.get_attribute('data-state')=='idle'
                     assert await page.locator('.state-button[data-state="idle"]').count()==1
                     assert await page.locator('.state-button[data-state="tantrum"]').count()==1
                     frame=await page.locator('#portraitFrame').bounding_box()
@@ -79,6 +81,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await mobile.wait_for_function(
                         "()=>window.__exodia33?.selected==='neutral'",timeout=15000)
                     assert await mobile.locator('.state-button').count()==33
+                    assert await mobile.locator('.state-group-heading').count()==2
                     await mobile.locator('.state-button[data-state="celebrating"]').click()
                     await mobile.wait_for_function(
                         "()=>window.__exodia33?.selected==='celebrating'",timeout=7000)
