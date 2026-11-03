@@ -187,6 +187,34 @@ def run(root: Path) -> dict:
       'remaining_28_review_images_pending':28-len(results),
       'states':{r['state']:r for r in results},
     }
+    # Counters advance ONLY after the original and normalized PNG bytes were
+    # verified on disk and the SHA-bound index was written successfully.
+    queue_file=root/'assets'/'review'/'albedo_core5'/'authorized_28_state_art_queue.json'
+    queue=json.loads(queue_file.read_text(encoding='utf-8'))
+    by_key={row['state_key']:row for row in queue['states']}
+    if set(by_key)!=set(x['state_key'] for x in queue['states']) or len(by_key)!=28:
+        raise ValueError('queue_has_duplicated_or_missing_state')
+    for proof in results:
+        record=by_key[proof['state']]
+        record.update(generation_status='generated_unapproved_native_candidate',
+                      source_sha256=proof['original_sha256'],
+                      output_sha256=proof['normalized_sha256'],
+                      original_canvas=proof['original_dimensions'],
+                      output_canvas=proof['normalized_dimensions'],
+                      generation_job_id=proof['generator_job_id'],
+                      human_pose_review='pending',
+                      production_status='pending_production_art',
+                      owner_hash_bound_approval=None)
+    queue['generated_count']=len([row for row in queue['states']
+                                  if row.get('generation_status')=='generated_unapproved_native_candidate'])
+    queue_file.write_text(json.dumps(queue,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    blueprint_file=root/'assets'/'blueprints'/'albedo_28_state_batch_gate.json'
+    blueprint=json.loads(blueprint_file.read_text(encoding='utf-8'))
+    if blueprint.get('production_release_enabled') is not False:
+        raise ValueError('release_must_remain_disabled')
+    blueprint['generated_states']=queue['generated_count']
+    blueprint_file.write_text(json.dumps(blueprint,indent=2)+'\n',encoding='utf-8')
+    output['remaining_28_review_images_pending']=28-queue['generated_count']
     p=root/'assets'/'review'/'albedo_core5'/'gate4_native_review_art_actual_report.json'
     p.write_text(json.dumps(output,sort_keys=True,indent=2)+'\n',encoding='utf-8')
     return output
