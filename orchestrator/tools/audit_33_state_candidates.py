@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 import sys
 import tempfile
-from PIL import Image
+from PIL import Image, ImageChops
 from audit_portrait_anchors import audit as dual_anchor_audit
 from core5_native_candidate_gate import dhash
 
@@ -61,9 +61,34 @@ def audit_28(project_root, annotations_path=None):
                 if im.format!='PNG' or im.size!=SIZE:
                     reasons.append('output_not_native_1536x1920')
             with Image.open(original) as im:
-                if (im.format!='PNG' or im.width<SIZE[0] or
-                        im.height<SIZE[1] or im.width*5!=im.height*4):
-                    reasons.append('original_not_independent_high_resolution_4_to_5')
+                if im.format!='PNG' or im.width<SIZE[0] or im.height<SIZE[1]:
+                    reasons.append('original_not_native_or_high_resolution')
+                elif im.size!=SIZE:
+                    normalization=entry.get('normalization',{})
+                    if not isinstance(normalization,dict):
+                        reasons.append('crop_and_resize_provenance_missing')
+                    elif normalization.get('kind')!='symmetric_center_crop_then_uniform_lanczos':
+                        reasons.append('crop_and_resize_provenance_missing')
+                    else:
+                        box=normalization.get('crop_xyxy',[])
+                        if (len(box)!=4 or not all(isinstance(v,int) for v in box)
+                                or box[0]<0 or box[1]<0
+                                or box[2]>im.width or box[3]>im.height
+                                or (box[2]-box[0])*5!=(box[3]-box[1])*4
+                                or abs(box[0]-(im.width-box[2]))>1
+                                or abs(box[1]-(im.height-box[3]))>1):
+                            reasons.append('source_crop_not_symmetric_4_to_5')
+                        else:
+                            test=im.convert('RGB').crop(tuple(box)).resize(
+                                SIZE,Image.Resampling.LANCZOS)
+                            with Image.open(image) as actual:
+                                if actual.size!=SIZE or ImageChops.difference(
+                                    test,actual.convert('RGB')).getbbox():
+                                    reasons.append('output_does_not_match_source_pixel_transform')
+                            from hashlib import sha256
+                            if sha256(test.tobytes()).hexdigest()!=normalization.get(
+                                    'source_pixel_sha256'):
+                                reasons.append('unproven_pixel_sha256_after_crop')
             if source_sha in source_hashes or output_sha in image_hashes:
                 reasons.append('duplicate_source_or_output_sha')
             else:
@@ -97,14 +122,18 @@ def audit_28(project_root, annotations_path=None):
           'sha256':output_sha,
           'original_source_sha256':source_sha,
           'distinct_source_verified':not reasons,
-          'source_kind':'independent_standalone_native' if image.is_file() else 'pending',
+          'source_kind':('independently_authored_higher_resolution'
+                         if image.is_file() and original.is_file() and
+                            entry.get('source_dimensions')!=list(SIZE)
+                         else 'independent_standalone_native') if image.is_file() else 'pending',
           'native_canvas':[1536,1920] if image.is_file() else None
         }
         if zone:scan_regions['states'][name]=zone
         proof[name]={
             'original_filename':name+'_original.png','original_sha256':source_sha,
             'output_filename':name+'.png','output_sha256':output_sha,
-            'expected_canvas':list(SIZE),'geometry_review_status':'PENDING',
+            'expected_canvas':list(SIZE),'normalization':entry.get('normalization'),
+            'geometry_review_status':'PENDING',
             'owner_approved':False,'production_status':'pending_production_art',
             'errors':reasons}
     with tempfile.TemporaryDirectory(prefix='exodia_review_audit_') as tmp:
