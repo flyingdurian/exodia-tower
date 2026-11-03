@@ -72,6 +72,25 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert await page.evaluate('window.__exodia33.releaseEnabled') is False
                     assert await page.locator('#registryStatus').inner_text()=='33 / 33 pending production art'
                     assert not errors,errors
+                    # Exercise EVERY defined state, not just two representative
+                    # buttons. All 33 must remain selectable without moving
+                    # the fixed portrait stage or inventing an image.
+                    state_response=await page.request.get(
+                        'http://127.0.0.1:8909/api/albedo/state33/manifest')
+                    state_order=(await state_response.json())['state_order']
+                    assert len(state_order)==33
+                    for state_name in state_order:
+                        await page.locator(
+                            '.state-button[data-state="'+state_name+'"]').click()
+                        await page.wait_for_function(
+                            "(value)=>window.__exodia33?.selected===value",
+                            arg=state_name,timeout=7000)
+                        assert (await page.locator('#portraitFrame').bounding_box())['width']==frame['width']
+                        assert await page.locator('#stateKey').inner_text()==state_name.upper()
+                    assert await page.evaluate('window.__exodia33.inspected')==33
+                    await page.locator('.state-button[data-state="pointing"]').click()
+                    await page.wait_for_function(
+                        "()=>window.__exodia33?.selected==='pointing'",timeout=7000)
                     # Let the genuine 240ms opacity crossfade FINISH before
                     # capturing a visual proof; earlier CI screenshots froze
                     # the text at partial transparency.
