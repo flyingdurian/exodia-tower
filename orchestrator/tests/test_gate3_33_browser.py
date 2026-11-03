@@ -58,9 +58,9 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert await missing.count()==1
                     assert await missing.is_visible(), 'Missing art must be visibly identified'
                     assert not await page.locator('.portrait-loading').count()
+                    frame_after=await page.locator('#portraitFrame').bounding_box()
                     assert frame_after['y']+frame_after['height'] <= 960, (
                         'Desktop portrait pushed below fold by expanded state controls',frame_after)
-                    frame_after=await page.locator('#portraitFrame').bounding_box()
                     assert abs(frame['height']-frame_after['height'])<1
                     assert abs(frame['width']-frame_after['width'])<1
                     await page.locator('.state-button[data-state="pointing"]').click()
