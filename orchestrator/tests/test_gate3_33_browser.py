@@ -72,6 +72,12 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert await page.evaluate('window.__exodia33.releaseEnabled') is False
                     assert await page.locator('#registryStatus').inner_text()=='33 / 33 pending production art'
                     assert not errors,errors
+                    # Let the genuine 240ms opacity crossfade FINISH before
+                    # capturing a visual proof; earlier CI screenshots froze
+                    # the text at partial transparency.
+                    await page.wait_for_timeout(380)
+                    assert await page.locator('.portrait-display-layer').evaluate_all(
+                        "(els)=>els.some(x=>Number(getComputedStyle(x).opacity)>0.98)")
                     await page.screenshot(path=str(proof/'desktop_33_states_MISSING_ART.png'))
                     mobile=await browser.new_page(viewport={'width':390,'height':844},
                                                  device_scale_factor=1,
@@ -95,6 +101,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                       release:window.__exodia33.releaseEnabled})""")
                     assert mobile_state['release'] is False
                     assert mobile_state['scrollWidth']<=mobile_state['viewportWidth']+8
+                    await mobile.wait_for_timeout(380)
                     await mobile.screenshot(path=str(proof/'mobile_33_states_MISSING_ART.png'),
                                             full_page=True)
                     # A fake "available" Core-Five image with invalid SHA
