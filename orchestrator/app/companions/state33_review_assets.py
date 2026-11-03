@@ -271,7 +271,7 @@ def import_art(root: Path, archive: bytes) -> dict:
             original_hashes[orig_sha] = state
             output_hashes[image_sha] = state
             perceptual[state] = (dhash(output), dhash(output, face=True))
-            verified[state] = (row, output)
+            verified[state] = (row, output, original)
         # Compare with existing review imports and within the new batch.
         with LOCK:
             previous = _index(root)
@@ -282,7 +282,7 @@ def import_art(root: Path, archive: bytes) -> dict:
                 path = _base(root) / 'images' / (state + '.png')
                 if path.is_file() and sha(path.read_bytes()) == old.get('image_sha256'):
                     existing[state] = (old, path.read_bytes())
-            for state,(row,data) in verified.items():
+            for state,(row,data,original) in verified.items():
                 for other,(old,old_bytes) in existing.items():
                     if (row['source_sha256'] == old.get('source_sha256')
                             or row['image_sha256'] == old.get('image_sha256')):
@@ -299,14 +299,18 @@ def import_art(root: Path, archive: bytes) -> dict:
             target.mkdir(parents=True,exist_ok=True)
             with tempfile.TemporaryDirectory(dir=target, prefix='stage33_') as tmp:
                 stage = Path(tmp)
-                for state,(row,data) in verified.items():
+                for state,(row,data,original) in verified.items():
                     (stage / (state + '.png')).write_bytes(data)
+                    (stage / (state + '_original.png')).write_bytes(original)
                 images = target / 'images'
+                sources = target / 'sources'
                 images.mkdir(parents=True,exist_ok=True)
+                sources.mkdir(parents=True,exist_ok=True)
                 for state in verified:
                     shutil.move(str(stage / (state + '.png')),str(images / (state + '.png')))
+                    shutil.move(str(stage / (state + '_original.png')),str(sources / (state + '_original.png')))
                 new_rows = dict(previous['states'])
-                for state,(row,_) in verified.items():
+                for state,(row,_,_) in verified.items():
                     new_rows[state] = {
                       'source_filename': state + '_original.png',
                       'source_sha256': row['source_sha256'],
