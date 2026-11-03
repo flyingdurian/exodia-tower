@@ -122,6 +122,10 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                             timeout=7000)
                         assert await mobile.locator('.portrait-preview-layer[src^="blob:"]').count()>=1
                         assert art['sha256']=='cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e'
+                        assert 'FAIL' in await mobile.locator('#geometryVerdict').inner_text()
+                        assert '(688.1, 526.9)' in await mobile.locator('#irisDetail').inner_text()
+                        assert '(520.0, 861.0)' in await mobile.locator('#shoulderDetail').inner_text()
+                        assert 'NOT CERTIFIED' in await mobile.locator('#headWidth').inner_text()
                     else:
                         assert await mobile.locator('.portrait-missing-layer').filter(
                             has_text='CELEBRATING').is_visible()
