@@ -98,6 +98,26 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert await page.locator('.portrait-display-layer').evaluate_all(
                         "(els)=>els.some(x=>Number(getComputedStyle(x).opacity)>0.98)")
                     await page.screenshot(path=str(proof/'desktop_33_states_MISSING_ART.png'))
+                    # Exercise the real auto-cycle scheduler for a full 1→33
+                    # sequence with timers accelerated ONLY inside this QA tab.
+                    # Production remains a readable 4 seconds per state.
+                    auto=await browser.new_page(viewport={'width':1300,'height':850})
+                    await auto.add_init_script("""(() => {
+                      const original=window.setInterval.bind(window);
+                      window.setInterval=(fn,delay,...args)=>
+                        original(fn,delay===4000?130:delay,...args);
+                    })();""")
+                    await auto.goto('http://127.0.0.1:8909/test-workbench',
+                                    wait_until='domcontentloaded')
+                    await auto.wait_for_function(
+                        "()=>window.__exodia33?.selected==='idle'",timeout=15000)
+                    await auto.locator('#autoCycle').check()
+                    await auto.wait_for_function(
+                        "()=>window.__exodia33?.autoAdvances>=33",timeout=15000)
+                    assert await auto.evaluate('window.__exodia33.autoUniqueRequested')==33
+                    assert await auto.evaluate('window.__exodia33.releaseEnabled') is False
+                    await auto.locator('#autoCycle').uncheck()
+                    await auto.close()
                     mobile=await browser.new_page(viewport={'width':390,'height':844},
                                                  device_scale_factor=1,
                                                  is_mobile=True,has_touch=True)
