@@ -125,6 +125,47 @@ async def albedo_core5_review_import(request: Request,
     except (ValueError, OSError) as exc:
         raise HTTPException(422,detail=str(exc)) from exc
 
+
+# Gate 3 / 33-state DEVELOPMENT workbench: never modifies production portrait
+# registry, owner sign-offs, the live provider task system or 28-state release.
+@app.get('/test-workbench')
+@app.get('/state33-review')
+async def albedo_state33_review_workbench():
+    return FileResponse(settings.root/'frontend'/'test_workbench.html')
+
+@app.get('/api/albedo/state33/manifest')
+async def albedo_state33_review_manifest():
+    from app.companions.state33_review_assets import manifest
+    return manifest(settings.root)
+
+@app.get('/api/albedo/state33/review-assets/{state}')
+async def albedo_state33_review_png(state: str):
+    from app.companions.state33_review_assets import asset
+    file = asset(settings.root, state)
+    if file is None:
+        raise HTTPException(404,detail='Pending or unverified state artwork')
+    return FileResponse(file,media_type='image/png',headers={
+        'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'})
+
+@app.post('/api/albedo/state33/review-import')
+async def albedo_state33_review_import(request: Request,
+                                        x_exodia_client: str=Header(default='')):
+    if x_exodia_client!='exodia-dashboard':
+        raise HTTPException(403,detail='Local operator confirmation required')
+    if request.headers.get('content-type','').split(';')[0] not in (
+        'application/zip','application/octet-stream'):
+        raise HTTPException(415,detail='A state33 review ZIP is required')
+    from app.companions.state33_review_assets import import_art,MAX_COMPRESSED
+    if int(request.headers.get('content-length','0') or '0')>MAX_COMPRESSED:
+        raise HTTPException(413,detail='Review archive exceeds limit')
+    body = await request.body()
+    if len(body)>MAX_COMPRESSED:
+        raise HTTPException(413,detail='Review archive exceeds limit')
+    try:
+        return await asyncio.to_thread(import_art,settings.root,body)
+    except (ValueError,OSError,KeyError) as exc:
+        raise HTTPException(422,detail=str(exc)) from exc
+
 @app.get('/legacy')
 async def legacy():return FileResponse(settings.root/'frontend'/'index.html')
 
