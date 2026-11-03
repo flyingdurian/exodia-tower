@@ -68,7 +68,10 @@ def test_full_33_state_manifest_is_real_registry_and_has_no_approved_art(tmp_pat
         assert body['state_order'][:5]==['idle','working','explaining','monitoring','pointing']
         assert all(body['states'][name]['tentative_reference_approved'] for name in body['state_order'][:5])
         assert set(body['states'])==set(body['state_order'])
-        assert body['states_without_review_images']>=28
+        # One genuinely authored Celebrating native review PNG is now tracked;
+        # the other 27 expansion states must remain genuinely unavailable.
+        assert body['states_without_review_images']>=27
+        assert body['additional_review_art_available_count'] in (0,1)
         assert body['production_release_enabled'] is False
         assert body['owner_production_approved_count']==0
         assert body['native_core_five_certified_count']==0
