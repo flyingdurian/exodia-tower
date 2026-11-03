@@ -37,3 +37,23 @@
 @media (max-width:1120px){.dashboard{grid-template-columns:minmax(185px,225px) minmax(300px,1fr)}.inspector{grid-column:1/-1}.state-menu{max-height:530px}.inspector .batch-intake{max-width:650px}}
 @media (max-width:700px){.dashboard{display:flex;flex-direction:column;min-height:0}.state-rail,.inspector{padding:15px}.state-rail h2,.inspector h2{font-size:22px}.state-menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-height:300px;overflow-y:auto;gap:6px}.state-button{padding:8px 6px;min-height:62px;gap:6px}.state-button .glyph{width:23px;height:23px;font-size:13px}.state-button .detail strong{font-size:10px}.state-button .detail small{font-size:8px}.state-button .arrow{display:none}.hero{min-height:690px}.portrait-zone{min-height:370px}.portrait-frame{width:min(70%,315px)}.orbit-one{width:330px;height:330px;margin:-165px 0 0 -165px}.orbit-two{width:365px;height:315px;margin:-157px 0 0 -182px}.reticle{display:none}.top-center{display:none}.hero-title{margin:10px 0}.stage-meta{padding:13px}.stage-bottom{margin-top:10px}.batch-intake{margin-top:10px}.app-shell{padding:10px}.footer-bar{flex-wrap:wrap;gap:7px}}
 @media(prefers-reduced-motion:reduce){.orbit,.star,.signal-bars i{animation:none!important}}
+
+/* Browser-validated stage-height lock: inspector and expanded state list may
+   scroll internally, but must not push Albedo below the desktop viewport. */
+.portrait-loading[hidden]{display:none!important}
+@media(min-width:1121px){
+ .app-shell{height:100dvh;min-height:700px;max-height:100dvh;overflow:hidden}
+ .dashboard{min-height:0;height:auto;flex:1}
+ .state-rail,.inspector{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+ .hero{min-height:0}
+ .portrait-zone{min-height:0;padding:4px 0}
+ .portrait-frame{width:min(40%,300px);max-height:min(44vh,375px)}
+ .rail-bottom{margin-top:18px}
+ .state-menu{max-height:calc(100vh - 365px)}
+ .footer-bar{flex-shrink:0}
+}
+@media(max-width:1120px){
+ .app-shell{height:auto;min-height:100vh;max-height:none;overflow:visible}
+ .dashboard{min-height:0;height:auto}
+ .state-rail,.inspector{overflow:visible}
+}
