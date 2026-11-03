@@ -25,7 +25,7 @@
     "pointing"
   ],
   "count": 28,
-  "generated_count": 0,
+  "generated_count": 1,
   "source_provenance_required": true,
   "anti_clone_policy": "one_independent_render_per_state_even_if_appearance_similar",
   "quality_gate": "every produced PNG audited with real per-feature pixel measurements and human anatomical inspection; no auto-promotions",
@@ -546,14 +546,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"celebrating\". Facial acting: Bright victorious open smile and proud delighted eyes. Body acting and pose: One arm raised in fist-pump; other displays a unique success sigil and confetti halo. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "celebrating_independent_original.png",
       "expected_output_png": "celebrating.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759",
+      "output_sha256": "cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "a1966bad-8d42-4e75-8ae0-c5bcd3696b60"
     },
     {
       "state_key": "defeat",
