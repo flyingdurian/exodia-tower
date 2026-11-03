@@ -31,6 +31,9 @@ on:
       - 'orchestrator/tests/test_core5_gate1_recovery.py'
       - 'assets/review/albedo_core5/source_anatomy_annotation_template.json'
       - 'assets/review/albedo_core5/source_access_report.json'
+      - 'assets/review/albedo_core5/authorized_28_state_art_queue.json'
+      - 'orchestrator/tools/audit_33_state_candidates.py'
+      - 'orchestrator/tests/test_gate3_33_states.py'
       - '.github/workflows/portrait-registry.yml'
       - 'orchestrator/tools/build_core5_review.py'
       - 'orchestrator/tools/core5_geometry_gate.py'
@@ -80,9 +83,18 @@ jobs:
           python - <<'PY'
           import json
           p=json.load(open('assets/blueprints/albedo_28_state_batch_gate.json'))
-          assert p['status']=='BLOCKED_AWAITING_5_OF_5_PIXEL_ANCHOR_AUDIT'
+          assert p['status']=='REVIEW_ART_GENERATION_AUTHORIZED_PRODUCTION_LOCKED'
           assert p['generated_states']==0
-          print('PASS: no unreviewed 28-state generation was started')
+          assert p['native_core_five_certified_count']==0
+          assert p['production_release_enabled'] is False
+          assert p['review_generation_approved_count']==28
+          registry=json.load(open('orchestrator/frontend/companions/production/kiko/portrait_registry.json'))
+          assert registry['release']['enabled'] is False
+          assert len([s for s in registry['states'].values() if s['status']=='pending_production_art'])==33
+          assert len([s for s in registry['states'].values() if s.get('tentative_visual_reference')])==5
+          assert all(not s['tentative_visual_reference']['owner_visual_approved_native_master']
+                     for s in registry['states'].values() if s.get('tentative_visual_reference'))
+          print('PASS: 28-state review generation authorized, zero created, production remains locked')
           PY
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
