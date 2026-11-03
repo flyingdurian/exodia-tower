@@ -12,6 +12,7 @@ function updateStatus(msg){$('loadStatus').textContent=msg;}
 function badgeFor(item){
  if(item.art_status==='CONCEPT_REVIEW_AVAILABLE')return 'CONCEPT / SHA OK';
  if(item.art_status==='INDEPENDENT_ART_UNAPPROVED_REVIEW')return 'NATIVE CANDIDATE / REVIEW';
+ if(item.tentative_reference_approved)return 'TENTATIVE REF · IMPORT ART';
  return 'ART PENDING';
 }
 function createStage(){
@@ -40,6 +41,12 @@ function signalLabel(signal){
 function addButtons(){
  const menu=$('stateMenu');menu.replaceChildren();
  registry.state_order.forEach((state,index)=>{
+  if(index===0||index===5){
+   const header=document.createElement('div');
+   header.className='state-group-heading';
+   header.textContent=index===0?'01 · Core-Five tentative references':'02 · 28 distinct art assignments';
+   menu.appendChild(header);
+  }
   const item=registry.states[state];
   const button=document.createElement('button');
   button.type='button';button.className='state-button';button.dataset.state=state;
@@ -148,6 +155,8 @@ async function loadManifest(retain=false){
     m.additional_state_count!==28||m.production_release_enabled!==false||
     m.owner_production_approved_count!==0||
     m.production_status!=='ALL_33_PENDING_PRODUCTION_ART'||
+    new Set(m.state_order).size!==33||
+    m.state_order.slice(0,5).join(',')!=='idle,working,explaining,monitoring,pointing'||
     m.state_order.some(s=>!m.states[s]||m.states[s].production_status!=='pending_production_art'||
       m.states[s].owner_approved!==false))
    throw Error('Invalid/unsafe 33-state review manifest');
