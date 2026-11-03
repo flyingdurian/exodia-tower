@@ -222,8 +222,7 @@ def import_art(root: Path, archive: bytes) -> dict:
                 raise ValueError('generator_job_id_missing:' + state)
             if not isinstance(row.get('pose_evidence_description'),str) or len(row['pose_evidence_description'].strip())<30:
                 raise ValueError('distinct_pose_evidence_description_missing:' + state)
-            if (not row.get('generator_job_id')
-                    or not SHA.fullmatch(str(row.get('generation_input_manifest_sha256','')))
+            if (not SHA.fullmatch(str(row.get('generation_input_manifest_sha256','')))
                     or row.get('derived_from_composite') is not False):
                 raise ValueError('independent_source_provenance_missing:' + state)
             source_name = state + '_original.png'
