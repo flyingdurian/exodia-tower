@@ -79,7 +79,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await mobile.goto('http://127.0.0.1:8909/test-workbench',
                                       wait_until='domcontentloaded')
                     await mobile.wait_for_function(
-                        "()=>window.__exodia33?.selected==='neutral'",timeout=15000)
+                        "()=>window.__exodia33?.selected==='idle'",timeout=15000)
                     assert await mobile.locator('.state-button').count()==33
                     assert await mobile.locator('.state-group-heading').count()==2
                     await mobile.locator('.state-button[data-state="celebrating"]').click()
@@ -97,6 +97,33 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert mobile_state['scrollWidth']<=mobile_state['viewportWidth']+8
                     await mobile.screenshot(path=str(proof/'mobile_33_states_MISSING_ART.png'),
                                             full_page=True)
+                    # A fake "available" Core-Five image with invalid SHA
+                    # must never be shown or silently treated as approved art.
+                    from json import dumps
+                    tampered=await browser.new_page(viewport={'width':1280,'height':820})
+                    result=await tampered.request.get(
+                        'http://127.0.0.1:8909/api/albedo/state33/manifest')
+                    injected=await result.json()
+                    injected['states']['idle']['art_status']='CONCEPT_REVIEW_AVAILABLE'
+                    injected['states']['idle']['image_url']='/api/albedo/core5/review-assets/idle'
+                    injected['states']['idle']['sha256']='a'*64
+                    async def mock_manifest(route):
+                        await route.fulfill(status=200,content_type='application/json',
+                                            body=dumps(injected))
+                    async def corrupt_png(route):
+                        await route.fulfill(status=200,content_type='image/png',
+                                            body=b'not-an-image-and-invalid-hash')
+                    await tampered.route('**/api/albedo/state33/manifest',mock_manifest)
+                    await tampered.route('**/api/albedo/core5/review-assets/idle',corrupt_png)
+                    await tampered.goto('http://127.0.0.1:8909/test-workbench',
+                                        wait_until='domcontentloaded')
+                    await tampered.wait_for_function(
+                        "()=>document.querySelector('#artStatusTag')?.textContent==='ASSET INTEGRITY REJECTED'",
+                        timeout=10000)
+                    assert 'IMAGE REJECTED' in await tampered.locator('#loadStatus').inner_text()
+                    assert await tampered.locator('.portrait-missing-layer').filter(
+                        has_text='IDLE').is_visible()
+                    assert await tampered.evaluate('window.__exodia33.releaseEnabled') is False
                 finally:
                     await browser.close()
         finally:
