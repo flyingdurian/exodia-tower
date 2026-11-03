@@ -4,7 +4,8 @@ const $=id=>document.getElementById(id);
 const ICONS={expression:'✧',action:'⌘'};
 const REQUIRED_SCHEMA='exodia.state33-review-workbench/v1';
 let registry=null,selected=0,token=0,active=0,stages=[],visited=new Set();
-let autoTimer=null;
+let autoTimer=null,autoCursor=0,autoAdvanceCount=0;
+const autoRequestedStates=new Set();
 const cached=new Map();
 let lastTaskKey=null;
 
@@ -184,7 +185,21 @@ async function loadManifest(retain=false){
 }
 function updateAutoplay(){
  if(autoTimer){clearInterval(autoTimer);autoTimer=null;}
- if($('autoCycle').checked)autoTimer=setInterval(()=>select(selected+1),4000);
+ if($('autoCycle').checked){
+  autoCursor=selected;
+  autoAdvanceCount=0;
+  autoRequestedStates.clear();
+  autoTimer=setInterval(()=>{
+   if(!registry)return;
+   // Advance the requested sequence independently of potentially delayed
+   // image decoding. Every tick requests the NEXT unique state in order,
+   // never repeats a state while a large PNG is still loading.
+   autoCursor=(autoCursor+1)%registry.state_order.length;
+   autoAdvanceCount++;
+   autoRequestedStates.add(registry.state_order[autoCursor]);
+   select(autoCursor);
+  },4000);
+ }
 }
 function registerInput(buttonId,inputId,endpoint){
  $(buttonId).addEventListener('click',async()=>{
@@ -246,5 +261,7 @@ setInterval(pollTask,4000);
 window.addEventListener('beforeunload',clearPreviewCache);
 window.__exodia33={get selected(){return registry?.state_order[selected]||null;},
  get inspected(){return visited.size;},get loaded(){return registry?.artwork_available_count||0;},
- get releaseEnabled(){return false;}};
+ get releaseEnabled(){return false;},
+ get autoAdvances(){return autoAdvanceCount;},
+ get autoUniqueRequested(){return autoRequestedStates.size;}};
 loadManifest().catch(e=>updateStatus('33-state workbench rejected manifest: '+e.message));
