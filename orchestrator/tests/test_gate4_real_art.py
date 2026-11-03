@@ -57,6 +57,14 @@ def test_real_fastapi_returns_identical_image_and_live_demo_review_status():
     assert m['states']['celebrating']['owner_approved'] is False
     assert m['states']['celebrating']['native_production_certified'] is False
     assert m['states']['celebrating']['signal_overlay']=='triumphant_halo'
+    assert m['states']['celebrating']['geometry_status']=='ACTUAL_PIXELS_GEOMETRY_FAIL_OWNER_UNREVIEWED'
+    measured=m['states']['celebrating']['measurements']
+    assert measured['eye_y']==519.427
+    assert measured['shoulder_y']==869.5
+    assert measured['eye_delta']==-114.173
+    assert measured['shoulder_delta']==-110.5
+    assert measured['head_width_px'] is None
+    assert measured['numeric_provisional_pass'] is False
     assert m['states_without_review_images']>=27
     with TestClient(app) as client:
         r=client.get('/api/albedo/state33/review-assets/celebrating')
