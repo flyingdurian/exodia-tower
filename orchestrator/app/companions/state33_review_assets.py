@@ -123,6 +123,7 @@ def manifest(root: Path) -> dict:
             art = core['states'][name]
             item['source_filename'] = art['source_filename']
             item['source_sha256'] = art['source_sha256']
+            item['measurements'] = art.get('measurements')
             item['geometry_status'] = 'PROVISIONAL_CONCEPT_MIDPOINTS_ONLY'
             if art['availability'] == 'unapproved_concept_review':
                 item['art_status'] = 'CONCEPT_REVIEW_AVAILABLE'
@@ -214,6 +215,13 @@ def import_art(root: Path, archive: bytes) -> dict:
                 raise ValueError('self_asserted_owner_approval_forbidden:' + state)
             if row.get('pose_key') != state:
                 raise ValueError('state_pose_identity_mismatch:' + state)
+            if row.get('source_kind') not in (
+                    'independent_standalone_native','independently_authored_higher_resolution'):
+                raise ValueError('independent_native_source_kind_required:' + state)
+            if not isinstance(row.get('generator_job_id'),str) or len(row['generator_job_id'])<8:
+                raise ValueError('generator_job_id_missing:' + state)
+            if not isinstance(row.get('pose_evidence_description'),str) or len(row['pose_evidence_description'].strip())<30:
+                raise ValueError('distinct_pose_evidence_description_missing:' + state)
             if (not row.get('generator_job_id')
                     or not SHA.fullmatch(str(row.get('generation_input_manifest_sha256','')))
                     or row.get('derived_from_composite') is not False):
@@ -255,6 +263,9 @@ def import_art(root: Path, archive: bytes) -> dict:
                     output_pixels = im.convert('RGB')
                     if ImageChops.difference(expected_pixels, output_pixels).getbbox():
                         raise ValueError('output_not_proven_downsample:' + state)
+            if ((orig_dims == SIZE and row.get('source_kind') != 'independent_standalone_native') or
+                    (orig_dims != SIZE and row.get('source_kind') != 'independently_authored_higher_resolution')):
+                raise ValueError('original_source_kind_and_dimensions_disagree:' + state)
             if (orig_sha in original_hashes or image_sha in output_hashes):
                 raise ValueError('duplicate_original_or_image_sha:' + state)
             original_hashes[orig_sha] = state
