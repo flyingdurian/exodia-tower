@@ -10,9 +10,9 @@ echo.
 echo ==========================================================
 echo EXODIA Tower - Albedo 33-State Development Workbench
 echo ==========================================================
-echo Local FastAPI server (not a static file server).
-echo Web address: http://127.0.0.1:8765/test-workbench
-echo All 33 production states remain locked pending artwork.
+echo Launching the existing FastAPI app, not a static file server.
+echo Local address: http://127.0.0.1:8765/test-workbench
+echo The native artwork release registry remains locked.
 echo.
 where py >nul 2>nul
 if not errorlevel 1 (
@@ -20,14 +20,15 @@ if not errorlevel 1 (
 ) else (
   set "EXODIA_PY=python"
 )
-start "" "http://127.0.0.1:8765/test-workbench"
-%EXODIA_PY% main.py
+start "EXODIA Tower FastAPI" cmd /k "%EXODIA_PY% main.py"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$u='http://127.0.0.1:8765/test-workbench'; for($i=0;$i -lt 60;$i++){ try { $response=Invoke-WebRequest -UseBasicParsing -Uri $u -TimeoutSec 1; if($response.StatusCode -eq 200){ Start-Process $u; exit 0 } } catch {} ; Start-Sleep -Milliseconds 300 }; exit 1"
 if errorlevel 1 (
   echo.
-  echo EXODIA startup failed. Install requirements from the repository:
+  echo The EXODIA web service did not become ready.
+  echo Inspect the separate FastAPI console and install dependencies:
   echo   python -m pip install -r orchestrator/requirements.txt
-  echo Refresh the browser after a successful launch.
   pause
   exit /b 1
 )
+echo 33-state workbench opened. Leave the EXODIA FastAPI window running.
 endlocal
