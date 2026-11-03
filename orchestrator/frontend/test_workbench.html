@@ -6,22 +6,23 @@
 <meta name="theme-color" content="#10112c">
 <title>EXODIA Tower · Albedo Visual Workbench</title>
 <link rel="stylesheet" href="./test_workbench.css">
-<script type="module" src="./test_workbench.mjs"></script>
+<link rel="stylesheet" href="./test_workbench_33.css">
+<script type="module" src="./test_workbench_33.mjs"></script>
 </head>
 <body>
 <div class="app-shell">
   <header class="topbar">
     <div class="brand"><div class="brand-icon">✧</div><div><strong>EXODIA <span>TOWER</span></strong><small>OPERATIONS / CHARACTER LAB</small></div></div>
-    <div class="top-center">AI COMPANION <b>·</b> VISUAL STATE WORKBENCH <span>V4 · CORE ONLY</span></div>
+    <div class="top-center">AI COMPANION <b>·</b> VISUAL STATE WORKBENCH <span>V5 · 33-STATE DEVELOPMENT</span></div>
     <div class="top-right"><i class="live-dot"></i><span>LOCAL PREVIEW</span><span class="clock" id="clock">00:00</span></div>
   </header>
   <main class="dashboard">
     <aside class="state-rail" aria-label="Choose companion state">
       <p class="eyebrow">01 / STATE LIBRARY</p>
       <h2>Albedo's activities</h2>
-      <p class="rail-copy">Four distinct pose previews; Pointing pending original. All 33 production states remain pending.</p>
+      <p class="rail-copy">All 33 authored states are selectable. Missing artwork is visibly marked; Core-Five retains tentative reference status only.</p>
       <nav id="stateMenu" class="state-menu"></nav>
-      <div class="rail-bottom"><div class="small-line"></div><b>STATE DRIVER</b><span>Manual selection or automatic loop</span><label class="toggle"><input id="autoCycle" type="checkbox"/> Auto-demo every 4s</label><div class="kbd-tip">Keyboard: <kbd>←</kbd> <kbd>→</kbd> to switch</div></div>
+      <div class="rail-bottom"><div class="small-line"></div><b>STATE DRIVER</b><span>Manual selection or all-state review cycle</span><label class="toggle"><input id="autoCycle" type="checkbox"/> Cycle all 33 states</label><div class="kbd-tip">Keyboard: <kbd>←</kbd> <kbd>→</kbd> to switch</div></div>
     </aside>
 
     <section class="hero" aria-label="Interactive portrait display">
@@ -35,12 +36,12 @@
         <div class="reticle reticle-right"><div class="reticle-line"></div><span>INNER STATE</span><strong id="innerState">STANDBY</strong></div>
         <div id="gestureBeam" class="gesture-beam" hidden><i></i><span>FOCUS TARGET</span></div>
       </div>
-      <div class="stage-bottom"><div class="status-chip"><i class="live-dot"></i><span id="statusLabel">Awaiting command</span></div><p id="statusText">The companion is ready for a new mission.</p><div class="stage-note">Only whole-portrait opacity changes. Zero image panning or cutout deformation.</div></div>
+      <div class="stage-bottom"><div class="status-chip"><i class="live-dot"></i><span id="statusLabel">Awaiting command</span></div><p id="statusText">The companion is ready for a new mission.</p><div class="stage-note">Whole-stage opacity transitions. No cloned character images for missing states.</div></div>
       <div class="cosmic-footer"><span>✦ STARLINK STABLE</span><span>CONSTELLATION: LYRA</span><span>◉ HEARTBEAT 01</span></div>
     </section>
 
     <aside class="inspector" aria-label="Asset inspector and simulation controls">
-      <p class="eyebrow">02 / LIVE TELEMETRY</p><h2>State inspector</h2><p class="rail-copy">See which source is loaded, validate its canvas and preview quality, and inspect transitions.</p>
+      <p class="eyebrow">02 / LIVE TELEMETRY</p><h2>State inspector</h2><p class="rail-copy">Inspect 33 states, inspect exact image SHA-256 when artwork exists, and distinguish missing art from verified concept previews.</p>
       <section class="side-card">
         <div class="card-heading">CURRENT STATE <span id="stateKey">IDLE</span></div>
         <div class="big-state" id="stateTitle">Awaiting command</div>
@@ -48,18 +49,21 @@
         <div class="signal"><span>EMOTION SIGNAL</span><b>LIVE</b></div><div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       </section>
       <section class="side-card technical">
-        <div class="card-heading">ASSET READINESS <span class="proto-tag">PROTOTYPE</span></div>
-        <dl><dt>Canvas</dt><dd>1536 × 1920</dd><dt>Format</dt><dd>PNG · 4:5</dd><dt>Rendering</dt><dd>Contain + pad</dd><dt>Motion</dt><dd>Opacity only</dd><dt>Provenance</dt><dd id="sourceName">Loading…</dd><dt>SHA-256</dt><dd class="sha" id="assetHash">Verifying…</dd></dl>
+        <div class="card-heading">ASSET READINESS <span class="proto-tag" id="artStatusTag">REVIEW ONLY</span></div>
+        <dl><dt>Canvas</dt><dd>1536 × 1920</dd><dt>Format</dt><dd>PNG · 4:5</dd><dt>Rendering</dt><dd>Contain + pad</dd><dt>Motion</dt><dd>Opacity only</dd><dt>Provenance</dt><dd id="sourceName">Loading…</dd><dt>SHA-256</dt><dd class="sha" id="assetHash">Verifying…</dd><dt>Eye / shoulder Y</dt><dd id="dualAnchors">Not audited</dd><dt>Head width</dt><dd id="headWidth">Not audited</dd><dt>Production registry</dt><dd id="registryStatus">33 / 33 pending</dd></dl>
       </section>
       <section class="side-card interactive">
         <div class="card-heading">TRANSITION CONTROL</div>
         <label for="transitionSpeed">Cross-fade <b id="speedValue">240 ms</b></label><input id="transitionSpeed" type="range" min="0" max="650" step="10" value="240"/>
         <div class="quick-actions"><button id="restart" class="secondary">Restart Idle</button><button id="copyDebug" class="secondary">Copy Telemetry</button></div>
-        <label class="toggle small-toggle"><input type="checkbox" id="ambientMotion" checked /> Animated cosmic ambience</label>
+        <label class="toggle small-toggle"><input type="checkbox" id="ambientMotion" checked /> Animated cosmic ambience</label><label class="toggle small-toggle"><input type="checkbox" id="observeTasks" /> Follow live task status (read-only)</label>
       </section>
-      <div class="nonproduction"><span>!</span><div><b>VISUAL TEST ONLY</b><p>No production approvals, no 3D rig, no altered gameplay. Pointing is representative art pending its dedicated pose.</p></div></div>
+      <div class="nonproduction"><span>!</span><div><b>REVIEW ART · NOT PRODUCTION</b><p>Five Core-Five concept references have tentative visual sign-off. Their native masters and the other 28 independent artworks are not yet production approved.</p></div></div>
+      <section class="side-card batch-intake"><div class="card-heading">LOCAL ART INTAKE</div><label for="coreZip">Gate 1 Core-Five review ZIP (verified sources)</label><input type="file" id="coreZip" accept=".zip,application/zip"><button id="coreImport" type="button" class="secondary">Load 5 references</button>
+      <label for="stateZip">Additional native artwork review ZIP</label><input type="file" id="stateZip" accept=".zip,application/zip"><button id="stateImport" type="button" class="secondary">Validate &amp; load unique art</button>
+      <p>Original SHA, standalone provenance, canvas and clone detection are required. Nothing imported here changes the production registry.</p></section>
     </aside>
   </main>
-  <footer class="footer-bar"><span id="loadStatus">Loading five Albedo previews…</span><div><span class="footer-led"></span> UI STATE ENGINE ONLINE <span class="footer-divider">|</span> <span id="frameCount">0 / 5</span> STATES TESTED</div></footer>
+  <footer class="footer-bar"><span id="loadStatus">Loading 33-state development manifest…</span><div><span class="footer-led"></span> UI STATE ENGINE ONLINE <span class="footer-divider">|</span> <span id="frameCount">0 / 33</span> STATES TESTED</div></footer>
 </div>
 </body></html>
