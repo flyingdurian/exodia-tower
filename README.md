@@ -45,9 +45,15 @@ static hosting returns missing API responses and cannot run the 33-state demo.
 - **28 distinct production art briefs**:
   `assets/review/albedo_core5/authorized_28_state_art_queue.json`. Each brief
   requires a unique original body/face pose and source-generation provenance.
-- **Zero newly generated native expansion masters**: 28 slots deliberately
-  display an honest *ART PENDING* visual. They do **not** reuse the Idle portrait,
-  change its color, or substitute a thumbnail collage.
+- **One genuinely independently generated higher-resolution expansion source**
+  has been SHA-verified and committed: **Celebrating**, rendered at 1856×2304
+  as a standalone original and center-crop/uniformly downsampled to a
+  1536×1920 review PNG. Its source and output are stored under
+  `orchestrator/app_data/albedo_33_review/{sources,images}/`. It is automatically
+  shown in the real 33-state workbench. **Its actual pixel geometry FAILS**
+  the immutable anchors and its native-art review remains unapproved.
+- **The other 27 expansion original portraits are not generated**. Their UI
+  slots honestly display *ART PENDING*, with no repeated character proxy.
 - **No certified native Core-Five masters**: tentative sign-off is explicitly
   limited to visual reference direction. The resampled 1536×1920 concept
   previews are not native masters; the strict head-width target was not met.
@@ -128,3 +134,50 @@ as **reference metadata only**. Final production activation requires
 independently authored native portraits, image-specific owner approval and
 all 33 production release audits. **Never insert automatic owner approvals,
 relabeled clones or composite-board crops as missing assets.**
+
+## Gate 4 — Actual independently rendered candidate (verified)
+
+A dedicated image-to-image generation job used the actual approved **revised
+Idle and true Pointing source illustrations** to produce the standalone
+**Celebrating** pose. Generation job
+`a1966bad-8d42-4e75-8ae0-c5bcd3696b60`, model `nano_banana_2_1`.
+The independently downloaded native source is 1856×2304 PNG (9,553,812 bytes)
+with SHA-256
+`25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759`.
+The verified 1536×1920 PNG is generated using symmetric 8px left/right and
+2px top/bottom crop, then uniform Lanczos downsampling with output SHA
+`cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e`.
+
+Actual iris-pigment / shoulder-edge scanner (provisional hints, not owner
+anatomical certification):
+
+| Metric | Real pixel scan | Canonical | Result |
+|---|---:|---:|---|
+| Iris y midpoint | 519.427 | 633.6 ±2 | FAIL |
+| Shoulder y midpoint | 869.5 | 980 ±2 | FAIL |
+| Eye center x | 789.493 | 768 | FAIL |
+| Eye left/right vertical drift | 14.903px | ≤12 | FAIL |
+| Shoulder left/right drift | 17px | ≤14 | FAIL |
+| Head width | Not independently certified | 614.4 ±4 | PENDING |
+
+These results are bound to the exact output image SHA and are exposed inside
+the existing 33-state inspector. The asset remains a **review-only candidate**
+and is neither an approved native production master nor a substitute for
+the remaining 27 missing state portraits.
+
+See `assets/review/albedo_core5/gate4_generated_review_candidates.json`,
+`gate4_native_review_art_actual_report.json`,
+`gate4_celebrating_actual_landmark_fail.json`, and
+`orchestrator/app_data/albedo_33_review/review_index.json`.
+
+The connected standalone-image renderer's available credit balance was zero
+after the successful Celebrating job. Other built-in rendering attempts did
+not produce usable standalone images from the archived references. **No
+unrendered pose is counted as generated.** A new authorized image-rendering
+capacity or separately delivered independent images is required to complete
+the 27 outstanding states. The generated core-five native masters also remain
+outstanding.
+
+The 33-state workbench auto-play requests all 33 unique poses in order,
+including honest unavailable-art screens for the missing portraits.
+The art loader never modifies the signed production registry.
