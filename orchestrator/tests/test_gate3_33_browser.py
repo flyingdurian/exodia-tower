@@ -111,7 +111,20 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await mobile.wait_for_function(
                         "()=>window.__exodia33?.selected==='celebrating'",timeout=7000)
                     assert await mobile.locator('.hero').get_attribute('data-signal')=='triumphant_halo'
-                    assert await mobile.locator('.portrait-missing-layer').filter(has_text='CELEBRATING').is_visible()
+                    manifest_response=await mobile.request.get(
+                        'http://127.0.0.1:8909/api/albedo/state33/manifest')
+                    art=(await manifest_response.json())['states']['celebrating']
+                    if art['image_url']:
+                        assert art['art_status']=='INDEPENDENT_ART_UNAPPROVED_REVIEW'
+                        assert art['owner_approved'] is False
+                        await mobile.wait_for_function(
+                            "()=>document.querySelector('#loadStatus')?.textContent.includes('SHA-VERIFIED')",
+                            timeout=7000)
+                        assert await mobile.locator('.portrait-preview-layer[src^="blob:"]').count()>=1
+                        assert art['sha256']=='cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e'
+                    else:
+                        assert await mobile.locator('.portrait-missing-layer').filter(
+                            has_text='CELEBRATING').is_visible()
                     assert not await mobile.locator('.portrait-loading').count()
                     mobile_state=await mobile.evaluate("""() => ({
                       scrollWidth:document.documentElement.scrollWidth,
