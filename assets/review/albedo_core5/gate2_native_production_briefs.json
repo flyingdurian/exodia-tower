@@ -1,0 +1,169 @@
+{
+  "schema": "exodia.albedo-core5-native-authorship-briefs/v1",
+  "status": "BRIEFS_ONLY_NO_NATIVE_IMAGES_GENERATED",
+  "release_enabled": false,
+  "owner_approved": false,
+  "required_native_dimensions": [
+    1536,
+    1920
+  ],
+  "allow_higher_resolution_downsample": true,
+  "forbid_upscale": true,
+  "immutable_targets": {
+    "eye_y": 633.6,
+    "eye_tol": 2,
+    "shoulder_y": 980,
+    "shoulder_tol": 2,
+    "eye_center_x": 768,
+    "head_width": 614.4,
+    "head_tol": 4
+  },
+  "art_direction": "Follow original independent PNG and separate approved style benchmark; visual owner signoff required per exact final PNG SHA.",
+  "states": {
+    "idle": {
+      "state": "idle",
+      "pose_evidence_tag": "relaxed_centered",
+      "reference_original_file": "albedo_in_a_celestial_orbital_halo.png",
+      "reference_original_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "character_identity_locked": true,
+      "prompt": "Create ONE independently painted standalone high-resolution Albedo portrait; source reference establishes character identity and approved design only, not a reusable painted base. Canvas minimum 1536x1920 native 4:5 (or genuinely larger 4:5 then exact downsample). Mature adult female, silver-lavender flowing hair, violet eyes, flower/gold celestial hair ornament, refined elaborate white/lilac/black/gold celestial costume with faceted crystals. Premium hand-painted anime key-art detail, controlled warm/cool rim lighting. Front-facing coherent 3/4 character-camera with eye-line midpoint y=633.6 px, anatomical left/right shoulder baseline average y=980 px, horizontal eye-midpoint x=768 px, head width 614.4±4 px. Preserve both anatomically accurate individual irises, actual shoulders and full connected arms/hands. No rubber sheet, no extraction/collage, no recolor-only pose, no copied base, no text, no charts, no presentation sheet. Render independent composition with adequate periphery and no cut-off limbs. ACTION SPECIFIC: Composed natural relaxed idle, shoulders balanced, both arms resting naturally within frame, soft self-possessed calm expression. No workstation or pointing gesture.",
+      "final_art_status": "PENDING_INDEPENDENT_GENERATION",
+      "production_status": "pending_production_art",
+      "output_file": null,
+      "output_sha256": null,
+      "owner_visual_approval": false,
+      "required_evidence": [
+        "generation_job_id",
+        "native_original_dimensions",
+        "original_source_sha256",
+        "final_output_sha256",
+        "independently_verified_left_right_eye_pixels",
+        "independently_verified_left_right_anatomical_shoulder_pixels",
+        "measured_head_width",
+        "centerline",
+        "pose_distinctness_review",
+        "owner_exact_hash_signoff"
+      ]
+    },
+    "working": {
+      "state": "working",
+      "pose_evidence_tag": "interactive_workstation",
+      "reference_original_file": "albedo_s_celestial_holographic_workstation.png",
+      "reference_original_sha256": "ec8e85610853591a0a46cdfac97c302b7359851681678ca4c64b179677ab7287",
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "character_identity_locked": true,
+      "prompt": "Create ONE independently painted standalone high-resolution Albedo portrait; source reference establishes character identity and approved design only, not a reusable painted base. Canvas minimum 1536x1920 native 4:5 (or genuinely larger 4:5 then exact downsample). Mature adult female, silver-lavender flowing hair, violet eyes, flower/gold celestial hair ornament, refined elaborate white/lilac/black/gold celestial costume with faceted crystals. Premium hand-painted anime key-art detail, controlled warm/cool rim lighting. Front-facing coherent 3/4 character-camera with eye-line midpoint y=633.6 px, anatomical left/right shoulder baseline average y=980 px, horizontal eye-midpoint x=768 px, head width 614.4±4 px. Preserve both anatomically accurate individual irises, actual shoulders and full connected arms/hands. No rubber sheet, no extraction/collage, no recolor-only pose, no copied base, no text, no charts, no presentation sheet. Render independent composition with adequate periphery and no cut-off limbs. ACTION SPECIFIC: Genuinely active working at holographic console: both hands physically connected to arms with fingers operating interface, plausible depth and correct wrists. The original Working concept has oversized head relative to shoulders; draw a NEW appropriately scaled head and upper torso in one coherent perspective. Avoid extra fingers and avoid the desk occluding shoulder anatomy.",
+      "final_art_status": "PENDING_INDEPENDENT_GENERATION",
+      "production_status": "pending_production_art",
+      "output_file": null,
+      "output_sha256": null,
+      "owner_visual_approval": false,
+      "required_evidence": [
+        "generation_job_id",
+        "native_original_dimensions",
+        "original_source_sha256",
+        "final_output_sha256",
+        "independently_verified_left_right_eye_pixels",
+        "independently_verified_left_right_anatomical_shoulder_pixels",
+        "measured_head_width",
+        "centerline",
+        "pose_distinctness_review",
+        "owner_exact_hash_signoff"
+      ]
+    },
+    "explaining": {
+      "state": "explaining",
+      "pose_evidence_tag": "explanatory_hand_gesture",
+      "reference_original_file": "albedo_s_luminous_arcane_explanation.png",
+      "reference_original_sha256": "162c999377522e4c93df8b7d286072d2ca8cc82cfa51b0af64410c174768a134",
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "character_identity_locked": true,
+      "prompt": "Create ONE independently painted standalone high-resolution Albedo portrait; source reference establishes character identity and approved design only, not a reusable painted base. Canvas minimum 1536x1920 native 4:5 (or genuinely larger 4:5 then exact downsample). Mature adult female, silver-lavender flowing hair, violet eyes, flower/gold celestial hair ornament, refined elaborate white/lilac/black/gold celestial costume with faceted crystals. Premium hand-painted anime key-art detail, controlled warm/cool rim lighting. Front-facing coherent 3/4 character-camera with eye-line midpoint y=633.6 px, anatomical left/right shoulder baseline average y=980 px, horizontal eye-midpoint x=768 px, head width 614.4±4 px. Preserve both anatomically accurate individual irises, actual shoulders and full connected arms/hands. No rubber sheet, no extraction/collage, no recolor-only pose, no copied base, no text, no charts, no presentation sheet. Render independent composition with adequate periphery and no cut-off limbs. ACTION SPECIFIC: Distinct explanation pose with one naturally extended open palm and readable fingers, mouth speaking softly, supporting hand neutral, eye contact to audience. Do not reproduce idle or pointing silhouette. Newly compose head and shoulders to exact target rather than stretch.",
+      "final_art_status": "PENDING_INDEPENDENT_GENERATION",
+      "production_status": "pending_production_art",
+      "output_file": null,
+      "output_sha256": null,
+      "owner_visual_approval": false,
+      "required_evidence": [
+        "generation_job_id",
+        "native_original_dimensions",
+        "original_source_sha256",
+        "final_output_sha256",
+        "independently_verified_left_right_eye_pixels",
+        "independently_verified_left_right_anatomical_shoulder_pixels",
+        "measured_head_width",
+        "centerline",
+        "pose_distinctness_review",
+        "owner_exact_hash_signoff"
+      ]
+    },
+    "monitoring": {
+      "state": "monitoring",
+      "pose_evidence_tag": "attentive_observation",
+      "reference_original_file": "albedo_in_a_celestial_command_halo.png",
+      "reference_original_sha256": "4f75754980023b7596f7b0b9ccf9d36e695d936d40fb0efd7233c725d4be8d46",
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "character_identity_locked": true,
+      "prompt": "Create ONE independently painted standalone high-resolution Albedo portrait; source reference establishes character identity and approved design only, not a reusable painted base. Canvas minimum 1536x1920 native 4:5 (or genuinely larger 4:5 then exact downsample). Mature adult female, silver-lavender flowing hair, violet eyes, flower/gold celestial hair ornament, refined elaborate white/lilac/black/gold celestial costume with faceted crystals. Premium hand-painted anime key-art detail, controlled warm/cool rim lighting. Front-facing coherent 3/4 character-camera with eye-line midpoint y=633.6 px, anatomical left/right shoulder baseline average y=980 px, horizontal eye-midpoint x=768 px, head width 614.4±4 px. Preserve both anatomically accurate individual irises, actual shoulders and full connected arms/hands. No rubber sheet, no extraction/collage, no recolor-only pose, no copied base, no text, no charts, no presentation sheet. Render independent composition with adequate periphery and no cut-off limbs. ACTION SPECIFIC: Attentive systems monitoring with focused violet gaze tracking holographic readouts; one hand at control surface or thoughtful near chin with physically coherent wrist; alert, not a speaking/open-palm or pointing pose. Consistent camera and independently painted head/torso proportions.",
+      "final_art_status": "PENDING_INDEPENDENT_GENERATION",
+      "production_status": "pending_production_art",
+      "output_file": null,
+      "output_sha256": null,
+      "owner_visual_approval": false,
+      "required_evidence": [
+        "generation_job_id",
+        "native_original_dimensions",
+        "original_source_sha256",
+        "final_output_sha256",
+        "independently_verified_left_right_eye_pixels",
+        "independently_verified_left_right_anatomical_shoulder_pixels",
+        "measured_head_width",
+        "centerline",
+        "pose_distinctness_review",
+        "owner_exact_hash_signoff"
+      ]
+    },
+    "pointing": {
+      "state": "pointing",
+      "pose_evidence_tag": "extended_index_connected_wrist",
+      "reference_original_file": "albedo_s_celestial_pointing_portrait.png",
+      "reference_original_sha256": "d55da7f4ca4e93a5d40592e97fe5c04cc6e3d9aaa8cbe8f24c64ee7e08de3b62",
+      "source_canvas": [
+        1122,
+        1402
+      ],
+      "character_identity_locked": true,
+      "prompt": "Create ONE independently painted standalone high-resolution Albedo portrait; source reference establishes character identity and approved design only, not a reusable painted base. Canvas minimum 1536x1920 native 4:5 (or genuinely larger 4:5 then exact downsample). Mature adult female, silver-lavender flowing hair, violet eyes, flower/gold celestial hair ornament, refined elaborate white/lilac/black/gold celestial costume with faceted crystals. Premium hand-painted anime key-art detail, controlled warm/cool rim lighting. Front-facing coherent 3/4 character-camera with eye-line midpoint y=633.6 px, anatomical left/right shoulder baseline average y=980 px, horizontal eye-midpoint x=768 px, head width 614.4±4 px. Preserve both anatomically accurate individual irises, actual shoulders and full connected arms/hands. No rubber sheet, no extraction/collage, no recolor-only pose, no copied base, no text, no charts, no presentation sheet. Render independent composition with adequate periphery and no cut-off limbs. ACTION SPECIFIC: Clear extended INDEX FINGER pointing to target with realistic hand perspective; all other fingers folded plausibly, thumb anchored, every digit count correct, wrist forearm elbow upper arm fully connected and visible; no detached arm, glove morph, or recycled other pose. Energetic but consistent eye-line.",
+      "final_art_status": "PENDING_INDEPENDENT_GENERATION",
+      "production_status": "pending_production_art",
+      "output_file": null,
+      "output_sha256": null,
+      "owner_visual_approval": false,
+      "required_evidence": [
+        "generation_job_id",
+        "native_original_dimensions",
+        "original_source_sha256",
+        "final_output_sha256",
+        "independently_verified_left_right_eye_pixels",
+        "independently_verified_left_right_anatomical_shoulder_pixels",
+        "measured_head_width",
+        "centerline",
+        "pose_distinctness_review",
+        "owner_exact_hash_signoff"
+      ]
+    }
+  }
+}
