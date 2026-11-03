@@ -57,3 +57,6 @@
  .dashboard{min-height:0;height:auto}
  .state-rail,.inspector{overflow:visible}
 }
+
+/* Missing art is a first-class real state, not a fade-hidden image placeholder. */
+.portrait-missing-layer{opacity:1!important;visibility:visible!important}
