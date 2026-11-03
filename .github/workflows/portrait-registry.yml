@@ -33,6 +33,7 @@ on:
       - 'assets/review/albedo_core5/source_access_report.json'
       - 'assets/review/albedo_core5/authorized_28_state_art_queue.json'
       - 'assets/review/albedo_core5/gate4_generated_review_candidates.json'
+      - 'assets/review/albedo_core5/gate4_celebrating_provisional_landmarks.json'
       - 'assets/review/albedo_core5/gate4_native_review_art_actual_report.json'
       - 'orchestrator/tools/gate4_ingest_independent_render.py'
       - 'orchestrator/app_data/albedo_33_review/**'
@@ -107,7 +108,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          python orchestrator/tools/audit_33_state_candidates.py --project-root orchestrator --report 28_review_audit_report.json > /tmp/exodia_28_art_audit.txt
+          python orchestrator/tools/audit_33_state_candidates.py --project-root orchestrator --annotations assets/review/albedo_core5/gate4_celebrating_provisional_landmarks.json --report 28_review_audit_report.json > /tmp/exodia_28_art_audit.txt
           audit_code=$?
           set -e
           if [ "$audit_code" -ne 1 ]; then
@@ -139,6 +140,14 @@ jobs:
           assert len({row['raw_generation_prompt'] for row in q['states']})==28
           assert r['states_expected']==28 and r['candidate_image_count']==count
           assert r['originals_sha_checked_count']==count
+          assert r['independently_audited_numeric_count']==count
+          if count:
+              c=r['states']['celebrating']
+              assert c['output_sha256']=='cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e'
+              assert c['pixel_scan'] and c['measured_geometry']['eye_delta_px'] < -2
+              assert c['measured_geometry']['shoulder_delta_px'] < -2
+              assert c['status']=='FAIL'
+              assert c['owner_approved'] is False
           assert r['provisional_numeric_pass_count']==0
           assert r['production_release_enabled'] is False
           print(f'PASS: 28 distinct jobs, {count} verified originals, no invented masters')
