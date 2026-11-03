@@ -17,7 +17,7 @@ function badgeFor(item){
 function createStage(){
  const frame=$('portraitFrame');
  const loading=frame.querySelector('.portrait-loading');
- if(loading)loading.hidden=true;
+ if(loading)loading.remove();
  for(let i=0;i<2;i++){
   const div=document.createElement('div');div.className='portrait-display-layer';
   Object.assign(div.style,{position:'absolute',inset:'0',opacity:'0',transition:'none',pointerEvents:'none'});
