@@ -120,9 +120,10 @@ async function select(index){
  const req=++token;
  updateStatus('Preparing '+item.label+' — '+badgeFor(item));
  let url=null;
+ let assetError=null;
  try{if(item.image_url)url=await verifiedImage(item);}
  catch(error){
-  updateStatus('Image verification rejected: '+error.message);
+  assetError=error.message;
   url=null;
  }
  if(req!==token)return;
@@ -134,6 +135,8 @@ async function select(index){
   stage.img.hidden=true;stage.img.removeAttribute('src');
   stage.missing.style.display='flex';
   stage.missing.querySelector('b').textContent=item.label.toUpperCase();
+  stage.missing.querySelector('small').textContent=
+   assetError?'SHA/CANVAS VERIFICATION REJECTED':'NO PROXY · GENERATION AUTHORIZED';
  }
  const ms=matchMedia('(prefers-reduced-motion:reduce)').matches?0:Math.min(650,Number($('transitionSpeed').value)||0);
  const prev=stages[active];
@@ -143,8 +146,13 @@ async function select(index){
  prev.div.style.transition='opacity '+ms+'ms ease-in-out';
  stage.div.style.opacity='1';prev.div.style.opacity='0';
  active=next;selected=nextIndex;visited.add(state);detail(item);
- updateStatus(item.label+': '+(url?'SHA-VERIFIED UNAPPROVED ART':'NO ART FILE — original pose outstanding')
-  +' · '+registry.artwork_available_count+' / 33 images available');
+ if(assetError){
+  $('artStatusTag').textContent='ASSET INTEGRITY REJECTED';
+  updateStatus(item.label+': IMAGE REJECTED — '+assetError+'. Production remains locked.');
+ }else{
+  updateStatus(item.label+': '+(url?'SHA-VERIFIED UNAPPROVED ART':'NO ART FILE — original pose outstanding')
+   +' · '+registry.artwork_available_count+' / 33 images available');
+ }
  $('autoCycle').title='33-state demo; missing art has no substituted portrait';
 }
 async function loadManifest(retain=false){
