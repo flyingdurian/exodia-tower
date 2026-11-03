@@ -1,8 +1,33 @@
 {
   "schema": "exodia.pending-28-distinct-states/v1",
-  "status": "BLOCKED_AWAITING_5_OF_5_PIXEL_ANCHOR_AUDIT",
+  "status": "REVIEW_ART_GENERATION_AUTHORIZED_PRODUCTION_LOCKED",
   "generated_states": 0,
   "no_proxies": true,
   "no_relabelled_duplicates": true,
-  "prerequisite": "All five core states pass CV pixel measurements, source SHA and owner approval."
+  "prerequisite": "Review artwork development is authorized now. Native-source and explicit hash-specific owner approvals are still required before production registration/release.",
+  "owner_tentative_reference_signoff": true,
+  "owner_authorization_reference": "owner_gate3_2026-11-02_28_state_batch_generation_unlock",
+  "reference_profile": "albedo-canonical-dual-anchor-v1",
+  "canonical_anchors": {
+    "canvas": [
+      1536,
+      1920
+    ],
+    "eye_y_px": 633.6,
+    "shoulder_y_px": 980,
+    "anchor_tolerance_px": 2,
+    "head_width_px": 614.4,
+    "head_width_tolerance_px": 4,
+    "center_x_px": 768
+  },
+  "native_core_five_certified_count": 0,
+  "production_release_enabled": false,
+  "review_generation_approved_count": 28,
+  "rules": [
+    "No cloned/relabelled/color-swapped base portraits",
+    "Each state is independently authored and captured in an original SHA-256 provenance manifest",
+    "All 33 states remain pending_production_art until certified native artwork and explicit owner approval",
+    "audit_portrait_anchors.py must examine every generated candidate before review",
+    "Never fabricate numeric measurements or make the automated audit pretend to be human signoff"
+  ]
 }
