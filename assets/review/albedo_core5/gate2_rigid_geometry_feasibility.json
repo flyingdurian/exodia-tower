@@ -1,0 +1,132 @@
+{
+  "schema": "exodia.core5-source-ratio-feasibility/v1",
+  "analysis_scope": "Model visually estimated anatomical source coordinates, pending human verification; not a native-art pass",
+  "canonical": {
+    "size": [
+      1536,
+      1920
+    ],
+    "eye_y": 633.6,
+    "shoulder_y": 980,
+    "head_width_px": 614.4,
+    "head_width_tolerance": 4,
+    "eye_shoulder_tolerance": 2
+  },
+  "states": [
+    {
+      "state": "idle",
+      "model_estimated_source_head_width_px": 426,
+      "source_eye_shoulder_midpoint_gap_px": 244,
+      "nominal_uniform_scale": 1.419672,
+      "nominal_uniform_head_width": 604.78,
+      "anchor_scale_interval": [
+        1.40328,
+        1.43607
+      ],
+      "head_scale_interval": [
+        1.43288,
+        1.45166
+      ],
+      "joint_uniform_feasible_based_on_source_landmarks": true,
+      "pixel_review_head_width": 587.93,
+      "pixel_review_head_width_delta": -26.47,
+      "original_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "review_sha256": "f43f54567ea30dd25a396744b8d8fb8eb15c1bbd74e560b938988d2c70d19ebe",
+      "requires_independent_native_composition": false,
+      "anatomy_human_review": "pending"
+    },
+    {
+      "state": "working",
+      "model_estimated_source_head_width_px": 415,
+      "source_eye_shoulder_midpoint_gap_px": 203,
+      "nominal_uniform_scale": 1.706404,
+      "nominal_uniform_head_width": 708.16,
+      "anchor_scale_interval": [
+        1.6867,
+        1.72611
+      ],
+      "head_scale_interval": [
+        1.47084,
+        1.49012
+      ],
+      "joint_uniform_feasible_based_on_source_landmarks": false,
+      "pixel_review_head_width": 692.98,
+      "pixel_review_head_width_delta": 78.58,
+      "original_sha256": "ec8e85610853591a0a46cdfac97c302b7359851681678ca4c64b179677ab7287",
+      "review_sha256": "bd060049b6203dbfd9989e3b66f5ecea591f3677c59453955eadf30ef2980702",
+      "requires_independent_native_composition": true,
+      "anatomy_human_review": "pending"
+    },
+    {
+      "state": "explaining",
+      "model_estimated_source_head_width_px": 419,
+      "source_eye_shoulder_midpoint_gap_px": 218,
+      "nominal_uniform_scale": 1.588991,
+      "nominal_uniform_head_width": 665.78,
+      "anchor_scale_interval": [
+        1.57064,
+        1.60734
+      ],
+      "head_scale_interval": [
+        1.45681,
+        1.4759
+      ],
+      "joint_uniform_feasible_based_on_source_landmarks": false,
+      "pixel_review_head_width": 649.28,
+      "pixel_review_head_width_delta": 34.88,
+      "original_sha256": "162c999377522e4c93df8b7d286072d2ca8cc82cfa51b0af64410c174768a134",
+      "review_sha256": "8b817005b2eb5f3dd34dc7670c415dd78c3b2f8c730664e0137f5703250242c0",
+      "requires_independent_native_composition": true,
+      "anatomy_human_review": "pending"
+    },
+    {
+      "state": "monitoring",
+      "model_estimated_source_head_width_px": 414,
+      "source_eye_shoulder_midpoint_gap_px": 214.5,
+      "nominal_uniform_scale": 1.614918,
+      "nominal_uniform_head_width": 668.58,
+      "anchor_scale_interval": [
+        1.59627,
+        1.63357
+      ],
+      "head_scale_interval": [
+        1.4744,
+        1.49372
+      ],
+      "joint_uniform_feasible_based_on_source_landmarks": false,
+      "pixel_review_head_width": 635.65,
+      "pixel_review_head_width_delta": 21.25,
+      "original_sha256": "4f75754980023b7596f7b0b9ccf9d36e695d936d40fb0efd7233c725d4be8d46",
+      "review_sha256": "c013a2128e92672d7021ecdee0f76f4eed24141cc8967a16f467d9f751170fc9",
+      "requires_independent_native_composition": true,
+      "anatomy_human_review": "pending"
+    },
+    {
+      "state": "pointing",
+      "model_estimated_source_head_width_px": 426,
+      "source_eye_shoulder_midpoint_gap_px": 244,
+      "nominal_uniform_scale": 1.419672,
+      "nominal_uniform_head_width": 604.78,
+      "anchor_scale_interval": [
+        1.40328,
+        1.43607
+      ],
+      "head_scale_interval": [
+        1.43286,
+        1.45164
+      ],
+      "joint_uniform_feasible_based_on_source_landmarks": true,
+      "pixel_review_head_width": 592.25,
+      "pixel_review_head_width_delta": -22.15,
+      "original_sha256": "d55da7f4ca4e93a5d40592e97fe5c04cc6e3d9aaa8cbe8f24c64ee7e08de3b62",
+      "review_sha256": "46aa1186a1b92e5ce60d410a73c7462fb7d77d7e3249f3d4ec9819b23bb1a412",
+      "requires_independent_native_composition": false,
+      "anatomy_human_review": "pending"
+    }
+  ],
+  "conclusion": "The rigid scale intervals do not overlap for Working, Explaining and Monitoring using source estimates. Moving all target lines cannot repair pose-specific head/shoulder ratios. Fresh independent native compositions required; pixel-search hints cannot manufacture a pass.",
+  "production_pass": false,
+  "owner_approved": false,
+  "release_enabled": false,
+  "remaining_28_generated": 0
+}
