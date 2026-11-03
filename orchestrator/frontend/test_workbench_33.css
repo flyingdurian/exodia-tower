@@ -79,3 +79,11 @@
 .portrait-display-layer .portrait-missing-layer small{
  color:#ffe0a1!important;font-size:10px;font-weight:750;
 }
+
+/* Label the 5/28 boundary without inventing art or changing production IDs. */
+.state-group-heading{font-size:10px;font-weight:800;letter-spacing:.08em;color:#bbb0e9;
+ text-transform:uppercase;border-bottom:1px solid #55547f;padding:12px 2px 7px;margin:0 0 3px;}
+.state-group-heading:not(:first-child){margin-top:13px}
+@media(max-width:700px){
+ .state-group-heading{grid-column:1/-1;margin-top:4px!important}
+}
