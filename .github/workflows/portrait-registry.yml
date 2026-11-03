@@ -33,6 +33,10 @@ on:
       - 'assets/review/albedo_core5/source_access_report.json'
       - '.github/workflows/portrait-registry.yml'
       - 'orchestrator/tools/build_core5_review.py'
+      - 'orchestrator/tools/core5_geometry_gate.py'
+      - 'orchestrator/tools/core5_native_candidate_gate.py'
+      - 'orchestrator/tests/test_core5_native_candidates.py'
+      - 'assets/review/albedo_core5/verified_concept_pixel_telemetry_2026-11-02.json'
       - 'orchestrator/tools/recover_core5_sources.py'
       - 'orchestrator/tools/calibrate_core5_concepts.py'
       - 'orchestrator/tests/test_core5_gate1_recovery.py'
@@ -72,7 +76,7 @@ jobs:
         run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py orchestrator/tests/test_static_portrait_release.py orchestrator/tests/test_standalone_only_gate.py orchestrator/tests/test_ingest_standalone_portrait.py orchestrator/tests/test_portrait_normalization.py orchestrator/tests/test_core_action_batch.py
       - name: Strict dual-anchor regression and 28-state generation gate
         run: |
-          python -m pytest -q orchestrator/tests/test_audit_portrait_anchors.py orchestrator/tests/test_core5_gate1_recovery.py
+          python -m pytest -q orchestrator/tests/test_audit_portrait_anchors.py orchestrator/tests/test_core5_gate1_recovery.py orchestrator/tests/test_core5_native_candidates.py
           python - <<'PY'
           import json
           p=json.load(open('assets/blueprints/albedo_28_state_batch_gate.json'))
