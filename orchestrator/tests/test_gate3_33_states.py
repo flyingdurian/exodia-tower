@@ -65,6 +65,8 @@ def test_full_33_state_manifest_is_real_registry_and_has_no_approved_art(tmp_pat
         assert body['core_five_count']==5
         assert body['additional_state_count']==28
         assert len(body['state_order'])==33
+        assert body['state_order'][:5]==['idle','working','explaining','monitoring','pointing']
+        assert all(body['states'][name]['tentative_reference_approved'] for name in body['state_order'][:5])
         assert set(body['states'])==set(body['state_order'])
         assert body['states_without_review_images']>=28
         assert body['production_release_enabled'] is False
