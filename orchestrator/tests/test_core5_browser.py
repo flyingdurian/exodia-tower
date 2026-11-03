@@ -84,7 +84,7 @@ def test_core5_live_workbench_desktop_mobile_state_and_sha():
                         await page.wait_for_function(
                             "() => document.querySelector('#stateTitle')?.textContent?.includes('RELAXED')",
                             timeout=15000)
-                        base=await page.locator('#portraitFrame').bounding_box()
+                        assert await page.locator('#emptyPreview').is_hidden()\n                        base=await page.locator('#portraitFrame').bounding_box()
                         assert base is not None
                         for state in STATES:
                             await page.get_by_role('button',name=state.capitalize()).click()
