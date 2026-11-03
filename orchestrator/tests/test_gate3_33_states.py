@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw
 from fastapi.testclient import TestClient
 from app.api.server import app
 from app.companions import state33_review_assets as review
+ROOT=Path(__file__).resolve().parents[1]
 
 def make_image(state, *, size=(1536,1920), color=(70,85,110)):
     im = Image.new('RGB',size,color)
@@ -103,7 +104,7 @@ def test_import_rejects_cloned_image_same_pose_different_state(tmp_path,monkeypa
     monkeypatch.setattr(review,'_base',lambda root:tmp_path/'review')
     identical=make_image('neutral')
     with pytest.raises(ValueError,match='duplicate_original_or_image_sha'):
-        review.import_art(Path('/project'),make_batch(
+        review.import_art(ROOT,make_batch(
           ('neutral','happy'),source_images={'neutral':identical,'happy':identical}))
 
 def test_import_rejects_color_swap_same_structure(tmp_path,monkeypatch):
@@ -113,7 +114,7 @@ def test_import_rejects_color_swap_same_structure(tmp_path,monkeypatch):
         gray=im.convert('L').convert('RGB')
         swapped=BytesIO();gray.save(swapped,format='PNG')
     with pytest.raises(ValueError,match='duplicate_pose_or_color_shift'):
-        review.import_art(Path('/project'),make_batch(
+        review.import_art(ROOT,make_batch(
             ('neutral','happy'),source_images={'neutral':image,'happy':swapped.getvalue()}))
 
 def test_import_rejects_upscaled_concept_even_when_dimensions_lie(tmp_path,monkeypatch):
@@ -122,7 +123,7 @@ def test_import_rejects_upscaled_concept_even_when_dimensions_lie(tmp_path,monke
     data=make_batch(source_images={'neutral':raw},row_overrides={
         'neutral':{'source_dimensions':[1122,1402]}})
     with pytest.raises(ValueError,match='output_not_native_1536x1920'):
-        review.import_art(Path('/project'),data)
+        review.import_art(ROOT,data)
 
 @pytest.mark.parametrize('extra,reason',[
     ({'approved_by':'owner'},'self_asserted_owner_approval_forbidden'),
@@ -134,7 +135,7 @@ def test_import_rejects_upscaled_concept_even_when_dimensions_lie(tmp_path,monke
 def test_invalid_provenance_or_owner_claim_rejected(tmp_path,monkeypatch,extra,reason):
     monkeypatch.setattr(review,'_base',lambda root:tmp_path/'review')
     with pytest.raises(ValueError,match=reason):
-        review.import_art(Path('/project'),make_batch(row_overrides={'neutral':extra}))
+        review.import_art(ROOT,make_batch(row_overrides={'neutral':extra}))
 
 def test_unsafe_zip_and_failed_image_shas_do_not_write_review_index(tmp_path,monkeypatch):
     monkeypatch.setattr(review,'_base',lambda root:tmp_path/'review')
@@ -143,17 +144,17 @@ def test_unsafe_zip_and_failed_image_shas_do_not_write_review_index(tmp_path,mon
         z.writestr('../state.png',b'malicious')
         z.writestr('review_batch_manifest.json','{}')
     with pytest.raises(ValueError,match='unsafe_or_duplicate_zip_member'):
-        review.import_art(Path('/project'),archive.getvalue())
+        review.import_art(ROOT,archive.getvalue())
     assert not (tmp_path/'review'/'review_index.json').exists()
     corrupted=make_batch(row_overrides={'neutral':{'image_sha256':'f'*64}})
     with pytest.raises(ValueError,match='sha256_mismatch'):
-        review.import_art(Path('/project'),corrupted)
+        review.import_art(ROOT,corrupted)
     assert not (tmp_path/'review'/'review_index.json').exists()
 
 def test_art_approval_remains_locked_even_if_review_image_exists(tmp_path,monkeypatch):
     monkeypatch.setattr(review,'_base',lambda root:tmp_path/'review')
-    review.import_art(Path('/project'),make_batch())
-    m=review.manifest(Path('/project'))
+    review.import_art(ROOT,make_batch())
+    m=review.manifest(ROOT)
     assert m['owner_production_approved_count']==0
     assert m['native_core_five_certified_count']==0
     assert all(x['owner_approved'] is False for x in m['states'].values())
