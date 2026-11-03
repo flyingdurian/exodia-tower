@@ -126,7 +126,9 @@ def audit_candidate_batch(manifest, sources, outputs):
                 operation.get('scale_y')!=CANVAS[1]/source_dims[1]):
                 errs.append('unsupported_or_unproven_normalization')
         geo=validate_independent_measurements(item.get('geometry',{}),source_approved=False)
-        # Missing owner approval is an obligatory release hold, never a reason\n        # to erase a separately meaningful structural/numeric result.\n        errs.extend(e for e in geo['errors'] if e!='owner_exact_hash_approval_missing')
+        # Missing approval remains a release hold, but does not erase
+        # separately measurable structural results.
+        errs.extend(e for e in geo['errors'] if e!='owner_exact_hash_approval_missing')
         if item.get('image_cropped_anatomy') is not False:
             errs.append('anatomy_crop_clearance_unverified')
         if item.get('independent_pose_human_reviewed') is not True:
