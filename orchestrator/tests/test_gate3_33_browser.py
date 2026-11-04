@@ -46,6 +46,12 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_function(
                       "()=>window.__exodia33?.selected==='idle'",timeout=15000)
                     assert await page.locator('.state-button').count()==33
+                    assert await page.locator('.state-button[data-owner-review="CORRECTION_REQUIRED"]').count()==4
+                    assert await page.locator('.state-button[data-owner-review="OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT"]').count()==29
+                    for target in ('angered','awaiting_command','neutral','tantrum'):
+                        node=page.locator('.state-button[data-state="'+target+'"]')
+                        assert await node.get_attribute('data-owner-review')=='CORRECTION_REQUIRED'
+                    assert await page.locator('#ownerDevelopmentStatus').count()==1
                     assert await page.locator('.state-group-heading').count()==2
                     assert await page.locator('.state-button').first.get_attribute('data-state')=='idle'
                     assert await page.locator('.state-button[data-state="idle"]').count()==1
@@ -55,6 +61,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_function(
                         "()=>window.__exodia33?.selected==='angered'",timeout=7000)
                     assert await page.locator('.hero').get_attribute('data-signal')=='strain_glitch'
+                    assert 'Needs independent replacement' in await page.locator('#ownerDevelopmentStatus').inner_text()
                     art_response=await page.request.get(
                         'http://127.0.0.1:8909/api/albedo/state33/manifest')
                     art_manifest=await art_response.json()
