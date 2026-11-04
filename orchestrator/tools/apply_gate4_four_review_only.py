@@ -19,8 +19,12 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import sys
 from zipfile import ZipFile, BadZipFile
 from PIL import Image, ImageChops
+# The module is called both by the live FastAPI app and as a standalone
+# repository-root CLI. Keep the same import contract in both environments.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tools.apply_gate4_four_corrections import verify_locked_29, TARGETS, sha
 
 ROOT = Path(__file__).resolve().parents[2]
