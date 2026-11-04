@@ -68,9 +68,15 @@ def test_correction_lock_preserves_29_and_native_angered_pending():
     assert cue['canvas']==[1122,1402]
     assert cue['native_production_eligible'] is False
     assert cue['future_rerender_inherits_owner_visual_approval'] is False
-    assert brief['status']=='PENDING_NEW_STANDALONE_ARTWORK'
-    assert brief['new_original_sha256'] is None
-    assert brief['new_review_sha256'] is None
+    assert brief['status'] in ('PENDING_NEW_STANDALONE_ARTWORK',
+                               'REVIEW_ONLY_OWNER_ACCEPTED_NON_NATIVE')
+    if brief['status']=='PENDING_NEW_STANDALONE_ARTWORK':
+        assert brief['new_original_sha256'] is None
+        assert brief['new_review_sha256'] is None
+    else:
+        assert brief['new_original_sha256']=='9c676dd8dcc5f76ed5938a69f78e2caff18e804e623e7200c8016637df3bf7ef'
+        assert brief['review_only_source_dimensions']==[1122,1402]
+        assert brief['native_production_certified'] is False
 
 
 def test_live_fastapi_manifest_exposes_lowres_owner_visual_cue_only():
@@ -92,6 +98,13 @@ def test_live_fastapi_manifest_exposes_lowres_owner_visual_cue_only():
     assert anger['owner_approved'] is False
     assert anger['owner_final_visual_approved'] is False
     assert anger['production_status']=='pending_production_art'
-    assert anger['owner_development_status']=='CORRECTION_REQUIRED'
+    assert anger['owner_development_status'] in (
+        'CORRECTION_REQUIRED','REVIEW_ONLY_OWNER_ACCEPTED_NON_NATIVE')
+    if anger['owner_development_status']=='REVIEW_ONLY_OWNER_ACCEPTED_NON_NATIVE':
+        assert anger['review_is_resampled_from_low_resolution'] is True
+        assert anger['source_dimensions']==[1122,1402]
+        assert anger['art_status']=='OWNER_ACCEPTED_DEVELOPMENT_RESAMPLED_REVIEW_ONLY'
+        assert anger['source_sha256']=='9c676dd8dcc5f76ed5938a69f78e2caff18e804e623e7200c8016637df3bf7ef'
+        assert data['owner_development_accepted_count']==33
     assert len([item for item in data['states'].values()
                 if item['owner_development_status']=='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT'])==29
