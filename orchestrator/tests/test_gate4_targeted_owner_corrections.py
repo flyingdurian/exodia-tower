@@ -12,6 +12,7 @@ from PIL import Image
 from io import BytesIO
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "orchestrator"))
 sys.path.insert(0, str(ROOT / "orchestrator" / "tools"))
 from apply_gate4_four_corrections import (TARGETS, verify_locked_29,
                                           check_metadata, validate_original_png,
