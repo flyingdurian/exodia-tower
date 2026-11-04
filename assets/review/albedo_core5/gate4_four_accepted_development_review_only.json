@@ -5,9 +5,9 @@
   "protected_other_state_count": 29,
   "required_new_review_count": 4,
   "handoff_archive_name": "EXODIA_G4_FOUR_STANDALONE_IMAGES_HANDOFF_2026-11-04.zip",
-  "handoff_archive_sha256": "",
+  "handoff_archive_sha256": "db768aeb2a5bf37ceda6b8b73bdc1220094ff7c2a164555df63d16c74e4559e3",
   "review_only_intake_archive_name": "EXODIA_GATE4_FOUR_REVIEW_ONLY_IMPORT_2026-11-04.zip",
-  "review_only_intake_archive_sha256": "25188358ed96180095975af3d2699df3375a7bf0147f7d38656afd9799aa37c1",
+  "review_only_intake_archive_sha256": "248b11c4880a3f355dbf3db6d8676e867adafd1441b1c756c91411e8dce6fe30",
   "source_generation_provenance": "Four standalone Albedo PNG outputs previously generated independently using ChatGPT image generation; exact individual provider job IDs not recorded in supplied handoff",
   "source_per_state_generation_job_ids": null,
   "normalization_contract": {
@@ -106,5 +106,6 @@
       "production_status": "pending_production_art",
       "native_production_certified": false
     }
-  }
+  },
+  "review_only_intake_size_bytes": 28860810
 }
