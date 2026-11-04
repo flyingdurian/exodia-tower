@@ -97,14 +97,20 @@ jobs:
           assert p['status']=='REVIEW_ART_GENERATION_AUTHORIZED_PRODUCTION_LOCKED'
           from pathlib import Path
           queue=json.load(open('assets/review/albedo_core5/authorized_28_state_art_queue.json'))
-          count=sum(s['generation_status']=='generated_unapproved_native_candidate'
+          count=sum(s['generation_status'] in ('generated_unapproved_native_candidate',
+                           'generated_owner_development_review_only')
                     for s in queue['states'])
           assert p['generated_states']==count
           assert queue['generated_count']==count
           for s in queue['states']:
-              if s['generation_status']=='generated_unapproved_native_candidate':
+              if s['generation_status'] in ('generated_unapproved_native_candidate',
+                                             'generated_owner_development_review_only'):
                   assert Path('orchestrator/app_data/albedo_33_review/images',s['state_key']+'.png').is_file()
                   assert Path('orchestrator/app_data/albedo_33_review/sources',s['state_key']+'_original.png').is_file()
+                  if s['generation_status']=='generated_owner_development_review_only':
+                      assert s['source_native_resolution_eligible'] is False
+                      assert s['native_production_certified'] is False
+                      assert s['original_canvas']==[1122,1402]
           assert p['native_core_five_certified_count']==0
           assert p['production_release_enabled'] is False
           assert p['review_generation_approved_count']==28
@@ -135,17 +141,26 @@ jobs:
           assert len({row['state_key'] for row in q['states']})==28
           from pathlib import Path
           from hashlib import sha256
-          count=sum(row['generation_status']=='generated_unapproved_native_candidate'
+          count=sum(row['generation_status'] in ('generated_unapproved_native_candidate',
+                                                'generated_owner_development_review_only')
                     for row in q['states'])
           assert q['generated_count']==count
           for row in q['states']:
-              if row['generation_status']=='generated_unapproved_native_candidate':
+              if row['generation_status'] in ('generated_unapproved_native_candidate',
+                                                'generated_owner_development_review_only'):
                   image=Path('orchestrator/app_data/albedo_33_review/images')/(row['state_key']+'.png')
                   original=Path('orchestrator/app_data/albedo_33_review/sources')/(row['state_key']+'_original.png')
                   assert image.is_file() and original.is_file()
                   assert sha256(image.read_bytes()).hexdigest()==row['output_sha256']
                   assert sha256(original.read_bytes()).hexdigest()==row['source_sha256']
                   assert row['production_status']=='pending_production_art'
+                  if row['generation_status']=='generated_owner_development_review_only':
+                      from PIL import Image
+                      with Image.open(original) as im:
+                          assert im.format=='PNG' and im.size==(1122,1402)
+                      with Image.open(image) as im:
+                          assert im.format=='PNG' and im.size==(1536,1920)
+                      assert row['native_production_certified'] is False
               else:
                   assert row['generation_status']=='authorized_not_generated'
                   assert not row['source_sha256']
