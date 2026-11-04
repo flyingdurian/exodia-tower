@@ -174,10 +174,20 @@ def preflight(root: Path, archive: Path) -> tuple[list, dict]:
     if not archive.is_file() or archive.stat().st_size > MAX_ARCHIVE_BYTES:
         raise ValueError("missing_or_oversized_correction_zip")
     with ZipFile(archive) as zipped:
-        if (len(zipped.namelist()) != len(set(zipped.namelist()))
+        permitted = {"correction_manifest.json"} | {
+            "sources/" + key + "_original.png" for key in TARGETS}
+        all_names = zipped.namelist()
+        if (len(all_names) != len(set(all_names))
+                or set(all_names) != permitted
                 or any(".." in Path(name).parts or name.startswith("/")
-                       for name in zipped.namelist())):
+                       for name in all_names)):
             raise ValueError("unsafe_or_duplicate_zip_entry")
+        if any(entry.file_size > (MAX_SOURCE_BYTES if entry.filename !=
+                "correction_manifest.json" else 65_536)
+                for entry in zipped.infolist()):
+            raise ValueError("zip_member_exceeds_individual_image_limit")
+        if sum(entry.file_size for entry in zipped.infolist()) > MAX_ARCHIVE_BYTES:
+            raise ValueError("zip_uncompressed_size_exceeds_limit")
         m = json.loads(zipped.read("correction_manifest.json"))
         if (m.get("schema") != SCHEMA or not isinstance(m.get("states"), dict)
                 or set(m["states"]) != set(TARGETS)):
