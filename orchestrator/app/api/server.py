@@ -199,6 +199,42 @@ async def albedo_gate4_owner_targeted_four_import(request: Request,
     return report
 
 
+# Gate 4: owner-accepted visual designs are 1122x1402 source originals.
+# This separate import route explicitly creates DEVELOPMENT-ONLY presentation
+# resamples; the existing native-production intake remains strict/unmodified.
+@app.post('/api/albedo/state33/gate4-four-review-import')
+async def albedo_gate4_four_review_only_import(request: Request,
+                                               x_exodia_client: str=Header(default='')):
+    if x_exodia_client != 'exodia-dashboard':
+        raise HTTPException(403,detail='Local operator confirmation required')
+    if request.headers.get('content-type','').split(';')[0] not in (
+            'application/zip','application/octet-stream'):
+        raise HTTPException(415,detail='Four-state resampled-review ZIP required')
+    from tools.apply_gate4_four_review_only import apply,MAX_ARCHIVE_BYTES
+    from zipfile import BadZipFile
+    if int(request.headers.get('content-length','0') or '0') > MAX_ARCHIVE_BYTES:
+        raise HTTPException(413,detail='Review-only archive exceeds limit')
+    body=await request.body()
+    if not body or len(body)>MAX_ARCHIVE_BYTES:
+        raise HTTPException(413,detail='Review-only archive exceeds limit')
+    try:
+        return await asyncio.to_thread(apply,settings.root.parent,body)
+    except (ValueError,OSError,KeyError,BadZipFile) as exc:
+        raise HTTPException(422,detail=str(exc)) from exc
+
+
+@app.post('/api/albedo/state33/gate4-four-review-rollback')
+async def albedo_gate4_four_review_only_rollback(
+        x_exodia_client: str=Header(default='')):
+    if x_exodia_client != 'exodia-dashboard':
+        raise HTTPException(403,detail='Local operator confirmation required')
+    from tools.apply_gate4_four_review_only import rollback
+    try:
+        return await asyncio.to_thread(rollback,settings.root.parent)
+    except (ValueError,OSError,KeyError) as exc:
+        raise HTTPException(422,detail=str(exc)) from exc
+
+
 @app.get('/legacy')
 async def legacy():return FileResponse(settings.root/'frontend'/'index.html')
 
