@@ -85,7 +85,8 @@ def test_real_fastapi_returns_identical_image_and_live_demo_review_status():
     queue=json.loads((ROOT/'assets'/'review'/'albedo_core5'/
                       'authorized_28_state_art_queue.json').read_text())
     assert queue['generated_count']>=1
-    assert sum(s['generation_status']=='generated_unapproved_native_candidate'
+    assert sum(s['generation_status'] in ('generated_unapproved_native_candidate',
+                                          'generated_owner_development_review_only')
                for s in queue['states'])==queue['generated_count']
 
 def test_all_33_real_review_portraits_are_delivered_with_correct_source_and_output_sha():
@@ -109,15 +110,25 @@ def test_all_33_real_review_portraits_are_delivered_with_correct_source_and_outp
             output=BASE/'images'/(name+'.png')
             assert source.is_file() and output.is_file(),name
             assert source.stat().st_size>500_000,name
+            is_review_only=info.get('review_is_resampled_from_low_resolution') is True
             with Image.open(source) as im:
-                assert im.format=='PNG' and im.width>=1536 and im.height>=1920,name
+                assert im.format=='PNG',name
+                if is_review_only:
+                    assert name in {'angered','awaiting_command','neutral','tantrum'}
+                    assert im.size==(1122,1402),name
+                    assert info['source_is_native'] is False
+                    assert entry['native_production_certified'] is False
+                    assert entry['normalization']['resampled_not_native'] is True
+                else:
+                    assert im.width>=1536 and im.height>=1920,name
             with Image.open(output) as im:
                 assert im.format=='PNG' and im.size==(1536,1920),name
             source_hash=sha256(source.read_bytes()).hexdigest()
             output_hash=sha256(output.read_bytes()).hexdigest()
             assert source_hash==info['source_sha256']==entry['source_sha256'],name
             assert output_hash==info['sha256']==entry['image_sha256'],name
-            assert info['art_status']=='INDEPENDENT_ART_UNAPPROVED_REVIEW',name
+            assert info['art_status']==('OWNER_ACCEPTED_DEVELOPMENT_RESAMPLED_REVIEW_ONLY'
+                  if is_review_only else 'INDEPENDENT_ART_UNAPPROVED_REVIEW'),name
             assert info['owner_approved'] is False,name
             assert info['native_production_certified'] is False,name
             assert entry['owner_approved'] is False,name
