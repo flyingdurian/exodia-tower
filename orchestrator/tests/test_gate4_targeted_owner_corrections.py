@@ -124,3 +124,32 @@ def test_four_old_images_are_present_but_not_marked_as_corrected_or_production()
             assert item["new_original_sha256"]
             assert item["new_review_sha256"]
         assert item["owner_final_visual_review"]=="PENDING"
+
+
+def test_real_api_four_state_correction_requires_auth_and_rejects_fake_art():
+    from app.api.server import app
+    from fastapi.testclient import TestClient
+    import zipfile
+    from io import BytesIO
+    # Supplying source labels, prompts or a fake ZIP without standalone PNGs
+    # must not count as any of the four image corrections.
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w") as container:
+        container.writestr("correction_manifest.json", "{}")
+    body = buf.getvalue()
+    with TestClient(app) as client:
+        assert client.post("/api/albedo/state33/gate4-four-correction-import",
+                           content=body,headers={"content-type":"application/zip"}).status_code==403
+        bad=client.post("/api/albedo/state33/gate4-four-correction-import",
+                        content=body,headers={"content-type":"application/zip",
+                                               "x-exodia-client":"exodia-dashboard"})
+        assert bad.status_code==422
+        assert "unsafe_or_duplicate_zip_entry" in bad.json()["detail"]
+        generic=client.post("/api/albedo/state33/review-import",
+                            content=body,headers={"content-type":"application/zip",
+                                                   "x-exodia-client":"exodia-dashboard"})
+        assert generic.status_code==422
+        assert "owner_locked_33_state_library" in generic.json()["detail"]
+    verified=verify_locked_29(ROOT)
+    assert verified["locked_29_verified"]==29
+    assert verified["unapproved_replacements"] in (0,4)
