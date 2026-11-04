@@ -223,7 +223,18 @@
       "new_original_sha256": null,
       "new_review_sha256": null,
       "status": "PENDING_NEW_STANDALONE_ARTWORK",
-      "owner_final_visual_review": "PENDING"
+      "owner_final_visual_review": "PENDING",
+      "owner_approved_reference_design": {
+        "status": "VISUAL_APPROVED_EXACT_SHA_ONLY",
+        "sha256": "139d622282f097c618c60ded0d3654ebffd2b18f3360fbdbc2eb8863eaf1ae18",
+        "canvas": [
+          1122,
+          1402
+        ],
+        "provenance_ledger": "assets/review/albedo_core5/gate4_angered_owner_visual_design_approval_2026-11-04.json",
+        "native_production_eligible": false,
+        "future_rerender_inherits_owner_visual_approval": false
+      }
     },
     "awaiting_command": {
       "board_slot": 8,
