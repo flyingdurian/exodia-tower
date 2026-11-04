@@ -121,7 +121,8 @@ def verify_locked_29(root: Path) -> dict:
         if old and rec["development_review_status"] != "OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT":
             raise ValueError("29_development_approval_status_corrupted:" + key)
         if not old and rec["development_review_status"] not in (
-                "CORRECTION_REQUIRED", "CORRECTION_RENDERED_OWNER_REVIEW_PENDING"):
+                "CORRECTION_REQUIRED", "CORRECTION_RENDERED_OWNER_REVIEW_PENDING",
+                "REVIEW_ONLY_OWNER_ACCEPTED_NON_NATIVE"):
             raise ValueError("four_target_status_corrupted:" + key)
         if old and (actual["source_sha256"] != rec["original_sha256"]
                     or actual["image_sha256"] != rec["review_sha256"]):
