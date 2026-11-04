@@ -59,4 +59,4 @@ def test_full_operator_handoff_updates_companion_screen(monkeypatch):
     assert delivered.status_code==200
     assert delivered.json()['state']=='answered'
     assert delivered.json()['answer'].startswith('Three titles')
-    assert client.get('/api/command/tasks').json()['automatic_extraction']['chatgpt'] is False
+    assert client.get('/api/command/tasks').json()['automatic_extraction']['chatgpt'] is True

@@ -317,7 +317,7 @@ async def companion_react(agent_id: str, body: ReactionBody):
 @app.get('/api/web/sessions')
 async def web_sessions():
     return {'models':router.sessions.snapshot(),
-            'automatic_extraction':{'gemini':True,'chatgpt':False,'deepseek':False},
+            'automatic_extraction':{'gemini':True,'chatgpt':True,'deepseek':False},
              'chatgpt_bridge':chatgpt_tasks.snapshot()}
 
 @app.post('/api/web/sessions/{model_choice}/start')
@@ -595,24 +595,33 @@ async def _complete_web_task(task_id: str):
                        f"{task['agent_id']}:configured_web")
 
 async def _submit_chatgpt_task(task_id: str):
-    """Automatically send a task to ChatGPT; never extract consumer-site output."""
+    """Send a task to ChatGPT and wait until the visible reply has finished."""
     task=inbox.get(task_id)
     def on_phase(stage):
         inbox.update(task_id,'state',stage)
         director.react(task['agent_id'],'working')
-        events.publish('task','ChatGPT prompt submission',f"{task['agent_id']}:{stage}")
+        events.publish('task','ChatGPT browser automation',f"{task['agent_id']}:{stage}")
     try:
-        await chatgpt_tasks.submit(task_id,task['prompt'],phase=on_phase)
-        inbox.update(task_id,'state','awaiting_operator')
-        events.publish('task','ChatGPT prompt sent; operator handoff pending',
+        result=await chatgpt_tasks.submit(task_id,task['prompt'],phase=on_phase)
+        if isinstance(result.get('timings'),dict):
+            inbox.update(task_id,'metrics',result['timings'])
+        if result.get('media'):
+            inbox.update(task_id,'media',result['media'])
+            first_image=next((m for m in result['media']
+                              if m.get('kind')=='image' and m.get('url')),None)
+            if first_image:inbox.update(task_id,'artifact',first_image['url'])
+        inbox.update(task_id,'answer',result['answer'])
+        inbox.update(task_id,'state','answered')
+        director.react(task['agent_id'],'success')
+        events.publish('success','ChatGPT response delivered to companion',
                        f"{task['agent_id']}:chatgpt")
     except Exception as exc:
         message=str(exc) if isinstance(exc,(SessionError,ValueError)) else (
-            'ChatGPT browser dispatch failed; inspect its window and screenshots.')
+            'ChatGPT browser task failed; inspect its window and screenshots.')
         inbox.update(task_id,'error',message[:700])
         inbox.update(task_id,'state','failed')
         director.react(task['agent_id'],'alert')
-        events.publish('alert','ChatGPT prompt dispatch failed',
+        events.publish('alert','ChatGPT browser task failed',
                        f"{task['agent_id']}:chatgpt")
 
 async def _complete_gemini_task(task_id: str):
@@ -654,12 +663,12 @@ async def command_providers():
             'configured_slots':{key:runner.snapshot() for key,runner in web_adapters.items()},
              'chatgpt':chatgpt_tasks.snapshot(),
             'gemini':router.sessions.snapshot()['gemini'],
-            'website_workspaces':'gemini_auto;_chatgpt_auto_submit_only'}
+            'website_workspaces':'gemini_auto;chatgpt_auto'}
 
 @app.get('/api/command/tasks')
 async def command_list():
     return {'tasks':inbox.list(),'sessions':router.sessions.snapshot(),
-            'automatic_extraction':{'gemini':True,'chatgpt':False,'deepseek':False}}
+            'automatic_extraction':{'gemini':True,'chatgpt':True,'deepseek':False}}
 
 @app.post('/api/command/tasks',status_code=201)
 async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(default='')):
