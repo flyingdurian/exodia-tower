@@ -2,7 +2,11 @@ name: Gate 4 — Real Application Source Review Snapshot
 on:
   push:
     branches: [development/exodia-foundation]
-    paths: ['.github/workflows/gate4-source-snapshot.yml']
+    paths:
+      - '.github/workflows/gate4-source-snapshot.yml'
+      - 'orchestrator/**'
+      - 'docs/EXODIA_FLEET_33_STATE_ART_STANDARD.md'
+      # This is a source-only artifact for authenticated integration review; PNGs remain separate.
   workflow_dispatch:
 permissions:
   contents: read
