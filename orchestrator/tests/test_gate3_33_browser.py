@@ -46,11 +46,17 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_function(
                       "()=>window.__exodia33?.selected==='idle'",timeout=15000)
                     assert await page.locator('.state-button').count()==33
-                    assert await page.locator('.state-button[data-owner-review="CORRECTION_REQUIRED"]').count()==4
+                    review_state_response=await page.request.get(
+                        'http://127.0.0.1:8909/api/albedo/state33/manifest')
+                    review_state_manifest=await review_state_response.json()
+                    corrected=review_state_manifest.get('owner_development_review_only_count',0)==4
+                    expected_target_status=('REVIEW_ONLY_OWNER_ACCEPTED_NON_NATIVE'
+                                            if corrected else 'CORRECTION_REQUIRED')
+                    assert await page.locator('.state-button[data-owner-review="'+expected_target_status+'"]').count()==4
                     assert await page.locator('.state-button[data-owner-review="OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT"]').count()==29
                     for target in ('angered','awaiting_command','neutral','tantrum'):
                         node=page.locator('.state-button[data-state="'+target+'"]')
-                        assert await node.get_attribute('data-owner-review')=='CORRECTION_REQUIRED'
+                        assert await node.get_attribute('data-owner-review')==expected_target_status
                     assert await page.locator('#ownerDevelopmentStatus').count()==1
                     assert await page.locator('.state-group-heading').count()==2
                     assert await page.locator('.state-button').first.get_attribute('data-state')=='idle'
@@ -61,15 +67,21 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_function(
                         "()=>window.__exodia33?.selected==='angered'",timeout=7000)
                     assert await page.locator('.hero').get_attribute('data-signal')=='strain_glitch'
-                    assert 'Owner approved exact design SHA' in await page.locator('#ownerDevelopmentStatus').inner_text()
-                    assert 'native rerender still required' in await page.locator('#ownerDevelopmentStatus').inner_text()
-                    assert 'DESIGN APPROVED' in await page.locator('.state-button[data-state="angered"] .detail small').inner_text()
+                    if corrected:
+                        assert 'RESAMPLED, NOT NATIVE' in await page.locator('#ownerDevelopmentStatus').inner_text()
+                        assert 'RESAMPLED' in await page.locator('.state-button[data-state="angered"] .detail small').inner_text()
+                    else:
+                        assert 'Owner approved exact design SHA' in await page.locator('#ownerDevelopmentStatus').inner_text()
+                        assert 'native rerender still required' in await page.locator('#ownerDevelopmentStatus').inner_text()
+                        assert 'DESIGN APPROVED' in await page.locator('.state-button[data-state="angered"] .detail small').inner_text()
                     art_response=await page.request.get(
                         'http://127.0.0.1:8909/api/albedo/state33/manifest')
                     art_manifest=await art_response.json()
                     angered=art_manifest['states']['angered']
                     if angered['image_url']:
-                        assert await page.locator('#artStatusTag').inner_text()=='INDEPENDENT_ART_UNAPPROVED_REVIEW'
+                        assert await page.locator('#artStatusTag').inner_text()==(
+                            'OWNER_ACCEPTED_DEVELOPMENT_RESAMPLED_REVIEW_ONLY'
+                            if corrected else 'INDEPENDENT_ART_UNAPPROVED_REVIEW')
                         await page.wait_for_function(
                           "()=>document.querySelector('#loadStatus')?.textContent.includes('SHA-VERIFIED')",
                           timeout=15000)
