@@ -1,0 +1,89 @@
+name: EXODIA Gate 4 — Persist all 33 real standalone review portraits
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths:
+      - 'assets/review/albedo_core5/gate4_runway_verified_batch_4.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: exodia-gate4-33-verified-art-production
+  cancel-in-progress: false
+
+jobs:
+  stage-33-independent-originals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development/exodia-foundation
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic Pillow
+        run: python -m pip install "Pillow==12.3.0"
+      - name: Download and byte-verify all standalone independent original images
+        run: python orchestrator/tools/gate4_import_runway_32.py
+      - name: Confirm every state is a genuine original plus native review file
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from hashlib import sha256
+          import json
+          from PIL import Image
+          repo=Path('.')
+          root=repo/'orchestrator'/'app_data'/'albedo_33_review'
+          idx=json.loads((root/'review_index.json').read_text())
+          assert len(idx['states'])==33
+          originals=set();outfiles=set()
+          for name,row in idx['states'].items():
+              p=root/'sources'/(name+'_original.png')
+              q=root/'images'/(name+'.png')
+              assert p.is_file() and q.is_file(), name
+              assert sha256(p.read_bytes()).hexdigest()==row['source_sha256']
+              assert sha256(q.read_bytes()).hexdigest()==row['image_sha256']
+              assert row['owner_approved'] is False
+              assert row['production_status']=='pending_production_art'
+              with Image.open(p) as im:assert im.format=='PNG' and im.width>=1536 and im.height>=1920
+              with Image.open(q) as im:assert im.format=='PNG' and im.size==(1536,1920)
+              originals.add(row['source_sha256']);outfiles.add(row['image_sha256'])
+          assert len(originals)==33 and len(outfiles)==33
+          queue=json.loads((repo/'assets/review/albedo_core5/authorized_28_state_art_queue.json').read_text())
+          assert queue['generated_count']==28
+          reg=json.loads((repo/'orchestrator/frontend/companions/production/kiko/portrait_registry.json').read_text())
+          assert reg['release']['enabled'] is False
+          assert all(x['status']=='pending_production_art' for x in reg['states'].values())
+          print('PASS: 33 independent original PNGs; 33 1536x1920 actual native review images; 28 expansion authored; no owner approvals')
+          PY
+      - name: Commit real source bytes on isolated development branch
+        shell: bash
+        run: |
+          git config user.name 'exodia-art-qa[bot]'
+          git config user.email 'exodia-art-qa[bot]@users.noreply.github.com'
+          git add -f orchestrator/app_data/albedo_33_review/images/*.png
+          git add -f orchestrator/app_data/albedo_33_review/sources/*.png
+          git add -f orchestrator/app_data/albedo_33_review/review_index.json
+          git add assets/review/albedo_core5/authorized_28_state_art_queue.json
+          git add assets/review/albedo_core5/gate4_all_real_33_state_byte_audit.json
+          git add assets/blueprints/albedo_28_state_batch_gate.json
+          if git diff --cached --quiet; then
+            echo 'No modified original bytes or manifests'
+          else
+            git commit -m "art(albedo): stage 33 real independently generated review portraits, original and native-size hashes"
+            git push origin HEAD:development/exodia-foundation
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-gate4-33-original-and-native-review-art
+          path: |
+            orchestrator/app_data/albedo_33_review/sources/*.png
+            orchestrator/app_data/albedo_33_review/images/*.png
+            orchestrator/app_data/albedo_33_review/review_index.json
+            assets/review/albedo_core5/gate4_all_real_33_state_byte_audit.json
+          retention-days: 30
