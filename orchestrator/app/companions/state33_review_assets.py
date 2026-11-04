@@ -178,6 +178,20 @@ def manifest(root: Path) -> dict:
                             'numeric_provisional_pass':False,
                         }
                         item['geometry_status']='ACTUAL_PIXELS_GEOMETRY_FAIL_OWNER_UNREVIEWED'
+        # Gate 4: a verified independently generated Core-Five review PNG
+        # supersedes the 1122x1402 tentative concept preview in the live
+        # workbench only. No native production approval is implied.
+        if name in core_reference:
+            row = idx.get('states', {}).get(name)
+            if row and _valid_local(root, name, row):
+                item['art_status'] = 'INDEPENDENT_ART_UNAPPROVED_REVIEW'
+                item['image_url'] = '/api/albedo/state33/review-assets/' + name
+                item['sha256'] = row['image_sha256']
+                item['source_sha256'] = row['source_sha256']
+                item['source_filename'] = row['source_filename']
+                item['geometry_status'] = 'PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT'
+                item['measurements'] = None
+                item['pose_direction'] = 'Independently illustrated Core-Five '+name+' action; native candidate pending geometric and owner art review'
         states[name] = item
     ready = sum(x['image_url'] is not None for x in states.values())
     core_ready = sum(states[x]['image_url'] is not None for x in CORE)
