@@ -269,7 +269,7 @@ document.addEventListener('keydown',e=>{
  if(e.key==='ArrowLeft'){e.preventDefault();select(selected-1);}
 });
 registerInput('coreImport','coreZip','/api/albedo/core5/review-import');
-registerInput('stateImport','stateZip','/api/albedo/state33/review-import');
+registerInput('stateImport','stateZip','/api/albedo/state33/gate4-four-correction-import');
 setInterval(pollTask,4000);
 window.addEventListener('beforeunload',clearPreviewCache);
 window.__exodia33={get selected(){return registry?.state_order[selected]||null;},
