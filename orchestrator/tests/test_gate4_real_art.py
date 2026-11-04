@@ -67,13 +67,15 @@ def test_real_fastapi_returns_identical_image_and_live_demo_review_status():
     assert measured['shoulder_delta']==-110.5
     assert measured['head_width_px'] is None
     assert measured['numeric_provisional_pass'] is False
-    assert m['states_without_review_images']==28-queue['generated_count']
+    assert m['states_without_review_images']==33-m['artwork_available_count']
     with TestClient(app) as client:
         r=client.get('/api/albedo/state33/review-assets/celebrating')
         assert r.status_code==200
         assert r.headers.get('content-type')=='image/png'
         assert sha256(r.content).hexdigest()==EXPECTED_OUTPUT
-        assert client.get('/api/albedo/state33/review-assets/surprised').status_code==404
+        surprise=client.get('/api/albedo/state33/review-assets/surprised')
+        assert surprise.status_code==200
+        assert sha256(surprise.content).hexdigest()==m['states']['surprised']['sha256']
         assert client.get('/api/albedo/state33/manifest').json()['production_release_enabled'] is False
     production=json.loads((ROOT/'orchestrator'/'frontend'/'companions'/'production'/'kiko'/
                            'portrait_registry.json').read_text())
@@ -84,4 +86,49 @@ def test_real_fastapi_returns_identical_image_and_live_demo_review_status():
                       'authorized_28_state_art_queue.json').read_text())
     assert queue['generated_count']>=1
     assert sum(s['generation_status']=='generated_unapproved_native_candidate'
-               for s in queue['states'])==1
+               for s in queue['states'])==queue['generated_count']
+
+def test_all_33_real_review_portraits_are_delivered_with_correct_source_and_output_sha():
+    """Verify REAL image files, not a 33/33 UI state-count proxy."""
+    m=manifest(Settings().root)
+    assert m['count']==33
+    assert m['verified_independent_review_art_count']==33
+    assert m['core_five_independent_review_art_count']==5
+    assert m['additional_review_art_available_count']==28
+    assert m['artwork_available_count']==33
+    assert m['states_without_review_images']==0
+    idx=json.loads(INDEX.read_text())
+    assert len(idx['states'])==33
+    original_hashes=set()
+    output_hashes=set()
+    with TestClient(app) as client:
+        for name in m['state_order']:
+            info=m['states'][name]
+            entry=idx['states'][name]
+            source=BASE/'sources'/(name+'_original.png')
+            output=BASE/'images'/(name+'.png')
+            assert source.is_file() and output.is_file(),name
+            assert source.stat().st_size>500_000,name
+            with Image.open(source) as im:
+                assert im.format=='PNG' and im.width>=1536 and im.height>=1920,name
+            with Image.open(output) as im:
+                assert im.format=='PNG' and im.size==(1536,1920),name
+            source_hash=sha256(source.read_bytes()).hexdigest()
+            output_hash=sha256(output.read_bytes()).hexdigest()
+            assert source_hash==info['source_sha256']==entry['source_sha256'],name
+            assert output_hash==info['sha256']==entry['image_sha256'],name
+            assert info['art_status']=='INDEPENDENT_ART_UNAPPROVED_REVIEW',name
+            assert info['owner_approved'] is False,name
+            assert info['native_production_certified'] is False,name
+            assert entry['owner_approved'] is False,name
+            assert entry['production_status']=='pending_production_art',name
+            original_hashes.add(source_hash)
+            output_hashes.add(output_hash)
+            response=client.get(info['image_url'])
+            assert response.status_code==200,name
+            assert response.headers['content-type']=='image/png',name
+            assert sha256(response.content).hexdigest()==output_hash,name
+    assert len(original_hashes)==len(output_hashes)==33
+    assert m['production_release_enabled'] is False
+    assert m['owner_production_approved_count']==0
+    assert m['native_core_five_certified_count']==0
