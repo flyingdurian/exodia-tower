@@ -133,44 +133,58 @@ def manifest(root: Path) -> dict:
                 item['sha256'] = art['sha256']
         else:
             item['pose_direction'] = queued[name]['visual_must_show']['action_pose']
-            row = idx.get('states', {}).get(name)
-            if row and _valid_local(root, name, row):
-                item['art_status'] = 'INDEPENDENT_ART_UNAPPROVED_REVIEW'
-                item['image_url'] = '/api/albedo/state33/review-assets/' + name
-                item['sha256'] = row['image_sha256']
-                item['source_sha256'] = row['source_sha256']
-                item['source_filename'] = row['source_filename']
-                item['geometry_status'] = 'PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT'
-                if name=='celebrating':
-                    evidence_path=(root.parent/'assets'/'review'/'albedo_core5'/
-                                   'gate4_celebrating_actual_landmark_fail.json')
-                    if evidence_path.is_file():
-                        proof=json.loads(evidence_path.read_text(encoding='utf-8'))
-                        if (proof.get('output_sha256')==row['image_sha256']
-                                and proof.get('original_sha256')==row['source_sha256']
-                                and proof.get('checks',{}).get('owner_visual_approved') is False):
-                            measurements=proof['actual_pixel_measurements']
-                            item['measurements']={
-                                'eye_y':measurements['eye_mid_y_px'],
-                                'shoulder_y':measurements['shoulder_mid_y_px'],
-                                'eye_delta':measurements['eye_delta_px'],
-                                'shoulder_delta':measurements['shoulder_delta_px'],
-                                'head_width_px':measurements['head_width_px'],
-                                'center_x_px':measurements['eye_center_x_px'],
-                                'center_delta_px':measurements['center_delta_px'],
-                                'iris_left':measurements['iris_left'],
-                                'iris_right':measurements['iris_right'],
-                                'shoulder_left':measurements['shoulder_left'],
-                                'shoulder_right':measurements['shoulder_right'],
-                                'eye_separation_px':measurements['eye_separation_px'],
-                                'eye_asymmetry_px':measurements['eye_vertical_asymmetry_px'],
-                                'shoulder_asymmetry_px':measurements['shoulder_vertical_asymmetry_px'],
-                                'numeric_provisional_pass':False,
-                            }
-                            item['geometry_status']='ACTUAL_PIXELS_GEOMETRY_FAIL_OWNER_UNREVIEWED'
+        # A genuinely generated, SHA-verified independent Core-Five review
+        # candidate takes precedence over the 1122x1402 concept preview.
+        # Neither is owner-approved; signed production registry is unchanged.
+        row = idx.get('states', {}).get(name)
+        if row and _valid_local(root, name, row):
+            item['art_status'] = 'INDEPENDENT_ART_UNAPPROVED_REVIEW'
+            item['image_url'] = '/api/albedo/state33/review-assets/' + name
+            item['sha256'] = row['image_sha256']
+            item['source_sha256'] = row['source_sha256']
+            item['source_filename'] = row['source_filename']
+            item['geometry_status'] = row.get(
+                'geometry_status', 'PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT')
+            item['independent_source_kind'] = row.get('independent_source_kind')
+            item['source_dimensions'] = row.get('source_dimensions')
+            item['review_status'] = 'GENERATED_UNAPPROVED'
+            if name in core_reference:
+                item['pose_direction'] = 'New independently rendered Core-Five review candidate'
+                item.pop('measurements', None)  # Never reuse CONCEPT measurements.
+            if name=='celebrating':
+                evidence_path=(root.parent/'assets'/'review'/'albedo_core5'/
+                               'gate4_celebrating_actual_landmark_fail.json')
+                if evidence_path.is_file():
+                    proof=json.loads(evidence_path.read_text(encoding='utf-8'))
+                    if (proof.get('output_sha256')==row['image_sha256']
+                            and proof.get('original_sha256')==row['source_sha256']
+                            and proof.get('checks',{}).get('owner_visual_approved') is False):
+                        measurements=proof['actual_pixel_measurements']
+                        item['measurements']={
+                            'eye_y':measurements['eye_mid_y_px'],
+                            'shoulder_y':measurements['shoulder_mid_y_px'],
+                            'eye_delta':measurements['eye_delta_px'],
+                            'shoulder_delta':measurements['shoulder_delta_px'],
+                            'head_width_px':measurements['head_width_px'],
+                            'center_x_px':measurements['eye_center_x_px'],
+                            'center_delta_px':measurements['center_delta_px'],
+                            'iris_left':measurements['iris_left'],
+                            'iris_right':measurements['iris_right'],
+                            'shoulder_left':measurements['shoulder_left'],
+                            'shoulder_right':measurements['shoulder_right'],
+                            'eye_separation_px':measurements['eye_separation_px'],
+                            'eye_asymmetry_px':measurements['eye_vertical_asymmetry_px'],
+                            'shoulder_asymmetry_px':measurements['shoulder_vertical_asymmetry_px'],
+                            'numeric_provisional_pass':False,
+                        }
+                        item['geometry_status']='ACTUAL_PIXELS_GEOMETRY_FAIL_OWNER_UNREVIEWED'
         states[name] = item
     ready = sum(x['image_url'] is not None for x in states.values())
     core_ready = sum(states[x]['image_url'] is not None for x in CORE)
+    real_core = sum(states[x]['art_status']=='INDEPENDENT_ART_UNAPPROVED_REVIEW'
+                    for x in CORE)
+    concept_core = sum(states[x]['art_status']=='CONCEPT_REVIEW_AVAILABLE'
+                       for x in CORE)
     newly_loaded = ready - core_ready
     return {
         'schema': 'exodia.state33-review-workbench/v1',
@@ -183,18 +197,18 @@ def manifest(root: Path) -> dict:
         'owner_production_approved_count': 0,
         'tentative_reference_signoff_count': 5,
         'artwork_available_count': ready,
-        'concept_preview_available_count': core_ready,
+        'concept_preview_available_count': concept_core,
+        'core_five_independent_review_art_count': real_core,
+        'verified_independent_review_art_count': real_core+newly_loaded,
         'additional_review_art_available_count': newly_loaded,
         'states_without_review_images': 33 - ready,
         'batch_review_generation_authorized': True,
         'production_status': 'ALL_33_PENDING_PRODUCTION_ART',
         'states': states,
-        'warning': 'Tentative Core-Five references are not native masters. Missing art states have NO substituted portrait images.'
+        'warning': 'All generated review files are unapproved. Canonical facial/shoulder geometry and identity still require owner art review; release remains disabled.'
     }
 
 def asset(root: Path, state: str) -> Path | None:
-    if state in CORE:
-        return None
     m = manifest(root)
     row = m['states'].get(state)
     if not row or row['art_status'] != 'INDEPENDENT_ART_UNAPPROVED_REVIEW':
