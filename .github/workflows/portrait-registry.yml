@@ -38,6 +38,9 @@ on:
       - 'orchestrator/tools/gate4_ingest_independent_render.py'
       - 'orchestrator/tools/gate4_stage_runway_verified.py'
       - 'orchestrator/tools/apply_gate4_four_corrections.py'
+      - 'orchestrator/tools/apply_gate4_four_review_only.py'
+      - 'orchestrator/tests/test_gate4_four_review_only.py'
+      - 'assets/review/albedo_core5/gate4_four_accepted_development_review_only.json'
       - 'orchestrator/tests/test_gate4_targeted_owner_corrections.py'
       - 'assets/review/albedo_core5/gate4_four_state_correction_lock.json'
       - 'assets/review/albedo_core5/gate4_runway_verified_sources.json'
@@ -183,6 +186,7 @@ jobs:
         run: |
           python orchestrator/tools/apply_gate4_four_corrections.py --verify-baseline
           python -m pytest -q orchestrator/tests/test_gate4_targeted_owner_corrections.py -k 'not real_api'
+          python -m pytest -q orchestrator/tests/test_gate4_four_review_only.py -k 'not fastapi'
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
       - name: Build SHA-verified review-only Core-Five preview board
