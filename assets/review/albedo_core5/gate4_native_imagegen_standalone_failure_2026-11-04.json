@@ -1,0 +1,61 @@
+{
+  "schema": "exodia.gate4-current-session-imagegen-evidence/v1",
+  "date": "2026-11-04",
+  "scope": "four independent Albedo correction portraits; 29 other images immutable",
+  "generator": "ChatGPT built-in image_gen.text2im",
+  "source_reference": "approved standalone Albedo Idle image supplied as accessible file input",
+  "runway_used": false,
+  "higgsfield_used": false,
+  "standalone_generated": 0,
+  "corrected_assets_registered": 0,
+  "targets": [
+    "angered",
+    "awaiting_command",
+    "neutral",
+    "tantrum"
+  ],
+  "outputs": [
+    {
+      "generation_id": "1bef05f9-7e4b-4619-8bc1-71a22f534903",
+      "name": "a_highly_detailed_anime_illustration_collage_of_fo.png",
+      "sha256": "4c653358bd264ecd8ddde8464bfab1c0415d6df7bc1dbc0ce6a86e34780130ed",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL"
+    },
+    {
+      "generation_id": "240cc4dc-307c-4c64-a281-a22b4609d56b",
+      "name": "a_horizontal_composite_of_four_highly_detailed_ani.png",
+      "sha256": "662ab97e085e19646ff15df7c8a5e955d4b9ea25e125bd26e9c7377c15fc5e6a",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL"
+    },
+    {
+      "generation_id": "3d6b5ff2-4b12-406c-9660-cd037bc18b3c",
+      "name": "a_high_detail_anime_style_graphic_a_single_wide_i.png",
+      "sha256": "7dbb980cc44cb2fe4fbbef60f64f1f1702437204770c3bd1253aca6c8417fd1b",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL"
+    }
+  ],
+  "resolution_note": "Actual standalone image generation failed: all tool outputs combine four character states on one wide canvas, despite attempts for one individual portrait. Do NOT crop, split, stretch or relabel output panels as production originals.",
+  "postcheck": {
+    "verified_project_branch": "development/exodia-foundation",
+    "owner_accepted_development_artwork_frozen": 29,
+    "hash_mismatches": 0,
+    "correction_completed": 0,
+    "all_33_current_art_entries_unchanged": true,
+    "release_enabled": false,
+    "pr1_draft": true,
+    "pr1_merged": false
+  },
+  "final_gate": "NEEDS_FOUR_GENUINELY_INDEPENDENT_RENDERINGS_WITH_NATIVE_RESOLUTION_AND_GEOMETRY_QA"
+}
