@@ -11,6 +11,8 @@ let lastTaskKey=null;
 
 function updateStatus(msg){$('loadStatus').textContent=msg;}
 function badgeFor(item){
+ if(item.owner_approved_lowres_design_reference?.visual_design_approved_exact_sha)
+   return 'DESIGN APPROVED · NATIVE PENDING';
  if(item.owner_development_status==='CORRECTION_REQUIRED')return 'REGENERATION REQUIRED';
  if(item.owner_development_status==='CORRECTION_RENDERED_OWNER_REVIEW_PENDING')return 'CORRECTED · OWNER REVIEW PENDING';
  if(item.owner_development_status==='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT')return 'DEVELOPMENT ACCEPTED';
@@ -102,7 +104,10 @@ function detail(item){
  $('assetHash').textContent=item.sha256||'NOT GENERATED / NOT VERIFIED';
  $('artStatusTag').textContent=item.art_status;
  $('ownerDevelopmentStatus').textContent=(
-  item.owner_development_status==='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT'
+  item.owner_approved_lowres_design_reference?.visual_design_approved_exact_sha
+   ?'Owner approved exact design SHA '+item.owner_approved_lowres_design_reference.sha256.slice(0,12)
+    +' · 1122×1402 · native rerender still required · original reviewed art shown'
+   :item.owner_development_status==='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT'
    ?'Accepted for continued development · NOT production'
    :item.owner_development_status==='CORRECTION_REQUIRED'
     ?'Needs independent replacement · original review art shown'
