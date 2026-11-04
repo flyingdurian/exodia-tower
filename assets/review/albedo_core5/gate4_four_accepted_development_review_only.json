@@ -1,0 +1,110 @@
+{
+  "schema": "exodia.gate4-owner-accepted-four-lowres-review-only/v1",
+  "owner_directive_date": "2026-11-04",
+  "owner_acceptance": "ACCEPTED_FOR_DEVELOPMENT_NOT_PRODUCTION",
+  "protected_other_state_count": 29,
+  "required_new_review_count": 4,
+  "handoff_archive_name": "EXODIA_G4_FOUR_STANDALONE_IMAGES_HANDOFF_2026-11-04.zip",
+  "handoff_archive_sha256": "",
+  "review_only_intake_archive_name": "EXODIA_GATE4_FOUR_REVIEW_ONLY_IMPORT_2026-11-04.zip",
+  "review_only_intake_archive_sha256": "25188358ed96180095975af3d2699df3375a7bf0147f7d38656afd9799aa37c1",
+  "source_generation_provenance": "Four standalone Albedo PNG outputs previously generated independently using ChatGPT image generation; exact individual provider job IDs not recorded in supplied handoff",
+  "source_per_state_generation_job_ids": null,
+  "normalization_contract": {
+    "native_claim": false,
+    "presentation_canvas": [
+      1536,
+      1920
+    ],
+    "original_canvas": [
+      1122,
+      1402
+    ],
+    "symmetric_crop_xyxy": [
+      1,
+      1,
+      1121,
+      1401
+    ],
+    "cropped_canvas": [
+      1120,
+      1400
+    ],
+    "uniform_scale_factor": 1.3714285714285714,
+    "algorithm": "Pillow LANCZOS",
+    "purpose": "DEVELOPMENT_DEMO_ONLY; resampled from lower resolution, not native independent detail"
+  },
+  "protected_29_release_locked": true,
+  "release_enabled": false,
+  "production_approval_count": 0,
+  "states": {
+    "angered": {
+      "original_filename": "albedo_s_violet_cathedral_fury.png",
+      "original_sha256": "9c676dd8dcc5f76ed5938a69f78e2caff18e804e623e7200c8016637df3bf7ef",
+      "original_bytes": 2857328,
+      "original_canvas": [
+        1122,
+        1402
+      ],
+      "review_canvas": [
+        1536,
+        1920
+      ],
+      "expected_resampled_png_sha256": "5f698f0c47e49c876578a523fb21ed90d1a8bdc166f62db098700b165452ec29",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_NON_NATIVE",
+      "production_status": "pending_production_art",
+      "native_production_certified": false
+    },
+    "awaiting_command": {
+      "original_filename": "albedo_awaiting_command_in_violet_radiance.png",
+      "original_sha256": "979c1a103b61615b07dcdb1c846e5a917fe028b3db2de0c482a8c32032df305c",
+      "original_bytes": 2728776,
+      "original_canvas": [
+        1122,
+        1402
+      ],
+      "review_canvas": [
+        1536,
+        1920
+      ],
+      "expected_resampled_png_sha256": "212cbb794353268b700ba70177bc4664cce4e2ba4968c21f782ca7d8a0ad1789",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_NON_NATIVE",
+      "production_status": "pending_production_art",
+      "native_production_certified": false
+    },
+    "neutral": {
+      "original_filename": "neutral_albedo_in_violet_cathedral_light.png",
+      "original_sha256": "0e66e022c5bb9460e9b82843a5933af389eb6c382bdbfefe75e0305d90ff71d4",
+      "original_bytes": 2711187,
+      "original_canvas": [
+        1122,
+        1402
+      ],
+      "review_canvas": [
+        1536,
+        1920
+      ],
+      "expected_resampled_png_sha256": "e5bedb885fd3705468b67a03d32fabb07c6beb92009acf0f6d8d52cb3a410e07",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_NON_NATIVE",
+      "production_status": "pending_production_art",
+      "native_production_certified": false
+    },
+    "tantrum": {
+      "original_filename": "albedo_s_furious_violet_tantrum.png",
+      "original_sha256": "f557ba52d9d515e4f0c9a89f26fc8a15a8ec51eb194b78f22bd5850e563c4cc8",
+      "original_bytes": 2905428,
+      "original_canvas": [
+        1122,
+        1402
+      ],
+      "review_canvas": [
+        1536,
+        1920
+      ],
+      "expected_resampled_png_sha256": "41bc8edbac915f73416758c896a8144cf50528ed6e92b38ce05b0d58feb95265",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_NON_NATIVE",
+      "production_status": "pending_production_art",
+      "native_production_certified": false
+    }
+  }
+}
