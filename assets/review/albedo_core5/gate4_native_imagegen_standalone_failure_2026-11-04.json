@@ -107,9 +107,30 @@
         724
       ],
       "verdict": "REJECTED_FOUR_PANEL"
+    },
+    {
+      "generation_id": "2e4643e8-a840-41ff-970b-1bea8bd116e5",
+      "filename": "a_wide_highly_detailed_anime_style_illustration_c.png",
+      "sha256": "c5fb0960da0fdab759c294e4937e3582e5c30eb908a9f92362d3e26bcccfcc21",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL_AFTER_NEUTRAL_SOURCE_REFERENCE"
+    },
+    {
+      "generation_id": "1161b5cb-4c49-4c1c-be31-0688862f90af",
+      "filename": "a_highly_detailed_anime_style_illustration_compose.png",
+      "sha256": "12127d18343d9bf063e562af94d6491ebfac9d43739813f882de6170a4bbe34b",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL_AFTER_TANTRUM_SOURCE_REFERENCE"
     }
   ],
   "standalone_generated_total": 1,
   "standalone_compliant_native_total": 0,
-  "critical_blocker": "Imagegen may yield an individual portrait when supplied a single previous portrait as image-edit reference, but the actual resulting image is 1122x1402 (below native); attempts to request portrait 1536x1920 output or other individual states revert to four-panel 2172x724 composites. No supported reliable per-state native-resolution controls in this session."
+  "critical_blocker": "Imagegen may yield an individual portrait when supplied a single previous portrait as image-edit reference, but the actual resulting image is 1122x1402 (below native); attempts to request portrait 1536x1920 output or other individual states revert to four-panel 2172x724 composites. No supported reliable per-state native-resolution controls in this session.",
+  "latest_recovery_status": "One real standalone Angered reference-guided image exists only at 1122x1402; Awaiting Command, Neutral and Tantrum did not yield valid standalone files. None meets exact independent native 1536x1920 release intake. 29 approved-for-development states byte-identical and unchanged."
 }
