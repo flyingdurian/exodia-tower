@@ -26,6 +26,7 @@ from tools.apply_gate4_four_corrections import verify_locked_29, TARGETS, sha
 ROOT = Path(__file__).resolve().parents[2]
 STORE = Path("orchestrator/app_data/albedo_33_review")
 LOCK = Path("assets/review/albedo_core5/gate4_four_state_correction_lock.json")
+QUEUE = Path("assets/review/albedo_core5/authorized_28_state_art_queue.json")
 LEDGER = Path("assets/review/albedo_core5/gate4_four_accepted_development_review_only.json")
 NORMALIZATION = "REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE"
 SCHEMA = "exodia.gate4-four-resampled-development-intake/v1"
@@ -120,7 +121,7 @@ def preflight(repo: Path, archive: bytes) -> tuple[dict, dict, dict]:
     return verified, document, ledger
 
 def _snapshot_paths(root: Path) -> list[Path]:
-    p=[root/STORE/"review_index.json",root/LOCK]
+    p=[root/STORE/"review_index.json",root/LOCK,root/QUEUE]
     for key in TARGETS:
         p.extend([root/STORE/"sources"/f"{key}_original.png",
                   root/STORE/"images"/f"{key}.png"])
@@ -253,12 +254,42 @@ def apply(root: Path, archive: bytes, *, dry_run=False) -> dict:
         lock["owner_final_production_approval"]=False
         if lock["release_enabled"] is not False:
             raise ValueError("release_safety_lock_mutated")
+        # Keep the authoritative 28-state source/output ledger consistent
+        # with the ACTUAL displayed development originals. These four are
+        # deliberately NOT native production candidates.
+        queue=load(root/QUEUE)
+        queued={r["state_key"]:r for r in queue["states"]}
+        if len(queued)!=28 or queue["generated_count"]!=28:
+            raise ValueError("invalid_existing_28_state_queue")
+        for state,info in images.items():
+            row=queued[state]
+            row.update({
+                "generation_status":"generated_owner_development_review_only",
+                "source_sha256":info["source_sha"],
+                "output_sha256":info["review_sha"],
+                "original_canvas":[1122,1402],
+                "output_canvas":[1536,1920],
+                "normalization":"REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE",
+                "source_native_resolution_eligible":False,
+                "native_production_certified":False,
+                "generation_job_id":None,
+                "generation_job_id_status":"not_present_in_original_handoff",
+                "human_pose_review":"owner_accepted_development_only",
+                "owner_hash_bound_approval":None,
+                "production_status":"pending_production_art",
+            })
+        queue["review_only_resampled_count"]=4
+        queue["native_original_candidate_count"]=24
+        # 28 genuine distinct source renders exist, but only 24 are currently
+        # native/larger candidates; four lowres originals are preserved.
+        queue["generated_count"]=28
         files={}
         for state,info in images.items():
             files[root/STORE/"sources"/f"{state}_original.png"]=info["source"]
             files[root/STORE/"images"/f"{state}.png"]=info["review"]
         files[root/STORE/"review_index.json"]=jbytes(idx)
         files[root/LOCK]=jbytes(lock)
+        files[root/QUEUE]=jbytes(queue)
         files[root/STORE/"four_owner_dev_review_only_provenance.json"]=jbytes(document)
         # Atomic replacement per path; any error restores the preflight-tested
         # prior state from byte-verified rollback copies.
