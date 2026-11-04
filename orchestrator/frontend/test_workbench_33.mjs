@@ -11,6 +11,9 @@ let lastTaskKey=null;
 
 function updateStatus(msg){$('loadStatus').textContent=msg;}
 function badgeFor(item){
+ if(item.art_status==='OWNER_ACCEPTED_DEVELOPMENT_RESAMPLED_REVIEW_ONLY'
+    && item.review_is_resampled_from_low_resolution===true)
+   return 'DEVELOPMENT ACCEPTED · RESAMPLED, NOT NATIVE';
  if(item.owner_approved_lowres_design_reference?.visual_design_approved_exact_sha)
    return 'DESIGN APPROVED · NATIVE PENDING';
  if(item.owner_development_status==='CORRECTION_REQUIRED')return 'REGENERATION REQUIRED';
@@ -104,7 +107,9 @@ function detail(item){
  $('assetHash').textContent=item.sha256||'NOT GENERATED / NOT VERIFIED';
  $('artStatusTag').textContent=item.art_status;
  $('ownerDevelopmentStatus').textContent=(
-  item.owner_approved_lowres_design_reference?.visual_design_approved_exact_sha
+  item.art_status==='OWNER_ACCEPTED_DEVELOPMENT_RESAMPLED_REVIEW_ONLY'
+   ?'Owner accepted development artwork · source 1122×1402 · presentation 1536×1920 RESAMPLED, NOT NATIVE · production pending'
+  :item.owner_approved_lowres_design_reference?.visual_design_approved_exact_sha
    ?'Owner approved exact design SHA '+item.owner_approved_lowres_design_reference.sha256.slice(0,12)
     +' · 1122×1402 · native rerender still required · original reviewed art shown'
    :item.owner_development_status==='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT'
@@ -181,7 +186,8 @@ async function select(index){
   updateStatus(item.label+': IMAGE REJECTED — '+assetError+'. Production remains locked.');
  }else{
   updateStatus(item.label+': '+(url?'SHA-VERIFIED UNAPPROVED ART':'NO ART FILE — original pose outstanding')
-   +' · '+registry.artwork_available_count+' / 33 images available');
+   +' · '+registry.artwork_available_count+' / 33 images available'
+   +(item.review_is_resampled_from_low_resolution?' · RESAMPLED NOT NATIVE':'') );
  }
  $('autoCycle').title='33-state demo; missing art has no substituted portrait';
 }
@@ -274,6 +280,19 @@ document.addEventListener('keydown',e=>{
  if(e.key==='ArrowLeft'){e.preventDefault();select(selected-1);}
 });
 registerInput('coreImport','coreZip','/api/albedo/core5/review-import');
+registerInput('reviewOnlyImport','reviewOnlyZip','/api/albedo/state33/gate4-four-review-import');
+$('reviewRollback').addEventListener('click',async()=>{
+ if(!window.confirm('Restore the previous four development review portraits from the verified local rollback snapshot? The 29 protected originals will remain unchanged.'))return;
+ const button=$('reviewRollback');button.disabled=true;
+ try{
+  const r=await fetch('/api/albedo/state33/gate4-four-review-rollback',{
+   method:'POST',headers:{'X-Exodia-Client':'exodia-dashboard'}});
+  if(!r.ok){const e=await r.json().catch(()=>({detail:'Rollback rejected'}));throw Error(e.detail);}
+  await loadManifest(true);
+  updateStatus('Four-portrait review rollback verified; 29 protected assets unchanged.');
+ }catch(error){updateStatus('REVIEW ROLLBACK REJECTED: '+error.message);}
+ finally{button.disabled=false;}
+});
 registerInput('stateImport','stateZip','/api/albedo/state33/gate4-four-correction-import');
 setInterval(pollTask,4000);
 window.addEventListener('beforeunload',clearPreviewCache);
