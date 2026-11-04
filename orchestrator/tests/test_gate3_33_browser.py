@@ -1,7 +1,7 @@
 """Real Chromium QA for existing FastAPI 33-state review workbench.
 
-The screenshots show honest unavailable-art states; no synthetic portrait is
-promoted and no live provider is invoked.
+The screenshots show real SHA-verified independent artwork when present;
+unavailable-art fallback remains truthful, with no synthetic substitution.
 """
 from __future__ import annotations
 import asyncio
@@ -55,10 +55,22 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_function(
                         "()=>window.__exodia33?.selected==='angered'",timeout=7000)
                     assert await page.locator('.hero').get_attribute('data-signal')=='strain_glitch'
-                    assert await page.locator('#artStatusTag').inner_text()=='PENDING_INDEPENDENT_ART'
-                    missing=page.locator('.portrait-missing-layer').filter(has_text='ANGERED')
-                    assert await missing.count()==1
-                    assert await missing.is_visible(), 'Missing art must be visibly identified'
+                    art_response=await page.request.get(
+                        'http://127.0.0.1:8909/api/albedo/state33/manifest')
+                    art_manifest=await art_response.json()
+                    angered=art_manifest['states']['angered']
+                    if angered['image_url']:
+                        assert await page.locator('#artStatusTag').inner_text()=='INDEPENDENT_ART_UNAPPROVED_REVIEW'
+                        await page.wait_for_function(
+                          "()=>document.querySelector('#loadStatus')?.textContent.includes('SHA-VERIFIED')",
+                          timeout=15000)
+                        assert await page.locator('.portrait-preview-layer[src^="blob:"]').count()>=1
+                        assert angered['owner_approved'] is False
+                    else:
+                        assert await page.locator('#artStatusTag').inner_text()=='PENDING_INDEPENDENT_ART'
+                        missing=page.locator('.portrait-missing-layer').filter(has_text='ANGERED')
+                        assert await missing.count()==1
+                        assert await missing.is_visible(), 'Missing art must be visibly identified'
                     assert not await page.locator('.portrait-loading').count()
                     frame_after=await page.locator('#portraitFrame').bounding_box()
                     assert frame_after['y']+frame_after['height'] <= 960, (
@@ -97,7 +109,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_timeout(380)
                     assert await page.locator('.portrait-display-layer').evaluate_all(
                         "(els)=>els.some(x=>Number(getComputedStyle(x).opacity)>0.98)")
-                    await page.screenshot(path=str(proof/'desktop_33_states_MISSING_ART.png'))
+                    await page.screenshot(path=str(proof/'desktop_33_states_REAL_ART.png'))
                     # Exercise the real auto-cycle scheduler for a full 1→33
                     # sequence with timers accelerated ONLY inside this QA tab.
                     # Production remains a readable 4 seconds per state.
@@ -158,7 +170,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert mobile_state['release'] is False
                     assert mobile_state['scrollWidth']<=mobile_state['viewportWidth']+8
                     await mobile.wait_for_timeout(380)
-                    await mobile.screenshot(path=str(proof/'mobile_33_states_MISSING_ART.png'),
+                    await mobile.screenshot(path=str(proof/'mobile_33_states_REAL_ART.png'),
                                             full_page=True)
                     # A fake "available" Core-Five image with invalid SHA
                     # must never be shown or silently treated as approved art.
