@@ -57,5 +57,59 @@
     "pr1_draft": true,
     "pr1_merged": false
   },
-  "final_gate": "NEEDS_FOUR_GENUINELY_INDEPENDENT_RENDERINGS_WITH_NATIVE_RESOLUTION_AND_GEOMETRY_QA"
+  "final_gate": "NEEDS_FOUR_GENUINELY_INDEPENDENT_RENDERINGS_WITH_NATIVE_RESOLUTION_AND_GEOMETRY_QA",
+  "new_single_portrait_candidate": {
+    "state": "angered",
+    "generation_id": "839bc42f-6e6c-44da-bab7-218b07d79a5f",
+    "actual_filename": "EXODIA_GATE4_ANGERED_SOLO_LOWRES_UNAPPROVED_2026-11-04.png",
+    "sha256": "139d622282f097c618c60ded0d3654ebffd2b18f3360fbdbc2eb8863eaf1ae18",
+    "original_dimensions": [
+      1122,
+      1402
+    ],
+    "independent_single_character_canvas": true,
+    "generation_mode": "reference_guided_reillustration_of_existing_individual_angered_original",
+    "status": "REJECTED_BELOW_NATIVE_1536x1920",
+    "native_original_pass": false,
+    "normalization_allowed": false,
+    "owner_approved": false,
+    "production_status": "pending_production_art",
+    "owner_gallery_integration": false,
+    "note": "This is a real standalone original render, but its tool-native 1122x1402 pixels cannot be upscaled and misrepresented as a compliant native master. File preserved in conversation evidence ZIP, not in production registry."
+  },
+  "additional_rejected_outputs": [
+    {
+      "generation_id": "d534e135-358a-4e87-a377-6dad90407550",
+      "filename": "a_crisp_high_detail_anime_style_collage_of_four.png",
+      "sha256": "10a7b6526659be9b0e73145e95e22a043fb6509b67a19673d39460e487097e32",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL"
+    },
+    {
+      "generation_id": "db292598-8aa9-4e96-8d8a-495617671507",
+      "filename": "a_wide_horizontal_composite_of_four_separate_h.png",
+      "sha256": "f7f0d73b0d42c49bf4008d4b7abc622015ba1b091646476d7297a93ce23e6426",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL"
+    },
+    {
+      "generation_id": "720c1527-2a29-4b5f-bf85-d40b6ed12697",
+      "filename": "a_wide_composite_image_consisting_of_four_vertical.png",
+      "sha256": "148692dac2fff0adb75b6721108e12df4341a4bc8c4206bbdd4eff8c6fc94bea",
+      "pixels": [
+        2172,
+        724
+      ],
+      "verdict": "REJECTED_FOUR_PANEL"
+    }
+  ],
+  "standalone_generated_total": 1,
+  "standalone_compliant_native_total": 0,
+  "critical_blocker": "Imagegen may yield an individual portrait when supplied a single previous portrait as image-edit reference, but the actual resulting image is 1122x1402 (below native); attempts to request portrait 1536x1920 output or other individual states revert to four-panel 2172x724 composites. No supported reliable per-state native-resolution controls in this session."
 }
