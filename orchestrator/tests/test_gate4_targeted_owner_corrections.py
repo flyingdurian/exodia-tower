@@ -17,8 +17,6 @@ sys.path.insert(0, str(ROOT / "orchestrator" / "tools"))
 from apply_gate4_four_corrections import (TARGETS, verify_locked_29,
                                           check_metadata, validate_original_png,
                                           preflight, sha)
-from app.companions.state33_review_assets import manifest
-from app.config import Settings
 
 
 def test_exact_29_owner_accepted_and_four_rejected_states_are_frozen():
@@ -50,6 +48,8 @@ def test_real_29_original_and_review_files_remain_byte_identical_to_owner_review
 
 
 def test_real_api_exposes_correct_review_status_but_zero_final_approvals():
+    from app.companions.state33_review_assets import manifest
+    from app.config import Settings
     api = manifest(Settings().root)
     assert api["count"] == 33
     assert api["owner_development_accepted_count"] == 29
