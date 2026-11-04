@@ -243,7 +243,7 @@ async function refreshModels(){
   for(const a of roster){const op=element('option','',a.name);op.value=a.id;UI.companion.append(op);}
   UI.companion.value='kiko';
   const status=await api('/api/command/providers');
-  const items=[['ChatGPT (chronos)',status.chatgpt?.automatic_output_extraction?'Automatic reply':'Check browser'],['Gemini (chronos)','Automatic reply'],['DeepSeek (chronos)','Manual / not prepared'],['Ollama (automatic local)',status.ollama?.connected?'Ready':'Offline'],['Official APIs','Not configured'],['Advanced browser slots',Object.values(status.configured_slots||{}).filter(c=>c.configured).length+' configured']];
+  const items=[['ChatGPT (chronos)',status.chatgpt?.automatic_output_extraction?'Automatic reply':'Check browser'],['Gemini (chronos)','Automatic reply'],['DeepSeek (chronos)','Automatic reply'],['Ollama (automatic local)',status.ollama?.connected?'Ready':'Offline'],['Official APIs','Not configured'],['Advanced browser slots',Object.values(status.configured_slots||{}).filter(c=>c.configured).length+' configured']];
   const container=$('#providerStatus');container.replaceChildren();
   for(const [name,value] of items){const row=element('div','');row.append(element('span','',name),element('strong','',value));container.append(row);}
  }catch(e){UI.diagnostic.textContent='Provider status unavailable: '+e.message;}
@@ -252,7 +252,7 @@ $('#dispatch').addEventListener('submit',async event=>{
  event.preventDefault();if(requestInFlight)return;
  requestInFlight=true;const send=$('#sendTask');send.disabled=true;
  const payload={model_choice:UI.model.value,transport:UI.model.selectedOptions[0]?.dataset.transport||'browser',agent_id:UI.companion.value,
-   prompt:UI.prompt.value.trim(),web_research:UI.research.checked};
+   prompt:UI.prompt.value.trim(),web_research:UI.research.checked,custom_instructions:$('#taskInstructions').value.trim()};
  if(!payload.prompt){inform('Enter a task first.',true);requestInFlight=false;send.disabled=false;return;}
  try{
   const task=await post('/api/command/tasks',payload);
@@ -260,16 +260,48 @@ $('#dispatch').addEventListener('submit',async event=>{
   inform('Task dispatched to '+(roster.find(a=>a.id===payload.agent_id)?.name||payload.agent_id)+'.');
   await loadTasks();selectTask(task.id);
   if(task.provider==='chatgpt')inform('ChatGPT (chronos) is submitting and retrieving the response automatically; browser sign-in may require your attention.');
-  else if(task.provider==='deepseek')inform('DeepSeek requires supervised prompt preparation in Advanced operations.');
+  else if(task.provider==='deepseek')inform('DeepSeek (chronos) is submitting and retrieving the response automatically; browser sign-in may require your attention.');
  }catch(e){inform(e.message,true);UI.diagnostic.textContent=e.message;}
  finally{requestInFlight=false;send.disabled=false;}
 });
 document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{UI.prompt.value=b.dataset.prompt;UI.prompt.focus();lastInteraction=Date.now();}));
 $('#refreshTasks').addEventListener('click',()=>loadTasks().catch(e=>inform(e.message,true)));
+let savedModelInstructions={};
+async function showModelInstructions(provider){
+ const field=$('#modelInstructions');
+ if(field)field.value=savedModelInstructions[provider]||'';
+}
+async function loadModelInstructions(){
+ try{
+  const data=await api('/api/command/model-instructions');
+  savedModelInstructions={};
+  for(const item of data.models||[])savedModelInstructions[item.provider]=item.text||'';
+  showModelInstructions($('#instructionModel').value);
+ }catch(e){const status=$('#instructionStatus');if(status)status.textContent=e.message;}
+}
+$('#instructionModel')?.addEventListener('change',()=>showModelInstructions($('#instructionModel').value));
+$('#instructionForm')?.addEventListener('submit',async event=>{
+ event.preventDefault();
+ const provider=$('#instructionModel').value;
+ const text=$('#modelInstructions').value;
+ try{
+  const data=await api('/api/command/model-instructions',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({provider,text})});
+  savedModelInstructions={};
+  for(const item of data.models||[])savedModelInstructions[item.provider]=item.text||'';
+  $('#instructionStatus').textContent='Saved for '+provider+'. Task responses will not include this text.';
+ }catch(e){$('#instructionStatus').textContent=e.message;}
+});
+loadModelInstructions();
 $('#openChatgptSession').addEventListener('click',async()=>{
  try{
    await api('/api/web/sessions/chatgpt/start',{method:'POST'});
    inform('ChatGPT browser is open. Complete sign-in manually if prompted.');
+ }catch(e){inform(e.message,true);}
+});
+$('#openDeepseekSession').addEventListener('click',async()=>{
+ try{
+   await api('/api/web/sessions/deepseek/start',{method:'POST'});
+   inform('DeepSeek browser is open. Complete sign-in manually if prompted.');
  }catch(e){inform(e.message,true);}
 });
 $('#chatgptImport').addEventListener('click',async()=>{

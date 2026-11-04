@@ -73,7 +73,7 @@ def test_seven_choices_exactly_ordered_and_modes():
     assert all(not x.available for x in CHOICES[4:])
     assert selection('chatgpt').provider_id=='chatgpt'
     assert selection('ollama').transport=='local'
-    assert selection('deepseek').status=='manual_browser_not_prepared'
+    assert selection('deepseek').status=='automatic_browser'
     assert set(ADVANCED)=={'custom_web','web_slot_2','web_slot_3'}
     for c in CHOICES[4:]:
         with pytest.raises(ValueError, match='not configured'):
@@ -98,16 +98,30 @@ def test_public_model_catalog_and_model_task_error_are_truthful(monkeypatch,tmp_
         assert client.post('/api/command/tasks',json={'model_choice':'chatgpt','transport':'api','agent_id':'kiko','prompt':'Should fail'},headers=HEADERS).status_code==422
         assert client.post('/api/ask',json={'model_choice':'chatgpt','channel':'api','question':'Should not use browser'}).status_code==409
 
-def test_legacy_ids_and_deepseek_manual_handoff_are_preserved(monkeypatch,tmp_path):
+def test_legacy_ids_and_deepseek_starts_automatically(monkeypatch,tmp_path):
     monkeypatch.setattr(server,'inbox',Inbox(tmp_path/'tasks.sqlite'))
+    async def fake_send(platform, prompt, *, phase=None):
+        assert platform=='deepseek' and prompt=='Prepare a campaign plan'
+        if phase:
+            for stage in ('typing','submitting','waiting_for_reply'): phase(stage)
+        return {'answer':'DeepSeek prepared a campaign plan with three concrete steps.','automatic_output':True,'timings':{'total_s':1.2},'media':[]}
+    monkeypatch.setattr(server.router.sessions,'send_prompt_robust',fake_send)
     with TestClient(server.app) as client:
         for provider in ('gemini','chatgpt','deepseek','ollama'):
             assert selection(provider).provider_id==provider
         p={'model_choice':'deepseek','agent_id':'nova','prompt':'Prepare a campaign plan','transport':'browser'}
         t=client.post('/api/command/tasks',json=p,headers=HEADERS)
         assert t.status_code==201
-        assert t.json()['provider']=='deepseek' and t.json()['state']=='draft'
-        assert client.get('/api/command/tasks').json()['tasks'][0]['provider']=='deepseek'
+        assert t.json()['provider']=='deepseek' and t.json()['state']=='opening'
+        import time
+        latest=None
+        for _ in range(40):
+            latest=client.get('/api/command/tasks').json()['tasks'][0]
+            if latest['state']=='answered': break
+            time.sleep(.02)
+        assert latest['state']=='answered'
+        assert latest['answer'].startswith('DeepSeek prepared')
+        assert client.get('/api/command/tasks').json()['automatic_extraction']['deepseek'] is True
 
 def test_ask_ollama_routes_to_local_backend_without_browser(monkeypatch):
     async def mock_generate(prompt,*,companion):

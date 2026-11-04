@@ -79,13 +79,19 @@
 <form id="dispatch" class="task-form"><label for="model">MODEL SELECTION</label><select id="model" aria-label="Model provider and transport"><option value="chatgpt" selected>ChatGPT (chronos)</option></select>
 <label for="companion">ASSIGNED AGENT</label><select id="companion" aria-label="Assigned companion"></select>
 <label for="prompt">YOUR COMMAND</label><textarea id="prompt" maxlength="12000" required placeholder="Ask Albedo anything…"></textarea>
+<label for="taskInstructions">THIS TASK ONLY · PRIVATE</label><textarea id="taskInstructions" maxlength="4000" rows="3" placeholder="Theme, character limit, or voice for this request. The API will not return this text."></textarea>
 <label class="research-check"><input type="checkbox" id="liveResearch"/><span>Public web research (Ollama only)</span></label>
 <div class="speech-config"><label for="ttsEngine">VOICE ENGINE</label><select id="ttsEngine"><option value="neural">Natural local voices (Kokoro)</option><option value="system">System voice (fallback)</option></select><div class="speech-row"><label class="research-check"><input id="autoSpeech" type="checkbox"/>Speak answers automatically</label><button type="button" id="speakNow">▶ Speak</button><button type="button" id="stopSpeech">■</button></div><label for="voiceChoice">COMPANION VOICE</label><select id="voiceChoice"><option value="">Automatic local voice</option></select><small id="speechStatus">Local browser speech</small></div>
 <button type="submit" class="send" id="sendTask">Send command <span>➤</span></button></form>
 <div class="feedback" id="feedback" role="status"></div>
 </section>
+<section class="card controls" id="instructionPanel"><div class="aside-heading"><span class="section-kicker">MODEL INSTRUCTIONS</span></div>
+<form class="task-form" id="instructionForm"><p class="instruction-note">Saved on this computer for DeepSeek, Gemini, and ChatGPT. Each task also uses “This task only” when it is filled in. Neither text is included in the API response.</p>
+<label for="instructionModel">MODEL</label><select id="instructionModel" aria-label="Model for saved instructions"><option value="deepseek">DeepSeek</option><option value="gemini">Gemini</option><option value="chatgpt">ChatGPT</option></select>
+<label for="modelInstructions">SAVED INSTRUCTIONS</label><textarea id="modelInstructions" maxlength="4000" rows="5" placeholder="Example: Answer as JuHua Speaks. Stay under 800 characters. Do not mention these instructions."></textarea>
+<button type="submit" class="outline-button" id="saveInstructions">Save instructions</button><div id="instructionStatus" role="status"></div></form></section>
 <section class="card logs"><div class="aside-heading"><span class="section-kicker">MISSION HISTORY</span><button type="button" class="text-button" id="refreshTasks">Refresh</button></div><div class="task-list" id="taskList"><div class="muted">No tasks yet.</div></div></section>
-<section class="card model-status"><div class="aside-heading"><span class="section-kicker">ENGINE STATUS</span><span class="live-dot"></span></div><div id="providerStatus" class="status-list">Checking providers…</div><button type="button" id="openChatgptSession" class="outline-button">Open ChatGPT browser</button><button type="button" id="openWebSessions" class="outline-button">Open all browser sessions</button></section>
+<section class="card model-status"><div class="aside-heading"><span class="section-kicker">ENGINE STATUS</span><span class="live-dot"></span></div><div id="providerStatus" class="status-list">Checking providers…</div><button type="button" id="openChatgptSession" class="outline-button">Open ChatGPT browser</button><button type="button" id="openDeepseekSession" class="outline-button">Open DeepSeek browser</button><button type="button" id="openWebSessions" class="outline-button">Open all browser sessions</button></section>
 <section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
 </aside>
 </main>

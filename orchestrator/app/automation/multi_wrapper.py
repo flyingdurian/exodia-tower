@@ -37,6 +37,23 @@ PROVIDERS = {
     "deepseek": ProviderSpec("https://chat.deepseek.com","textarea#chat-input","div.chat-submit-button","div.ds-markdown"),
 }
 
+async def type_composer_text(page, text: str, *, prefer_insert: bool=False) -> str:
+    """Insert the full prompt. A newline must not press Enter, which sends the chat."""
+    text = text.strip()
+    keyboard = page.keyboard
+    if hasattr(keyboard, "insert_text") and (prefer_insert or "\n" in text or len(text) >= 250):
+        await keyboard.insert_text(text)
+        return "insert_text"
+    if "\n" in text:
+        for index, line in enumerate(text.split("\n")):
+            if index:
+                await keyboard.press("Shift+Enter")
+            if line:
+                await keyboard.type(line, delay=0)
+        return "shift_enter_lines"
+    await keyboard.type(text, delay=0)
+    return "keyboard_type"
+
 class SessionError(RuntimeError): pass
 class OperatorActionRequired(SessionError): pass
 
@@ -65,19 +82,23 @@ class MultiWebSessionManager:
         self._gemini_start_lock=asyncio.Lock()
         self._gemini_last_start=0.0
         self._gemini_active=0
+        self._deepseek_slots=asyncio.Semaphore(2)
+        self._deepseek_start_lock=asyncio.Lock()
+        self._deepseek_last_start=0.0
+        self._deepseek_active=0
 
     def snapshot(self):
         return {name:{"status":self._status[name], "url":spec.url,
                       "profile":f"session_data/{name}", "pending_prompt":name in self._pending,
-                      "mode":("automatic_text" if name=="gemini" else
+                      "mode":("automatic_text" if name in ("gemini","deepseek") else
                               "automatic_submit_manual_result" if name=="chatgpt" else
                               "operator_assisted"),
                       "error":self._last_error[name],
                       "last_timings":self._last_timings[name],
                       "actual_user_agent":self._browser_ua[name],
                       "browser_version":self._browser_versions[name],
-                      "running_tasks":self._gemini_active if name=="gemini" else 0,
-                      "max_parallel_tasks":2 if name=="gemini" else 1} for name,spec in PROVIDERS.items()}
+                      "running_tasks":self._gemini_active if name=="gemini" else self._deepseek_active if name=="deepseek" else 0,
+                      "max_parallel_tasks":2 if name in ("gemini","deepseek") else 1} for name,spec in PROVIDERS.items()}
 
     async def initialize_all(self):
         async with self._initialization_lock:
@@ -211,7 +232,7 @@ class MultiWebSessionManager:
             await box.click(timeout=15000)
             # Keyboard events keep React / rich-text handlers in sync.
             await page.keyboard.press("ControlOrMeta+A")
-            await page.keyboard.type(prompt,delay=10)
+            await type_composer_text(page, prompt)
 
     # Site-specific selectors are best-effort, not stable public interfaces.
     GEMINI_EDITORS=(
@@ -231,6 +252,20 @@ class MultiWebSessionManager:
     )
     GEMINI_RESPONSE='message-content, model-response .markdown, model-response .response-container'
     GEMINI_STOP='button[aria-label*="Stop generating"], button[aria-label*="Stop response"], button.stop-button'
+    DEEPSEEK_EDITORS=(
+        'textarea#chat-input',
+        'textarea[placeholder*="DeepSeek"]',
+        'textarea[placeholder*="Message"]',
+        '#chat-input',
+    )
+    DEEPSEEK_SEND=(
+        'div.chat-submit-button',
+        'button[aria-label="Send"]',
+        'button[aria-label="Send message"]',
+        'div[class*="send-button"]',
+    )
+    DEEPSEEK_RESPONSE='div.ds-markdown, .ds-markdown'
+    DEEPSEEK_STOP='div.chat-stop-button, button[aria-label*="Stop"], div[aria-label*="Stop"]'
 
     @staticmethod
     async def _first_visible(page, selectors):
@@ -257,93 +292,106 @@ class MultiWebSessionManager:
         return None
 
     async def send_prompt_robust(self,platform: str,prompt: str,*,phase=None)->dict:
-        """Full Gemini user-requested browser task -> final text.
+        """Full Gemini or DeepSeek browser task -> final visible reply.
 
         No stealth, auth bypass, hidden API calls, or unattended sensitive actions.
-        One active Gemini task per profile. Designed for plain chat text only.
+        Each provider uses its own signed-in profile and fresh task tab.
         """
-        if platform!="gemini":
-            raise OperatorActionRequired("Automatic website mode is currently implemented only for Gemini.")
+        targets={
+            "gemini":{"editors":self.GEMINI_EDITORS,"send":self.GEMINI_SEND,
+                      "response":self.GEMINI_RESPONSE,"stop":self.GEMINI_STOP,"spacing":2.5},
+            "deepseek":{"editors":self.DEEPSEEK_EDITORS,"send":self.DEEPSEEK_SEND,
+                        "response":self.DEEPSEEK_RESPONSE,"stop":self.DEEPSEEK_STOP,"spacing":2.5},
+        }
+        if platform not in targets:
+            raise OperatorActionRequired("Automatic website mode is currently implemented only for Gemini and DeepSeek.")
+        spec=targets[platform]
+        label=platform.capitalize()
+        slots=self._gemini_slots if platform=="gemini" else self._deepseek_slots
+        start_lock=self._gemini_start_lock if platform=="gemini" else self._deepseek_start_lock
         if not isinstance(prompt,str) or not 1<=len(prompt.strip())<=12000:
             raise ValueError("Prompt must contain 1–12000 characters.")
         t_begin=monotonic()
-        if "gemini" not in self._pages:
+        if platform not in self._pages:
             if phase: phase("opening")
-            await self.initialize_one("gemini")
+            await self.initialize_one(platform)
         browser_ready=monotonic()
         if phase:phase("queued")
-        async with self._gemini_slots:
-            if "gemini" in self._pending:
-                raise OperatorActionRequired("Gemini has an earlier manually prepared prompt; resolve it first.")
-            context=self._contexts.get("gemini")
-            baseline_page=self._pages.get("gemini")
+        async with slots:
+            if platform in self._pending:
+                raise OperatorActionRequired(f"{label} has an earlier manually prepared prompt; resolve it first.")
+            context=self._contexts.get(platform)
+            baseline_page=self._pages.get(platform)
             if baseline_page is None:
-                raise SessionError("Gemini browser unavailable. Open the workspaces and sign in to Gemini.")
+                raise SessionError(f"{label} browser unavailable. Open the workspaces and sign in to {label}.")
             page=baseline_page
             disposable=False
-            self._gemini_active+=1
+            if platform=="gemini": self._gemini_active+=1
+            else: self._deepseek_active+=1
             try:
-                # Each task gets a fresh conversation tab to prevent stale prompt
-                # editors, old generated media and task cross-talk. Persistent
-                # browser context shares its existing Google sign-in cookies.
+                # Each task gets a fresh conversation tab so earlier replies cannot
+                # be mistaken for this task. The persistent profile keeps the sign-in.
                 if context is not None and hasattr(context,"new_page"):
                     if phase:phase("opening")
                     page=await context.new_page()
                     disposable=True
-                    await page.goto(PROVIDERS["gemini"].url,
+                    await page.goto(PROVIDERS[platform].url,
                                     wait_until="domcontentloaded",timeout=30000)
-                self._check_destination("gemini",page.url)
-                # Light start-spacing limits UI racing without serializing responses.
-                async with self._gemini_start_lock:
-                    delay=max(0.0,2.5-(monotonic()-self._gemini_last_start))
+                self._check_destination(platform,page.url)
+                async with start_lock:
+                    last_start=self._gemini_last_start if platform=="gemini" else self._deepseek_last_start
+                    delay=max(0.0,spec["spacing"]-(monotonic()-last_start))
                     if delay:
                         if phase:phase("cooldown")
                         await asyncio.sleep(delay)
-                    self._gemini_last_start=monotonic()
+                    if platform=="gemini": self._gemini_last_start=monotonic()
+                    else: self._deepseek_last_start=monotonic()
                 t_editor=monotonic()
-                editor=await self._wait_for_gemini_editor(page)
+                if platform=="gemini":
+                    editor=await self._wait_for_gemini_editor(page)
+                else:
+                    editor=None
+                    for attempt in range(20):
+                        editor=await self._first_visible(page,spec["editors"])
+                        if editor is not None: break
+                        if attempt<19: await asyncio.sleep(.5)
                 editor_ready=monotonic()
                 if editor is None:
-                    self._status["gemini"]="editor_unavailable"
+                    self._status[platform]="editor_unavailable"
+                    if platform=="gemini":
+                        raise SessionError(
+                            "Gemini editor is not visible after loading. Guest text chat may work "
+                            "without signing in; try typing manually in this same browser window. "
+                            "If only the welcome page appears, reload Gemini and check for a blocked or "
+                            "incomplete page load. Signing in is NOT required for basic guest chat. "
+                            "Google may reject automated-browser sign-in; do not bypass its security checks."
+                        )
                     raise SessionError(
-                        "Gemini editor is not visible after loading. Guest text chat may work "
-                        "without signing in; try typing manually in this same browser window. "
-                        "If only the welcome page appears, reload Gemini and check for a blocked or "
-                        "incomplete page load. Signing in is NOT required for basic guest chat. "
-                        "Google may reject automated-browser sign-in; do not bypass its security checks."
+                        "DeepSeek composer is not visible. Sign in manually in the DeepSeek browser, then create the task again."
                     )
-                history=page.locator(self.GEMINI_RESPONSE)
+                history=page.locator(spec["response"])
                 prior_count=await history.count()
                 prior_text=(await history.last.inner_text(timeout=7000)).strip() if prior_count else ""
                 wants_media=media_intent(prompt)
                 baseline_media=await snapshot_media(page) if wants_media else []
 
-                self._status["gemini"]="typing"
+                self._status[platform]="typing"
                 if phase: phase("typing")
                 t_typing=monotonic()
                 await editor.click(timeout=15000)
                 await page.keyboard.press("ControlOrMeta+A")
-                # Fast text insertion preserves an input event for React editors.
-                # Keep actual key events for shorter prompts that already work.
-                if len(prompt.strip())>=250 and hasattr(page.keyboard,"insert_text"):
-                    await page.keyboard.insert_text(prompt.strip())
-                    typing_method="insert_text"
-                else:
-                    await page.keyboard.type(prompt.strip(),delay=0)
-                    typing_method="keyboard_type"
+                typing_method=await type_composer_text(page, prompt)
                 typed_at=monotonic()
 
-                sender=await self._first_visible(page,self.GEMINI_SEND)
-                self._status["gemini"]="submitting"
+                sender=await self._first_visible(page,spec["send"])
+                self._status[platform]="submitting"
                 if phase: phase("submitting")
                 if sender is not None:
-                    # A timeout here is ambiguous; do not retry or press Enter.
                     await sender.click(timeout=15000)
                 else:
-                    # Enter can submit in Gemini; it is used only when no send button exists.
                     await page.keyboard.press("Enter")
                 submitted_at=monotonic()
-                self._status["gemini"]="waiting_for_reply"
+                self._status[platform]="waiting_for_reply"
                 if phase: phase("waiting_for_reply")
                 first_text_at=[None]
                 def mark_first_text():
@@ -351,10 +399,10 @@ class MultiWebSessionManager:
                         first_text_at[0]=monotonic()
                 media=[]
                 if wants_media:
-                    self._status["gemini"]="rendering_media"
+                    self._status[platform]="rendering_media"
                     if phase:phase("rendering_media")
                     result=await await_media_answer(page,
-                        text_selector=self.GEMINI_RESPONSE,stop_selector=self.GEMINI_STOP,
+                        text_selector=spec["response"],stop_selector=spec["stop"],
                         baseline=baseline_media,baseline_count=prior_count,
                         baseline_text=prior_text,
                         timeout=360.0 if 'video' in prompt.lower() else 130.0,
@@ -367,19 +415,19 @@ class MultiWebSessionManager:
                         if not answer.strip():
                             complete=sum(1 for item in media if item.get('url'))
                             answer=f"Generated {complete} media file(s)." if complete else (
-                                "Gemini generated media but download capture failed; "
-                                "inspect the Gemini browser and task diagnostics."
+                                f"{label} generated media but download capture failed; "
+                                f"inspect the {label} browser and task diagnostics."
                             )
                 else:
                     answer=await watch_response_stream(
                         page,
-                        StreamWatchConfig(response_selector=self.GEMINI_RESPONSE,
-                            stop_selector=self.GEMINI_STOP,timeout_seconds=180.0,
+                        StreamWatchConfig(response_selector=spec["response"],
+                            stop_selector=spec["stop"],timeout_seconds=180.0,
                             stable_seconds=1.5,poll_seconds=.25),
                         initial_count=prior_count,initial_text=prior_text,
                         on_first_text=mark_first_text)
                 finished_at=monotonic()
-                if not answer.strip(): raise SessionError("Gemini returned no readable text or media.")
+                if not answer.strip(): raise SessionError(f"{label} returned no readable text or media.")
                 timings={
                     "browser_setup_s":round(browser_ready-t_begin,3),
                     "editor_wait_s":round(editor_ready-t_editor,3),
@@ -391,22 +439,23 @@ class MultiWebSessionManager:
                     "total_s":round(finished_at-t_begin,3),
                     "typing_method":typing_method,
                 }
-                self._last_timings["gemini"]=timings
-                self._status["gemini"]="ready_for_next_prompt"
-                self._last_error["gemini"]=None
-                return {"answer":answer.strip()[:100000],"model_choice":"gemini",
-                        "provider":"gemini","source":"gemini_visible_browser",
+                self._last_timings[platform]=timings
+                self._status[platform]="ready_for_next_prompt"
+                self._last_error[platform]=None
+                return {"answer":answer.strip()[:100000],"model_choice":platform,
+                        "provider":platform,"source":f"{platform}_visible_browser",
                         "automatic_output":True,"timings":timings,"media":media}
             except Exception as exc:
-                screenshot=await self._capture_failure("gemini",page)
-                if self._status["gemini"] not in ("needs_operator_login_or_review","editor_unavailable"):
-                    self._status["gemini"]="dom_error_manual_review"
+                screenshot=await self._capture_failure(platform,page)
+                if self._status[platform] not in ("needs_operator_login_or_review","editor_unavailable"):
+                    self._status[platform]="dom_error_manual_review"
                 message=(str(exc) if isinstance(exc,(SessionError,DOMResponseError)) else
-                    f"Gemini browser error ({type(exc).__name__}).")
-                self._last_error["gemini"]=message[:420]
+                    f"{label} browser error ({type(exc).__name__}).")
+                self._last_error[platform]=message[:420]
                 raise SessionError(f"{message} Debug screenshot: {screenshot}.") from exc
             finally:
-                self._gemini_active-=1
+                if platform=="gemini": self._gemini_active-=1
+                else: self._deepseek_active-=1
                 if disposable:
                     try:await page.close()
                     except Exception:pass

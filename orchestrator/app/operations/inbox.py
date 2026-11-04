@@ -16,6 +16,7 @@ class Inbox:
    if "sources" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN sources TEXT DEFAULT '[]'")
    if "metrics" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN metrics TEXT DEFAULT '{}'")
    if "media" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN media TEXT DEFAULT '[]'")
+   if "private_instructions" not in columns:c.execute("ALTER TABLE tasks ADD COLUMN private_instructions TEXT DEFAULT ''")
  def db(self):return sqlite3.connect(self.path,timeout=10)
  @staticmethod
  def _mapped(row):
@@ -37,11 +38,12 @@ class Inbox:
   with self.lock,self.db() as c:
    c.row_factory=sqlite3.Row;rows=c.execute("SELECT * FROM tasks ORDER BY created_at DESC LIMIT 75").fetchall()
   return [self._mapped(x) for x in rows]
- def create(self,agent,provider,prompt,web_research=False):
+ def create(self,agent,provider,prompt,web_research=False,private_instructions=''):
   if provider not in ('ollama','custom_web','web_slot_2','web_slot_3','chatgpt','gemini','deepseek'):raise ValueError("Unsupported model")
   if not prompt.strip() or len(prompt)>12000:raise ValueError("Prompt length invalid")
+  if not isinstance(private_instructions,str) or len(private_instructions)>4000:raise ValueError("Invalid private instructions")
   id=str(uuid.uuid4());now=timestamp()
-  with self.lock,self.db() as c:c.execute("INSERT INTO tasks(id,agent_id,provider,prompt,state,created_at,updated_at,web_research,sources) VALUES(?,?,?,?,?,?,?,?,?)",(id,agent,provider,prompt.strip(),'draft',now,now,int(web_research),'[]'))
+  with self.lock,self.db() as c:c.execute("INSERT INTO tasks(id,agent_id,provider,prompt,state,created_at,updated_at,web_research,sources,private_instructions) VALUES(?,?,?,?,?,?,?,?,?,?)",(id,agent,provider,prompt.strip(),'draft',now,now,int(web_research),'[]',private_instructions.strip()))
   return self.get(id)
  def update(self,id,key,value):
   if key not in ('answer','state','artifact','error','sources','metrics','media'):raise ValueError("Forbidden update")

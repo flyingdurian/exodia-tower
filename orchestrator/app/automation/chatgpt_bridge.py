@@ -15,6 +15,7 @@ from uuid import uuid4
 
 from app.automation.multi_wrapper import (
     MultiWebSessionManager, SessionError, OperatorActionRequired, PROVIDERS,
+    type_composer_text,
 )
 from app.automation.gemini_media import media_intent
 
@@ -146,13 +147,7 @@ class ChatGPTSubmissionBridge:
             
             await editor.click(timeout=2000)
             await page.keyboard.press('ControlOrMeta+A')
-            
-            if hasattr(page.keyboard,'insert_text'):
-                await page.keyboard.insert_text(prompt_text)
-                typing='insert_text'
-            else:
-                await page.keyboard.type(prompt_text,delay=0)
-                typing='keyboard_type'
+            typing=await type_composer_text(page, prompt_text, prefer_insert=True)
             
             typed_at=monotonic()
 

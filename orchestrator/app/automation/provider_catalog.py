@@ -18,7 +18,7 @@ class ModelChoice:
 CHOICES = (
     ModelChoice("chatgpt", "ChatGPT (chronos)", "chatgpt", "browser", True, "automatic_browser"),
     ModelChoice("gemini", "Gemini (chronos)", "gemini", "browser", True, "automatic_browser"),
-    ModelChoice("deepseek", "DeepSeek (chronos)", "deepseek", "browser", True, "manual_browser_not_prepared"),
+    ModelChoice("deepseek", "DeepSeek (chronos)", "deepseek", "browser", True, "automatic_browser"),
     ModelChoice("ollama", "Ollama (automatic local)", "ollama", "local", True, "automatic_local"),
     ModelChoice("chatgpt:api", "ChatGPT (api)", "chatgpt", "api", False, "not_configured"),
     ModelChoice("gemini:api", "Gemini (api)", "gemini", "api", False, "not_configured"),

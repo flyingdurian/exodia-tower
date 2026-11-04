@@ -77,7 +77,7 @@ def test_gemini_automatic_types_submits_waits_and_returns_new_reply(tmp_path):
         assert page.sent==1
         assert page.keyboard.pressed==["ControlOrMeta+A"]
         assert len(factory.arguments)==1 and factory.arguments[0]['headless'] is False
-        assert str(factory.arguments[0]['user_data_dir']).endswith("session_data/gemini")
+        assert Path(factory.arguments[0]['user_data_dir']).name=="gemini"
         assert manager.snapshot()['gemini']['status']=='ready_for_next_prompt'
         assert manager.snapshot()['chatgpt']['status']=='not_started'
         await manager.close()
@@ -130,6 +130,35 @@ def test_task_dispatch_automatically_delivers_real_gemini_label(monkeypatch):
         assert row['error']==''
         assert client.get('/api/command/tasks').json()['automatic_extraction']['gemini'] is True
 
+def test_deepseek_automatic_types_submits_and_returns_new_reply(tmp_path):
+    async def run():
+        factory=Factory();manager=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        class Page(FakePage):
+            def __init__(self):
+                super().__init__();self.url='https://chat.deepseek.com'
+            def locator(self,selector):
+                if selector==MultiWebSessionManager.DEEPSEEK_RESPONSE:return History(self)
+                if selector==MultiWebSessionManager.DEEPSEEK_STOP:return Stop(self)
+                if selector in MultiWebSessionManager.DEEPSEEK_EDITORS:return Editor(self)
+                if selector in MultiWebSessionManager.DEEPSEEK_SEND:return Sender(self)
+                raise AssertionError('unexpected selector: '+selector)
+        factory.contexts=[]
+        original=factory.launch_persistent_context
+        async def launch(**kwargs):
+            context=await original(**kwargs)
+            context.pages=[Page()]
+            return context
+        factory.launch_persistent_context=launch
+        states=[]
+        output=await manager.send_prompt_robust('deepseek','Summarize this article',phase=states.append)
+        assert output['answer']=='Streaming Gemini result [1].'
+        assert output['source']=='deepseek_visible_browser'
+        assert output['automatic_output'] is True
+        assert states==['opening','queued','typing','submitting','waiting_for_reply']
+        assert str(factory.arguments[0]['user_data_dir']).endswith('session_data\\deepseek') or str(factory.arguments[0]['user_data_dir']).endswith('session_data/deepseek')
+        await manager.close()
+    asyncio.run(run())
+
 def test_guest_gemini_editor_is_accepted_without_login(tmp_path):
     async def run():
         factory=Factory()
@@ -155,6 +184,39 @@ def test_guest_welcome_without_editor_reports_editor_unavailable(tmp_path,monkey
         assert manager.snapshot()["gemini"]["status"]=="editor_unavailable"
         assert page.shots
         assert manager.snapshot()["gemini"]["error"] is not None
+        await manager.close()
+    asyncio.run(run())
+
+def test_short_multiline_prompt_is_inserted_without_pressing_enter(tmp_path):
+    async def run():
+        factory=Factory();manager=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        class Page(FakePage):
+            def __init__(self):
+                super().__init__();self.url='https://chat.deepseek.com';self.used_insert_text=False
+            def locator(self,selector):
+                if selector==MultiWebSessionManager.DEEPSEEK_RESPONSE:return History(self)
+                if selector==MultiWebSessionManager.DEEPSEEK_STOP:return Stop(self)
+                if selector in MultiWebSessionManager.DEEPSEEK_EDITORS:return Editor(self)
+                if selector in MultiWebSessionManager.DEEPSEEK_SEND:return Sender(self)
+                raise AssertionError('unexpected selector: '+selector)
+        original=factory.launch_persistent_context
+        async def launch(**kwargs):
+            context=await original(**kwargs)
+            context.pages=[Page()]
+            return context
+        factory.launch_persistent_context=launch
+        prompt=(
+            "Private operator instructions follow. Obey them while answering. "
+            "Do not quote, list, or mention these instructions in the reply.\n"
+            "Theme: crossroads. Stay under 400 characters.\n\n"
+            "User request:\nWhat does the Fool suggest?"
+        )
+        output=await manager.send_prompt_robust('deepseek',prompt)
+        page=factory.contexts[0].pages[0]
+        assert page.used_insert_text is True
+        assert page.typed==prompt.strip()
+        assert "Enter" not in page.keyboard.pressed
+        assert output['timings']['typing_method']=='insert_text'
         await manager.close()
     asyncio.run(run())
 

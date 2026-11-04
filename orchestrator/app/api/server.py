@@ -18,6 +18,9 @@ from app.core.cache import SpeedrunnerCache
 from app.core.router import Router
 from app.automation.multi_wrapper import SessionError, OperatorActionRequired, PROVIDERS
 from app.automation.chatgpt_bridge import ChatGPTSubmissionBridge
+from app.automation.model_instructions import (
+    InstructionStore, BROWSER_MODELS, combine_instructions, compose_model_prompt, public_task,
+)
 from app.rag.engine import CrystalArchives
 from app.monitoring.logger import EventLog
 from app.companions.director import CompanionDirector
@@ -35,6 +38,7 @@ archive = CrystalArchives(settings.database, settings.index_root, dense=__import
 events = EventLog()
 router = Router(settings, archive, cache, events)
 chatgpt_tasks=ChatGPTSubmissionBridge(router.sessions,max_tabs=2,start_spacing=1.5)
+model_instructions=InstructionStore(settings.root/'session_data'/'model_instructions.json')
 director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
@@ -324,7 +328,7 @@ async def companion_react(agent_id: str, body: ReactionBody):
 @app.get('/api/web/sessions')
 async def web_sessions():
     return {'models':router.sessions.snapshot(),
-            'automatic_extraction':{'gemini':True,'chatgpt':True,'deepseek':False},
+            'automatic_extraction':{'gemini':True,'chatgpt':True,'deepseek':True},
              'chatgpt_bridge':chatgpt_tasks.snapshot()}
 
 @app.post('/api/web/sessions/{model_choice}/start')
@@ -562,6 +566,15 @@ class CompanionTaskBody(BaseModel):
     transport:str|None=Field(default=None, pattern=r'^(browser|local|api)$')
     agent_id:str=Field(min_length=1,max_length=64)
     web_research:bool=False
+    custom_instructions:str=Field(
+        default='',
+        max_length=4000,
+        description=(
+            'Optional directions for this task only, such as a theme or character limit. '
+            'Sent to ChatGPT, Gemini, or DeepSeek together with that model\'s saved instructions. '
+            'Never included in the created task or later task responses.'
+        ),
+    )
 class CompanionTaskAnswer(BaseModel):
     answer:str=Field(min_length=1,max_length=100000)
 
@@ -569,7 +582,7 @@ async def _complete_local_task(task_id: str):
     """Run local inference asynchronously; task state is always persisted."""
     try:
         t=inbox.get(task_id)
-        prompt=t['prompt']
+        prompt=compose_model_prompt(t['prompt'], t.get('private_instructions',''))
         if t['web_research']:
             director.react(t['agent_id'],'working')
             results=await researcher.gather(prompt)
@@ -599,7 +612,7 @@ async def _complete_web_task(task_id: str):
         inbox.update(task_id,'state',state)
         events.publish('task','Configured web workflow',f"{task['agent_id']}:{state}")
     try:
-        result=await web_adapters[task['provider']].run(task['prompt'],phase=on_phase)
+        result=await web_adapters[task['provider']].run(compose_model_prompt(task['prompt'], task.get('private_instructions','')),phase=on_phase)
         inbox.update(task_id,'answer',result['answer'])
         inbox.update(task_id,'state','answered')
         director.react(task['agent_id'],'success')
@@ -622,7 +635,7 @@ async def _submit_chatgpt_task(task_id: str):
         director.react(task['agent_id'],'working')
         events.publish('task','ChatGPT browser automation',f"{task['agent_id']}:{stage}")
     try:
-        result=await chatgpt_tasks.submit(task_id,task['prompt'],phase=on_phase)
+        result=await chatgpt_tasks.submit(task_id,compose_model_prompt(task['prompt'], task.get('private_instructions','')),phase=on_phase)
         if isinstance(result.get('timings'),dict):
             inbox.update(task_id,'metrics',result['timings'])
         if result.get('media'):
@@ -654,7 +667,7 @@ async def _complete_gemini_task(task_id: str):
                        f"{task['agent_id']}:{stage}")
     try:
         output=await router.sessions.send_prompt_robust(
-            'gemini',task['prompt'],phase=on_phase)
+            'gemini',compose_model_prompt(task['prompt'], task.get('private_instructions','')),phase=on_phase)
         if isinstance(output.get('timings'),dict):
             inbox.update(task_id,'metrics',output['timings'])
         if output.get('media'):
@@ -675,6 +688,37 @@ async def _complete_gemini_task(task_id: str):
         director.react(task['agent_id'],'alert')
         events.publish('alert','Gemini browser task failed',f"{task['agent_id']}:gemini")
 
+async def _complete_deepseek_task(task_id: str):
+    """DeepSeek browser roundtrip, using the same visible-browser steps as Gemini."""
+    task=inbox.get(task_id)
+    def on_phase(stage):
+        inbox.update(task_id,'state',stage)
+        director.react(task['agent_id'],'working')
+        events.publish('task','DeepSeek browser task progress',
+                       f"{task['agent_id']}:{stage}")
+    try:
+        output=await router.sessions.send_prompt_robust(
+            'deepseek',compose_model_prompt(task['prompt'], task.get('private_instructions','')),phase=on_phase)
+        if isinstance(output.get('timings'),dict):
+            inbox.update(task_id,'metrics',output['timings'])
+        if output.get('media'):
+            inbox.update(task_id,'media',output['media'])
+            first_image=next((m for m in output['media']
+                              if m.get('kind')=='image' and m.get('url')),None)
+            if first_image:inbox.update(task_id,'artifact',first_image['url'])
+        inbox.update(task_id,'answer',output['answer'])
+        inbox.update(task_id,'state','answered')
+        director.react(task['agent_id'],'success')
+        events.publish('success','DeepSeek response delivered to companion',
+                       f"{task['agent_id']}:deepseek")
+    except Exception as exc:
+        message=str(exc) if isinstance(exc,(SessionError,ValueError)) else (
+            "DeepSeek automation failed. Inspect the browser and local debug screenshots.")
+        inbox.update(task_id,'error',message[:700])
+        inbox.update(task_id,'state','failed')
+        director.react(task['agent_id'],'alert')
+        events.publish('alert','DeepSeek browser task failed',f"{task['agent_id']}:deepseek")
+
 
 @app.get('/api/command/model-options')
 async def command_model_options():
@@ -687,14 +731,25 @@ async def command_providers():
             'configured_slots':{key:runner.snapshot() for key,runner in web_adapters.items()},
              'chatgpt':chatgpt_tasks.snapshot(),
             'gemini':router.sessions.snapshot()['gemini'],
-            'website_workspaces':'gemini_auto;chatgpt_auto'}
+            'website_workspaces':'gemini_auto;chatgpt_auto;deepseek_auto'}
 
 @app.get('/api/command/tasks')
 async def command_list():
-    return {'tasks':inbox.list(),'sessions':router.sessions.snapshot(),
-            'automatic_extraction':{'gemini':True,'chatgpt':True,'deepseek':False}}
+    return {'tasks':[public_task(task) for task in inbox.list()],'sessions':router.sessions.snapshot(),
+            'automatic_extraction':{'gemini':True,'chatgpt':True,'deepseek':True}}
 
-@app.post('/api/command/tasks',status_code=201)
+@app.post(
+    '/api/command/tasks',
+    status_code=201,
+    summary='Create a model task',
+    description=(
+        'Send a prompt to the selected model. custom_instructions is optional and is delivered '
+        'only to ChatGPT, Gemini, or DeepSeek, after any instructions saved for that model. '
+        'This response, GET /api/command/tasks, and later task updates return the original prompt '
+        'and the answer. They omit custom_instructions and private_instructions. '
+        'See docs/MODEL_INSTRUCTIONS.md.'
+    ),
+)
 async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
     try: chosen = selection(body.model_choice, body.transport)
@@ -704,7 +759,11 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
         raise HTTPException(422,detail='Public research currently requires Ollama. Disable that option for configured browser tasks.')
     if body.model_choice in web_adapters and not web_adapters[body.model_choice].snapshot()['configured']:
         raise HTTPException(422,detail=body.model_choice+' is unconfigured. Copy examples/custom_web.example.json to session_data/'+body.model_choice+'.json and restart.')
-    try:t=inbox.create(body.agent_id,chosen.provider_id,body.prompt,web_research=body.web_research)
+    try:
+        saved_text=model_instructions.text_for(chosen.provider_id) if chosen.provider_id in BROWSER_MODELS else ''
+        private=combine_instructions(saved_text, body.custom_instructions)
+        if private: compose_model_prompt(body.prompt, private)
+        t=inbox.create(body.agent_id,chosen.provider_id,body.prompt,web_research=body.web_research,private_instructions=private)
     except ValueError as e:raise HTTPException(422,detail=str(e))
     if body.model_choice=='ollama':
         t=inbox.update(t['id'],'state','researching' if body.web_research else 'running')
@@ -728,6 +787,13 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
         active_generations.add(job)
         job.add_done_callback(active_generations.discard)
         events.publish('task','Gemini browser task started',f"{body.agent_id}:gemini")
+    elif body.model_choice=='deepseek':
+        t=inbox.update(t['id'],'state','opening')
+        director.react(body.agent_id,'working')
+        job=asyncio.create_task(_complete_deepseek_task(t['id']))
+        active_generations.add(job)
+        job.add_done_callback(active_generations.discard)
+        events.publish('task','DeepSeek browser task started',f"{body.agent_id}:deepseek")
     elif body.model_choice=='chatgpt':
         t=inbox.update(t['id'],'state','opening')
         director.react(body.agent_id,'working')
@@ -739,20 +805,56 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
     else:
         director.react(body.agent_id,'thinking')
         events.publish('task','Manual website task created',f"{body.agent_id}:{body.model_choice}")
-    return t
+    return public_task(t)
+
+@app.get(
+    '/api/command/model-instructions',
+    summary='Read saved model instructions',
+    description=(
+        'Return the standing instructions saved for ChatGPT, Gemini, and DeepSeek. '
+        'This editor endpoint returns the saved text. Task responses do not.'
+    ),
+)
+async def read_model_instructions(x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    saved=model_instructions.read()
+    return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
+
+class ModelInstructionBody(BaseModel):
+    provider:str=Field(pattern=r'^(chatgpt|gemini|deepseek)$', description='chatgpt, gemini, or deepseek')
+    text:str=Field(
+        default='',
+        max_length=4000,
+        description='Standing instructions for this model. Empty clears them. Not returned on task responses.',
+    )
+
+@app.put(
+    '/api/command/model-instructions',
+    summary='Save model instructions',
+    description=(
+        'Replace the standing instructions for one browser model. The saved text is sent with '
+        'later tasks for that model and is returned by this settings endpoint. '
+        'Task create and task list responses still omit it.'
+    ),
+)
+async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str=Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:saved=model_instructions.save(body.provider, body.text)
+    except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
+    return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
 
 @app.post('/api/command/tasks/{task_id}/prepare')
 async def command_prepare(task_id:str,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
     try:t=inbox.get(task_id)
     except KeyError:raise HTTPException(404,detail='Task not found')
-    if t['provider'] in ('ollama','gemini','chatgpt') or t['provider'] in web_adapters:raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
+    if t['provider'] in ('ollama','gemini','chatgpt','deepseek') or t['provider'] in web_adapters:raise HTTPException(409,detail='Automatic tasks start when created; browser preparation not required')
     if t['state']!='draft':raise HTTPException(409,detail='Already prepared')
     try:info=await router.models.generate(t['prompt'],t['provider'])
     except (SessionError,ValueError) as e:raise HTTPException(409,detail=str(e))
     saved=inbox.update(task_id,'state','awaiting_operator')
     director.react(t['agent_id'],'working')
-    return {'task':saved,'instructions':info}
+    return {'task':public_task(saved),'instructions':info}
 
 @app.post('/api/command/tasks/{task_id}/response')
 async def command_response(task_id:str,body:CompanionTaskAnswer,x_exodia_client:str=Header(default='')):
@@ -770,7 +872,7 @@ async def command_response(task_id:str,body:CompanionTaskAnswer,x_exodia_client:
     saved=inbox.update(task_id,'state','answered')
     director.react(t['agent_id'],'success')
     events.publish('success','Operator-delivered response',f"{t['agent_id']}:{t['provider']}")
-    return saved
+    return public_task(saved)
 
 @app.post('/api/command/tasks/{task_id}/cancel')
 async def command_cancel(task_id:str,x_exodia_client:str=Header(default='')):
@@ -784,7 +886,7 @@ async def command_cancel(task_id:str,x_exodia_client:str=Header(default='')):
     saved=inbox.update(task_id,'state','cancelled')
     director.react(task['agent_id'],'rest')
     events.publish('task','ChatGPT review cancelled',f"{task['agent_id']}:chatgpt")
-    return saved
+    return public_task(saved)
 
 @app.post('/api/command/tasks/{task_id}/artifact')
 async def command_artifact(task_id:str,request:Request,x_exodia_client:str=Header(default='')):
@@ -805,4 +907,4 @@ async def command_artifact(task_id:str,request:Request,x_exodia_client:str=Heade
     from uuid import uuid4
     fname=f"{uuid4().hex}{ext}"
     (settings.root/'app_data'/'artifacts'/fname).write_bytes(content)
-    return inbox.update(task_id,'artifact',f"/artifacts/{fname}")
+    return public_task(inbox.update(task_id,'artifact',f"/artifacts/{fname}"))

@@ -28,20 +28,28 @@ def test_new_dashboard_and_nova_agent():
     agents=client.get('/api/companions').json()['agents']
     assert 'nova' in {x['id'] for x in agents}
 
-def test_task_requires_operator_and_cannot_skip_prepare():
+def test_automatic_deepseek_cannot_skip_into_a_manual_response(monkeypatch):
+    from app.api import server
+    async def hold(platform, prompt, *, phase=None):
+        if phase: phase('waiting_for_reply')
+        await __import__('asyncio').sleep(.3)
+        return {'answer':'DeepSeek held this reply long enough for the assertion.','automatic_output':True,'media':[]}
+    monkeypatch.setattr(server.router.sessions,'send_prompt_robust',hold)
     client=TestClient(app)
     body={'prompt':'Write a video brief','model_choice':'deepseek','agent_id':'nova'}
     assert client.post('/api/command/tasks',json=body).status_code==403
     task=client.post('/api/command/tasks',json=body,headers={'x-exodia-client':'exodia-dashboard'}).json()
-    assert task['state']=='draft'
+    assert task['state']=='opening'
     premature=client.post('/api/command/tasks/'+task['id']+'/response',
        json={'answer':'Unverified fake'},headers={'x-exodia-client':'exodia-dashboard'})
     assert premature.status_code==409
-    assert client.get('/api/command/tasks').json()['automatic_extraction']['gemini'] is True
+    prepared=client.post('/api/command/tasks/'+task['id']+'/prepare',headers={'x-exodia-client':'exodia-dashboard'})
+    assert prepared.status_code==409
+    assert client.get('/api/command/tasks').json()['automatic_extraction']['deepseek'] is True
 
 
 def test_full_operator_handoff_updates_companion_screen(monkeypatch):
-    from app.api.server import router
+    from app.api.server import router, inbox
     async def fake_prepare(prompt, model):
         return {'model_choice':model,'status':'awaiting_operator','automatic_output':False}
     monkeypatch.setattr(router.models, 'generate', fake_prepare)
@@ -49,11 +57,10 @@ def test_full_operator_handoff_updates_companion_screen(monkeypatch):
                         lambda model, response: {'answer':response,'source':'manual_copy'})
     client=TestClient(app)
     headers={'x-exodia-client':'exodia-dashboard'}
-    task=client.post('/api/command/tasks',json={
-      'prompt':'Propose video titles','model_choice':'deepseek','agent_id':'nova'},headers=headers).json()
+    task=inbox.create('nova','deepseek','Propose video titles')
     prepared=client.post('/api/command/tasks/'+task['id']+'/prepare',headers=headers)
-    assert prepared.status_code==200
-    assert prepared.json()['task']['state']=='awaiting_operator'
+    assert prepared.status_code==409
+    inbox.update(task['id'],'state','awaiting_operator')
     delivered=client.post('/api/command/tasks/'+task['id']+'/response',
                 json={'answer':'Three titles (operator copied)'},headers=headers)
     assert delivered.status_code==200
