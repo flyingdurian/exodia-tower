@@ -1,0 +1,30 @@
+name: Gate 4 — Real Application Source Review Snapshot
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths: ['.github/workflows/gate4-source-snapshot.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package-app-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Preserve exact committed FastAPI application without duplicate portrait binaries
+        shell: bash
+        run: |
+          tar -czf /tmp/exodia_gate4_source.tar.gz \
+            --exclude='./.git' \
+            --exclude='./orchestrator/app_data/albedo_33_review/sources' \
+            --exclude='./orchestrator/app_data/albedo_33_review/images' \
+            --exclude='./orchestrator/frontend/prototype_assets' \
+            .
+          cp /tmp/exodia_gate4_source.tar.gz exodia_gate4_source.tar.gz
+          sha256sum exodia_gate4_source.tar.gz
+          ls -lh exodia_gate4_source.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: exodia-gate4-complete-real-app-source
+          path: exodia_gate4_source.tar.gz
+          retention-days: 5
