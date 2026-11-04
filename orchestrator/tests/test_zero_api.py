@@ -3,7 +3,7 @@ import asyncio
 from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
-from app.automation.multi_wrapper import MultiWebSessionManager, SessionError, OperatorActionRequired, PROVIDERS
+from app.automation.multi_wrapper import MultiWebSessionManager, SessionError, OperatorActionRequired, PROVIDERS, type_composer_text
 from app.core.zero_api import ZeroAPIModelRouter
 from app.companions.rigs import load_all, validate_rig
 from app.api.server import app
@@ -51,7 +51,8 @@ def test_three_isolated_sessions_and_manual_replies(tmp_path):
         assert r['status']=='awaiting_operator' and r['automatic_output'] is False
         gp=f.contexts[1].pages[0]
         assert gp.inputs[PROVIDERS['gemini'].input_selector].clicks==1
-        assert gp.keyboard.typed==[('Review this draft',10)]
+        # Deliberate latency optimization: rich-text typing dispatches input events without a fixed delay.
+        assert gp.keyboard.typed==[('Review this draft',0)]
         assert gp.keyboard.pressed==['ControlOrMeta+A']
         with pytest.raises(OperatorActionRequired):m.receive_operator_response('chatgpt','not pending')
         result=router.record_operator_response('gemini','Copied manually')
@@ -115,7 +116,7 @@ def test_chatgpt_contenteditable_receives_keyboard_events(tmp_path):
         await m.initialize_all()
         await m.prepare_prompt('chatgpt','Explain this diagram')
         p=m._pages['chatgpt']
-        assert p.keyboard.typed==[('Explain this diagram',10)]
+        assert p.keyboard.typed==[('Explain this diagram',0)]
         assert p.inputs[PROVIDERS['chatgpt'].input_selector].messages==[]
         await m.close()
     asyncio.run(run())
@@ -145,4 +146,31 @@ def test_optional_chromium_blink_flag_is_off_by_default_but_opt_in(tmp_path,monk
         await manager.initialize_all()
         assert all(c.opts.get('args')==['--disable-blink-features=AutomationControlled'] for c in opted.contexts)
         await manager.close()
+    asyncio.run(run())
+
+
+def test_browser_composer_multiline_never_sends_bare_enter():
+    """Newlines use Shift+Enter; an ordinary Enter can submit a browser message."""
+    async def run():
+        p=Page()
+        mode=await type_composer_text(p,'First line\nSecond line\nThird')
+        assert mode=='shift_enter_lines'
+        assert p.keyboard.typed==[('First line',0),('Second line',0),('Third',0)]
+        assert p.keyboard.pressed==['Shift+Enter','Shift+Enter']
+        assert 'Enter' not in p.keyboard.pressed
+    asyncio.run(run())
+
+def test_browser_composer_long_prompt_prefers_insert_text_when_available():
+    """Long prompts should use the fast input-event path instead of slow per-character typing."""
+    class InsertKeyboard(Keyboard):
+        def __init__(self):
+            super().__init__();self.inserted=[]
+        async def insert_text(self,text):self.inserted.append(text)
+    async def run():
+        p=Page();p.keyboard=InsertKeyboard()
+        prompt='Long operator request ' * 20
+        mode=await type_composer_text(p,prompt)
+        assert mode=='insert_text'
+        assert p.keyboard.inserted==[prompt.strip()]
+        assert p.keyboard.typed==[]
     asyncio.run(run())
