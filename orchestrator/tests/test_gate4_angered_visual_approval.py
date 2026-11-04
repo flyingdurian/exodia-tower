@@ -71,3 +71,27 @@ def test_correction_lock_preserves_29_and_native_angered_pending():
     assert brief['status']=='PENDING_NEW_STANDALONE_ARTWORK'
     assert brief['new_original_sha256'] is None
     assert brief['new_review_sha256'] is None
+
+
+def test_live_fastapi_manifest_exposes_lowres_owner_visual_cue_only():
+    from app.companions.state33_review_assets import manifest
+    data=manifest(Settings().root)
+    assert data['count']==33
+    assert data['artwork_available_count']==33
+    assert data['production_release_enabled'] is False
+    assert data['owner_production_approved_count']==0
+    anger=data['states']['angered']
+    cue=anger['owner_approved_lowres_design_reference']
+    assert cue['sha256']==SHA
+    assert cue['source_dimensions']==[1122,1402]
+    assert cue['visual_design_approved_exact_sha'] is True
+    assert cue['native_production_eligible'] is False
+    assert cue['future_rerender_needs_owner_review'] is True
+    assert cue['preview_asset_available_in_repo'] is False
+    assert anger['sha256'] != SHA  # Existing 1536x1920 review image remains intact.
+    assert anger['owner_approved'] is False
+    assert anger['owner_final_visual_approved'] is False
+    assert anger['production_status']=='pending_production_art'
+    assert anger['owner_development_status']=='CORRECTION_REQUIRED'
+    assert len([item for item in data['states'].values()
+                if item['owner_development_status']=='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT'])==29
