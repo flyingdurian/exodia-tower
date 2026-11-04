@@ -89,3 +89,6 @@
 @media(max-width:760px){.build-badge{font-size:9px;padding:4px 6px}.masthead{height:auto;min-height:63px;flex-wrap:wrap}.online{margin-left:auto}}
 .instruction-note{color:#c9d4ef;font-size:12px;line-height:1.45;margin:0 0 10px}
 #instructionStatus{min-height:1.2em;color:#d7e4ff;font-size:12px;margin-top:8px}
+
+/* Local task cancellation remains visible alongside current task status. */
+.task-terminal-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.task-terminal-actions button{padding:6px 10px;font-size:11px}.task-terminal-actions [hidden]{display:none}

@@ -1,0 +1,84 @@
+{
+  "schema": "exodia.fleet-art-pilot/v1",
+  "character_id": "router",
+  "name": "Riven",
+  "identity_reference": {
+    "path": "frontend/companions/source_masters/router.png",
+    "sha256": "65562dfd75c83ac46cf6ec2dec05bff9d59812bd22287750bd48833f94bc584e",
+    "dimensions": [
+      1122,
+      1402
+    ],
+    "classification": "nonproduction_composite_poster_style_reference_only",
+    "native_identity_owner_approved": false
+  },
+  "native_canvas": [
+    1536,
+    1920
+  ],
+  "eye_midline_y_px": 633.6,
+  "shoulder_baseline_y_px": 980.0,
+  "head_width_px": 614.4,
+  "head_center_x_px": 768.0,
+  "source_policy": "single_independently_authored_standalone_state_png",
+  "production_release_enabled": false,
+  "states": {
+    "neutral": {
+      "category": "expression",
+      "brief": "Quiet neutral pathfinder readiness, no pointing or anger",
+      "source_file": null,
+      "source_sha256": null,
+      "source_kind": "pending_native_independent_standalone",
+      "derived_from_composite": false,
+      "owner_approval_reference": null,
+      "actual_landmark_evidence": null,
+      "status": "awaiting_native_source"
+    },
+    "confident": {
+      "category": "expression",
+      "brief": "Steady decisive tactical gaze, both arms anatomically credible",
+      "source_file": null,
+      "source_sha256": null,
+      "source_kind": "pending_native_independent_standalone",
+      "derived_from_composite": false,
+      "owner_approval_reference": null,
+      "actual_landmark_evidence": null,
+      "status": "awaiting_native_source"
+    },
+    "angered": {
+      "category": "expression",
+      "brief": "Controlled frustration at a blocked route, not a tantrum",
+      "source_file": null,
+      "source_sha256": null,
+      "source_kind": "pending_native_independent_standalone",
+      "derived_from_composite": false,
+      "owner_approval_reference": null,
+      "actual_landmark_evidence": null,
+      "status": "awaiting_native_source"
+    },
+    "working": {
+      "category": "action",
+      "brief": "Active route-planning with connected hands and plausible tools",
+      "source_file": null,
+      "source_sha256": null,
+      "source_kind": "pending_native_independent_standalone",
+      "derived_from_composite": false,
+      "owner_approval_reference": null,
+      "actual_landmark_evidence": null,
+      "status": "awaiting_native_source"
+    },
+    "pointing": {
+      "category": "action",
+      "brief": "Clearly connected index finger identifying a safe route",
+      "source_file": null,
+      "source_sha256": null,
+      "source_kind": "pending_native_independent_standalone",
+      "derived_from_composite": false,
+      "owner_approval_reference": null,
+      "actual_landmark_evidence": null,
+      "status": "awaiting_native_source"
+    }
+  },
+  "native_production_certified": false,
+  "note": "A0 Riven identity and 5 independent source masters require new owner review; this manifest never approves pixels."
+}

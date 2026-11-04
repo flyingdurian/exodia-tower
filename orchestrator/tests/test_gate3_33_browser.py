@@ -74,6 +74,16 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                         "() => document.querySelector('#buildBadge')?.textContent.includes('EXODIA v')",
                         timeout=6000)
                     assert await command.locator('#buildBadge').inner_text() == build['label']
+                    # Live frontshell task controls and provider/session metadata.
+                    assert await command.locator('#cancelActiveTask').count()==1
+                    assert await command.locator('#cancelActiveTask').is_hidden()
+                    await command.wait_for_function(
+                        "() => document.querySelectorAll('#providerStatus strong').length === 6",
+                        timeout=10000)
+                    provider_text=await command.locator('#providerStatus').inner_text()
+                    assert 'Not configured' in provider_text
+                    assert 'Automatic reply' not in provider_text, 'Authentication must never be inferred from capability'
+                    assert await command.locator('#engineChecked').inner_text()
                     await command.screenshot(path=str(proof/'command_version_providers_DESKTOP.png'))
                     await command.close()
                     command_mobile=await browser.new_page(viewport={'width':390,'height':844},
