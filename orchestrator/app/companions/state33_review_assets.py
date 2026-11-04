@@ -213,6 +213,7 @@ def manifest(root: Path) -> dict:
         'artwork_available_count': ready,
         'concept_preview_available_count': concept_core,
         'core_five_independent_review_art_count': real_core,
+        'core_native_review_art_available_count': real_core,  # review only, NOT certified production
         'verified_independent_review_art_count': real_core+newly_loaded,
         'additional_review_art_available_count': newly_loaded,
         'states_without_review_images': 33 - ready,
