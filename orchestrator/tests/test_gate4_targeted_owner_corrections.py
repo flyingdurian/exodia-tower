@@ -119,11 +119,19 @@ def test_four_old_images_are_present_but_not_marked_as_corrected_or_production()
             assert item["new_original_sha256"] is None
             assert item["new_review_sha256"] is None
             assert lock["frozen_review_hashes"][state]["development_review_status"]=="CORRECTION_REQUIRED"
+        elif item["status"]=="REVIEW_ONLY_OWNER_ACCEPTED_NON_NATIVE":
+            assert item["new_original_sha256"] and item["new_review_sha256"]
+            assert item["review_only_source_dimensions"]==[1122,1402]
+            assert item["review_only_presentation_dimensions"]==[1536,1920]
+            assert item["native_production_certified"] is False
+            assert item["owner_final_visual_review"]=="DEVELOPMENT_APPROVED_ONLY"
         else:
             assert item["status"]=="RENDERED_PENDING_OWNER"
             assert item["new_original_sha256"]
             assert item["new_review_sha256"]
-        assert item["owner_final_visual_review"]=="PENDING"
+            assert item["owner_final_visual_review"]=="PENDING"
+        if item["status"]=="PENDING_NEW_STANDALONE_ARTWORK":
+            assert item["owner_final_visual_review"]=="PENDING"
 
 
 def test_real_api_four_state_correction_requires_auth_and_rejects_fake_art():
