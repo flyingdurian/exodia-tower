@@ -61,7 +61,9 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_function(
                         "()=>window.__exodia33?.selected==='angered'",timeout=7000)
                     assert await page.locator('.hero').get_attribute('data-signal')=='strain_glitch'
-                    assert 'Needs independent replacement' in await page.locator('#ownerDevelopmentStatus').inner_text()
+                    assert 'Owner approved exact design SHA' in await page.locator('#ownerDevelopmentStatus').inner_text()
+                    assert 'native rerender still required' in await page.locator('#ownerDevelopmentStatus').inner_text()
+                    assert 'DESIGN APPROVED' in await page.locator('.state-button[data-state="angered"] .detail small').inner_text()
                     art_response=await page.request.get(
                         'http://127.0.0.1:8909/api/albedo/state33/manifest')
                     art_manifest=await art_response.json()
