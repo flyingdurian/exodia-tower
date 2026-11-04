@@ -46,7 +46,7 @@ def test_chatgpt_auto_submit_handoff_panel_and_single_import():
      await page.goto('http://127.0.0.1:8898/',wait_until='domcontentloaded')
      await page.wait_for_selector('#chatgptHandoff',state='visible',timeout=15000)
      assert await page.locator('#chatgptHandoff').is_visible()
-     assert 'automatically extract' in (await page.locator('#chatgptHandoff').inner_text()).lower()
+     assert 'the current chatgpt bridge attempts automatic delivery' in (await page.locator('#chatgptHandoff').inner_text()).lower()
      await page.locator('#chatgptResultText').fill('Response imported manually')
      await page.screenshot(path=str(screenshots/'chatgpt_handoff.png'),full_page=False)
      await page.locator('#chatgptImport').click()

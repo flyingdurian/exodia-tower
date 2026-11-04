@@ -162,7 +162,7 @@ function renderAnswer(task){
   w.append(element('div','welcome-glyph',waiting?'◉':'✧'),
     element('b','',waiting?'ChatGPT prompt submitted':prettyName(task.state)),
     element('p','',waiting?
-      'The ChatGPT tab is open for review. Deliver the response using the handoff panel below; automatic output extraction is not enabled.':
+      'This task needs operator review despite the automatic ChatGPT bridge. Deliver the response using the manual handoff panel below.':
       'Your companion is '+(moodDesc[moodForTask(task)]||'working')+'.'));
   UI.answer.append(w);return;
  }
