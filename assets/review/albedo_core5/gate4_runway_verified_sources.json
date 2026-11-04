@@ -315,5 +315,7 @@
       "owner_approved": false,
       "production_release_enabled": false
     }
-  ]
+  ],
+  "binary_staging_retry_reason": "First GitHub run downloaded, re-rendered and SHA-verified all thirteen standalone originals and their exact normalized PNGs; the final git-add step needed force-add for an ignored review_index.json. This retry changes no source artwork or hashes.",
+  "previously_verified_in_actions_run": 41753770033
 }
