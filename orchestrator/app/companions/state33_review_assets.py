@@ -256,6 +256,12 @@ def asset(root: Path, state: str) -> Path | None:
 
 def import_art(root: Path, archive: bytes) -> dict:
     """Partial or full 28-state original-art batch; art review only, fail closed."""
+    # The owner has frozen 29 exact 33-state source/output hashes. The legacy
+    # generic import must not bypass the NEW four-state correction gate by
+    # overwriting an already complete 33-state library.
+    lock_file = root.parent / 'assets' / 'review' / 'albedo_core5' / 'gate4_four_state_correction_lock.json'
+    if lock_file.is_file() and len(_index(root).get('states', {})) == 33:
+        raise ValueError('owner_locked_33_state_library_use_gate4_four_state_import')
     if not isinstance(archive, bytes) or not archive or len(archive) > MAX_COMPRESSED:
         raise ValueError('review_zip_invalid_size')
     if not is_zipfile(BytesIO(archive)):
