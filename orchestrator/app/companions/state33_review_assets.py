@@ -113,6 +113,29 @@ def manifest(root: Path) -> dict:
                 if current is None or (current.get('source_sha256') != frozen['original_sha256']
                    or current.get('image_sha256') != frozen['review_sha256']):
                     raise ValueError('protected_29_state_sha_mismatch:' + frozen_name)
+    owner_design_reference = None
+    cue_path = root.parent / 'assets' / 'review' / 'albedo_core5' / 'gate4_angered_owner_visual_design_approval_2026-11-04.json'
+    if cue_path.is_file():
+        cue = json.loads(cue_path.read_text(encoding='utf-8'))
+        if (correction_lock is None
+                or cue.get('schema') != 'exodia.gate4-angered-owner-visual-design-approval/v1'
+                or cue.get('original_sha256') !=
+                    correction_lock['correction_briefs']['angered'].get(
+                        'owner_approved_reference_design', {}).get('sha256')
+                or cue.get('original_source_dimensions') != [1122, 1402]
+                or cue.get('native_source_eligible') is not False
+                or cue.get('production_approved') is not False
+                or cue.get('approval_not_transferrable_to_other_files') is not True):
+            raise ValueError('invalid_or_unsafe_owner_design_reference_approval')
+        owner_design_reference = {
+            'filename': cue['original_filename'],
+            'sha256': cue['original_sha256'],
+            'source_dimensions': cue['original_source_dimensions'],
+            'visual_design_approved_exact_sha': True,
+            'native_production_eligible': False,
+            'future_rerender_needs_owner_review': True,
+            'preview_asset_available_in_repo': False,
+        }
     # UI is deliberately Core-Five-first; the signed production registry's
     # canonical state keyset and order remain untouched.
     order = list(CORE) + [name for name in prod['states'] if name not in CORE]
@@ -203,6 +226,10 @@ def manifest(root: Path) -> dict:
                             'numeric_provisional_pass':False,
                         }
                         item['geometry_status']='ACTUAL_PIXELS_GEOMETRY_FAIL_OWNER_UNREVIEWED'
+        if name == 'angered' and owner_design_reference is not None:
+            # This is explicitly a *separate low-resolution design cue*;
+            # never substitute it for the current native review image_url.
+            item['owner_approved_lowres_design_reference'] = dict(owner_design_reference)
         # Gate 4: a verified independently generated Core-Five review PNG
         # supersedes the 1122x1402 tentative concept preview in the live
         # workbench only. No native production approval is implied.
