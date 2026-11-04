@@ -91,6 +91,24 @@ def manifest(root: Path) -> dict:
     prod = _registry(root)
     core = core5_review_assets.current_manifest(root)
     idx = _index(root)
+    # Owner Gate 4: 29 states accepted for continued DEVELOPMENT, four
+    # corrections outstanding. This review metadata NEVER unlocks production.
+    lock_path = root.parent / 'assets' / 'review' / 'albedo_core5' / 'gate4_four_state_correction_lock.json'
+    correction_lock = json.loads(lock_path.read_text(encoding='utf-8')) if lock_path.is_file() else None
+    if correction_lock is not None:
+        if (correction_lock.get('schema') != 'exodia.gate4-four-state-owner-correction-lock/v1'
+                or set(correction_lock.get('target_states', [])) != {
+                    'angered', 'awaiting_command', 'neutral', 'tantrum'}
+                or correction_lock.get('protected_count') != 29):
+            raise ValueError('invalid_four_state_owner_development_lock')
+        if set(correction_lock.get('frozen_review_hashes', {})) != set(prod['states']):
+            raise ValueError('owner_review_lock_mismatches_33_state_registry')
+        for frozen_name, frozen in correction_lock['frozen_review_hashes'].items():
+            if frozen_name not in correction_lock['target_states']:
+                current = idx.get('states', {}).get(frozen_name)
+                if current is None or (current.get('source_sha256') != frozen['original_sha256']
+                   or current.get('image_sha256') != frozen['review_sha256']):
+                    raise ValueError('protected_29_state_sha_mismatch:' + frozen_name)
     # UI is deliberately Core-Five-first; the signed production registry's
     # canonical state keyset and order remain untouched.
     order = list(CORE) + [name for name in prod['states'] if name not in CORE]
@@ -119,6 +137,9 @@ def manifest(root: Path) -> dict:
             'geometry_status': 'NO_IMAGE_MEASURED',
             'art_status': 'PENDING_INDEPENDENT_ART',
             'pose_direction': None,
+            'owner_development_status': (correction_lock['frozen_review_hashes'][name]['development_review_status']
+                                         if correction_lock else 'UNREVIEWED_FOR_CONTINUED_DEVELOPMENT'),
+            'owner_final_visual_approved': False,
         }
         if name in core_reference:
             item['pose_direction'] = 'Core-Five source pose — tentative visual reference'
@@ -218,6 +239,9 @@ def manifest(root: Path) -> dict:
         'additional_review_art_available_count': newly_loaded,
         'states_without_review_images': 33 - ready,
         'batch_review_generation_authorized': True,
+        'owner_development_accepted_count': 29 if correction_lock else 0,
+        'owner_targeted_correction_count': 4 if correction_lock else 0,
+        'targeted_corrections_rendered_count': correction_lock.get('correction_completed',0) if correction_lock else 0,
         'production_status': 'ALL_33_PENDING_PRODUCTION_ART',
         'states': states,
         'warning': 'All generated review files are unapproved. Canonical facial/shoulder geometry and identity still require owner art review; release remains disabled.'
