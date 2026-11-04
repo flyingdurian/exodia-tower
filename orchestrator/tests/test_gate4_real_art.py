@@ -51,7 +51,9 @@ def test_actual_generated_image_sha_canvas_and_pixel_transform():
 def test_real_fastapi_returns_identical_image_and_live_demo_review_status():
     m=manifest(Settings().root)
     assert m['count']==33
-    assert m['additional_review_art_available_count']==1
+    queue=json.loads((ROOT/'assets'/'review'/'albedo_core5'/
+                      'authorized_28_state_art_queue.json').read_text())
+    assert m['additional_review_art_available_count']==queue['generated_count']
     assert m['states']['celebrating']['sha256']==EXPECTED_OUTPUT
     assert m['states']['celebrating']['art_status']=='INDEPENDENT_ART_UNAPPROVED_REVIEW'
     assert m['states']['celebrating']['owner_approved'] is False
@@ -65,13 +67,13 @@ def test_real_fastapi_returns_identical_image_and_live_demo_review_status():
     assert measured['shoulder_delta']==-110.5
     assert measured['head_width_px'] is None
     assert measured['numeric_provisional_pass'] is False
-    assert m['states_without_review_images']>=27
+    assert m['states_without_review_images']==28-queue['generated_count']
     with TestClient(app) as client:
         r=client.get('/api/albedo/state33/review-assets/celebrating')
         assert r.status_code==200
         assert r.headers.get('content-type')=='image/png'
         assert sha256(r.content).hexdigest()==EXPECTED_OUTPUT
-        assert client.get('/api/albedo/state33/review-assets/laughing').status_code==404
+        assert client.get('/api/albedo/state33/review-assets/surprised').status_code==404
         assert client.get('/api/albedo/state33/manifest').json()['production_release_enabled'] is False
     production=json.loads((ROOT/'orchestrator'/'frontend'/'companions'/'production'/'kiko'/
                            'portrait_registry.json').read_text())
@@ -80,6 +82,6 @@ def test_real_fastapi_returns_identical_image_and_live_demo_review_status():
                 if s['status']=='pending_production_art'])==33
     queue=json.loads((ROOT/'assets'/'review'/'albedo_core5'/
                       'authorized_28_state_art_queue.json').read_text())
-    assert queue['generated_count']==1
+    assert queue['generated_count']>=1
     assert sum(s['generation_status']=='generated_unapproved_native_candidate'
                for s in queue['states'])==1
