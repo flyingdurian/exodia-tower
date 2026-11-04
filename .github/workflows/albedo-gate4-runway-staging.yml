@@ -71,8 +71,8 @@ jobs:
           git config user.email 'exodia-art-qa[bot]@users.noreply.github.com'
           git add -f orchestrator/app_data/albedo_33_review/sources/*.png
           git add -f orchestrator/app_data/albedo_33_review/images/*.png
+          git add -f -- orchestrator/app_data/albedo_33_review/review_index.json
           git add -- \
-            orchestrator/app_data/albedo_33_review/review_index.json \
             assets/review/albedo_core5/authorized_28_state_art_queue.json \
             assets/review/albedo_core5/gate4_runway_verified_report.json \
             assets/blueprints/albedo_28_state_batch_gate.json
