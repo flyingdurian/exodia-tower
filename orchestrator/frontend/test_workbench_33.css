@@ -87,3 +87,9 @@
 @media(max-width:700px){
  .state-group-heading{grid-column:1/-1;margin-top:4px!important}
 }
+
+/* Four targeted correction states are REVIEW-only, not artwork failures or production approvals. */
+.state-button[data-owner-review="CORRECTION_REQUIRED"]{outline:1px solid #f4bb8d;outline-offset:-2px;background:linear-gradient(110deg,#4a2f49,#22203e)}
+.state-button[data-owner-review="CORRECTION_REQUIRED"] .detail small{color:#ffd4a8;font-weight:800}
+.state-button[data-owner-review="CORRECTION_RENDERED_OWNER_REVIEW_PENDING"]{outline:1px solid #a2cad4;outline-offset:-2px}
+#ownerDevelopmentStatus{font-weight:650;overflow-wrap:anywhere}
