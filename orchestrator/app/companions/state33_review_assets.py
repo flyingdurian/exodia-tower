@@ -82,9 +82,23 @@ def _index(root: Path) -> dict:
 
 def _valid_local(root: Path, name: str, row: dict) -> bool:
     file = _base(root) / 'images' / (name + '.png')
-    return (file.is_file() and SHA.fullmatch(str(row.get('image_sha256', '')))
+    if not (file.is_file() and SHA.fullmatch(str(row.get('image_sha256', '')))
             and sha(file.read_bytes()) == row['image_sha256']
-            and _png(file.read_bytes()) == SIZE)
+            and _png(file.read_bytes()) == SIZE):
+        return False
+    # The four non-native review replacements must remain bound to the
+    # exact original 1122x1402 PNG bytes. Missing/tampered originals must
+    # never silently leave a seemingly "verified" displayed preview.
+    norm = row.get('normalization', {})
+    if isinstance(norm, dict) and norm.get('kind') == (
+            'REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE'):
+        original = _base(root) / 'sources' / (name + '_original.png')
+        return (original.is_file()
+                and sha(original.read_bytes()) == row.get('source_sha256')
+                and _png(original.read_bytes()) == (1122, 1402)
+                and row.get('native_production_certified') is False
+                and row.get('owner_approved') is False)
+    return True
 
 def manifest(root: Path) -> dict:
     queue = _queue(root)
@@ -186,7 +200,15 @@ def manifest(root: Path) -> dict:
         # Neither is owner-approved; signed production registry is unchanged.
         row = idx.get('states', {}).get(name)
         if row and _valid_local(root, name, row):
-            item['art_status'] = 'INDEPENDENT_ART_UNAPPROVED_REVIEW'
+            norm = row.get('normalization', {})
+            is_resampled = isinstance(norm, dict) and norm.get('kind') == (
+                'REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE')
+            item['art_status'] = ('OWNER_ACCEPTED_DEVELOPMENT_RESAMPLED_REVIEW_ONLY'
+                                  if is_resampled else 'INDEPENDENT_ART_UNAPPROVED_REVIEW')
+            item['source_is_native'] = not is_resampled and (
+                row.get('source_dimensions') != [1122, 1402])
+            item['review_is_resampled_from_low_resolution'] = is_resampled
+            item['native_production_certified'] = False
             item['image_url'] = '/api/albedo/state33/review-assets/' + name
             item['sha256'] = row['image_sha256']
             item['source_sha256'] = row['source_sha256']
@@ -270,8 +292,13 @@ def manifest(root: Path) -> dict:
         'additional_review_art_available_count': newly_loaded,
         'states_without_review_images': 33 - ready,
         'batch_review_generation_authorized': True,
-        'owner_development_accepted_count': 29 if correction_lock else 0,
+        'owner_development_accepted_count': (
+            29 + (correction_lock.get('review_only_correction_completed', 0)
+                  if correction_lock else 0)) if correction_lock else 0,
         'owner_targeted_correction_count': 4 if correction_lock else 0,
+        'owner_development_review_only_count': (
+            correction_lock.get('review_only_correction_completed', 0)
+            if correction_lock else 0),
         'targeted_corrections_rendered_count': correction_lock.get('correction_completed',0) if correction_lock else 0,
         'production_status': 'ALL_33_PENDING_PRODUCTION_ART',
         'states': states,
@@ -281,7 +308,9 @@ def manifest(root: Path) -> dict:
 def asset(root: Path, state: str) -> Path | None:
     m = manifest(root)
     row = m['states'].get(state)
-    if not row or row['art_status'] != 'INDEPENDENT_ART_UNAPPROVED_REVIEW':
+    if not row or row['art_status'] not in (
+            'INDEPENDENT_ART_UNAPPROVED_REVIEW',
+            'OWNER_ACCEPTED_DEVELOPMENT_RESAMPLED_REVIEW_ONLY'):
         return None
     return _base(root) / 'images' / (state + '.png')
 
