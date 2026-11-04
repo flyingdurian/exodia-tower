@@ -11,6 +11,9 @@ let lastTaskKey=null;
 
 function updateStatus(msg){$('loadStatus').textContent=msg;}
 function badgeFor(item){
+ if(item.owner_development_status==='CORRECTION_REQUIRED')return 'REGENERATION REQUIRED';
+ if(item.owner_development_status==='CORRECTION_RENDERED_OWNER_REVIEW_PENDING')return 'CORRECTED · OWNER REVIEW PENDING';
+ if(item.owner_development_status==='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT')return 'DEVELOPMENT ACCEPTED';
  if(item.art_status==='CONCEPT_REVIEW_AVAILABLE')return 'CONCEPT / SHA OK';
  if(item.art_status==='INDEPENDENT_ART_UNAPPROVED_REVIEW')return 'NATIVE CANDIDATE / REVIEW';
  if(item.tentative_reference_approved)return 'TENTATIVE REF · IMPORT ART';
@@ -52,6 +55,7 @@ function addButtons(){
   const button=document.createElement('button');
   button.type='button';button.className='state-button';button.dataset.state=state;
   button.dataset.availability=item.art_status;button.dataset.category=item.category;
+  button.dataset.ownerReview=item.owner_development_status||'UNREVIEWED';
   button.setAttribute('aria-pressed',String(selected===index));
   const symbol=document.createElement('span');symbol.className='glyph';symbol.textContent=ICONS[item.category]||'✦';
   const detail=document.createElement('span');detail.className='detail';
@@ -97,6 +101,15 @@ function detail(item){
  $('sourceName').textContent=item.source_filename||'NO INDEPENDENT SOURCE YET';
  $('assetHash').textContent=item.sha256||'NOT GENERATED / NOT VERIFIED';
  $('artStatusTag').textContent=item.art_status;
+ $('ownerDevelopmentStatus').textContent=(
+  item.owner_development_status==='OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT'
+   ?'Accepted for continued development · NOT production'
+   :item.owner_development_status==='CORRECTION_REQUIRED'
+    ?'Needs independent replacement · original review art shown'
+    :item.owner_development_status==='CORRECTION_RENDERED_OWNER_REVIEW_PENDING'
+     ?'Corrected candidate · owner review pending'
+     :'Unreviewed'
+ );
  $('registryStatus').textContent='33 / 33 pending production art';
  $('gestureBeam').hidden=item.key!=='pointing';
  $('portraitFrame').setAttribute('aria-label','Albedo '+item.label+' — '+item.art_status);
