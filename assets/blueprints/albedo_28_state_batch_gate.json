@@ -1,7 +1,7 @@
 {
   "schema": "exodia.pending-28-distinct-states/v1",
   "status": "REVIEW_ART_GENERATION_AUTHORIZED_PRODUCTION_LOCKED",
-  "generated_states": 1,
+  "generated_states": 28,
   "no_proxies": true,
   "no_relabelled_duplicates": true,
   "prerequisite": "Review artwork development is authorized now. Native-source and explicit hash-specific owner approvals are still required before production registration/release.",

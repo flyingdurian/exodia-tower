@@ -25,7 +25,7 @@
     "pointing"
   ],
   "count": 28,
-  "generated_count": 1,
+  "generated_count": 28,
   "source_provenance_required": true,
   "anti_clone_policy": "one_independent_render_per_state_even_if_appearance_similar",
   "quality_gate": "every produced PNG audited with real per-feature pixel measurements and human anatomical inspection; no auto-promotions",
@@ -46,14 +46,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"neutral\". Facial acting: Neutral, steady open violet eyes with relaxed eyebrows, composed attentive gaze. Body acting and pose: Hands calmly open, one hand resting close to the chest, shoulders level, direct eye contact. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "neutral_independent_original.png",
       "expected_output_png": "neutral.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "c91fbaede642868f0edcb018e2f2f4182f5e0c0a133fc840069fac60526272e4",
+      "output_sha256": "c5e06e112eccf607a98c18cd93c58a27f88c48c8443f7c3c9f757c427a680a86",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "7846b22b-2027-4772-8cc3-145ee5eccb7b"
     },
     {
       "state_key": "happy",
@@ -71,14 +79,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"happy\". Facial acting: Warm delighted smile with subtly lifted eyebrows, eyes open and sparkling. Body acting and pose: One hand lifted toward the heart, other gently extended as greeting. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "happy_independent_original.png",
       "expected_output_png": "happy.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "dd55d0c94e4f6428d331d800a60188a3b915195e7cfcf01c42d4aafa6a0e4f16",
+      "output_sha256": "e294687563e045f8cbc1d4b620b7a3a0bdc4d44e6435102975572751da94140c",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "5f985619-47ed-4023-b2cf-d6e11a201906"
     },
     {
       "state_key": "joyful",
@@ -96,14 +112,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"joyful\". Facial acting: Radiant joy with open delighted smile and bright widened eyes. Body acting and pose: Both hands held upward with bent elbows in a buoyant celebratory posture. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "joyful_independent_original.png",
       "expected_output_png": "joyful.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "c3d5ba364f6deeb6a4715e5dd4d6ff035b9289c84404a54fadd272da831517e7",
+      "output_sha256": "8525e702518abb615a018be1f40a7304636c66c89989039e7be84f9486e9da68",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "379ab324-8498-4e10-b6d6-b904156c4eb7"
     },
     {
       "state_key": "excited",
@@ -121,14 +145,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"excited\". Facial acting: Energetic excited grin, widened eyes with anticipatory light. Body acting and pose: One fist drawn near the chin, free hand actively pointing toward a new holographic alert. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "excited_independent_original.png",
       "expected_output_png": "excited.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "1d96afa0bd40ab96e6179687b9f29ed1db51861dbd03d1e1a8910334577e2912",
+      "output_sha256": "f44fc26eae2e4714adac32cda387cbbe75bccf504eef44ad378c8ab179771832",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "2ab05f4c-48e0-45dd-87de-cf6aaa50c01a"
     },
     {
       "state_key": "gentle",
@@ -146,14 +178,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"gentle\". Facial acting: Soft reassuring closed-lip smile, kind lidded eyes. Body acting and pose: Both hands form a careful protective cradle near the crystal pendant. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "gentle_independent_original.png",
       "expected_output_png": "gentle.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "cdd475c43113b1113909d1ea4b2600ca4fb3a804ec457727869b69ebe0975980",
+      "output_sha256": "b4af6dbaeb01b125c80ac4d036709b076b304adf9b3ffd1a85ed6a689464e7fa",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "df100314-6e23-4a60-8eee-1b2ed491d042"
     },
     {
       "state_key": "smiling_closed",
@@ -171,14 +211,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"smiling_closed\". Facial acting: Eyes softly closed with serene genuine smile, light cheek rise. Body acting and pose: One hand resting over heart and head tilted gently right, peaceful posture. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "smiling_closed_independent_original.png",
       "expected_output_png": "smiling_closed.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "55a40a3c7bf97e859bc6fde00d51347c57ae88936af89b4a0bded10a4bd73453",
+      "output_sha256": "20bc0a1ff5652e2d8ca88d2b9893e20891d2d655e72f55e5b4c9fce94b8582f3",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "c357b7df-d4c6-4ecb-800a-31fde8472e8a"
     },
     {
       "state_key": "laughing",
@@ -196,14 +244,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"laughing\". Facial acting: Open-mouth authentic laughter, curved closed eyes, raised cheeks. Body acting and pose: One hand near lips while shoulders lift naturally from laughter. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "laughing_independent_original.png",
       "expected_output_png": "laughing.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "a14a53dfcef55f813d01377551d3b8dfae2d34391a73ab37beaa26d560ba9ac0",
+      "output_sha256": "f724341697e9e4d93393cfd040fd01852811fe239bd7c99c08ed4e30cdc38777",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "326aa3d1-6eb8-4683-b6a4-15039755db9c"
     },
     {
       "state_key": "amused",
@@ -221,14 +277,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"amused\". Facial acting: Wry sideways smile with one eyebrow raised, knowing gaze. Body acting and pose: Head angled left, palm half-up in a playful what-can-you-do gesture. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "amused_independent_original.png",
       "expected_output_png": "amused.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "4a44bc1980a4158a50402856d98ee45d4469b60bd8379d50b1b6a36ab2909641",
+      "output_sha256": "ee5a247a2533bb7072a71969938763ac2d69a30f9de1374002ab9f5fb6c29232",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "cf55a2ac-1073-4f02-9828-5ceed272582e"
     },
     {
       "state_key": "confident",
@@ -246,14 +310,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"confident\". Facial acting: Confident subtle smile, level brows and direct focused eye contact. Body acting and pose: One hand on waist, other palm-forward slightly raised with poised command stance. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "confident_independent_original.png",
       "expected_output_png": "confident.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "db0c23a4c599b92c15a1ce35e5bad7ccc9f8d0a409c8111ddd06c35edebb8fc3",
+      "output_sha256": "8a90be4344224fa6817a8f9bcf6f0d45a68ec11f8148da5e1c89423ace6f67e8",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "da78f3dc-8042-406a-bb54-c47fb560ec5a"
     },
     {
       "state_key": "serious",
@@ -271,14 +343,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"serious\". Facial acting: Composed serious mouth, gently lowered brow and watchful gaze. Body acting and pose: Hands folded together below pendant, erect neutral shoulders and straight posture. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "serious_independent_original.png",
       "expected_output_png": "serious.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "bc05407262f1bd67a4d28441e80ebb87b43a21bf21928d6fbfe43a47be92045d",
+      "output_sha256": "38de342406476fd7f74ffd4ce0dfaf7b5f8fceaec43a1233c4b0a28c8d1653d5",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "6ecc5f55-0bac-4fcf-b3ec-af646e36ecf2"
     },
     {
       "state_key": "focused",
@@ -296,14 +376,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"focused\". Facial acting: Highly focused gaze with narrowed eyes and lightly pressed lips. Body acting and pose: One hand holds a translucent rectangular data pane at the side while other manipulates its surface. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "focused_independent_original.png",
       "expected_output_png": "focused.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "270a699bf52af4d91a16a11fd349c4597852cfa7fa0e04b148469b1666a7af63",
+      "output_sha256": "cbcb26c6e6b8c4f2f41890428ed03f311b3027cf6ded4f002a68db163691e929",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "bac6464b-bfd3-4a69-a76f-79f046960140"
     },
     {
       "state_key": "thinking",
@@ -321,14 +409,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"thinking\". Facial acting: Analytical furrowed brow with eyes looking slightly diagonally upward. Body acting and pose: One index finger placed against lower lip while opposite arm crosses waist. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "thinking_independent_original.png",
       "expected_output_png": "thinking.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "18f25847106a6ddf64bef0e106abedd0eaddd075d04a742c769a52ae347ef0bf",
+      "output_sha256": "101f4b9e3dac868bdd8f81450c405f7f96b12879ce8c83ccba8ed7b6116e2b63",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "20f20404-6665-4cad-9f29-4f486873d1e6"
     },
     {
       "state_key": "curious",
@@ -346,14 +442,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"curious\". Facial acting: Intrigued wide eyes with eyebrows raised and lips slightly parted. Body acting and pose: Head angled right; open hand reaches toward a floating small holographic glyph. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "curious_independent_original.png",
       "expected_output_png": "curious.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "814400184a065891a4091e6e50731e812088f2493a185e210690b34e691e1c4a",
+      "output_sha256": "cceca5b528c9c5b3871ec4fe9a61039bca92f69159d2b07aaf9481bf03d03164",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "5eda6242-29cd-4c76-9cc5-6e9804596478"
     },
     {
       "state_key": "surprised",
@@ -371,14 +475,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"surprised\". Facial acting: Surprised wide eyes, high brows and small open mouth. Body acting and pose: One hand raised beside face with splayed fingers, other remains near collar. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "surprised_independent_original.png",
       "expected_output_png": "surprised.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "6da0a8df698e6df161a6ec9a63bb232881bf41194d6bbed2442db3cce3f8e94d",
+      "output_sha256": "009359db06662abf90a43c2a0325678a626647704b81eedba35a81a36e44a32f",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "5f5771c1-fe00-4fa4-bae4-a9eaa1fa7186"
     },
     {
       "state_key": "concerned",
@@ -396,14 +508,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"concerned\". Facial acting: Quiet concern with knitted brows and softened eyes. Body acting and pose: A hand lightly touches the cheek, the other hand steadies an angled holographic warning. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "concerned_independent_original.png",
       "expected_output_png": "concerned.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "3006dac4808507e4f975b70be65203f147eb8c26b07086d95d190b6ef986daa4",
+      "output_sha256": "b43e722e6414d16ea44107183dc4231eef0a359b023aef9058887255d04da389",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "f470b230-f92e-43a2-83cb-8cca5c504c46"
     },
     {
       "state_key": "worried",
@@ -421,14 +541,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"worried\". Facial acting: Genuine anxious eyes, slightly drawn mouth and knitted brows. Body acting and pose: Hands clasped tightly at collar level, shoulders subtly drawn inward. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "worried_independent_original.png",
       "expected_output_png": "worried.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "ede58d773e7b396ed74058714231fc7c8befb8a31e88d248517f4d19354e3a8a",
+      "output_sha256": "62f99e4c7dece5ab9f286fcfada97184e3d5218ac131690b48c056940654b18b",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "6b852628-1044-45a7-895b-32fb1a35ef64"
     },
     {
       "state_key": "sad",
@@ -446,14 +574,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"sad\". Facial acting: Downcast sadness with wet violet eyes, downturned mouth. Body acting and pose: Head inclined slightly downward, hands resting loosely together at mid torso. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "sad_independent_original.png",
       "expected_output_png": "sad.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "86b31116305bcd56f1d25032f57187fee1fb88c94a7326d5185d0b86f1c726ec",
+      "output_sha256": "338d70ba2fbb3724574cd037783627ea2953b729b5bb3b71716a7d11ef33c913",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "f483d01a-ca8e-47ff-9690-d3c288a0e695"
     },
     {
       "state_key": "disappointed",
@@ -471,14 +607,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"disappointed\". Facial acting: Measured disappointment, slightly squinting eyes and pursed lips. Body acting and pose: One hand rests on forearm, small sigh and gently lowered chin. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "disappointed_independent_original.png",
       "expected_output_png": "disappointed.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "3801bbfcd04bcbc967f5c410d62180bf394502c56c1593cf6198310ef5af9373",
+      "output_sha256": "aa8b07f0bfd975fbcebbe39f43eea568972ef967f913c5a16029af9a4da8455c",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "9f18d4a9-5df9-482f-afbd-5e8b3aa96af1"
     },
     {
       "state_key": "angered",
@@ -496,14 +640,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"angered\". Facial acting: Controlled irritation with narrowed eyes, lowered brows and pressed lips. Body acting and pose: Fist clenched beside torso while open hand braces against workstation console. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "angered_independent_original.png",
       "expected_output_png": "angered.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "23d6a16e88bfc9e6cd7582300c815a08e9cd3eccf76820ee6f1c7c711c88534f",
+      "output_sha256": "a077efef47a94e371ae59c3475457ca68455737fe68e1945de540ed2854f02e3",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "61db6610-567e-4742-a8b1-7a1bbe906f46"
     },
     {
       "state_key": "blushing",
@@ -521,14 +673,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"blushing\". Facial acting: Gentle embarrassed smile, lightly flushed cheeks and averted gaze. Body acting and pose: One hand tucking silver-lavender hair behind ear, other holding crystal pendant. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "blushing_independent_original.png",
       "expected_output_png": "blushing.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "fc00a157b53ecb114e68b01ee8b36df9bbdf4b5179a91d35b0121d870b65ce0d",
+      "output_sha256": "a20a1427bea480ad070893727db903f49b5d11380720434fd9760c0b2bf4d70d",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "ac7f188a-776c-4db0-9924-e51fc9b2fe59"
     },
     {
       "state_key": "celebrating",
@@ -579,14 +739,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"defeat\". Facial acting: Exhausted regret and downward gaze, slightly trembling mouth. Body acting and pose: Shoulders sag, one hand covers part of face while other reaches toward a dimmed console. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "defeat_independent_original.png",
       "expected_output_png": "defeat.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "72c980d7d6fcc35dd0a1cebefab9976b4ee8ace775ac936269adc5f3cd841892",
+      "output_sha256": "faa75c48d96c016a1754ef788353d0b183186af63721449ac052bae956bda546",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "aafc31dd-ba46-4b91-829d-cd0d23860943"
     },
     {
       "state_key": "stretching",
@@ -604,14 +772,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"stretching\". Facial acting: Content relaxed expression and slightly narrowed resting eyes. Body acting and pose: Both elbows raised and hands clasped above head in a visible natural shoulder stretch. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "stretching_independent_original.png",
       "expected_output_png": "stretching.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "2c2cc95939e30f6cda86fc0ad02d1aefce4ec8a5db0ccc396b77b2d9ddb9bbfb",
+      "output_sha256": "5faf69c6cc8234da25c9435ac2539ef84a6530453e53dd34c6423e9c95dfd308",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "c4f1b108-efae-4cc2-afa1-a2af776b2bec"
     },
     {
       "state_key": "sleeping",
@@ -629,14 +805,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"sleeping\". Facial acting: Eyes gently closed and fully relaxed features. Body acting and pose: Head tilted to side against a soft folded hand, loose shoulders and quiet repose. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "sleeping_independent_original.png",
       "expected_output_png": "sleeping.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "d81a269eb039a9d8c885fe72a99a262a138fe22444c8ada046b75de0c0da53af",
+      "output_sha256": "2fe2781c1e5f06afc443a9e09f771cd4422d05b3d5f4c87e68ce8b1296d015e8",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "c4a22c0e-dcfc-4666-b01f-5324387c8970"
     },
     {
       "state_key": "waking_up",
@@ -654,14 +838,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"waking_up\". Facial acting: Sleepy half-open eyes and small waking yawn. Body acting and pose: One hand rubs sleepy eye, other lifts into modest stretch; hair slightly disheveled. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "waking_up_independent_original.png",
       "expected_output_png": "waking_up.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "461b6f162372bd4d7ea9db5938d8cec4eb6f32c50285c32f77c066b70d0793d4",
+      "output_sha256": "8f5fb1fc3efeab519fb382efb815b62de720f5b01cc53c8f6ab7e7e761caee38",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "24a8211e-2183-4fec-8648-2ea3758fe0d0"
     },
     {
       "state_key": "tantrum",
@@ -679,14 +871,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"tantrum\". Facial acting: Frustrated pout with eyes tightly narrowed and a blush of annoyance. Body acting and pose: Arms flung outward in theatrical indignant gesture; shoulders lifted but anatomically plausible. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "tantrum_independent_original.png",
       "expected_output_png": "tantrum.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "88480f87a8c81b6a69107a3fa3c349ac92f933cfd4d08b73458a391b92b6d16a",
+      "output_sha256": "2212dd4cea7724affa66e6441bf2d76d958c14399c420a087250ad4411e7ea13",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "ca857959-54fe-4f47-bf90-3bd86ad45b04"
     },
     {
       "state_key": "thinking_deeper",
@@ -704,14 +904,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"thinking_deeper\". Facial acting: Intense concentrated eyes scanning multiple translucent diagrams. Body acting and pose: One hand touches temple, other rotates a large three-dimensional holographic data sphere. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "thinking_deeper_independent_original.png",
       "expected_output_png": "thinking_deeper.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "ae6657ec59da83b6c88a8b102f0b7db642592b3d43199b73cfcb2a6ba8b6c403",
+      "output_sha256": "551b64e0d012492865e8ed21866ee31983421b9ed6e8358076165e25bdf1863f",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "3af56d9b-36a9-4d73-a583-179363425182"
     },
     {
       "state_key": "awaiting_command",
@@ -729,14 +937,22 @@
       "raw_generation_prompt": "Produce ONE standalone independently rendered high-fidelity portrait of adult Albedo for the EXODIA Tower character state \"awaiting_command\". Facial acting: Patient expectant gentle smile and upright direct gaze. Body acting and pose: Both hands poised to receive instructions, palms open and symmetrical near the lower frame. Preserve established silver-lavender hair, violet eyes, gold-and-flower head ornament, intricate white-lilac-black-gold celestial costume, crystal jewelry and refined painted anime style. Compose directly at 1536x1920 (4:5) native pixels. Near front-facing canonical fixed camera, iris eye-line midpoint y=633.6, anatomical shoulder baseline y=980, head silhouette width 614.4 ±4px, horizontal head/eyes center x=768. Preserve full gesture and connected hands, avoid occlusions. Output one single-image PNG with no collages, text, labels, watermarks or dashboard. The pose must not be reused from other states.",
       "expected_original_png": "awaiting_command_independent_original.png",
       "expected_output_png": "awaiting_command.png",
-      "generation_status": "authorized_not_generated",
+      "generation_status": "generated_unapproved_native_candidate",
       "human_pose_review": "pending",
-      "source_sha256": null,
-      "output_sha256": null,
-      "original_canvas": null,
+      "source_sha256": "9b7c4071e072423efab3202bd16be9aa00066e351daf044954e5b95927e001f3",
+      "output_sha256": "5f495c8ab760d598aaaff2980d29fbe095cb182e5445a87832784317ef91b4da",
+      "original_canvas": [
+        1856,
+        2304
+      ],
       "verified_landmarks": null,
       "production_status": "pending_production_art",
-      "owner_hash_bound_approval": null
+      "owner_hash_bound_approval": null,
+      "output_canvas": [
+        1536,
+        1920
+      ],
+      "generation_job_id": "4fd0c2bc-94e5-4924-a806-68600faf1172"
     }
   ]
 }

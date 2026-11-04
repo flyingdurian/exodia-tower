@@ -1,0 +1,530 @@
+{
+  "all_art_state_count": 33,
+  "geometry_and_anatomy_approved_count": 0,
+  "owner_approved_count": 0,
+  "production_release_enabled": false,
+  "review_normalized_verified": 33,
+  "review_originals_verified": 33,
+  "schema": "exodia.gate4.all-original-source-files-audited/v1",
+  "states": {
+    "amused": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "ee5a247a2533bb7072a71969938763ac2d69a30f9de1374002ab9f5fb6c29232",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "4a44bc1980a4158a50402856d98ee45d4469b60bd8379d50b1b6a36ab2909641",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "cf55a2ac-1073-4f02-9828-5ceed272582e"
+    },
+    "angered": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "a077efef47a94e371ae59c3475457ca68455737fe68e1945de540ed2854f02e3",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "23d6a16e88bfc9e6cd7582300c815a08e9cd3eccf76820ee6f1c7c711c88534f",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "61db6610-567e-4742-a8b1-7a1bbe906f46"
+    },
+    "awaiting_command": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "5f495c8ab760d598aaaff2980d29fbe095cb182e5445a87832784317ef91b4da",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "9b7c4071e072423efab3202bd16be9aa00066e351daf044954e5b95927e001f3",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "4fd0c2bc-94e5-4924-a806-68600faf1172"
+    },
+    "blushing": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "a20a1427bea480ad070893727db903f49b5d11380720434fd9760c0b2bf4d70d",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "fc00a157b53ecb114e68b01ee8b36df9bbdf4b5179a91d35b0121d870b65ce0d",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "ac7f188a-776c-4db0-9924-e51fc9b2fe59"
+    },
+    "celebrating": {
+      "geometry": "FAIL_ALREADY_RECORDED",
+      "image_sha256": "cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e",
+      "owner_approved": false,
+      "source_sha256": "25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759",
+      "status": "PREVIOUSLY_VERIFIED_INDEPENDENT_ORIGINAL"
+    },
+    "concerned": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "b43e722e6414d16ea44107183dc4231eef0a359b023aef9058887255d04da389",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "3006dac4808507e4f975b70be65203f147eb8c26b07086d95d190b6ef986daa4",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "f470b230-f92e-43a2-83cb-8cca5c504c46"
+    },
+    "confident": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "8a90be4344224fa6817a8f9bcf6f0d45a68ec11f8148da5e1c89423ace6f67e8",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "db0c23a4c599b92c15a1ce35e5bad7ccc9f8d0a409c8111ddd06c35edebb8fc3",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "da78f3dc-8042-406a-bb54-c47fb560ec5a"
+    },
+    "curious": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "cceca5b528c9c5b3871ec4fe9a61039bca92f69159d2b07aaf9481bf03d03164",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "814400184a065891a4091e6e50731e812088f2493a185e210690b34e691e1c4a",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "5eda6242-29cd-4c76-9cc5-6e9804596478"
+    },
+    "defeat": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "faa75c48d96c016a1754ef788353d0b183186af63721449ac052bae956bda546",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "72c980d7d6fcc35dd0a1cebefab9976b4ee8ace775ac936269adc5f3cd841892",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "aafc31dd-ba46-4b91-829d-cd0d23860943"
+    },
+    "disappointed": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "aa8b07f0bfd975fbcebbe39f43eea568972ef967f913c5a16029af9a4da8455c",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "3801bbfcd04bcbc967f5c410d62180bf394502c56c1593cf6198310ef5af9373",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "9f18d4a9-5df9-482f-afbd-5e8b3aa96af1"
+    },
+    "excited": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "f44fc26eae2e4714adac32cda387cbbe75bccf504eef44ad378c8ab179771832",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "1d96afa0bd40ab96e6179687b9f29ed1db51861dbd03d1e1a8910334577e2912",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "2ab05f4c-48e0-45dd-87de-cf6aaa50c01a"
+    },
+    "explaining": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "49ceed0b86535f459304f30314b86847172be35c7d2bfcc953e260acd96a4536",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "710f46693064b35254e2670cd774197d34d7e4297004cec57683ca2a1f8a2993",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "a93815f4-e542-4ebc-b0c6-61c2ddc1f930"
+    },
+    "focused": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "cbcb26c6e6b8c4f2f41890428ed03f311b3027cf6ded4f002a68db163691e929",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "270a699bf52af4d91a16a11fd349c4597852cfa7fa0e04b148469b1666a7af63",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "bac6464b-bfd3-4a69-a76f-79f046960140"
+    },
+    "gentle": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "b4af6dbaeb01b125c80ac4d036709b076b304adf9b3ffd1a85ed6a689464e7fa",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "cdd475c43113b1113909d1ea4b2600ca4fb3a804ec457727869b69ebe0975980",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "df100314-6e23-4a60-8eee-1b2ed491d042"
+    },
+    "happy": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "e294687563e045f8cbc1d4b620b7a3a0bdc4d44e6435102975572751da94140c",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "dd55d0c94e4f6428d331d800a60188a3b915195e7cfcf01c42d4aafa6a0e4f16",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "5f985619-47ed-4023-b2cf-d6e11a201906"
+    },
+    "idle": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "7458ca059aa8c37b0c47cdc05f4085821ccbd47df433a964a5c336c2ecdfdad1",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "7f4cd6a29b7daf30d5972a59452df8dab8e8f1e6f4e6f978c4b0f71a375fd438",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "577aeea3-2a6c-4475-a3d5-f6aa1ae95547"
+    },
+    "joyful": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "8525e702518abb615a018be1f40a7304636c66c89989039e7be84f9486e9da68",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "c3d5ba364f6deeb6a4715e5dd4d6ff035b9289c84404a54fadd272da831517e7",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "379ab324-8498-4e10-b6d6-b904156c4eb7"
+    },
+    "laughing": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "f724341697e9e4d93393cfd040fd01852811fe239bd7c99c08ed4e30cdc38777",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "a14a53dfcef55f813d01377551d3b8dfae2d34391a73ab37beaa26d560ba9ac0",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "326aa3d1-6eb8-4683-b6a4-15039755db9c"
+    },
+    "monitoring": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "23f4ebb5ca2d71f66cae5cdf026c455204672e9904598888c05f75f40ca377b2",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "a174fc70bbd1f8b78357ebc1a316e82576d231839cadf95e173b79f3960a022c",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "1a527a86-45a9-4fd2-aa4b-2bcfd0f9137c"
+    },
+    "neutral": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "c5e06e112eccf607a98c18cd93c58a27f88c48c8443f7c3c9f757c427a680a86",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "c91fbaede642868f0edcb018e2f2f4182f5e0c0a133fc840069fac60526272e4",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "7846b22b-2027-4772-8cc3-145ee5eccb7b"
+    },
+    "pointing": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "4f60e165f5d0ece524cd5114e98672732d3fd3bf48ee6f8c4e803215d4c27894",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "d09daa7b6bcd7a017c319331d5b1fb8313086eb5000d6418debc2f8cc87de5ec",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "78c2969f-d2d0-4acb-a025-8395a44cc44d"
+    },
+    "sad": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "338d70ba2fbb3724574cd037783627ea2953b729b5bb3b71716a7d11ef33c913",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "86b31116305bcd56f1d25032f57187fee1fb88c94a7326d5185d0b86f1c726ec",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "f483d01a-ca8e-47ff-9690-d3c288a0e695"
+    },
+    "serious": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "38de342406476fd7f74ffd4ce0dfaf7b5f8fceaec43a1233c4b0a28c8d1653d5",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "bc05407262f1bd67a4d28441e80ebb87b43a21bf21928d6fbfe43a47be92045d",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "6ecc5f55-0bac-4fcf-b3ec-af646e36ecf2"
+    },
+    "sleeping": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "2fe2781c1e5f06afc443a9e09f771cd4422d05b3d5f4c87e68ce8b1296d015e8",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "d81a269eb039a9d8c885fe72a99a262a138fe22444c8ada046b75de0c0da53af",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "c4a22c0e-dcfc-4666-b01f-5324387c8970"
+    },
+    "smiling_closed": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "20bc0a1ff5652e2d8ca88d2b9893e20891d2d655e72f55e5b4c9fce94b8582f3",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "55a40a3c7bf97e859bc6fde00d51347c57ae88936af89b4a0bded10a4bd73453",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "c357b7df-d4c6-4ecb-800a-31fde8472e8a"
+    },
+    "stretching": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "5faf69c6cc8234da25c9435ac2539ef84a6530453e53dd34c6423e9c95dfd308",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "2c2cc95939e30f6cda86fc0ad02d1aefce4ec8a5db0ccc396b77b2d9ddb9bbfb",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "c4f1b108-efae-4cc2-afa1-a2af776b2bec"
+    },
+    "surprised": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "009359db06662abf90a43c2a0325678a626647704b81eedba35a81a36e44a32f",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "6da0a8df698e6df161a6ec9a63bb232881bf41194d6bbed2442db3cce3f8e94d",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "5f5771c1-fe00-4fa4-bae4-a9eaa1fa7186"
+    },
+    "tantrum": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "2212dd4cea7724affa66e6441bf2d76d958c14399c420a087250ad4411e7ea13",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "88480f87a8c81b6a69107a3fa3c349ac92f933cfd4d08b73458a391b92b6d16a",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "ca857959-54fe-4f47-bf90-3bd86ad45b04"
+    },
+    "thinking": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "101f4b9e3dac868bdd8f81450c405f7f96b12879ce8c83ccba8ed7b6116e2b63",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "18f25847106a6ddf64bef0e106abedd0eaddd075d04a742c769a52ae347ef0bf",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "20f20404-6665-4cad-9f29-4f486873d1e6"
+    },
+    "thinking_deeper": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "551b64e0d012492865e8ed21866ee31983421b9ed6e8358076165e25bdf1863f",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "ae6657ec59da83b6c88a8b102f0b7db642592b3d43199b73cfcb2a6ba8b6c403",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "3af56d9b-36a9-4d73-a583-179363425182"
+    },
+    "waking_up": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "8f5fb1fc3efeab519fb382efb815b62de720f5b01cc53c8f6ab7e7e761caee38",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "461b6f162372bd4d7ea9db5938d8cec4eb6f32c50285c32f77c066b70d0793d4",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "24a8211e-2183-4fec-8648-2ea3758fe0d0"
+    },
+    "working": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "d1ee914c05d10903c7c971343ae324205dd5478d6267212cba0883664c5e0297",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "8ae3530a185030609d089e2eeed9bafa24dc6c81c1a81416a09bffa2ee28fed6",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "94a25bf2-9680-47fb-96aa-2e25243af161"
+    },
+    "worried": {
+      "geometric_landmarks": "NOT_OWNER_CERTIFIED",
+      "image_sha256": "62f99e4c7dece5ab9f286fcfada97184e3d5218ac131690b48c056940654b18b",
+      "native_review_dimensions": [
+        1536,
+        1920
+      ],
+      "owner_approved": false,
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_sha256": "ede58d773e7b396ed74058714231fc7c8befb8a31e88d248517f4d19354e3a8a",
+      "status": "REAL_ORIGINAL_AND_PNG_HASH_VERIFIED",
+      "task_id": "6b852628-1044-45a7-895b-32fb1a35ef64"
+    }
+  }
+}

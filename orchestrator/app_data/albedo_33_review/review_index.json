@@ -1,6 +1,154 @@
 {
   "schema": "exodia.state33-review-index/v1",
   "states": {
+    "amused": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "cf55a2ac-1073-4f02-9828-5ceed272582e",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "ee5a247a2533bb7072a71969938763ac2d69a30f9de1374002ab9f5fb6c29232",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "5aca131ec4abffe69a040b04715b1199500754c00eedbff3ff53cde02fdc3f99"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Head angled left, palm half-up in a playful what-can-you-do gesture",
+      "pose_key": "amused",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "amused_original.png",
+      "source_sha256": "4a44bc1980a4158a50402856d98ee45d4469b60bd8379d50b1b6a36ab2909641"
+    },
+    "angered": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "61db6610-567e-4742-a8b1-7a1bbe906f46",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "a077efef47a94e371ae59c3475457ca68455737fe68e1945de540ed2854f02e3",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "f97260040cd42d5d5d5fc97d0a1ca4237565c42f59ac0057089ea4c8bf346da6"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Fist clenched beside torso while open hand braces against workstation console",
+      "pose_key": "angered",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "angered_original.png",
+      "source_sha256": "23d6a16e88bfc9e6cd7582300c815a08e9cd3eccf76820ee6f1c7c711c88534f"
+    },
+    "awaiting_command": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "4fd0c2bc-94e5-4924-a806-68600faf1172",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "5f495c8ab760d598aaaff2980d29fbe095cb182e5445a87832784317ef91b4da",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "8ce0617e7fb2a3a590ba8e9b884391a645eb6231761dd5ff0a5da309a2796691"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Both hands poised to receive instructions, palms open and symmetrical near the lower frame",
+      "pose_key": "awaiting_command",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "awaiting_command_original.png",
+      "source_sha256": "9b7c4071e072423efab3202bd16be9aa00066e351daf044954e5b95927e001f3"
+    },
+    "blushing": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "ac7f188a-776c-4db0-9924-e51fc9b2fe59",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "a20a1427bea480ad070893727db903f49b5d11380720434fd9760c0b2bf4d70d",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "e9b0c829f5a68eff338a7ef3dbbc67f626dde7ac6b7e1e3499d836d7b05593d1"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand tucking silver-lavender hair behind ear, other holding crystal pendant",
+      "pose_key": "blushing",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "blushing_original.png",
+      "source_sha256": "fc00a157b53ecb114e68b01ee8b36df9bbdf4b5179a91d35b0121d870b65ce0d"
+    },
     "celebrating": {
       "generation_input_manifest_sha256": "33451e662bea059050b552133c2aadf6fb22d1743a3a8a362ff864da0c1f71dd",
       "generator_job_id": "a1966bad-8d42-4e75-8ae0-c5bcd3696b60",
@@ -37,6 +185,1042 @@
       ],
       "source_filename": "celebrating_original.png",
       "source_sha256": "25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759"
+    },
+    "concerned": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "f470b230-f92e-43a2-83cb-8cca5c504c46",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "b43e722e6414d16ea44107183dc4231eef0a359b023aef9058887255d04da389",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "fe5256adb398d4d1ab15f42f5f1c31542a06b9b28e318343b4db7be64c799acc"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "A hand lightly touches the cheek, the other hand steadies an angled holographic warning",
+      "pose_key": "concerned",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "concerned_original.png",
+      "source_sha256": "3006dac4808507e4f975b70be65203f147eb8c26b07086d95d190b6ef986daa4"
+    },
+    "confident": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "da78f3dc-8042-406a-bb54-c47fb560ec5a",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "8a90be4344224fa6817a8f9bcf6f0d45a68ec11f8148da5e1c89423ace6f67e8",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "4735d754c6c7b407c3cc54541f5546f745daf9cfc077b2dba2ca82cd1bdd470a"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand on waist, other palm-forward slightly raised with poised command stance",
+      "pose_key": "confident",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "confident_original.png",
+      "source_sha256": "db0c23a4c599b92c15a1ce35e5bad7ccc9f8d0a409c8111ddd06c35edebb8fc3"
+    },
+    "curious": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "5eda6242-29cd-4c76-9cc5-6e9804596478",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "cceca5b528c9c5b3871ec4fe9a61039bca92f69159d2b07aaf9481bf03d03164",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "4fb003cb69279fba59fab28d1a4794c0a7394e91d6e83880d71d760a38d31aac"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Head angled right; open hand reaches toward a floating small holographic glyph",
+      "pose_key": "curious",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "curious_original.png",
+      "source_sha256": "814400184a065891a4091e6e50731e812088f2493a185e210690b34e691e1c4a"
+    },
+    "defeat": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "aafc31dd-ba46-4b91-829d-cd0d23860943",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "faa75c48d96c016a1754ef788353d0b183186af63721449ac052bae956bda546",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "20ce9ddff65f7edb04b714b5ac2a1b75f14914b5ad4a3b0f815d6e5baf371422"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Shoulders sag, one hand covers part of face while other reaches toward a dimmed console",
+      "pose_key": "defeat",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "defeat_original.png",
+      "source_sha256": "72c980d7d6fcc35dd0a1cebefab9976b4ee8ace775ac936269adc5f3cd841892"
+    },
+    "disappointed": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "9f18d4a9-5df9-482f-afbd-5e8b3aa96af1",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "aa8b07f0bfd975fbcebbe39f43eea568972ef967f913c5a16029af9a4da8455c",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "216f6333bc531efc6d041ae242ab8b002910520ca280ab8ace86ed6ae4069bee"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand rests on forearm, small sigh and gently lowered chin",
+      "pose_key": "disappointed",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "disappointed_original.png",
+      "source_sha256": "3801bbfcd04bcbc967f5c410d62180bf394502c56c1593cf6198310ef5af9373"
+    },
+    "excited": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "2ab05f4c-48e0-45dd-87de-cf6aaa50c01a",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "f44fc26eae2e4714adac32cda387cbbe75bccf504eef44ad378c8ab179771832",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "897005dbe2703487dd6b2e1bebd302138a009b199076157bf287a23a097c1911"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One fist drawn near the chin, free hand actively pointing toward a new holographic alert",
+      "pose_key": "excited",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "excited_original.png",
+      "source_sha256": "1d96afa0bd40ab96e6179687b9f29ed1db51861dbd03d1e1a8910334577e2912"
+    },
+    "explaining": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "a93815f4-e542-4ebc-b0c6-61c2ddc1f930",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "49ceed0b86535f459304f30314b86847172be35c7d2bfcc953e260acd96a4536",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "b88476baa785c59ec9dd96c0edf4ff5219a202e03cf0498d1038e81c1ff1607d"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Core-Five uniquely rendered explaining state candidate",
+      "pose_key": "explaining",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "explaining_original.png",
+      "source_sha256": "710f46693064b35254e2670cd774197d34d7e4297004cec57683ca2a1f8a2993"
+    },
+    "focused": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "bac6464b-bfd3-4a69-a76f-79f046960140",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "cbcb26c6e6b8c4f2f41890428ed03f311b3027cf6ded4f002a68db163691e929",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "59f25528224e59646aca7aa0de1bc27ca48281dd2775a4950a4cd90b3f5a0e60"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand holds a translucent rectangular data pane at the side while other manipulates its surface",
+      "pose_key": "focused",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "focused_original.png",
+      "source_sha256": "270a699bf52af4d91a16a11fd349c4597852cfa7fa0e04b148469b1666a7af63"
+    },
+    "gentle": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "df100314-6e23-4a60-8eee-1b2ed491d042",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "b4af6dbaeb01b125c80ac4d036709b076b304adf9b3ffd1a85ed6a689464e7fa",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "62714ef959a118959d229dd69730ff403244611c708bd87b284d885473f31cbb"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Both hands form a careful protective cradle near the crystal pendant",
+      "pose_key": "gentle",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "gentle_original.png",
+      "source_sha256": "cdd475c43113b1113909d1ea4b2600ca4fb3a804ec457727869b69ebe0975980"
+    },
+    "happy": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "5f985619-47ed-4023-b2cf-d6e11a201906",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "e294687563e045f8cbc1d4b620b7a3a0bdc4d44e6435102975572751da94140c",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "5dd990fd1ccd1b5c88f6def471295c75914a9de9a13f0fef92a22c80b2d0cb31"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand lifted toward the heart, other gently extended as greeting",
+      "pose_key": "happy",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "happy_original.png",
+      "source_sha256": "dd55d0c94e4f6428d331d800a60188a3b915195e7cfcf01c42d4aafa6a0e4f16"
+    },
+    "idle": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "577aeea3-2a6c-4475-a3d5-f6aa1ae95547",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "7458ca059aa8c37b0c47cdc05f4085821ccbd47df433a964a5c336c2ecdfdad1",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "c5d618754d68ab06bf897a7e26817db214bd84f257296ba90cd36b32a5c0b3fd"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Core-Five uniquely rendered idle state candidate",
+      "pose_key": "idle",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "idle_original.png",
+      "source_sha256": "7f4cd6a29b7daf30d5972a59452df8dab8e8f1e6f4e6f978c4b0f71a375fd438"
+    },
+    "joyful": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "379ab324-8498-4e10-b6d6-b904156c4eb7",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "8525e702518abb615a018be1f40a7304636c66c89989039e7be84f9486e9da68",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "9fde1b815cd1860958befa5a83d9c4c0d21a49ff388d4fd1754606c0193dc650"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Both hands held upward with bent elbows in a buoyant celebratory posture",
+      "pose_key": "joyful",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "joyful_original.png",
+      "source_sha256": "c3d5ba364f6deeb6a4715e5dd4d6ff035b9289c84404a54fadd272da831517e7"
+    },
+    "laughing": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "326aa3d1-6eb8-4683-b6a4-15039755db9c",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "f724341697e9e4d93393cfd040fd01852811fe239bd7c99c08ed4e30cdc38777",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "89cdfacba770b092553d4dd5394a7a20b122531c85b9452384a572ac5a13ea83"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand near lips while shoulders lift naturally from laughter",
+      "pose_key": "laughing",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "laughing_original.png",
+      "source_sha256": "a14a53dfcef55f813d01377551d3b8dfae2d34391a73ab37beaa26d560ba9ac0"
+    },
+    "monitoring": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "1a527a86-45a9-4fd2-aa4b-2bcfd0f9137c",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "23f4ebb5ca2d71f66cae5cdf026c455204672e9904598888c05f75f40ca377b2",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "7192716245587ddab8719012a1217d5fbc88b405d76600d1547c7550c18cf45e"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Core-Five uniquely rendered monitoring state candidate",
+      "pose_key": "monitoring",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "monitoring_original.png",
+      "source_sha256": "a174fc70bbd1f8b78357ebc1a316e82576d231839cadf95e173b79f3960a022c"
+    },
+    "neutral": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "7846b22b-2027-4772-8cc3-145ee5eccb7b",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "c5e06e112eccf607a98c18cd93c58a27f88c48c8443f7c3c9f757c427a680a86",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "565b99607ef3b9a9390160d0589cb848b1e915b0219cb991f2e506adbe1f2f7a"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Hands calmly open, one hand resting close to the chest, shoulders level, direct eye contact",
+      "pose_key": "neutral",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "neutral_original.png",
+      "source_sha256": "c91fbaede642868f0edcb018e2f2f4182f5e0c0a133fc840069fac60526272e4"
+    },
+    "pointing": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "78c2969f-d2d0-4acb-a025-8395a44cc44d",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "4f60e165f5d0ece524cd5114e98672732d3fd3bf48ee6f8c4e803215d4c27894",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "b57c320244e48575bb474f267071006b3049a9688e294c428f5cf9f8ebd2cbb4"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Core-Five uniquely rendered pointing state candidate",
+      "pose_key": "pointing",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "pointing_original.png",
+      "source_sha256": "d09daa7b6bcd7a017c319331d5b1fb8313086eb5000d6418debc2f8cc87de5ec"
+    },
+    "sad": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "f483d01a-ca8e-47ff-9690-d3c288a0e695",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "338d70ba2fbb3724574cd037783627ea2953b729b5bb3b71716a7d11ef33c913",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "c4f16fa1f4a21cbf85b14f069dbc41a82fd9333d97c95bbb935a15ba525b663d"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Head inclined slightly downward, hands resting loosely together at mid torso",
+      "pose_key": "sad",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "sad_original.png",
+      "source_sha256": "86b31116305bcd56f1d25032f57187fee1fb88c94a7326d5185d0b86f1c726ec"
+    },
+    "serious": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "6ecc5f55-0bac-4fcf-b3ec-af646e36ecf2",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "38de342406476fd7f74ffd4ce0dfaf7b5f8fceaec43a1233c4b0a28c8d1653d5",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "e37df5b1e35660afda6304b3790c88b949008f0273ce44e3b97c35c1c928f0fe"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Hands folded together below pendant, erect neutral shoulders and straight posture",
+      "pose_key": "serious",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "serious_original.png",
+      "source_sha256": "bc05407262f1bd67a4d28441e80ebb87b43a21bf21928d6fbfe43a47be92045d"
+    },
+    "sleeping": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "c4a22c0e-dcfc-4666-b01f-5324387c8970",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "2fe2781c1e5f06afc443a9e09f771cd4422d05b3d5f4c87e68ce8b1296d015e8",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "b89ac81add4160c8c0904e08050880a472507ba985dddb88b5331620e43fe386"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Head tilted to side against a soft folded hand, loose shoulders and quiet repose",
+      "pose_key": "sleeping",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "sleeping_original.png",
+      "source_sha256": "d81a269eb039a9d8c885fe72a99a262a138fe22444c8ada046b75de0c0da53af"
+    },
+    "smiling_closed": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "c357b7df-d4c6-4ecb-800a-31fde8472e8a",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "20bc0a1ff5652e2d8ca88d2b9893e20891d2d655e72f55e5b4c9fce94b8582f3",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "05601b590854c97d9c821effd6ee265603e393f6774f8e49f38b01d078f2d849"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand resting over heart and head tilted gently right, peaceful posture",
+      "pose_key": "smiling_closed",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "smiling_closed_original.png",
+      "source_sha256": "55a40a3c7bf97e859bc6fde00d51347c57ae88936af89b4a0bded10a4bd73453"
+    },
+    "stretching": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "c4f1b108-efae-4cc2-afa1-a2af776b2bec",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "5faf69c6cc8234da25c9435ac2539ef84a6530453e53dd34c6423e9c95dfd308",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "69cc593d9d0e99ec3844bd0982d00c523f5228ea08aef1a763240ef352ecdb3e"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Both elbows raised and hands clasped above head in a visible natural shoulder stretch",
+      "pose_key": "stretching",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "stretching_original.png",
+      "source_sha256": "2c2cc95939e30f6cda86fc0ad02d1aefce4ec8a5db0ccc396b77b2d9ddb9bbfb"
+    },
+    "surprised": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "5f5771c1-fe00-4fa4-bae4-a9eaa1fa7186",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "009359db06662abf90a43c2a0325678a626647704b81eedba35a81a36e44a32f",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "54e75333c4a97717ba0baf6c00ca77cf0680981f826c47a7e7eb5ee4e976187b"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand raised beside face with splayed fingers, other remains near collar",
+      "pose_key": "surprised",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "surprised_original.png",
+      "source_sha256": "6da0a8df698e6df161a6ec9a63bb232881bf41194d6bbed2442db3cce3f8e94d"
+    },
+    "tantrum": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "ca857959-54fe-4f47-bf90-3bd86ad45b04",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "2212dd4cea7724affa66e6441bf2d76d958c14399c420a087250ad4411e7ea13",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "848347e6f98d357b8e5cc23fa41f99cf55b72866ef1055acc5015607a23ec50a"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Arms flung outward in theatrical indignant gesture; shoulders lifted but anatomically plausible",
+      "pose_key": "tantrum",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "tantrum_original.png",
+      "source_sha256": "88480f87a8c81b6a69107a3fa3c349ac92f933cfd4d08b73458a391b92b6d16a"
+    },
+    "thinking": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "20f20404-6665-4cad-9f29-4f486873d1e6",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "101f4b9e3dac868bdd8f81450c405f7f96b12879ce8c83ccba8ed7b6116e2b63",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "0e55b1a30288f79f12bfb6e619c74300f6fa840c0d071836f7b56f4b921bc956"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One index finger placed against lower lip while opposite arm crosses waist",
+      "pose_key": "thinking",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "thinking_original.png",
+      "source_sha256": "18f25847106a6ddf64bef0e106abedd0eaddd075d04a742c769a52ae347ef0bf"
+    },
+    "thinking_deeper": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "3af56d9b-36a9-4d73-a583-179363425182",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "551b64e0d012492865e8ed21866ee31983421b9ed6e8358076165e25bdf1863f",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "8f24c7835eb580ecf696ad5d4cc0a37b701747b9bc896b0e467d4e2bb960b33a"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand touches temple, other rotates a large three-dimensional holographic data sphere",
+      "pose_key": "thinking_deeper",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "thinking_deeper_original.png",
+      "source_sha256": "ae6657ec59da83b6c88a8b102f0b7db642592b3d43199b73cfcb2a6ba8b6c403"
+    },
+    "waking_up": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "24a8211e-2183-4fec-8648-2ea3758fe0d0",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "8f5fb1fc3efeab519fb382efb815b62de720f5b01cc53c8f6ab7e7e761caee38",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "9f58be3410841062c0ff018f3c30094c6a6b63f61e1881af4a01c520ebe7ebc2"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "One hand rubs sleepy eye, other lifts into modest stretch; hair slightly disheveled",
+      "pose_key": "waking_up",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "waking_up_original.png",
+      "source_sha256": "461b6f162372bd4d7ea9db5938d8cec4eb6f32c50285c32f77c066b70d0793d4"
+    },
+    "working": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "94a25bf2-9680-47fb-96aa-2e25243af161",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "d1ee914c05d10903c7c971343ae324205dd5478d6267212cba0883664c5e0297",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "eb074facd6c97ebaf49f88b5757c3e54e5e94766dcaec9c021ed2b4000502b0f"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Core-Five uniquely rendered working state candidate",
+      "pose_key": "working",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "working_original.png",
+      "source_sha256": "8ae3530a185030609d089e2eeed9bafa24dc6c81c1a81416a09bffa2ee28fed6"
+    },
+    "worried": {
+      "generation_input_manifest_sha256": null,
+      "generator_job_id": "6b852628-1044-45a7-895b-32fb1a35ef64",
+      "generator_model": "Runway nano-banana-2 2K",
+      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
+      "image_sha256": "62f99e4c7dece5ab9f286fcfada97184e3d5218ac131690b48c056940654b18b",
+      "independent_source_kind": "independently_authored_higher_resolution",
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "c513cc9daedb9a6d7498e298e7128994eb787cada3b4fd74062e96904a09b6ce"
+      },
+      "owner_approved": false,
+      "pose_evidence_description": "Hands clasped tightly at collar level, shoulders subtly drawn inward",
+      "pose_key": "worried",
+      "production_status": "pending_production_art",
+      "review_status": "GENERATED_UNAPPROVED",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "source_filename": "worried_original.png",
+      "source_sha256": "ede58d773e7b396ed74058714231fc7c8befb8a31e88d248517f4d19354e3a8a"
     }
   }
 }
