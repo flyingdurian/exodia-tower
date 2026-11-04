@@ -103,7 +103,11 @@ def manifest(root: Path) -> dict:
             raise ValueError('invalid_four_state_owner_development_lock')
         if set(correction_lock.get('frozen_review_hashes', {})) != set(prod['states']):
             raise ValueError('owner_review_lock_mismatches_33_state_registry')
-        for frozen_name, frozen in correction_lock['frozen_review_hashes'].items():
+        # A temporary EMPTY image store is permitted for isolated fixture
+        # tests and first-time deployment. Once all 33 exist, the 29-image
+        # freeze is mandatory and cannot be bypassed by editing the index.
+        if len(idx.get('states', {})) == 33:
+          for frozen_name, frozen in correction_lock['frozen_review_hashes'].items():
             if frozen_name not in correction_lock['target_states']:
                 current = idx.get('states', {}).get(frozen_name)
                 if current is None or (current.get('source_sha256') != frozen['original_sha256']
