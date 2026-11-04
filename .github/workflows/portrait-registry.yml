@@ -37,6 +37,9 @@ on:
       - 'assets/review/albedo_core5/gate4_native_review_art_actual_report.json'
       - 'orchestrator/tools/gate4_ingest_independent_render.py'
       - 'orchestrator/tools/gate4_stage_runway_verified.py'
+      - 'orchestrator/tools/apply_gate4_four_corrections.py'
+      - 'orchestrator/tests/test_gate4_targeted_owner_corrections.py'
+      - 'assets/review/albedo_core5/gate4_four_state_correction_lock.json'
       - 'assets/review/albedo_core5/gate4_runway_verified_sources.json'
       - 'assets/review/albedo_core5/gate4_runway_verified_report.json'
       - 'orchestrator/app_data/albedo_33_review/**'
@@ -161,6 +164,10 @@ jobs:
           assert r['production_release_enabled'] is False
           print(f'PASS: 28 distinct jobs, {count} verified originals, no invented masters')
           PY
+      - name: Verify targeted owner correction lock (29 protected)
+        run: |
+          python orchestrator/tools/apply_gate4_four_corrections.py --verify-baseline
+          python -m pytest -q orchestrator/tests/test_gate4_targeted_owner_corrections.py
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
       - name: Build SHA-verified review-only Core-Five preview board
