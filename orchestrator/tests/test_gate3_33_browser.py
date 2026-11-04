@@ -84,6 +84,40 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert 'Not configured' in provider_text
                     assert 'Automatic reply' not in provider_text, 'Authentication must never be inferred from capability'
                     assert await command.locator('#engineChecked').inner_text()
+                    # The real command stage must display genuine SHA-verified
+                    # 33-state *development* art, not the old low-res atlas or
+                    # the production registry (which remains release-locked).
+                    await command.wait_for_function(
+                        "() => window.__exodiaDevelopmentPortraitStage?.status === 'verified'",
+                        timeout=20000)
+                    stage=await command.evaluate('''() => ({
+                      key:window.__exodiaDevelopmentPortraitStage.state,
+                      sha:window.__exodiaDevelopmentPortraitStage.lastVerifiedHash,
+                      count:window.__exodiaDevelopmentPortraitStage.manifest.count,
+                      release:window.__exodiaDevelopmentPortraitStage.manifest.production_release_enabled
+                    })''')
+                    assert stage['key']=='idle' and stage['count']==33 and stage['release'] is False
+                    assert len(stage['sha'])==64
+                    assert await command.locator('#expressionCard.portrait-registry-active').count()==1
+                    assert await command.locator('#expressionCard .exodia-portrait-state-frame[src^="blob:"]').count()>=1
+                    assert 'PRODUCTION LOCKED' in await command.locator('.review-portrait-status').inner_text()
+                    # A UI-state change must swap complete verified artwork.
+                    await command.locator('#moodLabel').evaluate("el => el.textContent='PROCESSING'")
+                    await command.wait_for_function(
+                      "() => window.__exodiaDevelopmentPortraitStage?.state === 'working'",timeout=15000)
+                    assert await command.locator('.exodia-signal-layer').last.get_attribute('data-signal')=='focus_resonance'
+                    await command.locator('#moodLabel').evaluate("el => el.textContent='IDLE'")
+                    await command.wait_for_function(
+                      "() => window.__exodiaDevelopmentPortraitStage?.state === 'idle'",timeout=15000)
+                    # Switching agents must not show Albedo on Riven.
+                    await command.locator('#companion').select_option('router')
+                    await command.wait_for_function(
+                      "() => window.__exodiaDevelopmentPortraitStage?.state === null",timeout=5000)
+                    assert await command.locator('#expressionCard.portrait-registry-active').count()==0
+                    await command.locator('#companion').select_option('kiko')
+                    await command.wait_for_function(
+                      "() => window.__exodiaDevelopmentPortraitStage?.state === 'idle'",timeout=15000)
+                    assert await command.locator('#expressionCard.portrait-registry-active').count()==1
                     await command.screenshot(path=str(proof/'command_version_providers_DESKTOP.png'))
                     await command.close()
                     command_mobile=await browser.new_page(viewport={'width':390,'height':844},
@@ -93,6 +127,10 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                         "() => document.querySelector('#model')?.options.length >= 10",
                         timeout=15000)
                     assert await command_mobile.locator('#model').input_value()=='chatgpt'
+                    await command_mobile.wait_for_function(
+                      "() => window.__exodiaDevelopmentPortraitStage?.status === 'verified'",
+                      timeout=20000)
+                    assert await command_mobile.locator('#expressionCard.portrait-registry-active').count()==1
                     await command_mobile.screenshot(
                         path=str(proof/'command_version_providers_MOBILE.png'),full_page=True)
                     await command_mobile.close()
