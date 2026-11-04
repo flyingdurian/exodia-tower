@@ -73,7 +73,7 @@ def test_full_33_state_manifest_is_real_registry_and_has_no_approved_art(tmp_pat
         # concept PNGs installed. In either case no independent images exist.
         assert 28 <= body['states_without_review_images'] <= 33
         assert body['additional_review_art_available_count']==0
-        assert body['core_native_review_art_available_count']==0
+        assert body['core_five_independent_review_art_count']==0
         assert body['production_release_enabled'] is False
         assert body['owner_production_approved_count']==0
         assert body['native_core_five_certified_count']==0
