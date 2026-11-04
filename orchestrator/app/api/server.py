@@ -166,6 +166,39 @@ async def albedo_state33_review_import(request: Request,
     except (ValueError,OSError,KeyError) as exc:
         raise HTTPException(422,detail=str(exc)) from exc
 
+@app.post('/api/albedo/state33/gate4-four-correction-import')
+async def albedo_gate4_owner_targeted_four_import(request: Request,
+                                                   x_exodia_client: str=Header(default='')):
+    """Only four independent newly rendered PNG originals can replace old art.
+
+    This is a review-only transaction, never production approval. The 29
+    owner-accepted states are checked against their immutable SHA-256 lock.
+    """
+    if x_exodia_client != 'exodia-dashboard':
+        raise HTTPException(403, detail='Local operator confirmation required')
+    if request.headers.get('content-type', '').split(';')[0] not in (
+            'application/zip', 'application/octet-stream'):
+        raise HTTPException(415, detail='Four individual original PNGs in ZIP required')
+    from tools.apply_gate4_four_corrections import apply, MAX_ARCHIVE_BYTES
+    if int(request.headers.get('content-length','0') or '0') > MAX_ARCHIVE_BYTES:
+        raise HTTPException(413, detail='Four-portrait correction ZIP exceeds limit')
+    body = await request.body()
+    if not body or len(body) > MAX_ARCHIVE_BYTES:
+        raise HTTPException(413, detail='Four-portrait correction ZIP exceeds limit')
+    import tempfile
+    with tempfile.NamedTemporaryFile(prefix='exodia_gate4_four_',suffix='.zip',
+                                     delete=False) as file:
+        file.write(body)
+        temp_path = Path(file.name)
+    try:
+        report = await asyncio.to_thread(apply, settings.root.parent, temp_path)
+    except (ValueError, OSError, KeyError) as exc:
+        raise HTTPException(422, detail=str(exc)) from exc
+    finally:
+        temp_path.unlink(missing_ok=True)
+    return report
+
+
 @app.get('/legacy')
 async def legacy():return FileResponse(settings.root/'frontend'/'index.html')
 
