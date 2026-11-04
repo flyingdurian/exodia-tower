@@ -40,77 +40,87 @@
     },
     "angered": {
       "generation_input_manifest_sha256": null,
-      "generator_job_id": "61db6610-567e-4742-a8b1-7a1bbe906f46",
-      "generator_model": "Runway nano-banana-2 2K",
-      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
-      "image_sha256": "a077efef47a94e371ae59c3475457ca68455737fe68e1945de540ed2854f02e3",
-      "independent_source_kind": "independently_authored_higher_resolution",
+      "generator_job_id": null,
+      "generator_model": "ChatGPT built-in image generation (verified handoff provenance)",
+      "geometry_status": "NON_NATIVE_SOURCE_REAL_PIXEL_GEOMETRY_PENDING",
+      "image_sha256": "5f698f0c47e49c876578a523fb21ed90d1a8bdc166f62db098700b165452ec29",
+      "independent_source_kind": "standalone_original_lowres_review_only",
+      "native_production_certified": false,
       "normalization": {
         "crop_xyxy": [
-          8,
-          2,
-          1848,
-          2302
+          1,
+          1,
+          1121,
+          1401
         ],
         "cropped_size": [
-          1840,
-          2300
+          1120,
+          1400
         ],
-        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "kind": "REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE",
         "output_size": [
           1536,
           1920
         ],
-        "source_pixel_sha256": "f97260040cd42d5d5d5fc97d0a1ca4237565c42f59ac0057089ea4c8bf346da6"
+        "resampled_not_native": true,
+        "source_pixel_sha256": "e1bfa6e91498eecc5d3eb037e920f7940745802097f76b49363e332f0455c2b1",
+        "uniform_scale_factor": 1.3714285714285714
       },
       "owner_approved": false,
+      "owner_development_design_accepted": true,
       "pose_evidence_description": "Fist clenched beside torso while open hand braces against workstation console",
       "pose_key": "angered",
       "production_status": "pending_production_art",
-      "review_status": "GENERATED_UNAPPROVED",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_RESAMPLED_NON_NATIVE",
       "source_dimensions": [
-        1856,
-        2304
+        1122,
+        1402
       ],
       "source_filename": "angered_original.png",
-      "source_sha256": "23d6a16e88bfc9e6cd7582300c815a08e9cd3eccf76820ee6f1c7c711c88534f"
+      "source_generation_handoff": "EXODIA_G4_FOUR_STANDALONE_IMAGES_HANDOFF_2026-11-04.zip",
+      "source_sha256": "9c676dd8dcc5f76ed5938a69f78e2caff18e804e623e7200c8016637df3bf7ef"
     },
     "awaiting_command": {
       "generation_input_manifest_sha256": null,
-      "generator_job_id": "4fd0c2bc-94e5-4924-a806-68600faf1172",
-      "generator_model": "Runway nano-banana-2 2K",
-      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
-      "image_sha256": "5f495c8ab760d598aaaff2980d29fbe095cb182e5445a87832784317ef91b4da",
-      "independent_source_kind": "independently_authored_higher_resolution",
+      "generator_job_id": null,
+      "generator_model": "ChatGPT built-in image generation (verified handoff provenance)",
+      "geometry_status": "NON_NATIVE_SOURCE_REAL_PIXEL_GEOMETRY_PENDING",
+      "image_sha256": "212cbb794353268b700ba70177bc4664cce4e2ba4968c21f782ca7d8a0ad1789",
+      "independent_source_kind": "standalone_original_lowres_review_only",
+      "native_production_certified": false,
       "normalization": {
         "crop_xyxy": [
-          8,
-          2,
-          1848,
-          2302
+          1,
+          1,
+          1121,
+          1401
         ],
         "cropped_size": [
-          1840,
-          2300
+          1120,
+          1400
         ],
-        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "kind": "REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE",
         "output_size": [
           1536,
           1920
         ],
-        "source_pixel_sha256": "8ce0617e7fb2a3a590ba8e9b884391a645eb6231761dd5ff0a5da309a2796691"
+        "resampled_not_native": true,
+        "source_pixel_sha256": "c0f42eebbad55c5999086138cd976584e24c9812db5533e63fffdcdafbb9c69c",
+        "uniform_scale_factor": 1.3714285714285714
       },
       "owner_approved": false,
+      "owner_development_design_accepted": true,
       "pose_evidence_description": "Both hands poised to receive instructions, palms open and symmetrical near the lower frame",
       "pose_key": "awaiting_command",
       "production_status": "pending_production_art",
-      "review_status": "GENERATED_UNAPPROVED",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_RESAMPLED_NON_NATIVE",
       "source_dimensions": [
-        1856,
-        2304
+        1122,
+        1402
       ],
       "source_filename": "awaiting_command_original.png",
-      "source_sha256": "9b7c4071e072423efab3202bd16be9aa00066e351daf044954e5b95927e001f3"
+      "source_generation_handoff": "EXODIA_G4_FOUR_STANDALONE_IMAGES_HANDOFF_2026-11-04.zip",
+      "source_sha256": "979c1a103b61615b07dcdb1c846e5a917fe028b3db2de0c482a8c32032df305c"
     },
     "blushing": {
       "generation_input_manifest_sha256": null,
@@ -706,40 +716,45 @@
     },
     "neutral": {
       "generation_input_manifest_sha256": null,
-      "generator_job_id": "7846b22b-2027-4772-8cc3-145ee5eccb7b",
-      "generator_model": "Runway nano-banana-2 2K",
-      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
-      "image_sha256": "c5e06e112eccf607a98c18cd93c58a27f88c48c8443f7c3c9f757c427a680a86",
-      "independent_source_kind": "independently_authored_higher_resolution",
+      "generator_job_id": null,
+      "generator_model": "ChatGPT built-in image generation (verified handoff provenance)",
+      "geometry_status": "NON_NATIVE_SOURCE_REAL_PIXEL_GEOMETRY_PENDING",
+      "image_sha256": "e5bedb885fd3705468b67a03d32fabb07c6beb92009acf0f6d8d52cb3a410e07",
+      "independent_source_kind": "standalone_original_lowres_review_only",
+      "native_production_certified": false,
       "normalization": {
         "crop_xyxy": [
-          8,
-          2,
-          1848,
-          2302
+          1,
+          1,
+          1121,
+          1401
         ],
         "cropped_size": [
-          1840,
-          2300
+          1120,
+          1400
         ],
-        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "kind": "REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE",
         "output_size": [
           1536,
           1920
         ],
-        "source_pixel_sha256": "565b99607ef3b9a9390160d0589cb848b1e915b0219cb991f2e506adbe1f2f7a"
+        "resampled_not_native": true,
+        "source_pixel_sha256": "d835110985eaf5444297d40bbc4c03568a22712b04912f25734f50721b6c1d79",
+        "uniform_scale_factor": 1.3714285714285714
       },
       "owner_approved": false,
+      "owner_development_design_accepted": true,
       "pose_evidence_description": "Hands calmly open, one hand resting close to the chest, shoulders level, direct eye contact",
       "pose_key": "neutral",
       "production_status": "pending_production_art",
-      "review_status": "GENERATED_UNAPPROVED",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_RESAMPLED_NON_NATIVE",
       "source_dimensions": [
-        1856,
-        2304
+        1122,
+        1402
       ],
       "source_filename": "neutral_original.png",
-      "source_sha256": "c91fbaede642868f0edcb018e2f2f4182f5e0c0a133fc840069fac60526272e4"
+      "source_generation_handoff": "EXODIA_G4_FOUR_STANDALONE_IMAGES_HANDOFF_2026-11-04.zip",
+      "source_sha256": "0e66e022c5bb9460e9b82843a5933af389eb6c382bdbfefe75e0305d90ff71d4"
     },
     "pointing": {
       "generation_input_manifest_sha256": null,
@@ -1002,40 +1017,45 @@
     },
     "tantrum": {
       "generation_input_manifest_sha256": null,
-      "generator_job_id": "ca857959-54fe-4f47-bf90-3bd86ad45b04",
-      "generator_model": "Runway nano-banana-2 2K",
-      "geometry_status": "PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT",
-      "image_sha256": "2212dd4cea7724affa66e6441bf2d76d958c14399c420a087250ad4411e7ea13",
-      "independent_source_kind": "independently_authored_higher_resolution",
+      "generator_job_id": null,
+      "generator_model": "ChatGPT built-in image generation (verified handoff provenance)",
+      "geometry_status": "NON_NATIVE_SOURCE_REAL_PIXEL_GEOMETRY_PENDING",
+      "image_sha256": "41bc8edbac915f73416758c896a8144cf50528ed6e92b38ce05b0d58feb95265",
+      "independent_source_kind": "standalone_original_lowres_review_only",
+      "native_production_certified": false,
       "normalization": {
         "crop_xyxy": [
-          8,
-          2,
-          1848,
-          2302
+          1,
+          1,
+          1121,
+          1401
         ],
         "cropped_size": [
-          1840,
-          2300
+          1120,
+          1400
         ],
-        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "kind": "REVIEW_ONLY_SYMMETRIC_CROP_THEN_UNIFORM_LANCZOS_UPSCALE",
         "output_size": [
           1536,
           1920
         ],
-        "source_pixel_sha256": "848347e6f98d357b8e5cc23fa41f99cf55b72866ef1055acc5015607a23ec50a"
+        "resampled_not_native": true,
+        "source_pixel_sha256": "23ceb9382b24b95805be2b57fc61b439a174b60b96e769afe8384c09df4cd526",
+        "uniform_scale_factor": 1.3714285714285714
       },
       "owner_approved": false,
+      "owner_development_design_accepted": true,
       "pose_evidence_description": "Arms flung outward in theatrical indignant gesture; shoulders lifted but anatomically plausible",
       "pose_key": "tantrum",
       "production_status": "pending_production_art",
-      "review_status": "GENERATED_UNAPPROVED",
+      "review_status": "OWNER_ACCEPTED_FOR_DEVELOPMENT_RESAMPLED_NON_NATIVE",
       "source_dimensions": [
-        1856,
-        2304
+        1122,
+        1402
       ],
       "source_filename": "tantrum_original.png",
-      "source_sha256": "88480f87a8c81b6a69107a3fa3c349ac92f933cfd4d08b73458a391b92b6d16a"
+      "source_generation_handoff": "EXODIA_G4_FOUR_STANDALONE_IMAGES_HANDOFF_2026-11-04.zip",
+      "source_sha256": "f557ba52d9d515e4f0c9a89f26fc8a15a8ec51eb194b78f22bd5850e563c4cc8"
     },
     "thinking": {
       "generation_input_manifest_sha256": null,
