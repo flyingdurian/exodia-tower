@@ -185,7 +185,7 @@ async function select(index){
   $('artStatusTag').textContent='ASSET INTEGRITY REJECTED';
   updateStatus(item.label+': IMAGE REJECTED — '+assetError+'. Production remains locked.');
  }else{
-  updateStatus(item.label+': '+(url?'SHA-VERIFIED UNAPPROVED ART':'NO ART FILE — original pose outstanding')
+  updateStatus(item.label+': '+(url?(item.review_is_resampled_from_low_resolution?'SHA-VERIFIED DEVELOPMENT-ACCEPTED REVIEW ART':'SHA-VERIFIED UNAPPROVED PRODUCTION ART'):'NO ART FILE — original pose outstanding')
    +' · '+registry.artwork_available_count+' / 33 images available'
    +(item.review_is_resampled_from_low_resolution?' · RESAMPLED NOT NATIVE':'') );
  }
@@ -302,3 +302,8 @@ window.__exodia33={get selected(){return registry?.state_order[selected]||null;}
  get autoAdvances(){return autoAdvanceCount;},
  get autoUniqueRequested(){return autoRequestedStates.size;}};
 loadManifest().catch(e=>updateStatus('33-state workbench rejected manifest: '+e.message));
+
+// Version information is supplied by the actual FastAPI server, not a UI-only counter.
+fetch('/api/build-info',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject(Error('Build unavailable'))).then(data=>{
+ const badge=document.getElementById('buildBadge');if(badge){badge.textContent=data.label;badge.title=data.commit_sha||'Commit not available';}
+}).catch(()=>{const badge=document.getElementById('buildBadge');if(badge)badge.textContent='EXODIA · build unknown';});

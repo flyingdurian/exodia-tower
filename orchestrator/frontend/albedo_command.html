@@ -8,7 +8,7 @@
 <div class="app-shell">
 <header class="masthead"><a href="/" class="logo" aria-label="Exodia Tower home"><span class="brand-mark">✦</span><span><b>EXODIA TOWER</b><small>AI COMPANION COMMAND CENTER</small></span></a>
 <nav class="top-nav" aria-label="Primary"><a href="/" aria-current="page">◈ Command</a><a href="/operations-legacy">◉ Operations</a><a href="/companions">✦ Companions</a><a href="/art-studio">✧ Art Studio</a><a href="/companion-art-qa">✦ Art QA</a><a href="/test-workbench">⊹ 33 State Review</a><a href="/puppet-lab">♙ Rig Lab</a></nav>
-<div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span></div></header>
+<div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span><span id="buildBadge" class="build-badge" aria-label="Application build">EXODIA v0.3.0-dev · unknown</span></div></header>
 <main class="command-grid">
 <section class="hero-col">
 <div class="hero card task-stage" id="hero" data-state="idle">
@@ -56,7 +56,7 @@
 <div class="source-list" id="sourceList"></div>
 <section class="chatgpt-handoff" id="chatgptHandoff" hidden>
   <div class="handoff-title">CHATGPT · SUBMISSION SENT</div>
-  <p>Review the result in your open ChatGPT task tab. To deliver it through the selected AI companion, supply the response below. This version does not automatically extract consumer ChatGPT output.</p>
+  <p>Review the result in your open ChatGPT task tab. To deliver it through the selected AI companion, supply the response below. The current ChatGPT bridge attempts automatic delivery. If a browser session requires manual attention, use this operator fallback only when shown.</p>
   <label for="chatgptResultText">RESPONSE TO DELIVER</label>
   <textarea id="chatgptResultText" maxlength="100000" rows="5" placeholder="Copy the answer from the ChatGPT tab into Exodia…"></textarea>
   <label for="chatgptArtifact">OPTIONAL DOWNLOADED IMAGE · PNG, JPEG OR WEBP · MAX 8 MIB</label>
@@ -76,11 +76,7 @@
 </div></div>
 </section>
 <aside class="control-col"><section class="card controls"><div class="aside-heading"><span class="section-kicker">OPERATOR & CONTROLS</span><b class="operator-icon">☷</b></div>
-<form id="dispatch" class="task-form"><label for="model">MODEL SELECTION</label><select id="model">
-<option value="gemini">Gemini · automatic browser</option><option value="ollama">Ollama · automatic local</option>
-<option value="custom_web">Web browser A · configured</option><option value="web_slot_2">Web browser B · configured</option><option value="web_slot_3">Web browser C · configured</option>
-<option value="chatgpt">ChatGPT · auto send / manual result</option><option value="deepseek">DeepSeek · supervised</option>
-</select>
+<form id="dispatch" class="task-form"><label for="model">MODEL SELECTION</label><select id="model" aria-label="Model provider and transport"><option value="chatgpt" selected>ChatGPT (chronos)</option></select>
 <label for="companion">ASSIGNED AGENT</label><select id="companion" aria-label="Assigned companion"></select>
 <label for="prompt">YOUR COMMAND</label><textarea id="prompt" maxlength="12000" required placeholder="Ask Albedo anything…"></textarea>
 <label class="research-check"><input type="checkbox" id="liveResearch"/><span>Public web research (Ollama only)</span></label>

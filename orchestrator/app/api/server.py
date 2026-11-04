@@ -12,6 +12,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel, Field
 from app.config import Settings
+from app.build_info import APP_VERSION, build_info
+from app.automation.provider_catalog import selection, public_catalog
 from app.core.cache import SpeedrunnerCache
 from app.core.router import Router
 from app.automation.multi_wrapper import SessionError, OperatorActionRequired, PROVIDERS
@@ -44,7 +46,7 @@ web_adapters={slot:ConfiguredWebRunner(settings.root,slot=slot)
 web_adapter=web_adapters["custom_web"]  # first-slot compatibility
 active_generations=set()
 started = monotonic()
-app = FastAPI(title='Exodia Tower', version='0.3.0', docs_url='/api/docs')
+app = FastAPI(title='Exodia Tower', version=APP_VERSION, docs_url='/api/docs')
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['localhost','127.0.0.1','testserver'])
 app.mount('/assets', StaticFiles(directory=settings.root/'frontend'), name='assets')
 (settings.root/'app_data'/'artifacts').mkdir(parents=True,exist_ok=True)
@@ -54,13 +56,18 @@ events.publish('system', 'Exodia Tower boot sequence complete', 'Local mode acti
 class AskBody(BaseModel):
     question: str = Field(min_length=2, max_length=2000)
     channel: str = Field(default='auto', pattern='^(auto|api|browser|local)$')
-    model_choice: str = Field(default='chatgpt', pattern='^(chatgpt|gemini|deepseek)$')
+    model_choice: str = Field(default='chatgpt', pattern=r'^(chatgpt|gemini|deepseek|ollama|chatgpt:api|gemini:api|deepseek:api)$')
+    transport: str | None = Field(default=None, pattern=r'^(browser|local|api)$')
 
 @app.on_event('shutdown')
 async def stop_browser_sessions():
     await chatgpt_tasks.close()
     await router.close_sessions()
     await asyncio.gather(*(runner.close() for runner in web_adapters.values()))
+
+@app.get('/api/build-info')
+async def api_build_info():
+    return build_info()
 
 @app.get('/')
 async def home():
@@ -371,6 +378,18 @@ async def recent_events():
 
 @app.post('/api/ask')
 async def ask(body: AskBody):
+    try: chosen = selection(body.model_choice, body.transport)
+    except ValueError as exc: raise HTTPException(422, detail=str(exc)) from exc
+    if body.channel == 'api':
+        raise HTTPException(409, detail='Official API transport is not configured. Select a chronos or Ollama model.')
+    if chosen.transport == 'local':
+        try:
+            output = await local_model.generate(body.question.strip(), companion='kiko')
+        except (LocalModelError, ValueError) as exc:
+            raise HTTPException(503, detail=str(exc)) from exc
+        return {'answer':output['answer'], 'route':'local', 'status':'complete',
+                'data':{'model':output['model'], 'provider_id':'ollama', 'transport':'local'},
+                'cache_hit':False, 'latency_ms':0}
     if body.channel == 'browser': kind='browser'
     elif body.channel == 'local': kind='rag'
     elif body.channel == 'api': kind='reasoning'
@@ -539,7 +558,8 @@ async def social_publish_disabled(job_id: str,x_exodia_client:str=Header(default
 # U2 — browser task inbox. Persist only operator-supplied output, never scraped output.
 class CompanionTaskBody(BaseModel):
     prompt:str=Field(min_length=1,max_length=12000)
-    model_choice:str=Field(pattern=r'^(ollama|custom_web|web_slot_2|web_slot_3|chatgpt|gemini|deepseek)$')
+    model_choice:str=Field(pattern=r'^(ollama|custom_web|web_slot_2|web_slot_3|chatgpt|gemini|deepseek|chatgpt:api|gemini:api|deepseek:api)$')
+    transport:str|None=Field(default=None, pattern=r'^(browser|local|api)$')
     agent_id:str=Field(min_length=1,max_length=64)
     web_research:bool=False
 class CompanionTaskAnswer(BaseModel):
@@ -656,9 +676,13 @@ async def _complete_gemini_task(task_id: str):
         events.publish('alert','Gemini browser task failed',f"{task['agent_id']}:gemini")
 
 
+@app.get('/api/command/model-options')
+async def command_model_options():
+    return public_catalog()
+
 @app.get('/api/command/providers')
 async def command_providers():
-    return {'ollama':await local_model.status(),
+    return {'model_options':public_catalog(), 'ollama':await local_model.status(),
             'configured_web':web_adapter.snapshot(),
             'configured_slots':{key:runner.snapshot() for key,runner in web_adapters.items()},
              'chatgpt':chatgpt_tasks.snapshot(),
@@ -673,12 +697,14 @@ async def command_list():
 @app.post('/api/command/tasks',status_code=201)
 async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
+    try: chosen = selection(body.model_choice, body.transport)
+    except ValueError as exc: raise HTTPException(422, detail=str(exc)) from exc
     if body.agent_id not in director.known:raise HTTPException(422,detail='Unknown companion')
     if body.web_research and body.model_choice!='ollama':
         raise HTTPException(422,detail='Public research currently requires Ollama. Disable that option for configured browser tasks.')
     if body.model_choice in web_adapters and not web_adapters[body.model_choice].snapshot()['configured']:
         raise HTTPException(422,detail=body.model_choice+' is unconfigured. Copy examples/custom_web.example.json to session_data/'+body.model_choice+'.json and restart.')
-    try:t=inbox.create(body.agent_id,body.model_choice,body.prompt,web_research=body.web_research)
+    try:t=inbox.create(body.agent_id,chosen.provider_id,body.prompt,web_research=body.web_research)
     except ValueError as e:raise HTTPException(422,detail=str(e))
     if body.model_choice=='ollama':
         t=inbox.update(t['id'],'state','researching' if body.web_research else 'running')

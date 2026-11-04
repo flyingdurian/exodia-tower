@@ -97,3 +97,5 @@
 /* Protect full review-status text in narrow sidebars: no clipped approval ambiguity. */
 .technical .card-heading{display:flex;flex-wrap:wrap;align-items:flex-start;gap:7px}
 .technical .card-heading #artStatusTag{white-space:normal;overflow-wrap:anywhere;word-break:break-word;font-size:10px;max-width:100%;line-height:1.4}
+
+.build-badge{display:inline-block;font:600 10px/1.4 system-ui,sans-serif;border:1px solid #7089cf;border-radius:6px;background:#202955;color:#e7eafb;padding:4px 8px;white-space:nowrap}

@@ -222,13 +222,28 @@ async function loadTasks({initial=false}={}){
 }
 async function refreshModels(){
  try{
+  const modelData=await api('/api/command/model-options');
+  const preserved=UI.model.value;
+  UI.model.replaceChildren();
+  for(const m of modelData.options){
+    const option=element('option','',m.label+(m.available?'':' — Not configured'));
+    option.value=m.value;option.disabled=!m.available;option.dataset.transport=m.transport;
+    UI.model.append(option);
+  }
+  const advanced=element('optgroup');advanced.label='Advanced browser slots';
+  for(const m of modelData.advanced){const option=element('option','',m.label);option.value=m.value;option.dataset.transport=m.transport;advanced.append(option);}
+  UI.model.append(advanced);
+  UI.model.value=Array.from(UI.model.options).some(o=>o.value===preserved&&!o.disabled)?preserved:modelData.default;
+  const build=await api('/api/build-info');
+  const marker=$('#buildBadge');if(marker){marker.textContent=build.label;marker.title=build.commit_sha||'Commit unavailable; using safe fallback';}
+
   const d=await api('/api/companions');
   roster=d.agents||[];
   UI.companion.replaceChildren();
   for(const a of roster){const op=element('option','',a.name);op.value=a.id;UI.companion.append(op);}
   UI.companion.value='kiko';
   const status=await api('/api/command/providers');
-  const items=[['Gemini browser','Automatic reply'],['ChatGPT','Auto send · manual result'],['Ollama',status.ollama?.connected?'Ready':'Offline'],['Web slots',Object.values(status.configured_slots||{}).filter(c=>c.configured).length+' configured']];
+  const items=[['ChatGPT (chronos)',status.chatgpt?.automatic_output_extraction?'Automatic reply':'Check browser'],['Gemini (chronos)','Automatic reply'],['DeepSeek (chronos)','Manual / not prepared'],['Ollama (automatic local)',status.ollama?.connected?'Ready':'Offline'],['Official APIs','Not configured'],['Advanced browser slots',Object.values(status.configured_slots||{}).filter(c=>c.configured).length+' configured']];
   const container=$('#providerStatus');container.replaceChildren();
   for(const [name,value] of items){const row=element('div','');row.append(element('span','',name),element('strong','',value));container.append(row);}
  }catch(e){UI.diagnostic.textContent='Provider status unavailable: '+e.message;}
@@ -236,7 +251,7 @@ async function refreshModels(){
 $('#dispatch').addEventListener('submit',async event=>{
  event.preventDefault();if(requestInFlight)return;
  requestInFlight=true;const send=$('#sendTask');send.disabled=true;
- const payload={model_choice:UI.model.value,agent_id:UI.companion.value,
+ const payload={model_choice:UI.model.value,transport:UI.model.selectedOptions[0]?.dataset.transport||'browser',agent_id:UI.companion.value,
    prompt:UI.prompt.value.trim(),web_research:UI.research.checked};
  if(!payload.prompt){inform('Enter a task first.',true);requestInFlight=false;send.disabled=false;return;}
  try{
@@ -244,7 +259,7 @@ $('#dispatch').addEventListener('submit',async event=>{
   explicitPreview=false;lastCompleted=null;lastInteraction=Date.now();
   inform('Task dispatched to '+(roster.find(a=>a.id===payload.agent_id)?.name||payload.agent_id)+'.');
   await loadTasks();selectTask(task.id);
-  if(task.provider==='chatgpt')inform('ChatGPT browser prompt is being submitted. Review the browser tab after it is sent.');
+  if(task.provider==='chatgpt')inform('ChatGPT (chronos) is submitting and retrieving the response automatically; browser sign-in may require your attention.');
   else if(task.provider==='deepseek')inform('DeepSeek requires supervised prompt preparation in Advanced operations.');
  }catch(e){inform(e.message,true);UI.diagnostic.textContent=e.message;}
  finally{requestInFlight=false;send.disabled=false;}

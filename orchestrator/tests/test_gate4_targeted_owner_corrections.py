@@ -52,14 +52,23 @@ def test_real_api_exposes_correct_review_status_but_zero_final_approvals():
     from app.config import Settings
     api = manifest(Settings().root)
     assert api["count"] == 33
-    assert api["owner_development_accepted_count"] == 29
+    installed = api["owner_development_review_only_count"]
+    assert installed in (0,4)
+    assert api["owner_development_accepted_count"] == 29 + installed
     assert api["owner_targeted_correction_count"] == 4
     assert api["production_release_enabled"] is False
     assert api["native_core_five_certified_count"] == 0
     assert api["owner_production_approved_count"] == 0
     assert api["artwork_available_count"] == 33
-    assert all(api["states"][s]["owner_development_status"] in (
-        "CORRECTION_REQUIRED", "CORRECTION_RENDERED_OWNER_REVIEW_PENDING") for s in TARGETS)
+    if installed == 4:
+        assert all(api["states"][s]["owner_development_status"] ==
+            "REVIEW_ONLY_OWNER_ACCEPTED_NON_NATIVE" for s in TARGETS)
+        assert all(api["states"][s]["review_is_resampled_from_low_resolution"]
+                   and not api["states"][s]["native_production_certified"] for s in TARGETS)
+    else:
+        assert all(api["states"][s]["owner_development_status"] in
+            ("CORRECTION_REQUIRED", "CORRECTION_RENDERED_OWNER_REVIEW_PENDING")
+            for s in TARGETS)
     assert sum(x["owner_development_status"]=="OWNER_ACCEPTED_FOR_CONTINUED_DEVELOPMENT"
                for x in api["states"].values())==29
     assert all(x["owner_approved"] is False for x in api["states"].values())

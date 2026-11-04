@@ -45,6 +45,47 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                                     wait_until='domcontentloaded')
                     await page.wait_for_function(
                       "()=>window.__exodia33?.selected==='idle'",timeout=15000)
+                    # Live canonical build marker, not a hardcoded UI version.
+                    build = await (await page.request.get(
+                        'http://127.0.0.1:8909/api/build-info')).json()
+                    await page.wait_for_function(
+                        "() => document.querySelector('#buildBadge')?.textContent.includes('EXODIA v')",
+                        timeout=6000)
+                    assert await page.locator('#buildBadge').inner_text() == build['label']
+                    if os.getenv('GITHUB_SHA'):
+                        assert build['commit_sha'] == os.environ['GITHUB_SHA'].lower()
+                    # The actual command surface uses the same backend catalog.
+                    command=await browser.new_page(viewport={'width':1440,'height':960})
+                    await command.goto('http://127.0.0.1:8909/',wait_until='domcontentloaded')
+                    await command.wait_for_function(
+                        "() => document.querySelector('#model')?.options.length >= 10",
+                        timeout=15000)
+                    labels=await command.locator('#model option').all_text_contents()
+                    assert labels[:7] == [
+                        'ChatGPT (chronos)', 'Gemini (chronos)',
+                        'DeepSeek (chronos)', 'Ollama (automatic local)',
+                        'ChatGPT (api) — Not configured',
+                        'Gemini (api) — Not configured',
+                        'DeepSeek (api) — Not configured']
+                    assert await command.locator('#model').input_value()=='chatgpt'
+                    for provider in ('chatgpt:api','gemini:api','deepseek:api'):
+                        assert await command.locator('#model option[value="'+provider+'"]').is_disabled()
+                    await command.wait_for_function(
+                        "() => document.querySelector('#buildBadge')?.textContent.includes('EXODIA v')",
+                        timeout=6000)
+                    assert await command.locator('#buildBadge').inner_text() == build['label']
+                    await command.screenshot(path=str(proof/'command_version_providers_DESKTOP.png'))
+                    await command.close()
+                    command_mobile=await browser.new_page(viewport={'width':390,'height':844},
+                                                         is_mobile=True,has_touch=True)
+                    await command_mobile.goto('http://127.0.0.1:8909/',wait_until='domcontentloaded')
+                    await command_mobile.wait_for_function(
+                        "() => document.querySelector('#model')?.options.length >= 10",
+                        timeout=15000)
+                    assert await command_mobile.locator('#model').input_value()=='chatgpt'
+                    await command_mobile.screenshot(
+                        path=str(proof/'command_version_providers_MOBILE.png'),full_page=True)
+                    await command_mobile.close()
                     assert await page.locator('.state-button').count()==33
                     review_state_response=await page.request.get(
                         'http://127.0.0.1:8909/api/albedo/state33/manifest')

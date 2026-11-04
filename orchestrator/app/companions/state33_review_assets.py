@@ -217,7 +217,8 @@ def manifest(root: Path) -> dict:
                 'geometry_status', 'PENDING_INDEPENDENT_PIXEL_AND_HUMAN_AUDIT')
             item['independent_source_kind'] = row.get('independent_source_kind')
             item['source_dimensions'] = row.get('source_dimensions')
-            item['review_status'] = 'GENERATED_UNAPPROVED'
+            item['review_status'] = ('OWNER_ACCEPTED_FOR_DEVELOPMENT_RESAMPLED_NON_NATIVE'
+                                     if is_resampled else 'GENERATED_UNAPPROVED')
             if name in core_reference:
                 item['pose_direction'] = 'New independently rendered Core-Five review candidate'
                 item.pop('measurements', None)  # Never reuse CONCEPT measurements.
@@ -302,7 +303,7 @@ def manifest(root: Path) -> dict:
         'targeted_corrections_rendered_count': correction_lock.get('correction_completed',0) if correction_lock else 0,
         'production_status': 'ALL_33_PENDING_PRODUCTION_ART',
         'states': states,
-        'warning': 'All generated review files are unapproved. Canonical facial/shoulder geometry and identity still require owner art review; release remains disabled.'
+        'warning': 'Development review only. '+str(correction_lock.get('review_only_correction_completed',0))+'/4 corrected portraits installed, non-native sources; native geometry and production approval remain pending. Release is disabled.'
     }
 
 def asset(root: Path, state: str) -> Path | None:

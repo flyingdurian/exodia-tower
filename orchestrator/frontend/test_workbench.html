@@ -14,13 +14,13 @@
   <header class="topbar">
     <div class="brand"><div class="brand-icon">✧</div><div><strong>EXODIA <span>TOWER</span></strong><small>OPERATIONS / CHARACTER LAB</small></div></div>
     <div class="top-center">AI COMPANION <b>·</b> VISUAL STATE WORKBENCH <span>V5 · 33-STATE DEVELOPMENT</span></div>
-    <div class="top-right"><i class="live-dot"></i><span>LOCAL PREVIEW</span><span class="clock" id="clock">00:00</span></div>
+    <div class="top-right"><i class="live-dot"></i><span>LOCAL PREVIEW</span><span id="buildBadge" class="build-badge" aria-label="Application build">EXODIA v0.3.0-dev · unknown</span><span class="clock" id="clock">00:00</span></div>
   </header>
   <main class="dashboard">
     <aside class="state-rail" aria-label="Choose companion state">
       <p class="eyebrow">01 / STATE LIBRARY</p>
       <h2>Albedo's activities</h2>
-      <p class="rail-copy">All 33 individual review portraits are present. Four targeted corrections remain; 29 states are accepted for development, NOT final production.</p>
+      <p class="rail-copy">All 33 individual review portraits are present. All 33 designs are accepted for development. Four non-native replacements are approved for installation; check the live SHA inspector to verify the active files.</p>
       <nav id="stateMenu" class="state-menu"></nav>
       <div class="rail-bottom"><div class="small-line"></div><b>STATE DRIVER</b><span>Manual selection or all-state review cycle</span><label class="toggle"><input id="autoCycle" type="checkbox"/> Cycle all 33 states</label><div class="kbd-tip">Keyboard: <kbd>←</kbd> <kbd>→</kbd> to switch</div></div>
     </aside>
@@ -63,7 +63,7 @@
         <div class="quick-actions"><button id="restart" class="secondary">Restart Idle</button><button id="copyDebug" class="secondary">Copy Telemetry</button></div>
         <label class="toggle small-toggle"><input type="checkbox" id="ambientMotion" checked /> Animated cosmic ambience</label><label class="toggle small-toggle"><input type="checkbox" id="observeTasks" /> Follow live task status (read-only)</label>
       </section>
-      <div class="nonproduction"><span>!</span><div><b>REVIEW ART · NOT PRODUCTION</b><p>All 33 standalone portrait review candidates are available. The owner accepted 29 for continued development and requested four revisions (Angered, Awaiting Command, Neutral, Tantrum). NONE are approved for production release.</p></div></div>
+      <div class="nonproduction"><span>!</span><div><b>REVIEW ART · NOT PRODUCTION</b><p>All 33 standalone portrait review candidates are available. All 33 designs are accepted for development review; the four targeted replacements are 1122×1402 originals with non-native presentation previews. Their installed status is verified by the live SHA index. No portrait has production approval.</p></div></div>
       <section class="side-card batch-intake"><div class="card-heading">LOCAL ART INTAKE</div><label for="coreZip">Gate 1 Core-Five review ZIP (verified sources)</label><input type="file" id="coreZip" accept=".zip,application/zip"><button id="coreImport" type="button" class="secondary">Load 5 references</button>
       <label for="reviewOnlyZip">Owner-approved four-state DEVELOPMENT review ZIP (1122×1402 originals)</label>
       <input type="file" id="reviewOnlyZip" accept=".zip,application/zip">
