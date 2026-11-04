@@ -167,7 +167,7 @@ jobs:
       - name: Verify targeted owner correction lock (29 protected)
         run: |
           python orchestrator/tools/apply_gate4_four_corrections.py --verify-baseline
-          python -m pytest -q orchestrator/tests/test_gate4_targeted_owner_corrections.py
+          python -m pytest -q orchestrator/tests/test_gate4_targeted_owner_corrections.py -k 'not real_api'
       - name: Run state-manager tests
         run: node --test orchestrator/tests/portrait_state_manager.test.mjs
       - name: Build SHA-verified review-only Core-Five preview board
