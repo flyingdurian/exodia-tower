@@ -51,7 +51,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await page.wait_for_function(
                         "expected => document.querySelector('#buildBadge')?.textContent === expected",
                         arg=build['label'],timeout=15000)
-                    assert await page.locator('#buildBadge').inner_text() == build['label']
+                    assert await page.locator('#buildBadge').text_content() == build['label']
                     if os.getenv('GITHUB_SHA'):
                         assert build['commit_sha'] == os.environ['GITHUB_SHA'].lower()
                     # The actual command surface uses the same backend catalog.
@@ -73,7 +73,7 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await command.wait_for_function(
                         "expected => document.querySelector('#buildBadge')?.textContent === expected",
                         arg=build['label'],timeout=15000)
-                    assert await command.locator('#buildBadge').inner_text() == build['label']
+                    assert await command.locator('#buildBadge').text_content() == build['label']
                     # Live frontshell task controls and provider/session metadata.
                     assert await command.locator('#cancelActiveTask').count()==1
                     assert await command.locator('#cancelActiveTask').is_hidden()

@@ -45,9 +45,9 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     await desktop.wait_for_function(
                         "label => document.querySelector('#buildBadge')?.textContent === label",
                         arg=info['label'],timeout=15000)
-                    assert await desktop.locator('#buildBadge').inner_text()==info['label']
-                    assert await desktop.locator('#buildChannel').inner_text()==info['channel']
-                    assert await desktop.locator('#buildShortSha').inner_text()==info['short_sha']
+                    assert await desktop.locator('#buildBadge').text_content()==info['label']
+                    assert await desktop.locator('#buildChannel').text_content()==info['channel']
+                    assert await desktop.locator('#buildShortSha').text_content()==info['short_sha']
                     assert not await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
                     assert not await desktop.locator('#diagnosticText').is_visible()
                     assert await desktop.locator('#chibiOperations').is_visible()
