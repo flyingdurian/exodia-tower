@@ -174,3 +174,12 @@
 @media(max-width:850px){.masthead{gap:9px}.developer-drawer>summary{padding:8px;font-size:10px}}
 @media(max-width:620px){.masthead{gap:7px}.logo{min-width:0}.logo small{display:none}.top-nav{flex:0 1 auto}.developer-drawer{margin-left:auto}.developer-drawer>summary{font-size:9px}.developer-panel{right:-4px;max-height:72vh}.hero-col #hero{height:520px;min-height:0}#chibiOperations .chibi-floor{height:245px}.output-col .response-screen{min-height:165px;max-height:min(55vh,500px)}}
 @media(prefers-reduced-motion:reduce){.developer-panel{scroll-behavior:auto}}
+
+/* Spatial lock: on desktop, the live operations floor is the center anchor;
+   response/quick missions left, configuration and mission history right. */
+@media(min-width:1181px){
+ .command-grid{grid-template-columns:minmax(305px,.83fr) minmax(470px,1.5fr) minmax(285px,.78fr)}
+ .output-col{grid-column:1;grid-row:1}
+ .hero-col{grid-column:2;grid-row:1}
+ .control-col{grid-column:3;grid-row:1}
+}

@@ -51,6 +51,15 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     assert not await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
                     assert not await desktop.locator('#diagnosticText').is_visible()
                     assert await desktop.locator('#chibiOperations').is_visible()
+                    # The central operations stage is the desktop visual anchor.
+                    # The mobile DOM order remains stage, response, controls.
+                    positioning=await desktop.evaluate("""() => {
+                       const box=selector=>document.querySelector(selector).getBoundingClientRect();
+                       return {response:box('.output-col'),center:box('.hero-col'),controls:box('.control-col')};
+                    }""")
+                    assert positioning['response']['left'] < positioning['center']['left'], positioning
+                    assert positioning['center']['left'] < positioning['controls']['left'], positioning
+                    assert positioning['center']['width'] > positioning['response']['width'], positioning
                     # A short answer may not stretch to the height of the entire operations floor.
                     response_rect=await desktop.locator('.response').bounding_box()
                     assert response_rect and response_rect['height'] < 460, response_rect

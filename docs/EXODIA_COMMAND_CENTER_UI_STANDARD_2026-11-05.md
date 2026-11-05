@@ -19,3 +19,7 @@ The command-center reference mockup supplied by the owner shows target proportio
 ## Engineering gates
 
 Perform exact-head Foundation/Portrait CI, real FastAPI/Chromium desktop + mobile, default developer-drawer closed, keyboard/debug-toggle accessibility, chibi zone test event continuity, no horizontal overflow, short/long response sizing, and protected 33-portrait SHA locks. This polish is isolated on a stacked feature branch based on the draft PR #15 QA preview. It is NOT an authorization to merge PR #15 or to skip independent review of #10 → #11 → #12. Preserve Riven and other fleet release locks.
+
+## Desktop spatial implementation (QA refinement)
+
+At desktop widths of 1181px and above, the content-size response terminal and quick actions occupy the left support column, Albedo's real task-driven operations floor is the broad **center** column, and operator controls, history and provider status occupy the right column. The existing DOM order is preserved to avoid moving runtime elements and event listeners; the responsive/mobile layout stays in its previous documented DOM sequence. Browser QA explicitly verifies the floor is centered and wider than the response column.
