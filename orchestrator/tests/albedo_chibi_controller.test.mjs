@@ -16,6 +16,7 @@ test('8-direction heading contract covers all cardinal and diagonals (screen Y d
 });
 test('all 40 independently keyed frames are pending, not sliced or fabricated artwork',()=>{
  assert.equal(validateChibiManifest(manifest),true);
+ assert.equal(manifest.motion.speed_normalized_per_second/manifest.motion.stride_frame_distance_normalized,manifest.states.walk.fps);
  assert.equal(Object.keys(manifest.frames).length,40);
  assert.ok(manifest.source_policy.independent_frames_required);
  assert.equal(manifest.production_release_enabled,false);

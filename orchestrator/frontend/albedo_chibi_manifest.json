@@ -67,7 +67,7 @@
     "speed_normalized_per_second": 0.3,
     "max_step_seconds": 0.05,
     "arrival_epsilon": 0.003,
-    "stride_frame_distance_normalized": 0.027
+    "stride_frame_distance_normalized": 0.0375
   },
   "zones": {
     "home": {

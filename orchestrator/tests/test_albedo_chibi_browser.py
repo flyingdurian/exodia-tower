@@ -65,6 +65,10 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     # Switching companions must never show Albedo on Riven's stage.
                     await desktop.locator('#companion').select_option('router')
                     await desktop.wait_for_function("() => document.querySelector('#chibiActor').hidden",timeout=3000)
+                    # Polling a still-running Albedo task must never restore her
+                    # chibi while the operator has selected another companion.
+                    await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{state:'running',agentId:'kiko'}}))")
+                    assert await desktop.locator('#chibiActor').is_hidden()
                     await desktop.locator('#companion').select_option('kiko')
                     await desktop.wait_for_function("() => !document.querySelector('#chibiActor').hidden",timeout=3000)
                     assert not errors,errors

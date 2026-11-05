@@ -12,10 +12,11 @@ export async function startAlbedoChibi({doc=document,win=window,loadManifest=()=
     renderer=new AlbedoChibiRenderer(root,manifest);
   }catch(_){status.textContent='CHIBI FLOOR UNAVAILABLE · MANIFEST CHECK FAILED';root.dataset.ready='error';return null;}
   const comp=doc.getElementById('companion');
-  const tasks=[];let lastKey=null;
+  const tasks=[];let lastKey=null;let taskAgent='kiko';
   const currentAgent=()=>comp?.value||'kiko';
   const update=(state='idle',agentId=currentAgent())=>{
-    controller.dispatchTaskState(state,agentId);
+    // A task for Albedo is not permission to show her on another companion's stage.
+    controller.dispatchTaskState(state,agentId==='kiko'&&currentAgent()==='kiko'?'kiko':'offstage');
     renderer.draw(controller.snapshot());
   };
   const onTask=event=>{
@@ -23,10 +24,10 @@ export async function startAlbedoChibi({doc=document,win=window,loadManifest=()=
     // Task events contain only state/agent IDs, never the user prompt or private instructions.
     const state=task.state||'idle';const agent=task.agentId||currentAgent();
     const key=state+'|'+agent; if(key===lastKey)return;
-    lastKey=key;tasks[0]=state;update(state,agent);
+    lastKey=key;tasks[0]=state;taskAgent=agent;update(state,agent);
   };
   win.addEventListener('exodia:command-task',onTask);
-  comp?.addEventListener('change',()=>update(tasks[0]||'idle',currentAgent()));
+  comp?.addEventListener('change',()=>update(tasks[0]||'idle',taskAgent));
   const demo=root.querySelectorAll('[data-chibi-go]');
   for(const button of demo)button.addEventListener('click',()=>{
     if(currentAgent()!=='kiko')return;
