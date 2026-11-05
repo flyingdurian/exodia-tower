@@ -38,6 +38,9 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     errors=[];desktop.on('pageerror',lambda exc:errors.append(str(exc)))
                     await desktop.goto('http://127.0.0.1:8915/',wait_until='domcontentloaded')
                     await desktop.wait_for_function("() => document.querySelector('#chibiOperations')?.dataset.ready==='1'",timeout=15000)
+                    await desktop.wait_for_function(
+                        "() => document.querySelector('#model')?.options.length >= 10 && document.querySelector('#companion')?.options.length===10 && document.querySelectorAll('#providerStatus strong').length===6",
+                        timeout=15000)
                     info=await (await desktop.request.get('http://127.0.0.1:8915/api/build-info')).json()
                     await desktop.wait_for_function(
                         "label => document.querySelector('#buildBadge')?.textContent === label",
@@ -67,6 +70,10 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     # Switching companions must never show Albedo on Riven's stage.
                     await desktop.locator('#companion').select_option('router')
                     await desktop.wait_for_function("() => document.querySelector('#chibiActor').hidden",timeout=3000)
+                    # Switching selected companion must NOT erase the selected historical task.
+                    if await desktop.locator('.task-item.active').count():
+                        assert await desktop.locator('#summaryTask').inner_text() != 'No task selected'
+                    assert await desktop.locator('#summarySelectedCompanion').inner_text() == 'Riven'
                     # Polling a still-running Albedo task must never restore her
                     # chibi while the operator has selected another companion.
                     await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{state:'running',agentId:'kiko'}}))")
@@ -78,7 +85,14 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     mobile=await browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True)
                     await mobile.goto('http://127.0.0.1:8915/',wait_until='domcontentloaded')
                     await mobile.wait_for_function("() => document.querySelector('#chibiOperations')?.dataset.ready==='1'",timeout=15000)
+                    await mobile.wait_for_function(
+                        "() => document.querySelector('#model')?.options.length >= 10 && document.querySelector('#companion')?.options.length===10 && document.querySelectorAll('#providerStatus strong').length===6",
+                        timeout=15000)
+                    await mobile.wait_for_function(
+                        "() => window.__exodiaDevelopmentPortraitStage?.status === 'verified'",
+                        timeout=20000)
                     assert await mobile.locator('#summaryAgent').count()==1
+                    assert await mobile.locator('#summarySelectedCompanion').inner_text() == 'Albedo'
                     assert await mobile.locator('#chibiMarker').is_visible()
                     assert 'MOTION PROOF' in await mobile.locator('#chibiArtStatus').inner_text()
                     size=await mobile.evaluate("() => ({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth})")

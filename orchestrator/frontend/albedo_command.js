@@ -31,7 +31,7 @@ const modelLabels=new Map();
 const moodDesc=Object.fromEntries(MOODS.map(m=>[m[0],m[2]]));
 const prettyName=s=>(s||'').replaceAll('_',' ').toUpperCase();
 function refreshCommandSummary(task=chosenTask){
- const agentName=id=>roster.find(a=>a.id===id)?.name||id||'Unknown companion';
+ const agentName=id=>roster.find(a=>a.id===id)?.name||(id==='kiko'?'Albedo':id||'Unknown companion');
  const providerName=id=>modelLabels.get(id)||id||'Unknown provider';
  const selectedAgent=agentName(UI.companion?.value||'kiko');
  const selectedProvider=UI.model?.selectedOptions[0]?.textContent.replace(' — Not configured','')||'Not selected';
@@ -317,7 +317,7 @@ $('#dispatch').addEventListener('submit',async event=>{
 });
 document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{UI.prompt.value=b.dataset.prompt;UI.prompt.focus();lastInteraction=Date.now();}));
 $('#refreshTasks').addEventListener('click',()=>loadTasks().catch(e=>inform(e.message,true)));
-UI.companion.addEventListener('change',()=>refreshCommandSummary(null));
+UI.companion.addEventListener('change',()=>refreshCommandSummary(chosenTask));
 UI.model.addEventListener('change',()=>refreshCommandSummary(chosenTask));
 UI.cancelTask?.addEventListener('click',async()=>{
  const task=tasks.find(t=>t.id===activeTaskId);
