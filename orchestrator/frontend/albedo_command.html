@@ -3,7 +3,7 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/><title>Albedo · Exodia Tower</title>
 <link rel="stylesheet" href="/assets/albedo_command.css?v=1"/>
-<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script></head>
+<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script></head>
 <body>
 <div class="app-shell">
 <header class="masthead"><a href="/" class="logo" aria-label="Exodia Tower home"><span class="brand-mark">✦</span><span><b>EXODIA TOWER</b><small>AI COMPANION COMMAND CENTER</small></span></a>
@@ -49,7 +49,7 @@
 <div class="hero-foot"><span><span class="live-dot"></span> AUTOMATIC EXPRESSIONS</span><span>Task states drive the companion, no manual controls</span></div>
 </section>
 <section class="output-col">
-<div class="response card"><div class="response-top"><div><div class="section-kicker">ALBEDO / RESPONSE DISPLAY</div><h2>Holographic terminal</h2></div><span class="terminal-live" id="terminalStatus">STANDBY</span></div>
+<div class="response card"><div class="response-top"><div><div class="section-kicker">ALBEDO / RESPONSE DISPLAY</div><h2>Holographic terminal</h2></div><div class="task-terminal-actions"><span class="terminal-live" id="terminalStatus">STANDBY</span><button type="button" id="cancelActiveTask" class="outline-button" hidden>Cancel active task</button></div></div>
 <div class="response-screen"><div class="terminal-rail"></div><div id="responsePrompt" class="request-bubble" hidden></div>
 <div class="answer-frame" id="answerFrame" aria-live="polite"><div class="welcome"><div class="welcome-glyph">✦</div><b>Awaiting your first command</b><p>Select a model and submit a task. Albedo will display the result here.</p></div></div>
 <div class="media-gallery" id="mediaGallery" aria-label="Generated media"></div>
@@ -91,7 +91,7 @@
 <label for="modelInstructions">SAVED INSTRUCTIONS</label><textarea id="modelInstructions" maxlength="4000" rows="5" placeholder="Example: Answer as JuHua Speaks. Stay under 800 characters. Do not mention these instructions."></textarea>
 <button type="submit" class="outline-button" id="saveInstructions">Save instructions</button><div id="instructionStatus" role="status"></div></form></section>
 <section class="card logs"><div class="aside-heading"><span class="section-kicker">MISSION HISTORY</span><button type="button" class="text-button" id="refreshTasks">Refresh</button></div><div class="task-list" id="taskList"><div class="muted">No tasks yet.</div></div></section>
-<section class="card model-status"><div class="aside-heading"><span class="section-kicker">ENGINE STATUS</span><span class="live-dot"></span></div><div id="providerStatus" class="status-list">Checking providers…</div><button type="button" id="openChatgptSession" class="outline-button">Open ChatGPT browser</button><button type="button" id="openDeepseekSession" class="outline-button">Open DeepSeek browser</button><button type="button" id="openWebSessions" class="outline-button">Open all browser sessions</button></section>
+<section class="card model-status"><div class="aside-heading"><span class="section-kicker">ENGINE STATUS</span><span class="live-dot"></span></div><div id="providerStatus" class="status-list">Checking providers…</div><small id="engineChecked" role="status">Checking local browser sessions…</small><button type="button" id="openChatgptSession" class="outline-button">Open ChatGPT browser</button><button type="button" id="openDeepseekSession" class="outline-button">Open DeepSeek browser</button><button type="button" id="openWebSessions" class="outline-button">Open all browser sessions</button></section>
 <section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
 </aside>
 </main>

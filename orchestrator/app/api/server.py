@@ -49,6 +49,20 @@ web_adapters={slot:ConfiguredWebRunner(settings.root,slot=slot)
               for slot in ("custom_web","web_slot_2","web_slot_3")}
 web_adapter=web_adapters["custom_web"]  # first-slot compatibility
 active_generations=set()
+active_command_jobs={}
+
+def schedule_command_job(task_id, coroutine):
+    """Track a task's cancellable local orchestration; not a remote stop guarantee."""
+    job=asyncio.create_task(coroutine)
+    active_generations.add(job)
+    active_command_jobs[task_id]=job
+    def release(done):
+        active_generations.discard(done)
+        if active_command_jobs.get(task_id) is done:
+            active_command_jobs.pop(task_id,None)
+    job.add_done_callback(release)
+    return job
+
 started = monotonic()
 app = FastAPI(title='Exodia Tower', version=APP_VERSION, docs_url='/api/docs')
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['localhost','127.0.0.1','testserver'])
@@ -768,38 +782,28 @@ async def command_create(body:CompanionTaskBody,x_exodia_client:str=Header(defau
     if body.model_choice=='ollama':
         t=inbox.update(t['id'],'state','researching' if body.web_research else 'running')
         director.react(body.agent_id,'working')
-        job=asyncio.create_task(_complete_local_task(t['id']))
-        active_generations.add(job)
-        job.add_done_callback(active_generations.discard)
+        schedule_command_job(t['id'],_complete_local_task(t['id']))
         events.publish('task','Autonomous companion '+('live research' if body.web_research else 'inference')+' started',f"{body.agent_id}:ollama")
     elif body.model_choice in web_adapters:
         t=inbox.update(t['id'],'state','opening')
         director.react(body.agent_id,'working')
-        job=asyncio.create_task(_complete_web_task(t['id']))
-        active_generations.add(job)
-        job.add_done_callback(active_generations.discard)
+        schedule_command_job(t['id'],_complete_web_task(t['id']))
         events.publish('task','Autonomous configured website task started',
                        f"{body.agent_id}:custom_web")
     elif body.model_choice=='gemini':
         t=inbox.update(t['id'],'state','opening')
         director.react(body.agent_id,'working')
-        job=asyncio.create_task(_complete_gemini_task(t['id']))
-        active_generations.add(job)
-        job.add_done_callback(active_generations.discard)
+        schedule_command_job(t['id'],_complete_gemini_task(t['id']))
         events.publish('task','Gemini browser task started',f"{body.agent_id}:gemini")
     elif body.model_choice=='deepseek':
         t=inbox.update(t['id'],'state','opening')
         director.react(body.agent_id,'working')
-        job=asyncio.create_task(_complete_deepseek_task(t['id']))
-        active_generations.add(job)
-        job.add_done_callback(active_generations.discard)
+        schedule_command_job(t['id'],_complete_deepseek_task(t['id']))
         events.publish('task','DeepSeek browser task started',f"{body.agent_id}:deepseek")
     elif body.model_choice=='chatgpt':
         t=inbox.update(t['id'],'state','opening')
         director.react(body.agent_id,'working')
-        job=asyncio.create_task(_submit_chatgpt_task(t['id']))
-        active_generations.add(job)
-        job.add_done_callback(active_generations.discard)
+        schedule_command_job(t['id'],_submit_chatgpt_task(t['id']))
         events.publish('task','ChatGPT browser prompt dispatch started',
                        f"{body.agent_id}:chatgpt")
     else:
@@ -879,13 +883,24 @@ async def command_cancel(task_id:str,x_exodia_client:str=Header(default='')):
     require_local_dashboard(x_exodia_client)
     try:task=inbox.get(task_id)
     except KeyError:raise HTTPException(404,detail='Task not found')
-    if task['provider']!='chatgpt' or task['state']!='awaiting_operator':
-        raise HTTPException(409,detail='Only pending ChatGPT review tasks can be cancelled')
-    try:await chatgpt_tasks.cancel(task_id)
-    except SessionError as exc:raise HTTPException(409,detail=str(exc)) from exc
-    saved=inbox.update(task_id,'state','cancelled')
-    director.react(task['agent_id'],'rest')
-    events.publish('task','ChatGPT review cancelled',f"{task['agent_id']}:chatgpt")
+    try:saved=inbox.cancel(task_id)
+    except ValueError as exc:raise HTTPException(409,detail=str(exc)) from exc
+    # Local cancellation prevents late task results; consumer sites may keep
+    # processing requests already submitted. This is not a remote revoke API.
+    job=active_command_jobs.get(task_id)
+    if job and not job.done():job.cancel()
+    elif task['provider']=='chatgpt' and task['state']=='awaiting_operator':
+        try:await chatgpt_tasks.cancel(task_id)
+        except SessionError:pass
+    # A different active task may still own this companion's working state.
+    other_active=any(
+        other_id!=task_id and not other_job.done()
+        and inbox.get(other_id)['agent_id']==task['agent_id']
+        and inbox.get(other_id)['state'] not in ('answered','failed','cancelled')
+        for other_id,other_job in list(active_command_jobs.items())
+    )
+    if not other_active:director.react(task['agent_id'],'rest')
+    events.publish('task','Local command task cancelled',f"{task['agent_id']}:{task['provider']}")
     return public_task(saved)
 
 @app.post('/api/command/tasks/{task_id}/artifact')

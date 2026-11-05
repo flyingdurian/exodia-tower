@@ -60,24 +60,10 @@ on:
       - 'assets/review/albedo_core5/source_anatomy_annotation_template.json'
       - 'assets/review/albedo_core5/source_access_report.json'
   pull_request:
-    paths:
-      - 'orchestrator/tools/portrait_registry_audit.py'
-      - 'orchestrator/tools/ingest_static_portraits.py'
-      - 'orchestrator/tools/ingest_standalone_portrait.py'
-      - 'orchestrator/tools/portrait_normalization.py'
-      - 'orchestrator/tools/ingest_core_action_batch.py'
-      - 'orchestrator/tests/test_core_action_batch.py'
-      - 'assets/staging_intake/core_actions_batch.json'
-      - 'assets/staging_intake/albedo_static_33_batch.json'
-      - 'orchestrator/tests/test_albedo_uniform_batch_matrix.py'
-      - 'orchestrator/tests/test_portrait_normalization.py'
-      - 'orchestrator/tests/test_ingest_standalone_portrait.py'
-      - 'assets/staging_intake/manifest_template.json'
-      - 'orchestrator/tests/test_standalone_only_gate.py'
-      - 'orchestrator/frontend/portrait_state_manager.mjs'
-      - 'orchestrator/frontend/companions/production/kiko/portrait_registry.json'
+    branches: [development/exodia-foundation]
 jobs:
   validate:
+    name: Portrait
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

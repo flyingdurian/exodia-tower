@@ -1,10 +1,14 @@
 """Persistent, truthful, operator-assisted model task inbox."""
-import sqlite3, uuid, json
+import asyncio, sqlite3, uuid, json
 from pathlib import Path
 from datetime import datetime, timezone
 from threading import RLock
 
 def timestamp():return datetime.now(timezone.utc).isoformat()
+
+class TaskCancelled(asyncio.CancelledError):
+ """A cancelled task must not receive a late provider callback or result."""
+
 class Inbox:
  def __init__(self,path):
   self.path=Path(path);self.path.parent.mkdir(parents=True,exist_ok=True);self.lock=RLock()
@@ -62,7 +66,25 @@ class Inbox:
     if path and (not isinstance(path,str) or not path.startswith('/artifacts/') or '..' in path):
      raise ValueError("Invalid media artifact URL")
    value=json.dumps(value)
-  with self.lock,self.db() as c:c.execute(f"UPDATE tasks SET {key}=?,updated_at=? WHERE id=?",(value,timestamp(),id))
+  with self.lock,self.db() as c:
+   state=c.execute('SELECT state FROM tasks WHERE id=?',(id,)).fetchone()
+   if state is None:raise KeyError(id)
+   if state[0]=='cancelled':raise TaskCancelled('Task is cancelled; late response rejected')
+   c.execute(f"UPDATE tasks SET {key}=?,updated_at=? WHERE id=?",(value,timestamp(),id))
+  return self.get(id)
+
+ def cancel(self,id):
+  """Atomically stop local task delivery without implying remote cancellation."""
+  with self.lock,self.db() as c:
+   row=c.execute('SELECT state FROM tasks WHERE id=?',(id,)).fetchone()
+   if row is None:raise KeyError(id)
+   state=row[0]
+   if state in ('answered','failed'):
+    raise ValueError('Completed or failed tasks cannot be cancelled')
+   if state!='cancelled':
+    c.execute("UPDATE tasks SET state='cancelled',error=?,updated_at=? WHERE id=?",(
+      'Cancelled locally. An already-submitted remote provider request may still finish outside Exodia.',
+      timestamp(),id))
   return self.get(id)
 
  def fail_interrupted(self):

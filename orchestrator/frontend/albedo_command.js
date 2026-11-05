@@ -12,7 +12,7 @@ const UI={
   promptBubble:$('#responsePrompt'),provider:$('#answerProvider'),timing:$('#answerTiming'),
   image:$('#responseImage'),attachment:$('#attachment'),sources:$('#sourceList'),
   taskList:$('#taskList'),feedback:$('#feedback'),diagnostic:$('#diagnosticText'),
-  terminalStatus:$('#terminalStatus'),playback:$('#playbackInfo'),toggle:$('#motionToggle')
+  terminalStatus:$('#terminalStatus'),cancelTask:$('#cancelActiveTask'),playback:$('#playbackInfo'),toggle:$('#motionToggle')
 };
 const HEADER={'X-Exodia-Client':'exodia-dashboard'};
 const MOODS=[
@@ -26,6 +26,7 @@ const ACTIVE=new Set(['researching','opening','queued','cooldown','typing','subm
 let state='idle',roster=[],tasks=[],activeTaskId=null,chosenTask=null,explicitPreview=false;
 let stateTimer=null,lastInteraction=Date.now(),lastCompleted=null,requestInFlight=false,videoOk=false;
 let handoffTaskId=null;
+const modelLabels=new Map();
 const moodDesc=Object.fromEntries(MOODS.map(m=>[m[0],m[2]]));
 const prettyName=s=>(s||'').replaceAll('_',' ').toUpperCase();
 function moodForTask(task){
@@ -34,6 +35,7 @@ function moodForTask(task){
  if(task.state==='running')return 'thinking';
  if(task.state==='waiting_for_reply'||task.state==='awaiting_operator')return 'waiting';
  if(task.state==='failed')return 'failed';
+ if(task.state==='cancelled')return 'idle';
  if(task.state==='answered')return 'happy';
  return 'idle';
 }
@@ -148,13 +150,15 @@ function renderAnswer(task){
  // All media is rendered once by the dedicated media-gallery module.
  UI.sources.replaceChildren();
  const state=task?.state||'idle';
- UI.terminalStatus.textContent=state==='answered'?'RESPONSE READY':ACTIVE.has(state)?'LIVE · '+prettyName(state):state==='failed'?'TASK FAILED':'STANDBY';
- UI.provider.textContent=task?(task.provider+' / '+prettyName(task.state)):'NO MODEL RESULT';
+ if(UI.cancelTask)UI.cancelTask.hidden=!(task&&(ACTIVE.has(state)||state==='awaiting_operator'||state==='draft'));
+ UI.terminalStatus.textContent=state==='cancelled'?'CANCELLED LOCALLY':state==='answered'?'RESPONSE READY':ACTIVE.has(state)?'LIVE · '+prettyName(state):state==='failed'?'TASK FAILED':'STANDBY';
+ UI.provider.textContent=task?((modelLabels.get(task.provider)||task.provider)+' · '+task.agent_id+' / '+prettyName(task.state)):'NO MODEL RESULT';
  const m=task?.metrics||{};
   UI.timing.textContent=Number.isFinite(m.total_s)?('Time '+m.total_s+'s'+(Number.isFinite(m.first_text_s)?' · first text '+m.first_text_s+'s':'')):'';
  if(!task){
   const wrap=element('div','welcome');wrap.append(element('div','welcome-glyph','✦'),element('b','','Awaiting your first command'),element('p','','Choose a model and send a task. Albedo will display the result here.'));UI.answer.append(wrap);return;
  }
+ if(task.state==='cancelled'){const w=element('div','stat-card');w.append(element('div','stat-name','TASK CANCELLED'),element('p','',task.error||'Cancelled locally; a remote request may still complete outside Exodia.'));UI.answer.append(w);return;}
  if(task.state==='failed'){const w=element('div','stat-card');w.append(element('div','stat-name','MISSION FAILED'),element('p','',task.error||'The provider did not finish the task. Review the diagnostics.'));UI.answer.append(w);UI.diagnostic.textContent=task.error||'Task failed';return;}
  if(task.state!=='answered'||!task.answer){
   const w=element('div','welcome');
@@ -207,7 +211,7 @@ function renderTasks(){
  UI.taskList.replaceChildren();
  for(const task of tasks.slice(0,18)){
   const btn=element('button','task-item');btn.type='button';btn.dataset.id=task.id;
-  btn.append(element('b','',task.prompt||'Untitled task'),element('span','',task.provider+' · '+prettyName(task.state)));
+  btn.append(element('b','',task.prompt||'Untitled task'),element('span','',(modelLabels.get(task.provider)||task.provider)+' · '+task.agent_id+' · '+prettyName(task.state)));
   btn.addEventListener('click',()=>selectTask(task.id));
   UI.taskList.append(btn);
  }
@@ -220,18 +224,50 @@ async function loadTasks({initial=false}={}){
  if(current)selectTask(current.id);
  else if(!explicitPreview){setMood(moodForTask(null));renderAnswer(null);}
 }
+function browserStateLabel(snapshot){
+ const state=snapshot?.status||'not_started';
+ if(state==='not_started'||state==='closed')return 'Not opened';
+ if(state==='needs_operator_login_or_review')return 'Open · sign-in unverified';
+ if(state==='ready_for_next_prompt')return 'Last task completed';
+ if(state==='launching'||state==='opening'||state==='typing'||state==='submitting')return 'Opening / working';
+ if(state==='dom_error_manual_review'||state==='error'||state==='editor_unavailable')return 'Browser needs attention';
+ if(state==='awaiting_operator')return 'Operator action pending';
+ return prettyName(state);
+}
+async function refreshProviderHealth(){
+ // This reports observed local session state; it does not claim authenticated
+ // external-provider E2E, valid credentials or guaranteed network availability.
+ const [providerStatus,sessionStatus]=await Promise.all([
+  api('/api/command/providers'),api('/api/web/sessions')
+ ]);
+ const sessions=sessionStatus.models||{};
+ const entries=[
+  ['ChatGPT (chronos)',browserStateLabel(sessions.chatgpt)],
+  ['Gemini (chronos)',browserStateLabel(sessions.gemini)],
+  ['DeepSeek (chronos)',browserStateLabel(sessions.deepseek)],
+  ['Ollama (automatic local)',providerStatus.ollama?.connected?'Local service connected':'Local service offline'],
+  ['Official APIs','Not configured · no requests sent'],
+  ['Advanced browser slots',Object.values(providerStatus.configured_slots||{}).filter(x=>x.configured).length+' configured']
+ ];
+ const container=$('#providerStatus');if(!container)return;
+ container.replaceChildren();
+ for(const [name,value] of entries){const row=element('div','');row.append(element('span','',name),element('strong','',value));container.append(row);}
+ const checked=$('#engineChecked');if(checked)checked.textContent='Local session status · '+new Date().toLocaleTimeString();
+}
 async function refreshModels(){
  try{
   const modelData=await api('/api/command/model-options');
   const preserved=UI.model.value;
+  modelLabels.clear();
   UI.model.replaceChildren();
   for(const m of modelData.options){
+    modelLabels.set(m.value,m.label);
     const option=element('option','',m.label+(m.available?'':' — Not configured'));
     option.value=m.value;option.disabled=!m.available;option.dataset.transport=m.transport;
     UI.model.append(option);
   }
   const advanced=element('optgroup');advanced.label='Advanced browser slots';
-  for(const m of modelData.advanced){const option=element('option','',m.label);option.value=m.value;option.dataset.transport=m.transport;advanced.append(option);}
+  for(const m of modelData.advanced){modelLabels.set(m.value,m.label);const option=element('option','',m.label);option.value=m.value;option.dataset.transport=m.transport;advanced.append(option);}
   UI.model.append(advanced);
   UI.model.value=Array.from(UI.model.options).some(o=>o.value===preserved&&!o.disabled)?preserved:modelData.default;
   const build=await api('/api/build-info');
@@ -242,10 +278,7 @@ async function refreshModels(){
   UI.companion.replaceChildren();
   for(const a of roster){const op=element('option','',a.name);op.value=a.id;UI.companion.append(op);}
   UI.companion.value='kiko';
-  const status=await api('/api/command/providers');
-  const items=[['ChatGPT (chronos)',status.chatgpt?.automatic_output_extraction?'Automatic reply':'Check browser'],['Gemini (chronos)','Automatic reply'],['DeepSeek (chronos)','Automatic reply'],['Ollama (automatic local)',status.ollama?.connected?'Ready':'Offline'],['Official APIs','Not configured'],['Advanced browser slots',Object.values(status.configured_slots||{}).filter(c=>c.configured).length+' configured']];
-  const container=$('#providerStatus');container.replaceChildren();
-  for(const [name,value] of items){const row=element('div','');row.append(element('span','',name),element('strong','',value));container.append(row);}
+  await refreshProviderHealth();
  }catch(e){UI.diagnostic.textContent='Provider status unavailable: '+e.message;}
 }
 $('#dispatch').addEventListener('submit',async event=>{
@@ -266,6 +299,17 @@ $('#dispatch').addEventListener('submit',async event=>{
 });
 document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{UI.prompt.value=b.dataset.prompt;UI.prompt.focus();lastInteraction=Date.now();}));
 $('#refreshTasks').addEventListener('click',()=>loadTasks().catch(e=>inform(e.message,true)));
+UI.cancelTask?.addEventListener('click',async()=>{
+ const task=tasks.find(t=>t.id===activeTaskId);
+ if(!task||!(ACTIVE.has(task.state)||task.state==='awaiting_operator'||task.state==='draft'))return;
+ UI.cancelTask.disabled=true;
+ try{
+  await api('/api/command/tasks/'+encodeURIComponent(task.id)+'/cancel',{method:'POST'});
+  inform('Local task cancelled; previously submitted remote requests may still complete outside Exodia.');
+  await loadTasks();
+ }catch(e){inform(e.message,true)}finally{UI.cancelTask.disabled=false}
+});
+
 let savedModelInstructions={};
 async function showModelInstructions(provider){
  const field=$('#modelInstructions');
@@ -352,8 +396,10 @@ try{await loadTasks({initial:true})}catch(e){inform('Cannot load tasks: '+e.mess
 setInterval(async()=>{
  if(requestInFlight)return;
  const previous=tasks.find(t=>t.id===activeTaskId);
- if(previous&&ACTIVE.has(previous.state)){
+ if(tasks.some(t=>ACTIVE.has(t.state))){
    try{await loadTasks()}catch(e){UI.diagnostic.textContent=e.message;}
  }
  else if(!explicitPreview&&!previous&&Date.now()-lastInteraction>90000&&state!=='sleeping')setMood('sleeping');
 },650);
+
+setInterval(()=>refreshProviderHealth().catch(error=>{UI.diagnostic.textContent='Local engine status refresh failed: '+error.message;}),15000);
