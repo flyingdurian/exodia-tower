@@ -13,6 +13,8 @@ export class AlbedoChibiRenderer {
     this.readyFrames=new Map();this.pendingFrames=new Map();this.assetState=manifest.asset_status;
     this.actor.style.setProperty('--foot-x',String(manifest.anchors.foot[0]*100)+'%');
     this.actor.style.setProperty('--foot-y',String(manifest.anchors.foot[1]*100)+'%');
+    this.actor.style.setProperty('--shadow-x',String(manifest.anchors.shadow[0]*100)+'%');
+    this.actor.style.setProperty('--shadow-y',String(manifest.anchors.shadow[1]*100)+'%');
     this.status.textContent=this.assetState==='approved_40_frame_set'?'40 approved frames · hash check pending':'MOTION PROOF · 40 ART FRAMES PENDING';
   }
   async acquireFrame(key){
@@ -31,6 +33,12 @@ export class AlbedoChibiRenderer {
         const digest=await this.cryptoProvider.subtle.digest('SHA-256',buffer);
         const hash=Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');
         if(hash!==record.sha256)throw Error('Sprite frame SHA-256 mismatch');
+        // Every approved frame must match the native sprite canvas; a hash alone
+        // does not establish the required foot-registered source geometry.
+        const canvas=await createImageBitmap(blob);
+        const valid=canvas.width===this.manifest.frame_size_px.width&&canvas.height===this.manifest.frame_size_px.height;
+        canvas.close();
+        if(!valid)throw Error('Sprite frame dimensions mismatch');
         const objectUrl=URL.createObjectURL(blob);
         this.readyFrames.set(key,objectUrl);
         return objectUrl;

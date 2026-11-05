@@ -10,7 +10,8 @@
     "composite_slicing_prohibited": true,
     "no_horizontal_flip_shortcuts": true,
     "owner_sha_bound_approval_required": true,
-    "development_marker_is_not_art": true
+    "development_marker_is_not_art": true,
+    "registered_foot_landmarks_required": true
   },
   "frame_size_px": {
     "width": 192,
@@ -394,5 +395,7 @@
       "source_provenance": null
     }
   },
-  "note": "The 40 frame slots are intentionally empty. This manifest authorizes only technical motion proof, not generated chibi artwork or production promotion."
+  "note": "The 40 frame slots are intentionally empty. This manifest authorizes only technical motion proof, not generated chibi artwork or production promotion.",
+  "obstacles": [],
+  "frame_source_directory": "orchestrator/frontend/albedo_chibi/frames"
 }

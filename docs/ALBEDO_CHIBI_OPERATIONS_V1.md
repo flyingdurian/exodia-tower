@@ -51,3 +51,12 @@ Chibi movement is suppressed when the currently selected task/companion is **not
 ### Source / isolation safeguards
 
 The original 33 Albedo review portraits and 29 protected pairs are untouched; `orchestrator/frontend/companions/production/kiko/portrait_registry.json` retains `release.enabled=false`; PR #1 remains draft. No backend provider implementations, stored task IDs, SQLite migrations, keys, cookies, or authenticated Chromium sessions are changed by this feature. The permanent owner checkout is not modified; run the preview in its own worktree and port 8767 with local-only data.
+
+## Phase 2 gait/path and 40-frame source checkpoint
+
+- 8×(idle + four walk poses) remain pinned to unique `idle_<dir>` and `walk_<dir>_00..03` source filenames under `orchestrator/frontend/albedo_chibi/frames/`. The directory is a **reserved destination**; no claimed PNGs are present yet.
+- Movement uses physical floor-pixel aspect ratio to keep walk speed and frame progression constant in desktop/mobile views. Stride phase is continuous when a command changes the target; only a full arrived idle resets to frame zero.
+- Optional registered floor-only obstacle rectangles are supported by a visibility-graph route planner using the character's collision radius. No furniture geometry is invented in the current uncluttered technical test floor; register measured geometry before enabling an obstacle.
+- Shadow/floor CSS positioning comes from the same manifest anchor, not a separately guessed percentage. The renderer rejects a PNG if either its SHA-256 **or native 192×256 dimensions** differ.
+- `python orchestrator/tools/audit_chibi_frames.py` checks all 40 source slots without accepting a cropped turnaround board. Pending status returns `PENDING_INDEPENDENT_ART_AND_OWNER_APPROVAL`; an approved manifest must include exact unique frame hashes, actual standalone source files, transparency, image size, an image-bound human-reviewed foot anchor, and SHA-specific approval. Automated checks alone do **not** certify anatomy or owner consent.
+- Gate remains `production_release_enabled=false`. Final foot contact quality requires comparing *actual independently authored* frames on floor paths in all eight directions. **No claim of eliminated visual foot slide until those images exist.**

@@ -11,6 +11,14 @@ export async function startAlbedoChibi({doc=document,win=window,loadManifest=()=
     controller=new AlbedoChibiController(manifest);
     renderer=new AlbedoChibiRenderer(root,manifest);
   }catch(_){status.textContent='CHIBI FLOOR UNAVAILABLE · MANIFEST CHECK FAILED';root.dataset.ready='error';return null;}
+  // Floor movement uses physical pixel aspect so diagonals do not cover extra
+  // distance in wide responsive layouts or accelerate the walk cycle.
+  const floor=root.querySelector('#chibiFloor');
+  const measure=()=>{
+    if(floor?.clientHeight>0&&floor?.clientWidth>0)controller.setFloorAspect(floor.clientWidth/floor.clientHeight);
+  };
+  measure();const observer=typeof ResizeObserver!=='undefined'?new ResizeObserver(measure):null;
+  if(observer)observer.observe(floor);
   const comp=doc.getElementById('companion');
   const tasks=[];let lastKey=null;let taskAgent='kiko';
   const currentAgent=()=>comp?.value||'kiko';
@@ -42,7 +50,7 @@ export async function startAlbedoChibi({doc=document,win=window,loadManifest=()=
   };
   update();if(win.__exodiaLastPublicTaskState)onTask({detail:win.__exodiaLastPublicTaskState});
   raf=win.requestAnimationFrame(render);root.dataset.ready='1';
-  const runtime={controller,renderer,stop(){win.cancelAnimationFrame(raf);win.removeEventListener('exodia:command-task',onTask);renderer.destroy();},update};
+  const runtime={controller,renderer,stop(){win.cancelAnimationFrame(raf);win.removeEventListener('exodia:command-task',onTask);observer?.disconnect();renderer.destroy();},update};
   win.__exodiaChibiRuntime=runtime;
   return runtime;
 }

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
-import {AlbedoChibiController,DIRECTIONS,headingFromVector,validateChibiManifest,zoneForTaskState} from '../frontend/albedo_chibi_controller.mjs';
+import {AlbedoChibiController,DIRECTIONS,headingFromVector,validateChibiManifest,zoneForTaskState,planFloorRoute} from '../frontend/albedo_chibi_controller.mjs';
 import {taskSummary,buildIdentity,renderCommandStatus} from '../frontend/command_status.mjs';
 const p=fileURLToPath(new URL('../frontend/albedo_chibi_manifest.json',import.meta.url));
 const manifest=JSON.parse(readFileSync(p,'utf8'));
@@ -86,4 +86,28 @@ test('DOM status renderer uses textContent, never provider HTML',()=>{
  renderCommandStatus(root,taskSummary({state:'answered',prompt:'<img onerror=alert(1)>',agent_id:'kiko',provider:'gemini',answer:'hi'}));
  assert.equal(nodes.summaryTask.textContent,'<img onerror=alert(1)>');
  assert.equal(root.dataset.state,'answered');assert.equal(root.dataset.busy,'false');
+});
+
+test('route planner avoids declared collision blocks and reaches terminal without crossing',()=>{
+ const map=copy();map.obstacles=[{id:'center_desk',x:[.38,.58],y:[.45,.65]}];
+ assert.equal(validateChibiManifest(map),true);
+ const c=new AlbedoChibiController(map);c.setFloorAspect(2);c.goToZone('terminal');
+ assert.ok(c.waypoints.length>=2,'Collision should require a detour');
+ let safe=true;
+ for(let i=0;i<1000&&!c.arrived;i++){
+   c.tick(.05);const {x,y}=c.position;
+   if(x>.38-.022/2&&x<.58+.022/2&&y>.45-.022&&y<.65+.022)safe=false;
+ }
+ assert.equal(safe,true);assert.equal(c.arrived,true);
+ assert.equal(c.mode,'idle');assert.deepEqual(c.position,{x:map.zones.terminal.x,y:map.zones.terminal.y});
+});
+test('walk phase continues across heading changes and physical floor aspect changes speed',()=>{
+ const m=copy(),c=new AlbedoChibiController(m);c.setFloorAspect(2);
+ c.goToZone('terminal');c.tick(.05);
+ const phase=c.distanceInWalk,first=c.position.x;
+ c.goToZone('waiting');
+ assert.equal(c.distanceInWalk,phase,'Changing destination must not rewind walk contact phase');
+ c.tick(.05);assert.ok(c.distanceInWalk>phase);
+ assert.ok(Math.abs(c.position.x-first)<.015,'Aspect-corrected x step is bounded');
+ assert.throws(()=>c.setFloorAspect(0),/Invalid floor pixel aspect/);
 });
