@@ -102,3 +102,11 @@
 #expressionCard.review-portrait-unavailable #expressionFace,#expressionCard.review-portrait-unavailable #agentPortrait{display:none!important;}
 #expressionCard .review-portrait-error{max-width:90%;color:#f8c0d7;background:#362343e8;border:1px solid #e47b9b;padding:10px;border-radius:8px;text-align:center;font-size:10px;}
 @media(max-width:620px){#expressionCard.portrait-registry-active{width:100%}#expressionCard .review-portrait-status{font-size:8px}}
+
+/* Phase 2: compact, searchable, accessible mission history; no provider HTML insertion. */
+.mission-filter-toolbar{display:flex;flex-direction:column;gap:6px;margin:10px 0;padding:9px;border-radius:9px;background:#101d47;border:1px solid #536b9c}
+.mission-filter-toolbar label{font-size:10px;color:#b7c9ef}.mission-filter-toolbar input,.mission-filter-toolbar select{width:100%;min-height:32px;padding:7px;border:1px solid #576fa5;border-radius:6px;color:#eaf2ff;background:#111e42;font-size:11px}
+.mission-filter-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mission-filter-row label{min-width:0}.mission-filter-toolbar small{font-size:9px;color:#abc6ef}
+.task-item .task-error-preview{display:block;color:#ffc0b5;margin-top:4px;font-size:10px;max-height:2.8em;overflow:hidden}
+.task-item[data-state=cancelled]{border-left:3px solid #f4c58d}.task-item[data-state=failed]{border-left:3px solid #ff8894}
+.api-configuration{display:grid;gap:5px;margin:8px 0;border-top:1px solid #4a6896;padding-top:8px}.api-config-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;font-size:10px}.api-config-row span{color:#c8d6f3}.api-config-row strong{color:#eecc96;text-align:right;font-weight:600;font-size:9px}
