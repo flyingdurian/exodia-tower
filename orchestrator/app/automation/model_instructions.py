@@ -11,6 +11,14 @@ def public_task(task: dict) -> dict:
     """Task payload safe to return to an API client."""
     return {key: value for key, value in task.items() if key != "private_instructions"}
 
+def user_request_text(prompt: str) -> str:
+    """The visitor's request, without the private instruction prefix."""
+    text = prompt or ""
+    marker = "User request:\n"
+    if marker in text:
+        return text.rsplit(marker, 1)[-1].strip()
+    return text.strip()
+
 class InstructionStore:
     def __init__(self, path: Path):
         self.path = Path(path)

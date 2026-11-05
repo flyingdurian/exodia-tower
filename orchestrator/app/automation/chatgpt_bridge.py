@@ -18,6 +18,7 @@ from app.automation.multi_wrapper import (
     MultiWebSessionManager, SessionError, OperatorActionRequired, PROVIDERS,
     type_composer_text,
 )
+from app.automation.model_instructions import user_request_text
 from app.automation.gemini_media import media_intent
 
 ARTIFACTS_DIR = Path("app_data/artifacts")
@@ -160,18 +161,14 @@ class ChatGPTSubmissionBridge:
         try:
             if phase:phase('opening')
 
-            # Stay on the signed-in tab. A new tab reloads ChatGPT and repeats
-            # the verification page. A challenge URL is never navigated again.
-            existing=self.sessions._pages.get('chatgpt')
-            if existing is not None:
-                page=existing
-                owns_tab=False
-            elif hasattr(context, 'new_page'):
+            # Each task gets its own tab so the previous conversation cannot
+            # mix into this answer. The anchor tab stays open for the sign-in.
+            # A verification address is not loaded a second time.
+            if hasattr(context, 'new_page'):
                 page = await context.new_page()
-                self.sessions._pages['chatgpt']=page
             else:
-                page = None
-            
+                page = self.sessions._pages.get('chatgpt')
+                owns_tab = False
             if page is None:
                 raise SessionError('No ChatGPT browser tab available')
 
@@ -183,9 +180,7 @@ class ChatGPTSubmissionBridge:
                 current=page.url or ""
             except Exception:
                 current=""
-            host=(urlparse(current).hostname or "")
-            on_chatgpt=host=="chatgpt.com" or host.endswith(".chatgpt.com")
-            if not on_chatgpt and not self._challenge_url(current):
+            if not self._challenge_url(current):
                 await page.goto(base_url, wait_until='domcontentloaded', timeout=12000)
             if not self._challenge_url(getattr(page,'url','')):
                 self.sessions._check_destination('chatgpt', page.url)
@@ -199,11 +194,11 @@ class ChatGPTSubmissionBridge:
                     'ChatGPT window, then create a new task. The check is not retried automatically.')
             
             prompt_text=prompt.strip()
+            request_text=user_request_text(prompt_text)
             prior_text, prior_images=await self._baseline(page)
-            # Long instruction prompts (JuHua readings, follow-ups) often
-            # contain phrases like "make a decision" or "draw new cards".
-            # Those must stay on the text watcher, not the image shortcut.
-            is_image_prompt = media_intent(prompt_text) and len(prompt_text) < 600
+            # Instructions can be long and can mention pictures. Judge the
+            # visitor's request only, so a real image task still returns the file.
+            is_image_prompt = media_intent(request_text) and len(request_text) < 600
 
             if phase:phase('typing')
             t_typing=monotonic()

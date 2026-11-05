@@ -1,7 +1,7 @@
 """Gemini generated-media handling for an operator's local browser session.
 
-Never treat old thumbnails as the new result. Read only images/videos inside
-Gemini model messages. Browser fetch works for authenticated/blob sources; media
+Never treat old thumbnails as the new result. A large new image counts even
+when Gemini moves it outside the old model-response element. Browser fetch works for authenticated/blob sources; media
 are validated and saved to Exodia's own artifacts directory.
 """
 from __future__ import annotations
@@ -23,19 +23,20 @@ MEDIA_SCRIPT=r"""() => {
     // alone misses generated content living inside open shadow roots.
     const nodes=root.querySelectorAll('*');
     for(const el of nodes){
-      const admitted=inside || (el.matches&&el.matches(SELECTOR)) || (el.closest&&el.closest(SELECTOR));
-      if(admitted && (el.tagName==='IMG'||el.tagName==='VIDEO')){
+      const inMessage=inside || (el.matches&&el.matches(SELECTOR)) || (el.closest&&el.closest(SELECTOR));
+      if(el.tagName==='IMG'||el.tagName==='VIDEO'){
         const bounds=el.getBoundingClientRect();
         const width=el.naturalWidth||el.videoWidth||bounds.width;
         const height=el.naturalHeight||el.videoHeight||bounds.height;
         const src=el.currentSrc||el.getAttribute('src')||'';
-        if(width>=100&&height>=70&&src&&!seen.has(src)&&!src.startsWith('javascript:')){
+        const large=width>=180&&height>=180;
+        if((inMessage||large)&&width>=100&&height>=70&&src&&!seen.has(src)&&!src.startsWith('javascript:')&&!/avatar|logo|icon/i.test(src)){
           seen.add(src);
           result.push({kind:el.tagName==='VIDEO'?'video':'image',src,
             poster:el.getAttribute('poster')||'',width,height});
         }
       }
-      if(el.shadowRoot)walk(el.shadowRoot,admitted);
+      if(el.shadowRoot)walk(el.shadowRoot,inMessage);
     }
   }
   walk(document,false);

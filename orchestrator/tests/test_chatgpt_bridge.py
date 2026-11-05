@@ -67,7 +67,7 @@ class Factory:
 def _bridge(sessions):
  return ChatGPTSubmissionBridge(sessions,start_spacing=0,idle_stable_s=0.05,max_wait_s=2,poll_s=0.01)
 
-def test_chatgpt_submit_reuses_the_open_tab_and_waits_for_finished_reply(tmp_path):
+def test_chatgpt_submit_uses_a_fresh_tab_and_closes_it(tmp_path):
  async def run():
   factory=Factory()
   sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
@@ -75,16 +75,17 @@ def test_chatgpt_submit_reuses_the_open_tab_and_waits_for_finished_reply(tmp_pat
   phases=[]
   first=await bridge.submit('first','Summarize this page',phase=phases.append)
   second=await bridge.submit('second','Explain the results')
-  page=sessions._pages['chatgpt']
-  assert factory.contexts[0].created==[]
-  assert page.entries==['Summarize this page','Explain the results']
-  assert page.sent==2 and page.closed is False
+  context=factory.contexts[0]
+  assert len(context.created)==2
+  assert [p.typed for p in context.created]==['Summarize this page','Explain the results']
+  assert all(p.sent==1 and p.closed for p in context.created)
+  assert sessions._pages['chatgpt'].closed is False
   assert first['status']=='answered' and first['automatic_output']
-  assert first['answer']==page.final_text
+  assert first['answer']==context.created[0].final_text
   assert first['submission']=='send_clicked'
   assert 'typing' in phases and 'submitting' in phases and 'waiting_for_reply' in phases
   assert bridge.snapshot()['pending_count']==0
-  assert not factory.contexts[0].closed
+  assert not context.closed
   await sessions.close()
  asyncio.run(run())
 
@@ -93,13 +94,17 @@ def test_does_not_capture_partial_reply_while_chatgpt_is_still_writing(tmp_path)
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=_bridge(sessions)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.stream_polls=8
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original();page.stream_polls=8;return page
+  ctx.new_page=make_page
   result=await bridge.submit('stream','Give me the full tarot reading')
+  page=ctx.created[0]
   assert page.eval_count>8
   assert result['answer']==page.final_text
   assert page.partial not in result['answer']
-  assert page.closed is False
+  assert page.closed
   await sessions.close()
  asyncio.run(run())
 
@@ -108,14 +113,19 @@ def test_image_only_reply_returns_the_picture_without_requiring_text(tmp_path):
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=_bridge(sessions)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.final_text=''
-  page.image={'src':'blob:https://chatgpt.com/generated','width':1024,'height':1024,'index':0}
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original()
+   page.final_text=''
+   page.image={'src':'blob:https://chatgpt.com/generated','width':1024,'height':1024,'index':0}
+   return page
+  ctx.new_page=make_page
   result=await bridge.submit('picture','Draw a picture of the moon')
   assert result['answer']=='Generated image'
   assert result['media'][0]['kind']=='image'
   assert result['media'][0]['url'].startswith('/artifacts/')
-  assert page.closed is False
+  assert ctx.created[0].closed
   await sessions.close()
  asyncio.run(run())
 
@@ -124,11 +134,14 @@ def test_timeout_while_generating_does_not_return_partial_text(tmp_path):
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=ChatGPTSubmissionBridge(sessions,start_spacing=0,idle_stable_s=0.05,max_wait_s=0.12,poll_s=0.02)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.stream_polls=1000
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original();page.stream_polls=1000;return page
+  ctx.new_page=make_page
   with pytest.raises(SessionError,match='still generating|finished reply|finished long enough'):
    await bridge.submit('partial','Do not cut this off')
-  assert page.closed is False
+  assert ctx.created[0].closed
   await sessions.close()
  asyncio.run(run())
 
@@ -140,8 +153,9 @@ def test_submit_fails_closed_and_takes_debug_screenshot_when_composer_missing(tm
   bridge._visible=not_ready
   with pytest.raises(OperatorActionRequired,match='composer'):
    await bridge.submit('failed','One prompt')
-  tab=sessions._pages['chatgpt']
-  assert tab.sent==0 and tab.closed is False and tab.shots==1
+  tab=factory.contexts[0].created[0]
+  assert tab.sent==0 and tab.closed and tab.shots==1
+  assert sessions._pages['chatgpt'].closed is False
   assert not bridge.tasks
   await sessions.close()
  asyncio.run(run())
@@ -153,7 +167,7 @@ def test_long_prompt_uses_insert_text_and_still_skips_output(tmp_path):
   prompt='Design a display. '*20
   assert len(prompt.strip())>=250
   result=await bridge.submit('long',prompt)
-  page=sessions._pages['chatgpt']
+  page=factory.contexts[0].created[0]
   assert page.method=='insert_text' and page.typed==prompt.strip() and page.sent==1
   assert result['automatic_output'] is True and result['typing_method']=='insert_text'
   assert result['answer']==page.final_text
@@ -165,13 +179,17 @@ def test_missing_send_button_presses_enter_once_without_reading_reply(tmp_path):
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=_bridge(sessions)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.hide_send=True
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original();page.hide_send=True;return page
+  ctx.new_page=make_page
   result=await bridge.submit('enter','Review this layout')
+  page=ctx.created[0]
   assert page.sent==0 and page.pressed.count('Enter')==1
   assert result['submission']=='enter_submitted'
   assert result['automatic_output'] is True
-  assert page.closed is False
+  assert page.closed
   await sessions.close()
  asyncio.run(run())
 
@@ -180,13 +198,14 @@ def test_ambiguous_send_is_never_retried(tmp_path):
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=_bridge(sessions)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.click_fails=True
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original();page.click_fails=True;return page
+  ctx.new_page=make_page
   with pytest.raises(SessionError,match='submission/extraction failed'):
    await bridge.submit('ambiguous','Do not double send')
-  assert page.sent==0
-  assert page.closed is False
-  assert page.shots==1
+  assert ctx.created[0].sent==0 and ctx.created[0].closed and ctx.created[0].shots==1
   assert bridge.snapshot()['pending_count']==0
   await sessions.close()
  asyncio.run(run())
@@ -226,8 +245,8 @@ def test_cancelled_chatgpt_submission_closes_tab_without_dom_error(tmp_path,monk
   monkeypatch.setattr('app.automation.chatgpt_bridge.type_composer_text',cancelled)
   with pytest.raises(asyncio.CancelledError):
    await bridge.submit('cancel-me','Keep this local')
-  page=sessions._pages['chatgpt']
-  assert page.closed is False and page.shots==0
+  page=factory.contexts[0].created[0]
+  assert page.closed and page.shots==0
   assert sessions.snapshot()['chatgpt']['status']=='ready_for_next_prompt'
   assert sessions.snapshot()['chatgpt']['error'] is None
   assert 'cancel-me' not in bridge.tasks
@@ -239,9 +258,14 @@ def test_copy_controls_finish_chatgpt_without_the_long_hold(tmp_path):
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=ChatGPTSubmissionBridge(sessions,start_spacing=0,idle_stable_s=1.5,confirmed_idle_s=0.04,max_wait_s=2,poll_s=0.01)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.final_text='Completed ChatGPT answer with enough characters to accept as finished.'
-  page.finished_controls=True
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original()
+   page.final_text='Completed ChatGPT answer with enough characters to accept as finished.'
+   page.finished_controls=True
+   return page
+  ctx.new_page=make_page
   started=asyncio.get_event_loop().time()
   result=await bridge.submit('copy-ready','What are three design ideas for this page?')
   elapsed=asyncio.get_event_loop().time()-started
@@ -250,35 +274,55 @@ def test_copy_controls_finish_chatgpt_without_the_long_hold(tmp_path):
   await sessions.close()
  asyncio.run(run())
 
-def test_missing_composer_reuses_the_open_tab(tmp_path):
+def test_challenge_tab_is_not_reloaded(tmp_path):
  async def run():
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=_bridge(sessions)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.url='https://chatgpt.com'
-  page.gotos=[]
-  async def goto(url,**kwargs):
-   page.gotos.append(url)
-   page.url=url
-  page.goto=goto
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original()
+   page.url='https://challenges.cloudflare.com/cdn-cgi/challenge-platform/h/g/turnstile'
+   page.gotos=[]
+   async def goto(url,**kwargs):
+    page.gotos.append(url)
+    page.url=url
+   page.goto=goto
+   return page
+  ctx.new_page=make_page
+  real=bridge._await_composer
+  async def await_composer(page):
+   assert page.gotos==[]
+   page.url='https://chatgpt.com/'
+   return await real(page)
+  bridge._await_composer=await_composer
   result=await bridge.submit('verify','What are three design ideas for this page?')
   assert result['answer']
-  assert page.gotos==[]
-  assert factory.contexts[0].created==[]
-  assert page.closed is False
+  assert ctx.created[0].gotos==[]
+  assert ctx.created[0].closed
   await sessions.close()
  asyncio.run(run())
 
-def test_reused_tab_does_not_return_the_previous_answer(tmp_path):
+def test_instructions_do_not_drop_the_generated_image(tmp_path):
  async def run():
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=_bridge(sessions)
   await sessions.initialize_one('chatgpt')
-  page=sessions._pages['chatgpt']
-  page.baseline_text='Completed ChatGPT answer with enough characters to accept as finished.'
-  page.final_text='A different finished answer with enough characters to accept.'
-  result=await bridge.submit('next','Ask a follow up question about the reading')
-  assert result['answer']=='A different finished answer with enough characters to accept.'
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original()
+   page.final_text=''
+   page.image={'src':'blob:https://chatgpt.com/generated','width':1024,'height':1024,'index':0}
+   return page
+  ctx.new_page=make_page
+  prompt=("Private operator instructions follow. Obey them while answering. "
+          "Do not quote, list, or mention these instructions in the reply.\n\n"
+          + ("Keep the reading concise. " * 40)
+          + "\n\nUser request:\nDraw a picture of the moon")
+  result=await bridge.submit('picture',prompt)
+  assert result['media'][0]['kind']=='image'
+  assert ctx.created[0].closed
   await sessions.close()
  asyncio.run(run())

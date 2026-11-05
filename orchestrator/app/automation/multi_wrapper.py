@@ -8,6 +8,7 @@ from typing import Any
 from urllib.parse import urlparse
 from time import monotonic
 from app.automation.interactive_dom import StreamWatchConfig, watch_response_stream, DOMResponseError
+from app.automation.model_instructions import user_request_text
 from app.automation.gemini_media import (
     media_intent, snapshot_media, await_media_answer, store_media, MediaCaptureError
 )
@@ -372,7 +373,7 @@ class MultiWebSessionManager:
                 history=page.locator(spec["response"])
                 prior_count=await history.count()
                 prior_text=(await history.last.inner_text(timeout=7000)).strip() if prior_count else ""
-                wants_media=media_intent(prompt)
+                wants_media=platform!="deepseek" and media_intent(user_request_text(prompt))
                 baseline_media=await snapshot_media(page) if wants_media else []
 
                 self._status[platform]="typing"
@@ -406,7 +407,7 @@ class MultiWebSessionManager:
                         baseline=baseline_media,baseline_count=prior_count,
                         baseline_text=prior_text,
                         timeout=360.0 if 'video' in prompt.lower() else 130.0,
-                        poll=.35,stable=1.6,confirmed_stable=1.0)
+                        poll=.35,stable=1.6)
                     answer=result.answer
                     if answer:mark_first_text()
                     if result.media:
@@ -427,8 +428,28 @@ class MultiWebSessionManager:
                             poll_seconds=.2),
                         initial_count=prior_count,initial_text=prior_text,
                         on_first_text=mark_first_text)
+                    if platform=="gemini":
+                        try:
+                            found=await snapshot_media(page)
+                        except Exception:
+                            found=[]
+                        fresh=[item for item in found if isinstance(item,dict) and item.get("src")]
+                        if fresh:
+                            media=await store_media(page,fresh,self.root/'app_data'/'artifacts')
+                if wants_media and not any(item.get("url") for item in media):
+                    try:
+                        found=await snapshot_media(page)
+                    except Exception:
+                        found=[]
+                    known={item.get("src") for item in baseline_media if isinstance(item,dict)}
+                    fresh=[item for item in found if isinstance(item,dict) and item.get("src") not in known]
+                    if fresh:
+                        media=await store_media(page,fresh,self.root/'app_data'/'artifacts')
                 finished_at=monotonic()
-                if not answer.strip(): raise SessionError(f"{label} returned no readable text or media.")
+                if not answer.strip() and not any(item.get("url") for item in media):
+                    raise SessionError(f"{label} returned no readable text or media.")
+                if not answer.strip():
+                    answer=f"Generated {sum(1 for item in media if item.get('url'))} media file(s)."
                 timings={
                     "browser_setup_s":round(browser_ready-t_begin,3),
                     "editor_wait_s":round(editor_ready-t_editor,3),

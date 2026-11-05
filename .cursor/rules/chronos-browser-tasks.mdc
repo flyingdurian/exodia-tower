@@ -1,0 +1,14 @@
+---
+description: Chronos browser tasks stay in a fresh chat and return generated images
+alwaysApply: true
+---
+
+# Chronos browser tasks
+
+- Each ChatGPT, Gemini, and DeepSeek task opens a new chat tab. Do not type a later task into an earlier conversation.
+- Close that task tab after the reply and any generated media are stored. Leave the signed-in anchor tab open.
+- If the new tab is already a human-verification page, do not navigate it again and do not inject script into it.
+- ChatGPT and Gemini image tasks must return the image file with the reply. A caption by itself is not a finished image result.
+- Judge image intent from the text after `User request:`, so saved instructions do not hide or force image capture.
+- DeepSeek does not generate images. Do not add an image path for it.
+- Task API responses omit saved and per-task instructions. Settings endpoints are the only place that returns saved instruction text.
