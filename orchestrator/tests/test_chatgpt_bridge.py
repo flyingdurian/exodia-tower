@@ -272,3 +272,30 @@ def test_copy_controls_finish_chatgpt_without_the_long_hold(tmp_path):
   assert elapsed<0.8
   await sessions.close()
  asyncio.run(run())
+
+def test_human_check_does_not_open_chatgpt_again(tmp_path):
+ async def run():
+  factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
+  bridge=_bridge(sessions)
+  await sessions.initialize_one('chatgpt')
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original()
+   page.gotos=[]
+   async def goto(url,**kwargs):
+    page.gotos.append(url)
+    page.url=url
+   page.goto=goto
+   return page
+  ctx.new_page=make_page
+  seen=[]
+  async def check(page):
+   seen.append(page.url)
+   return len(seen)==1
+  bridge._human_check=check
+  result=await bridge.submit('verify','What are three design ideas for this page?')
+  assert result['answer']
+  assert factory.contexts[0].created[0].gotos==[]
+  await sessions.close()
+ asyncio.run(run())
