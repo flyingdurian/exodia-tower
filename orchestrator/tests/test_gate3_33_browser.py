@@ -84,6 +84,18 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     assert 'Not configured' in provider_text
                     assert 'Automatic reply' not in provider_text, 'Authentication must never be inferred from capability'
                     assert await command.locator('#engineChecked').inner_text()
+                    # Seven-model catalog is unchanged; each official API has
+                    # a separate, honest, catalog-derived configuration row.
+                    await command.wait_for_function(
+                        "() => document.querySelectorAll('#apiModelConfiguration .api-config-row').length===3",
+                        timeout=10000)
+                    assert 'no requests sent' in await command.locator('#apiModelConfiguration').inner_text()
+                    assert await command.locator('#historySearch').count()==1
+                    assert await command.locator('#historyState').count()==1
+                    assert await command.locator('#historyProvider').count()==1
+                    await command.locator('#historySearch').fill('never-match-this-query-6f4c')
+                    assert 'No missions match these filters' in await command.locator('#taskList').inner_text() or 'No tasks yet' in await command.locator('#taskList').inner_text()
+                    await command.locator('#historySearch').fill('')
                     # The real command stage must display genuine SHA-verified
                     # 33-state *development* art, not the old low-res atlas or
                     # the production registry (which remains release-locked).
@@ -132,7 +144,12 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await command.wait_for_function(
                       "() => window.__exodiaDevelopmentPortraitStage?.state === 'idle'",timeout=15000)
                     assert await command.locator('#expressionCard.portrait-registry-active').count()==1
-                    await command.screenshot(path=str(proof/'command_version_providers_DESKTOP.png'))
+                    # The filter toolbar scrolls into view during interaction; capture the
+                    # complete real dashboard rather than a scrolled middle viewport.
+                    await command.evaluate('() => window.scrollTo(0, 0)')
+                    await command.screenshot(
+                        path=str(proof/'command_version_providers_DESKTOP.png'),
+                        full_page=True)
                     await command.close()
                     command_mobile=await browser.new_page(viewport={'width':390,'height':844},
                                                          is_mobile=True,has_touch=True)

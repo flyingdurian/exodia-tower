@@ -1,4 +1,5 @@
 import {taskSummary,renderCommandStatus,buildIdentity} from './command_status.mjs';
+import {filterMissionHistory,describeTask,publicApiRows} from './mission_history.mjs';
 /* Production-mode expression transitions; no active cutout rig. */
 /* Exodia Tower — Albedo live command stage.
  * Stage uses existing multi-frame video, real task events and independent scene VFX.
@@ -223,14 +224,22 @@ function selectTask(id){
  renderAnswer(task);updateMoodForTask(task,previous);refreshCommandSummary(task);
 }
 function renderTasks(){
- UI.taskList.replaceChildren();
- for(const task of tasks.slice(0,18)){
-  const btn=element('button','task-item');btn.type='button';btn.dataset.id=task.id;
-  btn.append(element('b','',task.prompt||'Untitled task'),element('span','',(modelLabels.get(task.provider)||task.provider)+' · '+task.agent_id+' · '+prettyName(task.state)));
-  btn.addEventListener('click',()=>selectTask(task.id));
-  UI.taskList.append(btn);
- }
- if(!tasks.length)UI.taskList.append(element('div','muted','No tasks yet.'));
+  const filtered=filterMissionHistory(tasks,{
+    query:$('#historySearch')?.value||'',state:$('#historyState')?.value||'all',
+    provider:$('#historyProvider')?.value||'all'});
+  const count=$('#historyCount');if(count)count.textContent=`${filtered.length} of ${tasks.length} stored tasks shown`;
+  UI.taskList.replaceChildren();
+  for(const task of filtered.slice(0,75)){
+    const info=describeTask(task),btn=element('button','task-item');
+    btn.type='button';btn.dataset.id=task.id;btn.dataset.state=task.state;
+    btn.classList.toggle('active',task.id===activeTaskId);
+    const title=element('b','',task.prompt||'Untitled task');title.title=task.prompt||'';
+    btn.append(title,element('span','',(modelLabels.get(task.provider)||task.provider)+' · '+task.agent_id+' · '+info.lifecycle+' · '+info.timing));
+    if(task.state==='failed'&&task.error)btn.append(element('small','task-error-preview',String(task.error).slice(0,130)));
+    btn.addEventListener('click',()=>selectTask(task.id));
+    UI.taskList.append(btn);
+  }
+  if(!filtered.length)UI.taskList.append(element('div','muted',tasks.length?'No missions match these filters.':'No tasks yet.'));
 }
 async function loadTasks({initial=false}={}){
  const d=await api('/api/command/tasks');tasks=d.tasks||[];renderTasks();
@@ -267,7 +276,14 @@ async function refreshProviderHealth(){
  const container=$('#providerStatus');if(!container)return;
  container.replaceChildren();
  for(const [name,value] of entries){const row=element('div','');row.append(element('span','',name),element('strong','',value));container.append(row);}
- const checked=$('#engineChecked');if(checked)checked.textContent='Local session status · '+new Date().toLocaleTimeString();
+  // Catalog state is the only allowed source for API configuration claims.
+  const rows=publicApiRows(providerStatus.model_options);
+  const configs=$('#apiModelConfiguration');if(configs){
+    configs.replaceChildren();
+    for(const item of rows){const row=element('div','api-config-row');
+      row.append(element('span','',item.label),element('strong','',item.description));configs.append(row);}
+  }
+  const checked=$('#engineChecked');if(checked)checked.textContent='Local session status · '+new Date().toLocaleTimeString();
 }
 async function refreshModels(){
  try{
@@ -317,6 +333,7 @@ $('#dispatch').addEventListener('submit',async event=>{
 });
 document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{UI.prompt.value=b.dataset.prompt;UI.prompt.focus();lastInteraction=Date.now();}));
 $('#refreshTasks').addEventListener('click',()=>loadTasks().catch(e=>inform(e.message,true)));
+for(const name of ['historySearch','historyState','historyProvider'])$('#'+name)?.addEventListener(name==='historySearch'?'input':'change',renderTasks);
 UI.companion.addEventListener('change',()=>refreshCommandSummary(chosenTask));
 UI.model.addEventListener('change',()=>refreshCommandSummary(chosenTask));
 UI.cancelTask?.addEventListener('click',async()=>{

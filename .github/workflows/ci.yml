@@ -34,6 +34,8 @@ jobs:
       - run: node --test orchestrator/tests/albedo_chibi_boot.test.mjs
       - run: node --check orchestrator/frontend/command_status.mjs
       - run: node --test orchestrator/tests/albedo_chibi_controller.test.mjs
+      - run: node --check orchestrator/frontend/mission_history.mjs
+      - run: node --test orchestrator/tests/mission_history.test.mjs
       - run: node --check orchestrator/frontend/development_portrait_stage.mjs
       - run: node --check orchestrator/frontend/development_portrait_boot.mjs
       - run: node --test orchestrator/tests/development_portrait_stage.test.mjs
