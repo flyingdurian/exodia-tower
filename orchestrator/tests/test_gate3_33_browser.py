@@ -144,7 +144,12 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await command.wait_for_function(
                       "() => window.__exodiaDevelopmentPortraitStage?.state === 'idle'",timeout=15000)
                     assert await command.locator('#expressionCard.portrait-registry-active').count()==1
-                    await command.screenshot(path=str(proof/'command_version_providers_DESKTOP.png'))
+                    # The filter toolbar scrolls into view during interaction; capture the
+                    # complete real dashboard rather than a scrolled middle viewport.
+                    await command.evaluate('() => window.scrollTo(0, 0)')
+                    await command.screenshot(
+                        path=str(proof/'command_version_providers_DESKTOP.png'),
+                        full_page=True)
                     await command.close()
                     command_mobile=await browser.new_page(viewport={'width':390,'height':844},
                                                          is_mobile=True,has_touch=True)
