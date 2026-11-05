@@ -1,3 +1,4 @@
+import {taskSummary,renderCommandStatus,buildIdentity} from './command_status.mjs';
 /* Production-mode expression transitions; no active cutout rig. */
 /* Exodia Tower — Albedo live command stage.
  * Stage uses existing multi-frame video, real task events and independent scene VFX.
@@ -29,6 +30,20 @@ let handoffTaskId=null;
 const modelLabels=new Map();
 const moodDesc=Object.fromEntries(MOODS.map(m=>[m[0],m[2]]));
 const prettyName=s=>(s||'').replaceAll('_',' ').toUpperCase();
+function refreshCommandSummary(task=chosenTask){
+ const agentName=id=>roster.find(a=>a.id===id)?.name||id||'Unknown companion';
+ const providerName=id=>modelLabels.get(id)||id||'Unknown provider';
+ const selectedAgent=agentName(UI.companion?.value||'kiko');
+ const selectedProvider=UI.model?.selectedOptions[0]?.textContent.replace(' — Not configured','')||'Not selected';
+ renderCommandStatus(document.getElementById('commandStatusStrip'),taskSummary(task,{selectedAgent,selectedProvider,agentName,providerName}));
+ $('#summarySelectedCompanion').textContent=selectedAgent;
+ const activeCount=tasks.filter(t=>ACTIVE.has(t.state)||t.state==='awaiting_operator').length;
+ $('#summaryBackground').textContent=activeCount?activeCount+' task'+(activeCount===1?'':'s')+' running / waiting':'No tasks running';
+ // Only minimal public task routing information enters the movement runtime.
+ const publicDetail={state:task?.state||'idle',agentId:task?.agent_id||UI.companion?.value||'kiko',provider:task?.provider||''};
+ window.__exodiaLastPublicTaskState=publicDetail;
+ window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:publicDetail}));
+}
 function moodForTask(task){
  if(!task)return Date.now()-lastInteraction>90000?'sleeping':'idle';
  if(task.state==='researching'||task.state==='typing'||task.state==='opening'||task.state==='submitting'||task.state==='rendering_media')return 'processing';
@@ -205,7 +220,7 @@ function selectTask(id){
  if(!task)return;
  activeTaskId=task.id;chosenTask=task;lastInteraction=Date.now();
  document.querySelectorAll('.task-item').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
- renderAnswer(task);updateMoodForTask(task,previous);
+ renderAnswer(task);updateMoodForTask(task,previous);refreshCommandSummary(task);
 }
 function renderTasks(){
  UI.taskList.replaceChildren();
@@ -222,7 +237,7 @@ async function loadTasks({initial=false}={}){
  let current=tasks.find(t=>t.id===activeTaskId);
  if(!current&&initial)current=tasks[0];
  if(current)selectTask(current.id);
- else if(!explicitPreview){setMood(moodForTask(null));renderAnswer(null);}
+ else if(!explicitPreview){activeTaskId=null;chosenTask=null;setMood(moodForTask(null));renderAnswer(null);refreshCommandSummary(null);}
 }
 function browserStateLabel(snapshot){
  const state=snapshot?.status||'not_started';
@@ -272,6 +287,7 @@ async function refreshModels(){
   UI.model.value=Array.from(UI.model.options).some(o=>o.value===preserved&&!o.disabled)?preserved:modelData.default;
   const build=await api('/api/build-info');
   const marker=$('#buildBadge');if(marker){marker.textContent=build.label;marker.title=build.commit_sha||'Commit unavailable; using safe fallback';}
+  const identity=buildIdentity(build);$('#buildChannel').textContent=identity.channel;$('#buildShortSha').textContent=identity.sha;
 
   const d=await api('/api/companions');
   roster=d.agents||[];
@@ -279,6 +295,7 @@ async function refreshModels(){
   for(const a of roster){const op=element('option','',a.name);op.value=a.id;UI.companion.append(op);}
   UI.companion.value='kiko';
   await refreshProviderHealth();
+  refreshCommandSummary();
  }catch(e){UI.diagnostic.textContent='Provider status unavailable: '+e.message;}
 }
 $('#dispatch').addEventListener('submit',async event=>{
@@ -288,17 +305,20 @@ $('#dispatch').addEventListener('submit',async event=>{
    prompt:UI.prompt.value.trim(),web_research:UI.research.checked,custom_instructions:$('#taskInstructions').value.trim()};
  if(!payload.prompt){inform('Enter a task first.',true);requestInFlight=false;send.disabled=false;return;}
  try{
+  refreshCommandSummary({state:'submitting',agent_id:payload.agent_id,provider:payload.model_choice,prompt:payload.prompt});
   const task=await post('/api/command/tasks',payload);
   explicitPreview=false;lastCompleted=null;lastInteraction=Date.now();
   inform('Task dispatched to '+(roster.find(a=>a.id===payload.agent_id)?.name||payload.agent_id)+'.');
   await loadTasks();selectTask(task.id);
   if(task.provider==='chatgpt')inform('ChatGPT (chronos) is submitting and retrieving the response automatically; browser sign-in may require your attention.');
   else if(task.provider==='deepseek')inform('DeepSeek (chronos) is submitting and retrieving the response automatically; browser sign-in may require your attention.');
- }catch(e){inform(e.message,true);UI.diagnostic.textContent=e.message;}
+ }catch(e){inform(e.message,true);UI.diagnostic.textContent=e.message;refreshCommandSummary(chosenTask);}
  finally{requestInFlight=false;send.disabled=false;}
 });
 document.querySelectorAll('[data-prompt]').forEach(b=>b.addEventListener('click',()=>{UI.prompt.value=b.dataset.prompt;UI.prompt.focus();lastInteraction=Date.now();}));
 $('#refreshTasks').addEventListener('click',()=>loadTasks().catch(e=>inform(e.message,true)));
+UI.companion.addEventListener('change',()=>refreshCommandSummary(null));
+UI.model.addEventListener('change',()=>refreshCommandSummary(chosenTask));
 UI.cancelTask?.addEventListener('click',async()=>{
  const task=tasks.find(t=>t.id===activeTaskId);
  if(!task||!(ACTIVE.has(task.state)||task.state==='awaiting_operator'||task.state==='draft'))return;
@@ -389,7 +409,7 @@ $('#openWebSessions').addEventListener('click',async()=>{
  catch(e){inform(e.message,true);}
 });
 let paused=false;
-setMood('idle');renderAnswer(null);
+setMood('idle');renderAnswer(null);refreshCommandSummary(null);
 // Rejected cutout/rig stage is intentionally inactive in the public dashboard.
 await refreshModels();
 try{await loadTasks({initial:true})}catch(e){inform('Cannot load tasks: '+e.message,true);}

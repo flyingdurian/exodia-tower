@@ -26,6 +26,11 @@ jobs:
       - run: node --test orchestrator/tests/kiko_art_engine.test.mjs
       - run: node --test orchestrator/tests/kiko_layer_runtime.test.mjs
       - run: node --check orchestrator/frontend/albedo_command.js
+      - run: node --check orchestrator/frontend/albedo_chibi_controller.mjs
+      - run: node --check orchestrator/frontend/albedo_chibi_renderer.mjs
+      - run: node --check orchestrator/frontend/albedo_chibi_boot.mjs
+      - run: node --check orchestrator/frontend/command_status.mjs
+      - run: node --test orchestrator/tests/albedo_chibi_controller.test.mjs
       - run: node --check orchestrator/frontend/development_portrait_stage.mjs
       - run: node --check orchestrator/frontend/development_portrait_boot.mjs
       - run: node --test orchestrator/tests/development_portrait_stage.test.mjs
@@ -34,7 +39,7 @@ jobs:
       - run: node --check orchestrator/frontend/test_workbench_33.mjs
       - run: node --test orchestrator/tests/albedo_motion.test.mjs
       - run: python -m playwright install --with-deps chromium
-      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py tests/test_core5_browser.py tests/test_gate3_33_browser.py -q
+      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py tests/test_core5_browser.py tests/test_gate3_33_browser.py tests/test_albedo_chibi_browser.py -q
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -54,6 +59,13 @@ jobs:
         with:
           name: exodia-state33-responsive-browser-proof
           path: orchestrator/app_data/qa_state33/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-albedo-chibi-operations-proof
+          path: orchestrator/app_data/qa_chibi/*.png
           if-no-files-found: ignore
           retention-days: 7
       - run: node --check orchestrator/frontend/albedo_experience.mjs

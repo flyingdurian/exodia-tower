@@ -3,12 +3,22 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/><title>Albedo · Exodia Tower</title>
 <link rel="stylesheet" href="/assets/albedo_command.css?v=1"/>
-<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script></head>
+<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script><script type="module" src="/assets/albedo_chibi_boot.mjs?v=1"></script></head>
 <body>
 <div class="app-shell">
 <header class="masthead"><a href="/" class="logo" aria-label="Exodia Tower home"><span class="brand-mark">✦</span><span><b>EXODIA TOWER</b><small>AI COMPANION COMMAND CENTER</small></span></a>
 <nav class="top-nav" aria-label="Primary"><a href="/" aria-current="page">◈ Command</a><a href="/operations-legacy">◉ Operations</a><a href="/companions">✦ Companions</a><a href="/art-studio">✧ Art Studio</a><a href="/companion-art-qa">✦ Art QA</a><a href="/test-workbench">⊹ 33 State Review</a><a href="/puppet-lab">♙ Rig Lab</a></nav>
-<div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span><span id="buildBadge" class="build-badge" aria-label="Application build">EXODIA v0.3.0-dev · unknown</span></div></header>
+<div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span><span id="buildBadge" class="build-badge" aria-label="Application build">EXODIA v0.3.0-dev · unknown</span><span class="build-meta" aria-label="Build channel and Git revision"><span id="buildChannel">development</span> · <code id="buildShortSha">unknown</code></span></div></header>
+<section class="command-status-strip" id="commandStatusStrip" aria-label="Current mission status" data-state="idle">
+ <div class="command-status-item"><small>SELECTED COMPANION</small><strong id="summarySelectedCompanion">Albedo</strong></div>
+ <div class="command-status-item command-status-task"><small>SELECTED TASK</small><strong id="summaryTask">No task selected</strong></div>
+ <div class="command-status-item"><small>TASK PROVIDER</small><strong id="summaryProvider">ChatGPT (chronos)</strong></div>
+ <div class="command-status-item"><small>STATE</small><strong id="summaryState">No active task</strong></div>
+ <div class="command-status-item command-result"><small>RESULT</small><strong id="summaryResult">Awaiting command</strong></div>
+ <div class="command-status-item"><small>TASK OWNER</small><strong id="summaryAgent">Albedo</strong></div>
+<div class="command-status-item"><small>LATENCY</small><strong id="summaryLatency">—</strong></div>
+<div class="command-status-item"><small>BACKGROUND</small><strong id="summaryBackground">No tasks running</strong></div>
+</section>
 <main class="command-grid">
 <section class="hero-col">
 <div class="hero card task-stage" id="hero" data-state="idle">
@@ -47,6 +57,25 @@
   <div class="hero-overlay" id="heroOverlay" aria-live="polite"></div>
 </div>
 <div class="hero-foot"><span><span class="live-dot"></span> AUTOMATIC EXPRESSIONS</span><span>Task states drive the companion, no manual controls</span></div>
+<section id="chibiOperations" class="chibi-operations card" aria-label="Albedo operations floor movement prototype" data-ready="loading">
+ <div class="chibi-header"><div><span class="section-kicker">OPERATIONS FLOOR · ALBEDO</span><p>8-direction navigation and workstation zones</p></div><strong id="chibiArtStatus" role="status">CHECKING 40-FRAME CONTRACT</strong></div>
+ <div class="chibi-floor" id="chibiFloor" aria-label="Technical operations movement test floor">
+  <span class="chibi-zone" style="left:17%;top:77%" aria-label="Home zone">HOME</span>
+  <span class="chibi-zone" style="left:79%;top:30%" aria-label="Terminal zone">TERMINAL</span>
+  <span class="chibi-zone" style="left:50%;top:76%" aria-label="Waiting zone">WAITING</span>
+  <span class="chibi-zone" style="left:82%;top:76%" aria-label="Result zone">RESULT</span>
+  <span class="chibi-zone" style="left:20%;top:31%" aria-label="Recovery zone">RECOVERY</span>
+  <div class="chibi-actor" id="chibiActor" data-motion="idle" data-heading="s" aria-label="Albedo navigation proof; not approved sprite art">
+   <div class="chibi-floor-shadow" aria-hidden="true"></div>
+   <div id="chibiMarker" class="chibi-technical-marker" role="img" aria-label="Temporary position and heading marker, not chibi artwork"><span class="chibi-arrow">↑</span><b>A</b><small class="chibi-heading">S</small></div>
+   <img id="chibiFrame" hidden alt="Albedo chibi frame, SHA-verified only"/>
+  </div>
+ </div>
+ <div class="chibi-footer"><span id="chibiZoneState" role="status">HOME · IDLE · S</span><span>Motion marker only · final 40-frame artwork pending</span></div>
+ <details class="chibi-test-controls"><summary>Developer movement / zone test</summary>
+  <div class="chibi-test-buttons"><button type="button" data-chibi-go="home">Home</button><button type="button" data-chibi-go="terminal">Terminal</button><button type="button" data-chibi-go="waiting">Waiting</button><button type="button" data-chibi-go="result">Result</button><button type="button" data-chibi-go="recovery">Recovery</button></div>
+ </details>
+</section>
 </section>
 <section class="output-col">
 <div class="response card"><div class="response-top"><div><div class="section-kicker">ALBEDO / RESPONSE DISPLAY</div><h2>Holographic terminal</h2></div><div class="task-terminal-actions"><span class="terminal-live" id="terminalStatus">STANDBY</span><button type="button" id="cancelActiveTask" class="outline-button" hidden>Cancel active task</button></div></div>
