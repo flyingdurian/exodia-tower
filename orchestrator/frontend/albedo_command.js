@@ -271,6 +271,10 @@ async function refreshProviderHealth(){
 }
 async function refreshModels(){
  try{
+  // Build identity must not wait on provider catalogs, browser sessions or logins.
+  const build=await api('/api/build-info');
+  const marker=$('#buildBadge');if(marker){marker.textContent=build.label;marker.title=build.commit_sha||'Commit unavailable; using safe fallback';}
+  const identity=buildIdentity(build);$('#buildChannel').textContent=identity.channel;$('#buildShortSha').textContent=identity.sha;
   const modelData=await api('/api/command/model-options');
   const preserved=UI.model.value;
   modelLabels.clear();
@@ -285,10 +289,6 @@ async function refreshModels(){
   for(const m of modelData.advanced){modelLabels.set(m.value,m.label);const option=element('option','',m.label);option.value=m.value;option.dataset.transport=m.transport;advanced.append(option);}
   UI.model.append(advanced);
   UI.model.value=Array.from(UI.model.options).some(o=>o.value===preserved&&!o.disabled)?preserved:modelData.default;
-  const build=await api('/api/build-info');
-  const marker=$('#buildBadge');if(marker){marker.textContent=build.label;marker.title=build.commit_sha||'Commit unavailable; using safe fallback';}
-  const identity=buildIdentity(build);$('#buildChannel').textContent=identity.channel;$('#buildShortSha').textContent=identity.sha;
-
   const d=await api('/api/companions');
   roster=d.agents||[];
   UI.companion.replaceChildren();

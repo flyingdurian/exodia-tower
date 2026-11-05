@@ -49,8 +49,8 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     build = await (await page.request.get(
                         'http://127.0.0.1:8909/api/build-info')).json()
                     await page.wait_for_function(
-                        "() => document.querySelector('#buildBadge')?.textContent.includes('EXODIA v')",
-                        timeout=6000)
+                        "expected => document.querySelector('#buildBadge')?.textContent === expected",
+                        arg=build['label'],timeout=15000)
                     assert await page.locator('#buildBadge').inner_text() == build['label']
                     if os.getenv('GITHUB_SHA'):
                         assert build['commit_sha'] == os.environ['GITHUB_SHA'].lower()
@@ -71,8 +71,8 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     for provider in ('chatgpt:api','gemini:api','deepseek:api'):
                         assert await command.locator('#model option[value="'+provider+'"]').is_disabled()
                     await command.wait_for_function(
-                        "() => document.querySelector('#buildBadge')?.textContent.includes('EXODIA v')",
-                        timeout=6000)
+                        "expected => document.querySelector('#buildBadge')?.textContent === expected",
+                        arg=build['label'],timeout=15000)
                     assert await command.locator('#buildBadge').inner_text() == build['label']
                     # Live frontshell task controls and provider/session metadata.
                     assert await command.locator('#cancelActiveTask').count()==1

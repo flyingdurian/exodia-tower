@@ -38,8 +38,10 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     errors=[];desktop.on('pageerror',lambda exc:errors.append(str(exc)))
                     await desktop.goto('http://127.0.0.1:8915/',wait_until='domcontentloaded')
                     await desktop.wait_for_function("() => document.querySelector('#chibiOperations')?.dataset.ready==='1'",timeout=15000)
-                    await desktop.wait_for_function("() => document.querySelector('#buildShortSha')?.textContent!=='unknown' || document.querySelector('#buildBadge')?.textContent.includes('unknown')",timeout=15000)
                     info=await (await desktop.request.get('http://127.0.0.1:8915/api/build-info')).json()
+                    await desktop.wait_for_function(
+                        "label => document.querySelector('#buildBadge')?.textContent === label",
+                        arg=info['label'],timeout=15000)
                     assert await desktop.locator('#buildBadge').inner_text()==info['label']
                     assert await desktop.locator('#buildChannel').inner_text()==info['channel']
                     assert await desktop.locator('#buildShortSha').inner_text()==info['short_sha']
