@@ -95,6 +95,30 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     await desktop.locator('#companion').select_option('kiko')
                     await desktop.wait_for_function("() => !document.querySelector('#chibiActor').hidden",timeout=3000)
                     assert not errors,errors
+                    # Paired QA captures: explicit debug-open evidence and clean default frontshell.
+                    await desktop.screenshot(path=str(proof/'operations_albedo_chibi_DESKTOP_DEBUG.png'),full_page=True)
+                    await desktop.locator('#developerToggle').click()
+                    assert not await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert not await desktop.locator('#diagnosticText').is_visible()
+                    # Long answers scroll inside a bounded terminal without increasing page width.
+                    # This uses disposable DOM text only: no fake task dispatch or provider claim.
+                    long_layout = await desktop.evaluate("""() => {
+                      const screen=document.querySelector('.response-screen');
+                      const frame=document.querySelector('#answerFrame');
+                      const sample=document.createElement('p');
+                      sample.textContent=('Large response line. '.repeat(25)+'\\n').repeat(90);
+                      sample.style.whiteSpace='pre-wrap';
+                      frame.append(sample);
+                      const result={clipped:screen.scrollHeight>screen.clientHeight,
+                        height:screen.clientHeight,
+                        pageWidth:document.documentElement.scrollWidth,
+                        viewportWidth:window.innerWidth};
+                      sample.remove();
+                      return result;
+                    }""")
+                    assert long_layout['clipped'] and long_layout['height'] <= 650, long_layout
+                    assert long_layout['pageWidth']<=long_layout['viewportWidth']+10, long_layout
+                    await desktop.evaluate('() => window.scrollTo(0, 0)')
                     await desktop.screenshot(path=str(proof/'operations_albedo_chibi_DESKTOP.png'),full_page=True)
                     mobile=await browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True)
                     await mobile.goto('http://127.0.0.1:8915/',wait_until='domcontentloaded')
@@ -113,6 +137,14 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     size=await mobile.evaluate("() => ({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth})")
                     assert size['scroll']<=size['viewport']+10,size
                     await mobile.screenshot(path=str(proof/'operations_albedo_chibi_MOBILE.png'),full_page=True)
+                    # Mobile debug is opt-in too; test accessibility via keyboard and capture separately.
+                    await mobile.locator('#developerToggle').focus()
+                    await mobile.keyboard.press('Enter')
+                    assert await mobile.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert await mobile.locator('#diagnosticText').is_visible()
+                    await mobile.screenshot(path=str(proof/'operations_albedo_chibi_MOBILE_DEBUG.png'),full_page=True)
+                    await mobile.keyboard.press('Enter')
+                    assert not await mobile.locator('#developerDrawer').evaluate('(el) => el.open')
                 finally:await browser.close()
         finally:
             proc.terminate()
