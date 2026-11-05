@@ -94,8 +94,23 @@ class ChatGPTSubmissionBridge:
         host=(urlparse(value).hostname or "")
         return host=="challenges.cloudflare.com" or host.endswith(".challenges.cloudflare.com") or "cdn-cgi/challenge" in value or "challenges.cloudflare.com" in value
 
-    async def _composer_ready(self,page)->bool:
-        return await self._visible(page,EDITOR_SELECTORS,timeout=0.4) is not None
+    async def _baseline(self,page):
+        """Text and images already on the open chat, so a reused tab cannot return them."""
+        try:
+            raw=await page.evaluate("""() => {
+                /* exodia-baseline */
+                const main=document.querySelector('main');
+                const text=main && main.innerText ? main.innerText.trim() : '';
+                const srcs=[...document.querySelectorAll('img')]
+                    .map(img => img.currentSrc || img.src || '')
+                    .filter(Boolean);
+                return {text, srcs};
+            }""")
+        except Exception:
+            return '', set()
+        if not isinstance(raw, dict):
+            return '', set()
+        return (raw.get('text') or '').strip(), set(raw.get('srcs') or [])
 
     async def _await_composer(self,page):
         """Find the composer. A verification page is left untouched and is not reloaded."""
@@ -145,17 +160,17 @@ class ChatGPTSubmissionBridge:
         try:
             if phase:phase('opening')
 
-            # A new tab and a second visit to ChatGPT restart Cloudflare after
-            # the box is solved. Reuse the open tab until its composer is ready.
+            # Stay on the signed-in tab. A new tab reloads ChatGPT and repeats
+            # the verification page. A challenge URL is never navigated again.
             existing=self.sessions._pages.get('chatgpt')
-            if existing is not None and (self._challenge_url(getattr(existing,'url','')) or not await self._composer_ready(existing)):
+            if existing is not None:
                 page=existing
                 owns_tab=False
             elif hasattr(context, 'new_page'):
                 page = await context.new_page()
+                self.sessions._pages['chatgpt']=page
             else:
-                page = existing
-                owns_tab = False
+                page = None
             
             if page is None:
                 raise SessionError('No ChatGPT browser tab available')
@@ -184,6 +199,7 @@ class ChatGPTSubmissionBridge:
                     'ChatGPT window, then create a new task. The check is not retried automatically.')
             
             prompt_text=prompt.strip()
+            prior_text, prior_images=await self._baseline(page)
             # Long instruction prompts (JuHua readings, follow-ups) often
             # contain phrases like "make a decision" or "draw new cards".
             # Those must stay on the text watcher, not the image shortcut.
@@ -308,7 +324,10 @@ class ChatGPTSubmissionBridge:
                     }""", prompt_text)
                     
                     current_text = (eval_result.get('foundText') or '').strip()
-                    candidates = eval_result.get('candidates', [])
+                    if prior_text and current_text==prior_text:
+                        current_text=''
+                    candidates = [item for item in eval_result.get('candidates', [])
+                                  if item.get('src') not in prior_images]
                     is_generating = bool(eval_result.get('isGenerating'))
                     composer_idle = bool(eval_result.get('composerIdle'))
                     finished_controls = bool(eval_result.get('finishedControls'))
