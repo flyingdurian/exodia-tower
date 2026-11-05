@@ -30,7 +30,7 @@ class FakePage:
   self.url='https://chatgpt.com';self.keyboard=Keys(self);self.focus=False
   self.typed='';self.sent=0;self.pressed=[];self.blocked=False;self.hide_send=False
   self.click_fails=False;self.closed=False;self.shots=0;self.method=''
-  self.eval_count=0;self.stream_polls=0;self.image=None
+  self.eval_count=0;self.stream_polls=0;self.image=None;self.finished_controls=False
   self.partial='This is only the first sentence of a longer reading'
   self.final_text='Completed ChatGPT answer with enough characters to accept as finished.'
  async def goto(self,url,**kwargs):self.url=url
@@ -48,7 +48,7 @@ class FakePage:
            'turnCount':0,'composerIdle':False,'finishedControls':False}
   return {'foundText':self.final_text,'candidates':[self.image] if self.image else [],
           'isGenerating':False,'stopVisible':False,
-          'turnCount':0,'composerIdle':False,'finishedControls':False}
+          'turnCount':0,'composerIdle':False,'finishedControls':self.finished_controls}
  async def screenshot(self,**kwargs):self.shots+=1
  async def close(self):self.closed=True
 class FakeContext:
@@ -248,5 +248,27 @@ def test_cancelled_chatgpt_submission_closes_tab_without_dom_error(tmp_path,monk
   assert sessions.snapshot()['chatgpt']['status']=='ready_for_next_prompt'
   assert sessions.snapshot()['chatgpt']['error'] is None
   assert 'cancel-me' not in bridge.tasks
+  await sessions.close()
+ asyncio.run(run())
+
+def test_copy_controls_finish_chatgpt_without_the_long_hold(tmp_path):
+ async def run():
+  factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
+  bridge=ChatGPTSubmissionBridge(sessions,start_spacing=0,idle_stable_s=1.5,confirmed_idle_s=0.04,max_wait_s=2,poll_s=0.01)
+  await sessions.initialize_one('chatgpt')
+  ctx=factory.contexts[0]
+  original=ctx.new_page
+  async def make_page():
+   page=await original()
+   page.final_text='Completed ChatGPT answer with enough characters to accept as finished.'
+   page.finished_controls=True
+   return page
+  ctx.new_page=make_page
+  # The fake evaluate result needs finishedControls true. Patch evaluate via the page flag.
+  started=asyncio.get_event_loop().time()
+  result=await bridge.submit('copy-ready','What are three design ideas for this page?')
+  elapsed=asyncio.get_event_loop().time()-started
+  assert result['answer'].startswith('Completed ChatGPT answer')
+  assert elapsed<0.8
   await sessions.close()
  asyncio.run(run())

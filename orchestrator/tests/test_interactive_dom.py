@@ -11,7 +11,7 @@ class ResultLocator:
     def last(self):return self
     async def inner_text(self,timeout=5000):
         return self.page.next_text()
-    async def is_visible(self):return self.page.generating
+    async def is_visible(self):return self.page.generating_now()
 
 
 class FakePage:
@@ -19,6 +19,11 @@ class FakePage:
     def next_text(self):
         if len(self.texts)>1:return self.texts.pop(0)
         return self.texts[0] if self.texts else ""
+    def generating_now(self):
+        if isinstance(self.generating,list):
+            if len(self.generating)>1:return self.generating.pop(0)
+            return bool(self.generating[0]) if self.generating else False
+        return bool(self.generating)
     def locator(self,selector):return ResultLocator(self)
 
 
@@ -54,4 +59,17 @@ def test_first_visible_callback_only_fires_for_new_text():
             initial_count=1,initial_text='old answer',on_first_text=lambda:calls.append('new'))
         assert result=='fresh answer'
         assert calls==['new']
+    asyncio.run(run())
+
+
+def test_seen_stop_control_finishes_before_the_long_hold():
+    async def run():
+        page=FakePage(['Completed answer.']*6, generating=[True, False, False, False, False])
+        started=asyncio.get_event_loop().time()
+        result=await watch_response_stream(
+            page, StreamWatchConfig('.answer','.stop',timeout_seconds=0.35,stable_seconds=0.5,
+                                    confirmed_stable_seconds=0.02,poll_seconds=0.01),
+            initial_count=0, initial_text='')
+        assert result=='Completed answer.'
+        assert asyncio.get_event_loop().time()-started<0.3
     asyncio.run(run())

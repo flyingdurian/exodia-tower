@@ -406,7 +406,7 @@ class MultiWebSessionManager:
                         baseline=baseline_media,baseline_count=prior_count,
                         baseline_text=prior_text,
                         timeout=360.0 if 'video' in prompt.lower() else 130.0,
-                        poll=.5,stable=1.6)
+                        poll=.35,stable=1.6,confirmed_stable=1.0)
                     answer=result.answer
                     if answer:mark_first_text()
                     if result.media:
@@ -423,7 +423,8 @@ class MultiWebSessionManager:
                         page,
                         StreamWatchConfig(response_selector=spec["response"],
                             stop_selector=spec["stop"],timeout_seconds=180.0,
-                            stable_seconds=1.5,poll_seconds=.25),
+                            stable_seconds=1.5,confirmed_stable_seconds=0.6,
+                            poll_seconds=.2),
                         initial_count=prior_count,initial_text=prior_text,
                         on_first_text=mark_first_text)
                 finished_at=monotonic()

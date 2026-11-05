@@ -48,13 +48,16 @@ class ChatGPTSubmissionBridge:
     """Robust extraction with longest-content markdown block parsing, deduplicated media capping, and strict locks."""
 
     def __init__(self,sessions:MultiWebSessionManager,*,max_tabs:int=2,start_spacing:float=0.0,
-                 idle_stable_s:float=1.5,max_wait_s:float=300.0,poll_s:float=0.4):
-        if max_tabs<1 or start_spacing<0 or idle_stable_s<0 or max_wait_s<=0 or poll_s<=0:
+                 idle_stable_s:float=1.5,confirmed_idle_s:float=0.45,max_wait_s:float=300.0,poll_s:float=0.25):
+        if max_tabs<1 or start_spacing<0 or idle_stable_s<0 or confirmed_idle_s<=0 or max_wait_s<=0 or poll_s<=0:
             raise ValueError('Invalid ChatGPT limits')
+        if confirmed_idle_s>idle_stable_s:
+            confirmed_idle_s=idle_stable_s
         self.sessions=sessions
         self.max_tabs=max_tabs
         self.start_spacing=start_spacing
         self.idle_stable_s=idle_stable_s
+        self.confirmed_idle_s=confirmed_idle_s
         self.max_wait_s=max_wait_s
         self.poll_s=poll_s
         self.tasks:dict[str,BrowserJob]={}
@@ -174,7 +177,6 @@ class ChatGPTSubmissionBridge:
             still_generating = True
 
             while monotonic() - start_wait < self.max_wait_s:
-                await asyncio.sleep(self.poll_s)
                 try:
                     eval_result = await page.evaluate("""async (promptText) => {
                         const visible = (el) => {
@@ -303,11 +305,14 @@ class ChatGPTSubmissionBridge:
                     image_ready = is_image_prompt and not is_generating and bool(raw_image_candidates)
                     reply_finished = text_ready or image_ready
 
+                    # Copy controls mean the turn is complete. Without them,
+                    # keep the longer unchanged-text hold so a pause is not returned.
+                    settle_s = self.confirmed_idle_s if finished_controls and not is_generating else self.idle_stable_s
                     if reply_finished and not text_changed and not image_changed:
                         if idle_since is None:
                             idle_since = monotonic()
-                        elif monotonic() - idle_since >= self.idle_stable_s:
-                            print("[ChatGPT Poll] Reply finished: composer idle, generation stopped, text stable. Closing after capture.")
+                        elif monotonic() - idle_since >= settle_s:
+                            print("[ChatGPT Poll] Reply finished: generation stopped, text stable. Closing after capture.")
                             stream_complete = True
                             still_generating = False
                             break
@@ -316,6 +321,9 @@ class ChatGPTSubmissionBridge:
                 except Exception as poll_exc:
                     print(f"[ChatGPT Poll Exception]: {type(poll_exc).__name__}: {poll_exc}")
                     idle_since = None
+                if stream_complete:
+                    break
+                await asyncio.sleep(self.poll_s)
 
             finished_at = monotonic()
             if not stream_complete:

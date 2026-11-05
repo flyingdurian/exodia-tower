@@ -98,10 +98,13 @@ async def snapshot_media(page)->list[dict]:
 
 async def await_media_answer(page,*,text_selector:str,stop_selector:str,
                              baseline:list[dict],baseline_count:int,baseline_text:str,
-                             timeout:float=240.0,poll:float=.5,stable:float=1.5)->MediaResult:
+                             timeout:float=240.0,poll:float=.5,stable:float=1.5,
+                             confirmed_stable:float|None=None)->MediaResult:
     if timeout<=0 or poll<=0 or stable<=0:raise ValueError('Invalid timing')
+    if confirmed_stable is not None and not 0<confirmed_stable<=stable:
+        raise ValueError('Invalid timing')
     baseline_urls={m['src'] for m in baseline}
-    started=monotonic();last_change=started;last_signature=None
+    started=monotonic();last_change=started;last_signature=None;saw_stop=False
     while monotonic()-started<timeout:
         media=await snapshot_media(page)
         new=[m for m in media if m.get('src') not in baseline_urls]
@@ -110,6 +113,7 @@ async def await_media_answer(page,*,text_selector:str,stop_selector:str,
         text=(await matches.last.inner_text(timeout=5000)).strip() if count else ''
         fresh_text=text if text and (count>baseline_count or text!=baseline_text) else ''
         generating=await page.locator(stop_selector).is_visible() if stop_selector else False
+        if generating:saw_stop=True
         signature=([m.get('src') for m in new],fresh_text)
         if signature!=last_signature:
             last_signature=signature;last_change=monotonic()
@@ -119,7 +123,8 @@ async def await_media_answer(page,*,text_selector:str,stop_selector:str,
           r"(can(?:not|'t) (?:generate|create|make)|unable to (?:generate|create)|"
           r"couldn(?:'t|ot) (?:generate|create)|sorry.{0,70}(?:image|video))",
           fresh_text,re.I|re.S))
-        if (new or final_text_only) and not generating and monotonic()-last_change>=stable:
+        hold=confirmed_stable if saw_stop and not generating and confirmed_stable is not None else stable
+        if (new or final_text_only) and not generating and monotonic()-last_change>=hold:
             return MediaResult(fresh_text,new[:4])
         await asyncio.sleep(poll)
     raise MediaCaptureError('No completed new generated image/video or text detected before timeout')

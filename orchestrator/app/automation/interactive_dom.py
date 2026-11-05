@@ -20,6 +20,9 @@ class StreamWatchConfig:
     timeout_seconds: float = 120.0
     stable_seconds: float = 2.0
     poll_seconds: float = 0.4
+    # Used only after the stop control was visible and then left. A missing
+    # stop control keeps the longer stable_seconds hold.
+    confirmed_stable_seconds: float | None = None
 
 
 async def watch_response_stream(page, config: StreamWatchConfig, *,
@@ -34,10 +37,13 @@ async def watch_response_stream(page, config: StreamWatchConfig, *,
         raise ValueError("response selector is required")
     if config.timeout_seconds <= 0 or config.stable_seconds <= 0 or config.poll_seconds <= 0:
         raise ValueError("timeouts must be positive")
+    if config.confirmed_stable_seconds is not None and not 0 < config.confirmed_stable_seconds <= config.stable_seconds:
+        raise ValueError("confirmed stable window must be shorter than the fallback")
     started=monotonic()
     last_text=""
     stable_since=None
     new_output_seen=False
+    saw_stop=False
     while monotonic()-started < config.timeout_seconds:
         matches=page.locator(config.response_selector)
         count=await matches.count()
@@ -49,12 +55,18 @@ async def watch_response_stream(page, config: StreamWatchConfig, *,
         generating=False
         if config.stop_selector:
             generating=await page.locator(config.stop_selector).is_visible()
+            if generating:
+                saw_stop=True
         if new_output_seen and text:
             if text!=last_text:
                 last_text=text
                 stable_since=monotonic()
-            elif stable_since is not None and not generating and monotonic()-stable_since>=config.stable_seconds:
-                return text
+            elif stable_since is not None and not generating:
+                hold=config.stable_seconds
+                if saw_stop and config.confirmed_stable_seconds is not None:
+                    hold=config.confirmed_stable_seconds
+                if monotonic()-stable_since>=hold:
+                    return text
         else:
             stable_since=None
         await asyncio.sleep(config.poll_seconds)
