@@ -87,48 +87,31 @@ class ChatGPTSubmissionBridge:
             await asyncio.sleep(0.01)
         return None
 
-    async def _human_check(self,page)->bool:
-        """True when ChatGPT is showing a human verification page.
+    @staticmethod
+    def _challenge_url(url:str)->bool:
+        """A verification address only. This does not interact with the page."""
+        value=(url or "").lower()
+        host=(urlparse(value).hostname or "")
+        return host=="challenges.cloudflare.com" or host.endswith(".challenges.cloudflare.com") or "cdn-cgi/challenge" in value or "challenges.cloudflare.com" in value
 
-        This only decides whether to keep the current tab open. It does not
-        solve, skip, or hide the check.
-        """
-        try:
-            url=(page.url or "").lower()
-        except Exception:
-            url=""
-        host=(urlparse(url).hostname or "")
-        if host=="challenges.cloudflare.com" or host.endswith(".challenges.cloudflare.com"):
-            return True
-        if "cdn-cgi/challenge" in url or "challenges.cloudflare.com" in url:
-            return True
-        try:
-            visible=await page.evaluate("""() => {
-                const text=(document.body && document.body.innerText || '').toLowerCase();
-                if (text.includes('verify you are human') || text.includes('just a moment')
-                    || text.includes('checking your browser') || text.includes('are you human'))
-                    return true;
-                return !!document.querySelector(
-                    'iframe[src*="challenges.cloudflare.com"], iframe[src*="turnstile"], #challenge-running, #cf-challenge-running'
-                );
-            }""")
-        except Exception:
-            return False
-        return visible is True
+    async def _composer_ready(self,page)->bool:
+        return await self._visible(page,EDITOR_SELECTORS,timeout=0.4) is not None
 
     async def _await_composer(self,page):
-        """Find the composer. A visible human check extends the wait without reloading."""
+        """Find the composer. A verification page is left untouched and is not reloaded."""
         started=monotonic()
-        saw_check=False
         while monotonic()-started<180:
-            if await self._human_check(page):
-                saw_check=True
+            try:
+                current=page.url or ""
+            except Exception:
+                current=""
+            if self._challenge_url(current):
                 await asyncio.sleep(0.5)
                 continue
             editor=await self._visible(page,EDITOR_SELECTORS,timeout=0.8)
             if editor is not None:
                 return editor
-            if not saw_check and monotonic()-started>=4:
+            if monotonic()-started>=4:
                 return None
             await asyncio.sleep(0.25)
         return None
@@ -161,11 +144,17 @@ class ChatGPTSubmissionBridge:
         owns_tab = True
         try:
             if phase:phase('opening')
-            
-            if hasattr(context, 'new_page'):
+
+            # A new tab and a second visit to ChatGPT restart Cloudflare after
+            # the box is solved. Reuse the open tab until its composer is ready.
+            existing=self.sessions._pages.get('chatgpt')
+            if existing is not None and (self._challenge_url(getattr(existing,'url','')) or not await self._composer_ready(existing)):
+                page=existing
+                owns_tab=False
+            elif hasattr(context, 'new_page'):
                 page = await context.new_page()
             else:
-                page = self.sessions._pages.get('chatgpt')
+                page = existing
                 owns_tab = False
             
             if page is None:
@@ -175,10 +164,15 @@ class ChatGPTSubmissionBridge:
             self.tasks[task_id] = job
 
             base_url = PROVIDERS['chatgpt'].url.rstrip('/')
-            # A second navigation while a check is already on screen restarts it.
-            if not await self._human_check(page):
+            try:
+                current=page.url or ""
+            except Exception:
+                current=""
+            host=(urlparse(current).hostname or "")
+            on_chatgpt=host=="chatgpt.com" or host.endswith(".chatgpt.com")
+            if not on_chatgpt and not self._challenge_url(current):
                 await page.goto(base_url, wait_until='domcontentloaded', timeout=12000)
-            if not await self._human_check(page):
+            if not self._challenge_url(getattr(page,'url','')):
                 self.sessions._check_destination('chatgpt', page.url)
 
             t_editor=monotonic()

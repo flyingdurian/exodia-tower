@@ -150,8 +150,8 @@ def test_submit_fails_closed_and_takes_debug_screenshot_when_composer_missing(tm
   bridge._visible=not_ready
   with pytest.raises(OperatorActionRequired,match='composer'):
    await bridge.submit('failed','One prompt')
-  tab=factory.contexts[0].created[0]
-  assert tab.sent==0 and tab.closed and tab.shots==1
+  tab=sessions._pages['chatgpt']
+  assert tab.sent==0 and tab.closed is False and tab.shots==1
   assert not bridge.tasks
   await sessions.close()
  asyncio.run(run())
@@ -273,29 +273,25 @@ def test_copy_controls_finish_chatgpt_without_the_long_hold(tmp_path):
   await sessions.close()
  asyncio.run(run())
 
-def test_human_check_does_not_open_chatgpt_again(tmp_path):
+def test_missing_composer_reuses_the_open_tab(tmp_path):
  async def run():
   factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
   bridge=_bridge(sessions)
   await sessions.initialize_one('chatgpt')
-  ctx=factory.contexts[0]
-  original=ctx.new_page
-  async def make_page():
-   page=await original()
-   page.gotos=[]
-   async def goto(url,**kwargs):
-    page.gotos.append(url)
-    page.url=url
-   page.goto=goto
-   return page
-  ctx.new_page=make_page
-  seen=[]
-  async def check(page):
-   seen.append(page.url)
-   return len(seen)==1
-  bridge._human_check=check
+  page=sessions._pages['chatgpt']
+  page.url='https://chatgpt.com'
+  page.gotos=[]
+  async def goto(url,**kwargs):
+   page.gotos.append(url)
+   page.url=url
+  page.goto=goto
+  async def not_ready(candidate):
+   return False
+  bridge._composer_ready=not_ready
   result=await bridge.submit('verify','What are three design ideas for this page?')
   assert result['answer']
-  assert factory.contexts[0].created[0].gotos==[]
+  assert page.gotos==[]
+  assert factory.contexts[0].created==[]
+  assert page.closed is False
   await sessions.close()
  asyncio.run(run())
