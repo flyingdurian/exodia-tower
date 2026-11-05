@@ -54,7 +54,10 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     # The central operations stage is the desktop visual anchor.
                     # The mobile DOM order remains stage, response, controls.
                     positioning=await desktop.evaluate("""() => {
-                       const box=selector=>document.querySelector(selector).getBoundingClientRect();
+                       const box=selector=>{
+                          const rect=document.querySelector(selector).getBoundingClientRect();
+                          return {left:rect.left,width:rect.width};
+                       };
                        return {response:box('.output-col'),center:box('.hero-col'),controls:box('.control-col')};
                     }""")
                     assert positioning['response']['left'] < positioning['center']['left'], positioning
