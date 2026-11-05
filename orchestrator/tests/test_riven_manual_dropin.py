@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -189,3 +192,25 @@ def test_invalid_annotation_root_is_reported_not_crashed(isolated):
     assert report["status"] == "source_or_annotations_rejected"
     assert "annotation_invalid_annotation_document_must_be_object" in report["errors"]
     assert report["owner_identity_approval"] == "pending"
+
+def test_documented_direct_cli_works_without_pythonpath(isolated):
+    root, inbox, _ = isolated
+    script = ROOT / "tools" / "riven_manual_dropin.py"
+    env = {**os.environ, "PYTHONPATH": ""}
+    command = [sys.executable, str(script), "--root", str(root)]
+    result = subprocess.run(command, cwd=ROOT, env=env, text=True,
+                            capture_output=True, timeout=20)
+    assert result.returncode == 0, result.stderr
+    report = json.loads(result.stdout)
+    assert report["status"] == "awaiting_manual_png"
+    assert report["production_release_enabled"] is False
+    assert report["owner_identity_approval"] == "pending"
+    candidate = candidate_image(inbox)
+    second = subprocess.run(command, cwd=ROOT, env=env, text=True,
+                            capture_output=True, timeout=20)
+    assert second.returncode == 0, second.stderr
+    report2 = json.loads(second.stdout)
+    assert report2["candidate_sha256"] == sha256(candidate)
+    assert report2["technical_source_pass"] is True
+    assert report2["status"] == "awaiting_image_bound_annotations"
+    assert report2["production_release_enabled"] is False

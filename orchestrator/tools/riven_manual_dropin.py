@@ -11,12 +11,19 @@ import hashlib
 import json
 import math
 import os
+import sys
 import time
 from tempfile import NamedTemporaryFile
 from datetime import datetime, timezone
 from pathlib import Path
 
 from PIL import Image
+
+# Running `python tools/riven_manual_dropin.py` does not put orchestrator/
+# on sys.path. Match the documented direct Windows operator command without
+# depending on the developer's PYTHONPATH or an editable pip install.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tools.riven_native_identity_gate import (
     ROOT, LOCKED, PILOT_MANIFEST, audit_identity, sha256,

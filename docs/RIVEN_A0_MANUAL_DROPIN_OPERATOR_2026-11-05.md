@@ -7,7 +7,8 @@
 From the Riven-specific feature worktree (never copy into the permanent owner's working directory without checking pending edits):
 
 \`\`\`powershell
-cd C:\Users\TFBOSS\Documents\GitHub\exodia-tower\orchestrator
+# From the root of your existing EXODIA checkout:
+Set-Location .\orchestrator
 New-Item -Type Directory -Force .\app_data\riven_a0_inbox | Out-Null
 # Optional local watch: runs in the foreground; Ctrl+C exits.
 python tools\riven_manual_dropin.py --watch
@@ -45,3 +46,5 @@ Full-resolution visual QA must verify Riven's own dark long twin tails, red ties
 ## Local file safety
 
 The scanner rejects linked PNGs and linked annotation sidecars, refuses annotation-template creation for non-native/rejected artwork, and uses an atomic on-disk replacement for manual patch-hash stamping. Only one regular PNG directly inside the isolated worktree inbox may enter review; no external path is inspected as an art source or written through a sidecar link. This is a defensive local file boundary, not an automatic proof of human-authored illustration or true facial-landmark positions.
+
+The CLI also accepts `python -m tools.riven_manual_dropin` when run inside `orchestrator`, but the documented direct `python tools\riven_manual_dropin.py` form is tested under CI with an empty `PYTHONPATH`. This does not create or migrate any working copy; use your existing authenticated Windows checkout and do not copy session or database files.
