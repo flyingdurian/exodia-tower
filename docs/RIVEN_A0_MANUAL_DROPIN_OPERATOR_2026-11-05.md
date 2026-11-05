@@ -41,3 +41,7 @@ This verifies the sidecar is bound to the **current original bytes** and measure
 Full-resolution visual QA must verify Riven's own dark long twin tails, red ties/eyes, black-red-gold tactical twin-blade armor, hand anatomy, real landmark placements, native authoring method and exact original SHA. Submit the candidate and SHA to owner for explicit visual identity approval. Only after that exact-image acceptance may five distinct PNGs \`neutral\`, \`confident\`, \`angered\`, \`working\`, \`pointing\` be authored, separately inspected and reviewed. The other eight companions remain frozen.
 
 **All scanned PNG and sidecar files remain in ignored worktree-local \`app_data\`; no secrets or assets get committed by this script.** PR #14's \`riven_native_identity_gate.py\` remains the authoritative unchanged technical gate.
+
+## Local file safety
+
+The scanner rejects linked PNGs and linked annotation sidecars, refuses annotation-template creation for non-native/rejected artwork, and uses an atomic on-disk replacement for manual patch-hash stamping. Only one regular PNG directly inside the isolated worktree inbox may enter review; no external path is inspected as an art source or written through a sidecar link. This is a defensive local file boundary, not an automatic proof of human-authored illustration or true facial-landmark positions.

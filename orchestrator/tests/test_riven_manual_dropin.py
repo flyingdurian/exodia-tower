@@ -132,3 +132,60 @@ def test_crop_or_non_native_cannot_pass_original_gate(isolated):
     assert report["technical_source_pass"] is False
     assert "not_native_1536x1920_png" in report["errors"]
     assert report["owner_identity_approval"] == "pending"
+
+
+def test_linked_candidate_is_rejected_before_reading_external_bytes(isolated, tmp_path):
+    root, inbox, _ = isolated
+    external = tmp_path / "outside.png"
+    Image.new("RGB", LOCKED, "#102030").save(external)
+    link = inbox / "riven_A0_native.png"
+    try:
+        link.symlink_to(external)
+    except (OSError, NotImplementedError):
+        pytest.skip("OS cannot create test symlinks")
+    report = scan_dropin(root, inbox)
+    assert report["status"] == "unsafe_dropin"
+    assert report["errors"] == ["symbolic_candidate_rejected"]
+    assert report["candidate_sha256"] is None
+    assert report["production_release_enabled"] is False
+
+
+def test_linked_annotation_never_reads_or_overwrites_external_data(isolated, tmp_path):
+    root, inbox, _ = isolated
+    candidate = candidate_image(inbox)
+    external = tmp_path / "unrelated-sidecar.json"
+    external.write_text('{"unrelated":"unchanged"}', encoding="utf-8")
+    sidecar = candidate.with_suffix(".landmarks.json")
+    try:
+        sidecar.symlink_to(external)
+    except (OSError, NotImplementedError):
+        pytest.skip("OS cannot create test symlinks")
+    for flags in ({}, {"make_template": True}, {"stamp": True}):
+        report = scan_dropin(root, inbox, **flags)
+        assert report["status"] == "unsafe_annotations"
+        assert report["errors"] == ["unsafe_or_linked_annotation_sidecar"]
+        assert report["production_release_enabled"] is False
+    with pytest.raises(ValueError, match="unsafe_or_linked_annotation_sidecar"):
+        stamp_patches(candidate, sidecar)
+    assert external.read_text(encoding="utf-8") == '{"unrelated":"unchanged"}'
+
+
+def test_rejected_source_cannot_create_landmark_sidecar(isolated):
+    root, inbox, _ = isolated
+    candidate = inbox / "riven_A0_native.png"
+    Image.new("RGB", (1122, 1402), "#202040").save(candidate)
+    report = scan_dropin(root, inbox, make_template=True)
+    assert not candidate.with_suffix(".landmarks.json").exists()
+    assert report["status"] == "source_rejected"
+    assert not report["technical_source_pass"]
+
+
+def test_invalid_annotation_root_is_reported_not_crashed(isolated):
+    root, inbox, _ = isolated
+    candidate = candidate_image(inbox)
+    sidecar = candidate.with_suffix(".landmarks.json")
+    sidecar.write_text('["not","a","landmark","object"]', encoding="utf-8")
+    report = scan_dropin(root, inbox)
+    assert report["status"] == "source_or_annotations_rejected"
+    assert "annotation_invalid_annotation_document_must_be_object" in report["errors"]
+    assert report["owner_identity_approval"] == "pending"

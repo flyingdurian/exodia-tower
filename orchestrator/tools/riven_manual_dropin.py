@@ -12,6 +12,7 @@ import json
 import math
 import os
 import time
+from tempfile import NamedTemporaryFile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -29,6 +30,17 @@ POINTS = (
 )
 PATCH_RADIUS = 9
 INBOX = ROOT / "app_data" / "riven_a0_inbox"
+
+
+def reject_linked_paths(candidate: Path, sidecar: Path | None = None):
+    """A manual intake may neither follow linked art nor link an annotation outside inbox."""
+    if candidate.is_symlink():
+        raise ValueError("symbolic_candidate_rejected")
+    if sidecar is not None:
+        if sidecar != candidate.with_suffix(".landmarks.json") or sidecar.is_symlink():
+            raise ValueError("unsafe_or_linked_annotation_sidecar")
+        if sidecar.parent.resolve() != candidate.parent.resolve():
+            raise ValueError("annotation_must_be_sibling_of_candidate")
 
 
 def is_number(value):
@@ -55,6 +67,8 @@ def pixel_patch_sha256(image: Image.Image, point: tuple[float, float]) -> str:
 
 def audit_pixel_annotations(candidate: Path, annotations: dict, manifest: dict) -> dict:
     """Verify coordinate and patch evidence without claiming to recognize a face."""
+    if not isinstance(annotations, dict):
+        raise ValueError("annotation_document_must_be_object")
     errors = []
     result = {
         "annotation_schema": annotations.get("schema"),
@@ -135,7 +149,10 @@ def template_for(candidate: Path) -> dict:
 
 def stamp_patches(candidate: Path, sidecar: Path) -> dict:
     """Explicit helper only: hashes user-annotated pixels, not automated face detection."""
+    reject_linked_paths(candidate, sidecar)
     original = json.loads(sidecar.read_text(encoding="utf-8"))
+    if not isinstance(original, dict):
+        raise ValueError("annotation_document_must_be_object")
     if original.get("source_sha256") != sha256(candidate):
         raise ValueError("annotation_source_sha_mismatch")
     positions = original.get("landmarks")
@@ -148,7 +165,17 @@ def stamp_patches(candidate: Path, sidecar: Path) -> dict:
         original["pixel_patch_sha256"] = {
             name: pixel_patch_sha256(image, points[name]) for name in POINTS
         }
-    sidecar.write_text(json.dumps(original, indent=2) + "\n", encoding="utf-8")
+    # Atomic replacement never follows a newly swapped symbolic-link destination.
+    tmp_path = None
+    try:
+        with NamedTemporaryFile(mode="w", encoding="utf-8", dir=sidecar.parent,
+                                prefix=".riven-a0-", suffix=".tmp", delete=False) as tmp:
+            tmp.write(json.dumps(original, indent=2) + "\n")
+            tmp_path = Path(tmp.name)
+        os.replace(tmp_path, sidecar)
+    finally:
+        if tmp_path is not None and tmp_path.exists():
+            tmp_path.unlink()
     return original
 
 
@@ -184,6 +211,12 @@ def scan_dropin(root: Path = ROOT, inbox: Path | None = None,
         report["errors"].append("exactly_one_riven_a0_png_required")
         return report
     candidate = pngs[0]
+    try:
+        reject_linked_paths(candidate)
+    except ValueError as exc:
+        report["status"] = "unsafe_dropin"
+        report["errors"].append(str(exc))
+        return report
     actual_sha = sha256(candidate)
     report["candidate_sha256"] = actual_sha
     source = audit_identity(manifest, root, candidate.relative_to(root), actual_sha)
@@ -191,8 +224,19 @@ def scan_dropin(root: Path = ROOT, inbox: Path | None = None,
     report["errors"].extend(source["errors"])
     report["candidate"] = source["identity_candidate"]
     sidecar = candidate.with_suffix(".landmarks.json")
+    try:
+        reject_linked_paths(candidate, sidecar)
+    except ValueError as exc:
+        report["status"] = "unsafe_annotations"
+        report["errors"].append(str(exc))
+        return report
+    if not source["technical_source_pass"] and (make_template or stamp):
+        report["status"] = "source_rejected"
+        return report
     if make_template and not sidecar.exists():
-        sidecar.write_text(json.dumps(template_for(candidate), indent=2) + "\n", encoding="utf-8")
+        # Exclusive create: cannot follow a previously nonexistent linked sidecar.
+        with sidecar.open("x", encoding="utf-8") as f:
+            f.write(json.dumps(template_for(candidate), indent=2) + "\n")
     if stamp and sidecar.exists():
         stamp_patches(candidate, sidecar)
     if not sidecar.is_file():
