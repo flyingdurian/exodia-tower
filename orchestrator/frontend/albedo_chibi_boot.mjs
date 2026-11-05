@@ -6,9 +6,9 @@ import {AlbedoRoomBehavior} from './albedo_room_behavior.mjs';
 export async function startAlbedoChibi({doc=document,win=window,loadManifest=()=>fetch('/assets/albedo_chibi_manifest.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('Manifest unavailable');return r.json();})}={}){
   const root=doc.getElementById('chibiOperations');if(!root)return null;
   const status=doc.getElementById('chibiArtStatus');
-  let controller,renderer;
+  let controller,renderer,manifest;
   try{
-    const manifest=await loadManifest();validateChibiManifest(manifest);
+    manifest=await loadManifest();validateChibiManifest(manifest);
     controller=new AlbedoChibiController(manifest);
     renderer=new AlbedoChibiRenderer(root,manifest);
   }catch(_){status.textContent='CHIBI FLOOR UNAVAILABLE · MANIFEST CHECK FAILED';root.dataset.ready='error';return null;}
@@ -42,7 +42,7 @@ export async function startAlbedoChibi({doc=document,win=window,loadManifest=()=
   comp?.addEventListener('change',onCompanion);
   const demo=root.querySelectorAll('[data-chibi-go]');
   for(const button of demo)button.addEventListener('click',()=>{
-    if(currentAgent()!=='kiko')return;
+    if((comp?.value||'kiko')!=='kiko')return;
     controller.goToZone(button.dataset.chibiGo);renderer.draw(controller.snapshot());
   });
   const reduced=win.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
