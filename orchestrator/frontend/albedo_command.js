@@ -40,7 +40,7 @@ function refreshCommandSummary(task=chosenTask){
  const activeCount=tasks.filter(t=>ACTIVE.has(t.state)||t.state==='awaiting_operator').length;
  $('#summaryBackground').textContent=activeCount?activeCount+' task'+(activeCount===1?'':'s')+' running / waiting':'No tasks running';
  // Only minimal public task routing information enters the movement runtime.
- const publicDetail={state:task?.state||'idle',agentId:task?.agent_id||UI.companion?.value||'kiko',provider:task?.provider||''};
+ const publicDetail={state:task?.state||'idle',agentId:task?.agent_id||UI.companion?.value||'kiko',provider:task?.provider||'',taskId:task?.id||'',updatedAt:task?.updated_at||null};
  window.__exodiaLastPublicTaskState=publicDetail;
  window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:publicDetail}));
 }

@@ -128,3 +128,9 @@
 .chibi-test-controls{margin-top:8px;font-size:10px;color:#b3c7e9}.chibi-test-controls summary{cursor:pointer}.chibi-test-buttons{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.chibi-test-buttons button{background:#203966;color:#dceeff;border:1px solid #6381be;border-radius:6px;font-size:10px;padding:5px 8px}
 @media(max-width:760px){.command-status-strip{gap:8px;padding:9px 11px}.command-status-item{flex:1 1 110px}.command-status-task{flex:1 1 180px}.command-status-item strong{font-size:10px}.chibi-floor{height:185px}.chibi-actor{width:50px;height:66px}.build-meta{display:none}}
 @media(prefers-reduced-motion:reduce){.chibi-actor{will-change:auto}}
+
+/* Phase 3: public task-driven in-room action cue, separate from artwork provenance. */
+#chibiBehaviorCue{display:inline-flex;align-items:center;font-size:9px;color:#e2efff;font-weight:700;letter-spacing:.02em;min-width:0}
+#chibiOperations[data-behavior="success"] #chibiBehaviorCue{color:#b1ffda}
+#chibiOperations[data-behavior="failure"] #chibiBehaviorCue{color:#ffc1d8}
+#chibiOperations[data-behavior="waiting"] #chibiBehaviorCue{color:#f5db9e}

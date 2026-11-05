@@ -63,10 +63,15 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     await desktop.wait_for_function("() => window.__exodiaChibiRuntime?.controller.arrived===true",timeout=8000)
                     assert await desktop.locator('#chibiActor').get_attribute('data-motion')=='idle'
                     assert 'TERMINAL' in await desktop.locator('#chibiZoneState').inner_text()
-                    await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{state:'answered',agentId:'kiko'}}))")
+                    await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{taskId:'qa-task',state:'answered',agentId:'kiko',updatedAt:'2026-11-04T10:00:03Z'}}))")
                     await desktop.wait_for_function("() => window.__exodiaChibiRuntime?.controller.zone==='result'",timeout=3000)
-                    await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{state:'cancelled',agentId:'kiko'}}))")
+                    assert await desktop.locator('#chibiBehaviorCue').inner_text() == 'Response received'
+                    assert await desktop.locator('#chibiOperations').get_attribute('data-behavior') == 'success'
+                    await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{taskId:'qa-task',state:'cancelled',agentId:'kiko',updatedAt:'2026-11-04T10:00:05Z'}}))")
                     await desktop.wait_for_function("() => window.__exodiaChibiRuntime?.controller.zone==='home'",timeout=3000)
+                    assert 'local cancellation' in (await desktop.locator('#chibiBehaviorCue').inner_text()).lower()
+                    await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{taskId:'qa-task',state:'running',agentId:'kiko',updatedAt:'2026-11-04T10:00:04Z'}}))")
+                    assert await desktop.locator('#chibiOperations').get_attribute('data-task-phase') == 'cancelled'
                     # Switching companions must never show Albedo on Riven's stage.
                     await desktop.locator('#companion').select_option('router')
                     await desktop.wait_for_function("() => document.querySelector('#chibiActor').hidden",timeout=3000)
