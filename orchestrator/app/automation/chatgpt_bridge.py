@@ -429,6 +429,10 @@ class ChatGPTSubmissionBridge:
                     'answer':answer.strip()[:100000],
                     'media': media_list,
                     'timings':timings}
+        except asyncio.CancelledError:
+            self.sessions._status['chatgpt']='ready_for_next_prompt'
+            self.last_error=None
+            raise
         except Exception as exc:
             self.last_error=str(exc)[:400]
             if page is not None:

@@ -299,3 +299,41 @@ def test_two_simultaneous_gemini_jobs_use_separate_tabs_and_close(tmp_path):
         assert ctx.closed is False
         await manager.close()
     asyncio.run(run())
+
+def test_cancelled_browser_task_releases_provider_without_dom_error(tmp_path, monkeypatch):
+    async def run():
+        factory=Factory();manager=MultiWebSessionManager(tmp_path,browser_factory=factory)
+        class Page(FakePage):
+            def __init__(self):
+                super().__init__();self.url='https://chat.deepseek.com'
+            def locator(self,selector):
+                if selector==MultiWebSessionManager.DEEPSEEK_RESPONSE:return History(self)
+                if selector==MultiWebSessionManager.DEEPSEEK_STOP:return Stop(self)
+                if selector in MultiWebSessionManager.DEEPSEEK_EDITORS:return Editor(self)
+                if selector in MultiWebSessionManager.DEEPSEEK_SEND:return Sender(self)
+                raise AssertionError('unexpected selector: '+selector)
+        original=factory.launch_persistent_context
+        async def launch(**kwargs):
+            context=await original(**kwargs)
+            if 'deepseek' in str(kwargs.get('user_data_dir','')):
+                context.pages=[Page()]
+            return context
+        factory.launch_persistent_context=launch
+        shots=[]
+        async def capture(name, page):
+            shots.append(name)
+            return 'unexpected.png'
+        monkeypatch.setattr(manager,'_capture_failure',capture)
+        async def cancelled(*args, **kwargs):
+            raise asyncio.CancelledError()
+        monkeypatch.setattr('app.automation.multi_wrapper.watch_response_stream', cancelled)
+        for platform in ('gemini','deepseek'):
+            with pytest.raises(asyncio.CancelledError):
+                await manager.send_prompt_robust(platform,'Summarize this article')
+            snap=manager.snapshot()[platform]
+            assert snap['status']=='ready_for_next_prompt'
+            assert snap['error'] is None
+            assert snap['running_tasks']==0
+        assert shots==[]
+        await manager.close()
+    asyncio.run(run())

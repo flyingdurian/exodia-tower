@@ -233,3 +233,20 @@ def test_api_task_auto_submission_waits_for_finished_chatgpt_answer(monkeypatch)
   assert called[0]==('submit',task['id'],'What are three design ideas?')
   assert client.get('/api/command/tasks').json()['automatic_extraction']['chatgpt'] is True
   assert client.post('/api/command/tasks/'+task['id']+'/cancel',headers=headers).status_code==409
+
+def test_cancelled_chatgpt_submission_closes_tab_without_dom_error(tmp_path,monkeypatch):
+ async def run():
+  factory=Factory();sessions=MultiWebSessionManager(tmp_path,browser_factory=factory)
+  bridge=_bridge(sessions)
+  async def cancelled(page,text,*,prefer_insert=False):
+   raise asyncio.CancelledError()
+  monkeypatch.setattr('app.automation.chatgpt_bridge.type_composer_text',cancelled)
+  with pytest.raises(asyncio.CancelledError):
+   await bridge.submit('cancel-me','Keep this local')
+  page=factory.contexts[0].created[0]
+  assert page.closed and page.shots==0
+  assert sessions.snapshot()['chatgpt']['status']=='ready_for_next_prompt'
+  assert sessions.snapshot()['chatgpt']['error'] is None
+  assert 'cancel-me' not in bridge.tasks
+  await sessions.close()
+ asyncio.run(run())

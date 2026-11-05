@@ -445,6 +445,11 @@ class MultiWebSessionManager:
                 return {"answer":answer.strip()[:100000],"model_choice":platform,
                         "provider":platform,"source":f"{platform}_visible_browser",
                         "automatic_output":True,"timings":timings,"media":media}
+            except asyncio.CancelledError:
+                # Local cancel closes the task tab. It is not a site or DOM failure.
+                self._status[platform]="ready_for_next_prompt"
+                self._last_error[platform]=None
+                raise
             except Exception as exc:
                 screenshot=await self._capture_failure(platform,page)
                 if self._status[platform] not in ("needs_operator_login_or_review","editor_unavailable"):
