@@ -48,6 +48,12 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     assert await desktop.locator('#buildBadge').inner_text()==info['label']
                     assert await desktop.locator('#buildChannel').inner_text()==info['channel']
                     assert await desktop.locator('#buildShortSha').inner_text()==info['short_sha']
+                    assert not await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert not await desktop.locator('#diagnosticText').is_visible()
+                    assert await desktop.locator('#chibiOperations').is_visible()
+                    # A short answer may not stretch to the height of the entire operations floor.
+                    response_rect=await desktop.locator('.response').bounding_box()
+                    assert response_rect and response_rect['height'] < 460, response_rect
                     assert '40 ART FRAMES PENDING' in await desktop.locator('#chibiArtStatus').inner_text()
                     assert await desktop.locator('#chibiFrame').is_hidden()
                     assert await desktop.locator('#chibiMarker').is_visible()
@@ -55,6 +61,9 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     assert await desktop.locator('#summaryProvider').inner_text()
                     # Simulate *public* task status events: no provider automation or auth side effects.
                     await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{state:'idle',agentId:'kiko'}}))")
+                    await desktop.locator('#developerToggle').click()
+                    assert await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert await desktop.locator('#diagnosticText').is_visible()
                     await desktop.locator('.chibi-test-controls summary').click()
                     await desktop.locator('[data-chibi-go="terminal"]').click()
                     await desktop.wait_for_function("() => window.__exodiaChibiRuntime?.controller.zone==='terminal' && window.__exodiaChibiRuntime?.controller.mode==='walk'",timeout=5000)
@@ -99,6 +108,7 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     assert await mobile.locator('#summaryAgent').count()==1
                     assert await mobile.locator('#summarySelectedCompanion').inner_text() == 'Albedo'
                     assert await mobile.locator('#chibiMarker').is_visible()
+                    assert not await mobile.locator('#developerDrawer').evaluate('(el) => el.open')
                     assert 'MOTION PROOF' in await mobile.locator('#chibiArtStatus').inner_text()
                     size=await mobile.evaluate("() => ({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth})")
                     assert size['scroll']<=size['viewport']+10,size
