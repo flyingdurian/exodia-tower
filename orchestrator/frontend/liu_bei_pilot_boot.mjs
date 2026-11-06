@@ -2,6 +2,8 @@
  * Never display artwork or infer A0 approval from a technical PNG check. */
 import {STATE_KEYS, publicTaskSignal, reviewRequestKey, safeReviewProjection}
   from './liu_bei_review_contract.mjs';
+import {safeVariantReadiness, reviewReadinessLabel}
+  from './liu_bei_variant_review.mjs';
 
 const panel = document.querySelector('#liu_beiPilotPane');
 const companion = document.querySelector('#companion');
@@ -16,6 +18,31 @@ let chosen = publicTaskSignal(window.__exodiaLastPublicTaskState);
 let manual = null;
 let revision = 0;
 let lastRequest = null;
+let variantCache = null;
+let variantSeenAt = 0;
+let variantPromise = null;
+
+async function variantReadiness() {
+  // Four standalone PNG inspections may be expensive: never rescan on each
+  // command-state event. Reuse one request and validate its strict lock schema.
+  if (Date.now() - variantSeenAt < 12000) return variantCache;
+  if (variantPromise) return variantPromise;
+  variantPromise = (async () => {
+    try {
+      const response = await fetch('/api/fleet/liu_bei/variant-preflight',
+        {headers: HEADER});
+      if (!response.ok) throw Error('Variant review service unavailable');
+      variantCache = safeVariantReadiness(await response.json());
+    } catch (_) {
+      variantCache = null;
+    } finally {
+      variantSeenAt = Date.now();
+      variantPromise = null;
+    }
+    return variantCache;
+  })();
+  return variantPromise;
+}
 
 function refreshButtonState() {
   for (const item of buttons)
@@ -59,6 +86,8 @@ async function update({force = false} = {}) {
     const record = await response.json();
     if (serial !== revision || !isLiuBei()) return;
     const safe = safeReviewProjection(record);
+    const nativeStates = await variantReadiness();
+    if (serial !== revision || !isLiuBei()) return;
     stateLabel.textContent = safe.state.toUpperCase() + ' · ' + safe.behavior.toUpperCase();
     absence.textContent = 'NATIVE LIU BEI ART PENDING';
     const technical = safe.technicalSourcePass
@@ -68,7 +97,8 @@ async function update({force = false} = {}) {
       : 'Native A0 source has not passed the local technical gate.';
     statusLabel.textContent =
       (safe.preview ? 'Manual review preview · ' : 'Task-bound review state · ') +
-      safe.behavior + '. ' + technical;
+      safe.behavior + '. ' + reviewReadinessLabel(nativeStates, safe.state) +
+      '. ' + technical;
   } catch (_) {
     if (serial !== revision || !isLiuBei()) return;
     stateLabel.textContent = 'REVIEW LOCKED';
