@@ -67,6 +67,11 @@ def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox)
             assert state["original_sha256"] == sha256(candidate)
             assert state["intake_status"] == "awaiting_image_bound_annotations"
             assert state["owner_identity_approval"] == "pending"
+            assert state["schema"] == "exodia.phase5.liu_bei-a0-watch-telemetry/v1"
+            assert state["check_sequence"] >= 1
+            assert state["last_transition_utc"]
+            assert state["geometry_ready_for_owner_review"] is False
+            assert state["five_state_staging_authorized"] is False
             assert state["production_release_enabled"] is False
             sidecar = candidate.with_suffix(".landmarks.json")
             assert sidecar.is_file()
@@ -85,6 +90,8 @@ def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox)
             sidecar.write_text(json.dumps(annotations), encoding="utf-8")
             await asyncio.to_thread(stamp_patches, candidate, sidecar)
             await until(lambda: watch.snapshot()["image_bound_annotation_consistency"] is True)
+            assert watch.snapshot()["geometry_ready_for_owner_review"] is True
+            assert watch.snapshot()["five_state_staging_authorized"] is False
             assert watch.snapshot()["owner_identity_approval"] == "pending"
             with Image.open(candidate) as src:
                 changed = src.copy()
@@ -93,6 +100,7 @@ def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox)
             new_sha = sha256(candidate)
             await until(lambda: watch.snapshot()["original_sha256"] == new_sha)
             assert not watch.snapshot()["image_bound_annotation_consistency"]
+            assert watch.snapshot()["geometry_ready_for_owner_review"] is False
             assert watch.snapshot()["production_release_enabled"] is False
             assert candidate.exists()
             serialized = json.dumps(event_log.latest(100))
