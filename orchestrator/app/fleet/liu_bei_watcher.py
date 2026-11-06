@@ -22,8 +22,13 @@ class LiuBeiA0Watcher:
         self._processed = None
         self._next_retry = 0.0
         self._task = None
+        self._check_sequence = 0
+        self._last_transition_utc = None
         self._status = dict(
+            schema="exodia.phase5.liu_bei-a0-watch-telemetry/v1",
             watcher_state="starting", intake_status="awaiting_manual_png",
+            check_sequence=0, last_transition_utc=None,
+            geometry_ready_for_owner_review=False, five_state_staging_authorized=False,
             original_sha256=None, technical_source_pass=False,
             image_bound_annotation_consistency=False,
             owner_identity_approval="pending", production_release_enabled=False,
