@@ -130,7 +130,7 @@ def _candidate_preflight(root: Path, inbox: Path, name: str, pilot: dict):
         result["status"] = "technical_geometry_ready_for_human_review"
         return result
     except (OSError, ValueError, KeyError, TypeError, UnicodeError,
-            json.JSONDecodeError, UnidentifiedImageError):
+            json.JSONDecodeError, UnidentifiedImageError, Image.DecompressionBombError):
         result["status"] = "source_or_annotations_unavailable"
         return result
 
