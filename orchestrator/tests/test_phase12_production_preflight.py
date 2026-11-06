@@ -183,7 +183,8 @@ def test_http_readiness_is_guarded_redacted_and_get_only(monkeypatch, isolated):
     async def run():
         root, inbox, _ = isolated
         monkeypatch.setattr(server, "inbox", inbox)
-        monkeypatch.setattr(server.settings, "root", root, raising=False)
+        from dataclasses import replace
+        monkeypatch.setattr(server, "settings", replace(server.settings, root=root))
         calls = []
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=server.app),
