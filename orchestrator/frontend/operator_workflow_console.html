@@ -39,12 +39,22 @@ footer{max-width:1280px;margin:auto;padding:18px 30px 34px;color:#879ab9;font-si
 @media(prefers-reduced-motion:no-preference){button{transition:background .12s,border-color .12s}}
 </style>
 <script type="module" src="/assets/operator_workflow_console.mjs?v=1"></script>
+<script type="module" src="/assets/workflow_health_boot.mjs?v=1"></script>
 </head><body>
 <header><div><span class="eyebrow">EXODIA TOWER · LOCAL COMMAND</span>
 <h1>Operator Workflow Console</h1>
 <p class="muted">Dependency-aware multi-agent planning. Manual task linking only; no model dispatch, publishing or production release.</p></div>
 <a href="/">Return to Command Center</a></header>
 <main>
+<section id="workflowOperationsPulse" aria-label="Operations health" style="grid-column:1/-1">
+  <div class="row" style="justify-content:space-between">
+    <div><span class="eyebrow">LOCAL OPERATIONS · READ-ONLY</span><h2>Workflow reliability</h2></div>
+    <button id="workflowHealthRefresh" type="button" class="secondary">Refresh health</button>
+  </div>
+  <p id="workflowHealthStatus" role="status">Checking persisted workflow integrity…</p>
+  <div id="workflowHealthMetrics" class="row" aria-label="Bounded workflow reliability counters"></div>
+  <small>Numbers reflect persisted local state, not real provider authentication, publishing or native artwork release. Recent-plan sample capped at 100.</small>
+</section>
 <section aria-label="Create workflow"><div class="row" style="justify-content:space-between"><h2>Compose a plan</h2><span class="tag">Up to 12 stages</span></div>
 <form id="planForm" class="stack"><label>Plan title<input name="title" id="planTitle" maxlength="120" placeholder="e.g. Research → analysis → review" required></label>
 <div id="stepEditors" class="stack" aria-label="Planned stages"></div>
