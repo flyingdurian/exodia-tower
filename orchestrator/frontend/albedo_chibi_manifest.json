@@ -1,0 +1,401 @@
+{
+  "schema": "exodia.albedo-chibi/v1",
+  "character_id": "kiko",
+  "name": "Albedo",
+  "asset_status": "pending_production_frames",
+  "production_release_enabled": false,
+  "art_style": "chibi-operations",
+  "source_policy": {
+    "independent_frames_required": true,
+    "composite_slicing_prohibited": true,
+    "no_horizontal_flip_shortcuts": true,
+    "owner_sha_bound_approval_required": true,
+    "development_marker_is_not_art": true,
+    "registered_foot_landmarks_required": true
+  },
+  "frame_size_px": {
+    "width": 192,
+    "height": 256
+  },
+  "directions": [
+    "n",
+    "ne",
+    "e",
+    "se",
+    "s",
+    "sw",
+    "w",
+    "nw"
+  ],
+  "states": {
+    "idle": {
+      "frames_per_direction": 1,
+      "fps": 0
+    },
+    "walk": {
+      "frames_per_direction": 4,
+      "fps": 8,
+      "advance_mode": "distance_registered"
+    }
+  },
+  "anchors": {
+    "foot": [
+      0.5,
+      0.94
+    ],
+    "shadow": [
+      0.5,
+      0.96
+    ],
+    "collision": {
+      "radius_normalized": 0.022,
+      "floor_only": true
+    },
+    "display_height_px": 80,
+    "display_height_mobile_px": 66,
+    "floor_bounds": {
+      "x": [
+        0.07,
+        0.93
+      ],
+      "y": [
+        0.16,
+        0.88
+      ]
+    }
+  },
+  "motion": {
+    "speed_normalized_per_second": 0.3,
+    "max_step_seconds": 0.05,
+    "arrival_epsilon": 0.003,
+    "stride_frame_distance_normalized": 0.0375
+  },
+  "zones": {
+    "home": {
+      "x": 0.17,
+      "y": 0.77,
+      "label": "Home"
+    },
+    "terminal": {
+      "x": 0.79,
+      "y": 0.3,
+      "label": "Terminal"
+    },
+    "waiting": {
+      "x": 0.5,
+      "y": 0.76,
+      "label": "Waiting"
+    },
+    "result": {
+      "x": 0.82,
+      "y": 0.76,
+      "label": "Results"
+    },
+    "recovery": {
+      "x": 0.2,
+      "y": 0.31,
+      "label": "Recovery"
+    }
+  },
+  "task_zone_mapping": {
+    "draft": "home",
+    "queued": "terminal",
+    "opening": "terminal",
+    "researching": "terminal",
+    "typing": "terminal",
+    "submitting": "terminal",
+    "running": "terminal",
+    "rendering_media": "terminal",
+    "waiting_for_reply": "waiting",
+    "awaiting_operator": "waiting",
+    "answered": "result",
+    "failed": "recovery",
+    "cancelled": "home",
+    "idle": "home"
+  },
+  "frames": {
+    "idle_n": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_n_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_n_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_n_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_n_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "idle_ne": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_ne_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_ne_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_ne_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_ne_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "idle_e": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_e_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_e_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_e_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_e_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "idle_se": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_se_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_se_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_se_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_se_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "idle_s": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_s_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_s_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_s_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_s_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "idle_sw": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_sw_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_sw_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_sw_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_sw_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "idle_w": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_w_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_w_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_w_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_w_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "idle_nw": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_nw_00": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_nw_01": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_nw_02": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    },
+    "walk_nw_03": {
+      "status": "pending_independent_art",
+      "src": null,
+      "sha256": null,
+      "approval_sha256": null,
+      "source_provenance": null
+    }
+  },
+  "note": "The 40 frame slots are intentionally empty. This manifest authorizes only technical motion proof, not generated chibi artwork or production promotion.",
+  "obstacles": [],
+  "frame_source_directory": "orchestrator/frontend/albedo_chibi/frames"
+}
