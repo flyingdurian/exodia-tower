@@ -182,6 +182,7 @@ function renderPlan(plan) {
                                  expected_revision:plan.revision})
           });
           showNotice('Task linked. Rechecked dependency evidence.');
+          window.dispatchEvent(new Event('exodia:workflow-change'));
           await selectPlan(plan.id);
         } catch (_) {
           showNotice('Task link rejected: verify assignment, dependency and revision.',true);
@@ -249,6 +250,7 @@ byId('planForm').addEventListener('submit',async event=>{
     });
     const plan=safeWorkflow(raw);
     showNotice('Saved operator plan. No tasks were sent.');
+    window.dispatchEvent(new Event('exodia:workflow-change'));
     byId('planForm').reset();
     stageEditors.replaceChildren();
     addStage();
@@ -271,6 +273,7 @@ byId('confirmReview').addEventListener('click',async()=>{
       })
     });
     showNotice('Local workflow review recorded. No external action authorized.');
+    window.dispatchEvent(new Event('exodia:workflow-change'));
     await selectPlan(selected.id);
   } catch (_) {
     showNotice('Review rejected. Verify all tasks are actually answered.',true);
