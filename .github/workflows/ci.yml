@@ -83,3 +83,6 @@ jobs:
       - run: node --check orchestrator/frontend/albedo_experience.mjs
       - run: node --check orchestrator/frontend/companion_voice.mjs
       - run: node --test orchestrator/tests/companion_voice.test.mjs
+      - run: node --check orchestrator/frontend/fleet_readiness_contract.mjs
+      - run: node --check orchestrator/frontend/fleet_readiness_boot.mjs
+      - run: node --test orchestrator/tests/fleet_readiness_contract.test.mjs

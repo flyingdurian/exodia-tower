@@ -1,0 +1,107 @@
+{
+  "schema": "exodia.phase11.fleet-review-rollout/v1",
+  "status": "architecture_only_no_artwork_or_provider_mutation",
+  "canonical_roster_source": "orchestrator/app/companions/roster.json",
+  "total_companions": 10,
+  "states_per_companion": 33,
+  "planned_contract_slots": 330,
+  "expressions_per_companion": 20,
+  "actions_per_companion": 13,
+  "automatic_art_registration": false,
+  "automatic_remote_provider_dispatch": false,
+  "automatic_social_publishing": false,
+  "production_release_enabled": false,
+  "owner_release_authorized": false,
+  "companions": [
+    {
+      "agent_id": "kiko",
+      "name": "Albedo",
+      "art_rollout_status": "existing_albedo_pipeline_preserved_native_33_release_locked",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "liu_bei",
+      "name": "Liu Bei",
+      "art_rollout_status": "a0_intake_unverified_native_33_art_pending",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "memory",
+      "name": "Mira",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "archives",
+      "name": "Lyra",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "inventory",
+      "name": "Pip",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "vault",
+      "name": "Aurelia",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "ninja",
+      "name": "Nyx",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "cache",
+      "name": "Mochi",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "strategy",
+      "name": "Orion",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    },
+    {
+      "agent_id": "nova",
+      "name": "Nova",
+      "art_rollout_status": "frozen_existing_companion_art_untouched",
+      "native_33_production_certified": false,
+      "owner_native_release_approval": null,
+      "production_release_enabled": false,
+      "source_master_replacement_authorized": false
+    }
+  ]
+}
