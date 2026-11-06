@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from time import monotonic
 from app.fleet.riven_preflight import riven_a0_preflight
+from tools.riven_manual_dropin import scan_dropin
 
 class RivenA0Watcher:
     def __init__(self, root, events=None, poll_seconds=0.65, stable_polls=2):
@@ -43,6 +44,12 @@ class RivenA0Watcher:
                 entries.append((item.name, stat.st_size, stat.st_mtime_ns, stat.st_mode))
         return tuple(sorted(entries))
 
+    def _inspect(self):
+        # Create only a blank annotation template once the existing source gate
+        # verifies real bytes and native dimensions. No guessed landmarks.
+        scan_dropin(self.root, make_template=True)
+        return riven_a0_preflight(self.root)
+
     async def poll_once(self):
         try:
             signature = await asyncio.to_thread(self._signature)
@@ -55,7 +62,7 @@ class RivenA0Watcher:
                     signature == self._processed or monotonic() < self._next_retry):
                 return self.snapshot()
             previous = self._status["intake_status"]
-            inspected = await asyncio.to_thread(riven_a0_preflight, self.root)
+            inspected = await asyncio.to_thread(self._inspect)
             if await asyncio.to_thread(self._signature) != signature:
                 self._stable = 0
                 return self.snapshot()

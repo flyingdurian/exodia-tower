@@ -251,6 +251,16 @@ def scan_dropin(root: Path = ROOT, inbox: Path | None = None,
         return report
     try:
         annotations = json.loads(sidecar.read_text(encoding="utf-8"))
+        # A generated, SHA-bound blank template is awaiting real human
+        # anatomical coordinates; do not misclassify the native PNG as bad.
+        if (isinstance(annotations, dict)
+                and annotations.get("schema") == SCHEMA
+                and annotations.get("source_sha256") == actual_sha
+                and isinstance(annotations.get("landmarks"), dict)
+                and all(annotations["landmarks"].get(name) is None for name in POINTS)):
+            report["errors"].append("landmarks_pending_human_measurement")
+            report["status"] = "awaiting_image_bound_annotations"
+            return report
         evidence = audit_pixel_annotations(candidate, annotations, manifest)
         report["landmark_evidence"] = evidence
         report["errors"].extend(evidence["errors"])
