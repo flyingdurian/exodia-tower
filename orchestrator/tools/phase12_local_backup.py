@@ -43,6 +43,17 @@ def backup_local(root: Path, *, confirmed: bool = False) -> dict:
             or not app_data.is_dir()
             or not app_data.resolve().is_relative_to(root)):
         raise ValueError("Unsafe or absent local app_data")
+    # Preflight the entire source set before any snapshot is created.
+    # A later linked/corrupt source must not leave earlier copies behind.
+    for name in FILES:
+        source = app_data / name
+        if source.is_symlink() or (source.exists() and not source.is_file()):
+            raise ValueError("Unsafe or linked source database")
+        if source.is_file():
+            with sqlite3.connect(f"{source.as_uri()}?mode=ro",
+                                 uri=True, timeout=10) as check:
+                if check.execute("PRAGMA quick_check(1)").fetchone()[0] != "ok":
+                    raise ValueError("Source SQLite integrity check failed")
     backup_dir.mkdir(mode=0o700, exist_ok=True)
     if (backup_dir.is_symlink() or not backup_dir.resolve().is_relative_to(root)
             or not backup_dir.is_dir()):
@@ -55,42 +66,45 @@ def backup_local(root: Path, *, confirmed: bool = False) -> dict:
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     completed = []
     missing = []
-    for name in FILES:
-        source = app_data / name
-        if source.is_symlink():
-            raise ValueError("Linked source database rejected")
-        if not source.exists():
-            missing.append(name)
-            continue
-        if not source.is_file():
-            raise ValueError("Invalid source database")
-        destination = backup_dir / (
-            name.removesuffix(".sqlite") + "-" + timestamp + "-" +
-            uuid4().hex + ".sqlite"
-        )
-        fd = None
-        try:
-            fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-            os.close(fd)
+    created = []
+    try:
+        for name in FILES:
+            source = app_data / name
+            if not source.exists():
+                missing.append(name)
+                continue
+            destination = backup_dir / (
+                name.removesuffix(".sqlite") + "-" + timestamp + "-" +
+                uuid4().hex + ".sqlite"
+            )
             fd = None
-            with sqlite3.connect(f"{source.as_uri()}?mode=ro", uri=True,
-                                 timeout=10) as original:
-                if original.execute("PRAGMA quick_check(1)").fetchone()[0] != "ok":
-                    raise ValueError("Source SQLite integrity check failed")
-                with sqlite3.connect(destination, timeout=10) as target:
-                    original.backup(target, pages=64)
-                    if target.execute("PRAGMA quick_check(1)").fetchone()[0] != "ok":
-                        raise ValueError("Snapshot SQLite integrity check failed")
             try:
-                destination.chmod(0o600)
-            except OSError:
-                pass  # NTFS ACL inspection is an operator responsibility.
-            completed.append(name)
-        except Exception:
-            if fd is not None:
+                fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
                 os.close(fd)
-            destination.unlink(missing_ok=True)
-            raise
+                fd = None
+                with sqlite3.connect(f"{source.as_uri()}?mode=ro", uri=True,
+                                     timeout=10) as original:
+                    if original.execute("PRAGMA quick_check(1)").fetchone()[0] != "ok":
+                        raise ValueError("Source SQLite integrity check failed")
+                    with sqlite3.connect(destination, timeout=10) as target:
+                        original.backup(target, pages=64)
+                        if target.execute("PRAGMA quick_check(1)").fetchone()[0] != "ok":
+                            raise ValueError("Snapshot SQLite integrity check failed")
+                try:
+                    destination.chmod(0o600)
+                except OSError:
+                    pass  # NTFS ACL review remains an operator responsibility.
+                created.append(destination)
+                completed.append(name)
+            except Exception:
+                if fd is not None:
+                    os.close(fd)
+                destination.unlink(missing_ok=True)
+                raise
+    except Exception:
+        for created_path in created:
+            created_path.unlink(missing_ok=True)
+        raise
     return {
         "schema": SCHEMA,
         "operator_explicitly_confirmed": True,
