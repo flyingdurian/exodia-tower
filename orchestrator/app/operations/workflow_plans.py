@@ -147,6 +147,9 @@ class OperatorWorkflowStore:
                 isinstance(expected_revision, bool) or expected_revision < 1):
             raise WorkflowInputError("Invalid workflow link request")
         with self._lock, self._connect() as c:
+            # BEGIN IMMEDIATE also protects separate EXODIA processes/store
+            # instances sharing one SQLite file; RLock alone is insufficient.
+            c.execute("BEGIN IMMEDIATE")
             plan = self._get(c, ident)
             step = next((s for s in plan["steps"] if s["key"] == step_key), None)
             if step is None:
@@ -194,6 +197,7 @@ class OperatorWorkflowStore:
                 isinstance(expected_revision, bool) or expected_revision < 1):
             raise WorkflowInputError("Invalid review revision")
         with self._lock, self._connect() as c:
+            c.execute("BEGIN IMMEDIATE")
             plan = self._get(c, ident)
             if plan["status"] == "reviewed_local_only":
                 return plan
