@@ -30,6 +30,9 @@ class Inbox:
     id INTEGER PRIMARY KEY AUTOINCREMENT, task_id TEXT NOT NULL, event TEXT NOT NULL,
     from_state TEXT, to_state TEXT, occurred_at TEXT NOT NULL)""")
    c.execute("CREATE INDEX IF NOT EXISTS idx_task_events_by_task ON task_events(task_id,id)")
+   event_columns={row[1] for row in c.execute("PRAGMA table_info(task_events)")}
+   if "reason_code" not in event_columns:
+    c.execute("ALTER TABLE task_events ADD COLUMN reason_code TEXT")
    # A pre-existing task has no historical transitions available. Preserve only
    # a truthful last-known snapshot; never invent prior states or timestamps.
    c.execute("""INSERT INTO task_events(task_id,event,from_state,to_state,occurred_at)
@@ -49,9 +52,16 @@ class Inbox:
   d['retry_index']=int(d.get('retry_index') or 0)
   return d
  @staticmethod
- def _event(c,task_id,event,from_state,to_state):
-  c.execute("INSERT INTO task_events(task_id,event,from_state,to_state,occurred_at) VALUES(?,?,?,?,?)",
-            (task_id,event,from_state,to_state,timestamp()))
+ def _event(c,task_id,event,from_state,to_state,reason_code=None):
+  # Only fixed machine-readable diagnostic codes are persisted. Raw provider
+  # exceptions, prompts, private instructions and session paths are forbidden.
+  allowed={None,'task_error','restart_interrupted','stale_expired',
+           'operator_cancelled','operator_retry'}
+  if reason_code not in allowed:raise ValueError('Unsafe audit reason code')
+  c.execute("""INSERT INTO task_events(
+    task_id,event,from_state,to_state,occurred_at,reason_code)
+    VALUES(?,?,?,?,?,?)""",
+    (task_id,event,from_state,to_state,timestamp(),reason_code))
  def get(self,id):
   with self.lock,self.db() as c:
    c.row_factory=sqlite3.Row;r=c.execute("SELECT * FROM tasks WHERE id=?",(id,)).fetchone()
@@ -100,6 +110,8 @@ class Inbox:
    c.execute(f"UPDATE tasks SET {key}=?,updated_at=? WHERE id=?",(value,timestamp(),id))
    if key=='state' and current!=value:
     self._event(c,id,'state_change',current,value)
+   elif key=='error':
+    self._event(c,id,'error_recorded',current,current,'task_error')
   return self.get(id)
 
  def cancel(self,id):
@@ -114,7 +126,7 @@ class Inbox:
     c.execute("UPDATE tasks SET state='cancelled',error=?,updated_at=? WHERE id=?",(
       'Cancelled locally. An already-submitted remote provider request may still finish outside Exodia.',
       timestamp(),id))
-    self._event(c,id,'cancelled',state,'cancelled')
+    self._event(c,id,'cancelled',state,'cancelled','operator_cancelled')
   return self.get(id)
 
  def fail_interrupted(self):
@@ -130,7 +142,7 @@ class Inbox:
               'Interrupted by Exodia restart. Use an explicit new retry attempt.')
      c.execute("UPDATE tasks SET state='failed',error=?,updated_at=? WHERE id=?",
                (message,timestamp(),task_id))
-     self._event(c,task_id,'restart_interrupted',state,'failed')
+     self._event(c,task_id,'restart_interrupted',state,'failed','restart_interrupted')
 
  def retry(self,id,max_retries=3):
   """Atomically create or find one linked retry; never dispatch a provider here.
@@ -158,7 +170,7 @@ class Inbox:
      (next_id,parent['agent_id'],parent['provider'],parent['prompt'],'draft','',
       now,now,parent['web_research'],'[]','{}','[]',
       parent['private_instructions'],id,idx+1))
-   self._event(c,id,'retry_requested',parent['state'],parent['state'])
+   self._event(c,id,'retry_requested',parent['state'],parent['state'],'operator_retry')
    self._event(c,next_id,'retry_created',None,'draft')
   return self.get(next_id),True
 
@@ -169,7 +181,7 @@ class Inbox:
   self.get(id)
   with self.lock,self.db() as c:
    c.row_factory=sqlite3.Row
-   rows=c.execute("""SELECT id,task_id,event,from_state,to_state,occurred_at
+   rows=c.execute("""SELECT id,task_id,event,from_state,to_state,occurred_at,reason_code
                      FROM task_events WHERE task_id=? ORDER BY id ASC LIMIT ?""",
                   (id,limit)).fetchall()
   return [dict(row) for row in rows]
@@ -215,6 +227,33 @@ class Inbox:
               ('Stale task stopped locally; the external provider may continue. Retry explicitly.',
                timestamp(),task_id,state))
     if c.execute('SELECT changes()').fetchone()[0]:
-     self._event(c,task_id,'stale_cleanup',state,'failed')
+     self._event(c,task_id,'stale_cleanup',state,'failed','stale_expired')
      expired.append(task_id)
   return expired
+
+
+ def history_health(self):
+  """Read-only, bounded aggregate health; no prompts, paths or raw exceptions.
+
+  This intentionally does not run provider I/O or change any task state.
+  """
+  with self.lock,self.db() as c:
+   check=c.execute("PRAGMA quick_check(1)").fetchone()
+   if check is None or check[0]!="ok":
+    raise sqlite3.DatabaseError("history_integrity_failed")
+   mode=c.execute("PRAGMA journal_mode").fetchone()[0]
+   total=c.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+   event_total=c.execute("SELECT COUNT(*) FROM task_events").fetchone()[0]
+   retry_total=c.execute("SELECT COUNT(*) FROM tasks WHERE retry_of IS NOT NULL").fetchone()[0]
+   failure_total=c.execute("SELECT COUNT(*) FROM tasks WHERE state='failed'").fetchone()[0]
+   stale_total=c.execute("SELECT COUNT(*) FROM task_events WHERE event='stale_cleanup'").fetchone()[0]
+   error_total=c.execute("SELECT COUNT(*) FROM task_events WHERE event='error_recorded'").fetchone()[0]
+   active_total=c.execute("""SELECT COUNT(*) FROM tasks WHERE state IN (
+    'running','researching','queued','cooldown','opening','typing',
+    'submitting','waiting_for_reply','rendering_media')""").fetchone()[0]
+  return {"schema":"exodia.command-history-health/v1",
+          "status":"ok","journal_mode":mode,
+          "total_tasks":total,"total_events":event_total,
+          "retry_attempts":retry_total,"failed_tasks":failure_total,
+          "active_tasks":active_total,"stale_expirations":stale_total,
+          "error_events":error_total}

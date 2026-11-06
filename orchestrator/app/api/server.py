@@ -1,12 +1,13 @@
 """Local FastAPI service, JSON API and live event WebSocket."""
 from __future__ import annotations
 import asyncio
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 import re
 from time import monotonic
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException, Header, Request
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, JSONResponse
 import httpx
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -28,6 +29,7 @@ from app.companions.rigs import load_all
 from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
+from app.fleet.riven_preflight import riven_a0_preflight
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
 from app.automation.configured_web import ConfiguredWebRunner, WebAdapterError
@@ -65,6 +67,15 @@ def schedule_command_job(task_id, coroutine):
 
 started = monotonic()
 app = FastAPI(title='Exodia Tower', version=APP_VERSION, docs_url='/api/docs')
+
+@app.exception_handler(sqlite3.DatabaseError)
+async def sqlite_command_storage_boundary(request: Request, error: sqlite3.DatabaseError):
+    """Never return raw database exceptions, SQL text, local paths or secrets."""
+    events.publish('alert','Local SQLite command storage unavailable','sqlite_database_error')
+    return JSONResponse(status_code=503,content={
+        'detail':'Local task storage unavailable; inspect SQLite health and local logs.',
+        'code':'sqlite_storage_unavailable'})
+
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['localhost','127.0.0.1','testserver'])
 app.mount('/assets', StaticFiles(directory=settings.root/'frontend'), name='assets')
 (settings.root/'app_data'/'artifacts').mkdir(parents=True,exist_ok=True)
@@ -883,6 +894,24 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     try:saved=model_instructions.save(body.provider, body.text)
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
+
+@app.get('/api/fleet/riven-a0/preflight')
+async def riven_a0_preflight_status(x_exodia_client: str=Header(default='')):
+    """Local-only read-only Phase 5 status; never auto-register or release artwork."""
+    require_local_dashboard(x_exodia_client)
+    try:
+        return await asyncio.to_thread(riven_a0_preflight,settings.root)
+    except Exception:
+        # Unknown local file names, hashes, annotations, paths and exception
+        # messages must never appear in response telemetry or remote logs.
+        events.publish('alert','Riven A0 preflight check unavailable','riven_a0_preflight_error')
+        raise HTTPException(503,detail='Riven A0 preflight unavailable; review the local intake gate')
+
+@app.get('/api/command/history-health')
+async def command_history_health(x_exodia_client: str=Header(default='')):
+    """Local-only, aggregate, read-only SQLite status with no sensitive rows."""
+    require_local_dashboard(x_exodia_client)
+    return await asyncio.to_thread(inbox.history_health)
 
 @app.get('/api/command/tasks/history')
 async def command_history(limit:int=50,offset:int=0,x_exodia_client:str=Header(default='')):
