@@ -20,13 +20,13 @@
     }
   },
   {
-    "id": "router",
-    "name": "Riven",
+    "id": "liu_bei",
+    "name": "Liu Bei",
     "agent_class": "Vanguard",
     "pillar": "Dual-Blade Router",
     "title": "Pathfinder Knight",
-    "portrait": "/assets/companions/portraits/router.webp",
-    "thumbnail": "/assets/companions/thumbs/router.webp",
+    "portrait": null,
+    "thumbnail": null,
     "accent": "#ff648d",
     "secondary": "#8b5aff",
     "persona": "Bold, tactical, quick to adapt; honest about unreliable routes.",

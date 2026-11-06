@@ -29,9 +29,9 @@ from app.companions.rigs import load_all
 from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
-from app.fleet.riven_preflight import riven_a0_preflight
-from app.fleet.riven_runtime import runtime_projection, STATES as RIVEN_REVIEW_STATES
-from app.fleet.riven_watcher import RivenA0Watcher
+from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
+from app.fleet.liu_bei_runtime import runtime_projection, STATES as LIU_BEI_REVIEW_STATES
+from app.fleet.liu_bei_watcher import Liu BeiA0Watcher
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
 from app.automation.configured_web import ConfiguredWebRunner, WebAdapterError
@@ -47,7 +47,7 @@ director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
 inbox.fail_interrupted()
-riven_a0_watcher=RivenA0Watcher(settings.root,events)
+liu_bei_a0_watcher=Liu BeiA0Watcher(settings.root,events)
 local_model=OllamaBackend()
 researcher=PublicWebResearcher()
 web_adapters={slot:ConfiguredWebRunner(settings.root,slot=slot)
@@ -116,11 +116,11 @@ async def _task_cleanup_watchdog():
 async def start_task_cleanup_watchdog():
     if getattr(app.state,'task_cleanup_watchdog',None) is None:
         app.state.task_cleanup_watchdog=asyncio.create_task(_task_cleanup_watchdog())
-    riven_a0_watcher.start()
+    liu_bei_a0_watcher.start()
 
 @app.on_event('shutdown')
 async def stop_browser_sessions():
-    await riven_a0_watcher.stop()
+    await liu_bei_a0_watcher.stop()
     watcher=getattr(app.state,'task_cleanup_watchdog',None)
     if watcher is not None:
         watcher.cancel()
@@ -329,7 +329,7 @@ async def companion_studio():
 
 # Optional Kokoro localhost neural voice: never proxies arbitrary remote hosts.
 KOKORO_URL='http://127.0.0.1:8880/v1/audio/speech'
-VOICE_IDS={'kiko':'af_heart','router':'am_michael','mira':'af_bella',
+VOICE_IDS={'kiko':'af_heart','liu_bei':'am_michael','mira':'af_bella',
  'lyra':'bf_emma','pip':'af_kore','aurelia':'bf_isabella',
  'nyx':'am_fenrir','mochi':'af_sky','orion':'bm_george','nova':'af_nova'}
 
@@ -460,7 +460,7 @@ async def ask(body: AskBody):
     elif body.channel == 'local': kind='rag'
     elif body.channel == 'api': kind='reasoning'
     else: kind,_=classify(body.question.strip())
-    specialist={'browser':'ninja','rag':'archives','integration':'inventory','system':'strategy','reasoning':'memory'}.get(kind,'router')
+    specialist={'browser':'ninja','rag':'archives','integration':'inventory','system':'strategy','reasoning':'memory'}.get(kind,'liu_bei')
     director.react('kiko','working')
     director.react(specialist,'working')
     result = await router.answer(body.question.strip(), body.channel, body.model_choice)
@@ -900,13 +900,13 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
 
-@app.get('/api/fleet/riven/pilot-runtime')
-async def riven_pilot_runtime(task_id: str | None = None, preview_state: str | None = None,
+@app.get('/api/fleet/liu_bei/pilot-runtime')
+async def liu_bei_pilot_runtime(task_id: str | None = None, preview_state: str | None = None,
                               x_exodia_client: str = Header(default='')):
-    """Live command-center Riven review state; never a native image URL or approval."""
+    """Live command-center Liu Bei review state; never a native image URL or approval."""
     require_local_dashboard(x_exodia_client)
-    if preview_state is not None and preview_state not in RIVEN_REVIEW_STATES:
-        raise HTTPException(422, detail='Unsupported Riven review state')
+    if preview_state is not None and preview_state not in LIU_BEI_REVIEW_STATES:
+        raise HTTPException(422, detail='Unsupported Liu Bei review state')
     task = None
     if task_id is not None:
         if len(task_id) > 128 or re.fullmatch(r'[0-9a-zA-Z-]+',task_id) is None:
@@ -921,27 +921,27 @@ async def riven_pilot_runtime(task_id: str | None = None, preview_state: str | N
     except Exception:
         # Never leak source or reference paths, hashes, local exceptions,
         # browser sessions, or anything from the private task store.
-        events.publish('alert', 'Riven review pilot unavailable',
-                       'riven_review_policy_failure')
-        raise HTTPException(503, detail='Riven review pilot is not available')
+        events.publish('alert', 'Liu Bei review pilot unavailable',
+                       'liu_bei_review_policy_failure')
+        raise HTTPException(503, detail='Liu Bei review pilot is not available')
 
-@app.get('/api/fleet/riven-a0/watch-status')
-async def riven_watch_status(x_exodia_client: str=Header(default='')):
+@app.get('/api/fleet/liu_bei-a0/watch-status')
+async def liu_bei_watch_status(x_exodia_client: str=Header(default='')):
     """Safe, non-secret live watcher snapshot; requires local dashboard access."""
     require_local_dashboard(x_exodia_client)
-    return riven_a0_watcher.snapshot()
+    return liu_bei_a0_watcher.snapshot()
 
-@app.get('/api/fleet/riven-a0/preflight')
-async def riven_a0_preflight_status(x_exodia_client: str=Header(default='')):
+@app.get('/api/fleet/liu_bei-a0/preflight')
+async def liu_bei_a0_preflight_status(x_exodia_client: str=Header(default='')):
     """Local-only read-only Phase 5 status; never auto-register or release artwork."""
     require_local_dashboard(x_exodia_client)
     try:
-        return await asyncio.to_thread(riven_a0_preflight,settings.root)
+        return await asyncio.to_thread(liu_bei_a0_preflight,settings.root)
     except Exception:
         # Unknown local file names, hashes, annotations, paths and exception
         # messages must never appear in response telemetry or remote logs.
-        events.publish('alert','Riven A0 preflight check unavailable','riven_a0_preflight_error')
-        raise HTTPException(503,detail='Riven A0 preflight unavailable; review the local intake gate')
+        events.publish('alert','Liu Bei A0 preflight check unavailable','liu_bei_a0_preflight_error')
+        raise HTTPException(503,detail='Liu Bei A0 preflight unavailable; review the local intake gate')
 
 @app.get('/api/command/history-health')
 async def command_history_health(x_exodia_client: str=Header(default='')):
