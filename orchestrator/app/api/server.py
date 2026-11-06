@@ -956,6 +956,23 @@ async def liu_bei_a0_preflight_status(x_exodia_client: str=Header(default='')):
         events.publish('alert','Liu Bei A0 preflight check unavailable','liu_bei_a0_preflight_error')
         raise HTTPException(503,detail='Liu Bei A0 preflight unavailable; review the local intake gate')
 
+@app.get('/api/operations/production-preflight')
+async def production_preflight_status(x_exodia_client: str = Header(default='')):
+    """Local-only, read-only integrity health: never a production release."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.production_readiness import inspect_production_readiness
+    def inspect():
+        return inspect_production_readiness(
+            settings.root, host=settings.host, history_health=inbox.history_health()
+        )
+    try:
+        return await asyncio.to_thread(inspect)
+    except Exception:
+        events.publish('alert', 'Production readiness checks unavailable',
+                       'phase12_local_integrity_or_policy_failure')
+        raise HTTPException(503, detail='Local release preflight unavailable')
+
+
 @app.get('/api/command/history-health')
 async def command_history_health(x_exodia_client: str=Header(default='')):
     """Local-only, aggregate, read-only SQLite status with no sensitive rows."""
