@@ -13,7 +13,7 @@ const STATES = new Set(['neutral','confident','angered','working','pointing']);
 let chosen = {agentId:'kiko',taskId:'',state:'idle'};
 let manual = null;
 let revision = 0;
-let lastRequest = '';
+let lastRequest=null;
 
 function refreshButtonState(){
   for(const item of buttons)
@@ -28,7 +28,7 @@ function showForSelection(){
   if(floor)floor.hidden=enabled;
   if(!enabled){
     revision+=1;
-    lastRequest='';
+    lastRequest=null;
   }
   return enabled;
 }
@@ -66,7 +66,7 @@ async function update(){
     stateLabel.textContent='REVIEW LOCKED';
     absence.textContent='NO VERIFIED RIVEN STATE ART';
     statusLabel.textContent='The Riven review validator is unavailable. No artwork will be displayed.';
-    lastRequest='';
+    lastRequest=null;
   }
 }
 
@@ -74,7 +74,7 @@ for(const button of buttons){
   button.addEventListener('click',()=>{
     manual=button.dataset.rivenPreview==='automatic'?null:button.dataset.rivenPreview;
     refreshButtonState();
-    lastRequest='';
+    lastRequest=null;
     void update();
   });
 }
@@ -83,7 +83,7 @@ if(companion){
   companion.addEventListener('change',()=>{
     manual=null;
     refreshButtonState();
-    lastRequest='';
+    lastRequest=null;
     void update();
   });
 }
