@@ -662,6 +662,12 @@ async def review_operator_workflow(workflow_id: str, body: OperatorWorkflowRevie
         raise HTTPException(503, detail='Local workflow storage unavailable')
 
 
+@app.get('/workflow-planner')
+async def operator_workflow_console():
+    """Manual-only workflow console; no action begins by loading this page."""
+    return FileResponse(settings.root / 'frontend/operator_workflow_console.html')
+
+
 @app.get('/api/social/status')
 async def social_status():
     return {'summary': social.summary(), 'connections':{
