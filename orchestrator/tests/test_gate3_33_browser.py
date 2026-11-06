@@ -140,7 +140,20 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await command.wait_for_function(
                       "() => window.__exodiaDevelopmentPortraitStage?.state === null",timeout=5000)
                     assert await command.locator('#expressionCard.portrait-registry-active').count()==0
+                    assert await command.locator('#rivenPilotPane').is_visible()
+                    await command.wait_for_function(
+                      "() => document.querySelector('#rivenPilotState')?.textContent.includes('NEUTRAL')",
+                      timeout=15000)
+                    assert 'NATIVE RIVEN ART PENDING' in await command.locator('#rivenPilotFallback').inner_text()
+                    assert not await command.locator('#chibiOperations').is_visible()
+                    await command.locator('[data-riven-preview="pointing"]').click()
+                    await command.wait_for_function(
+                      "() => document.querySelector('#rivenPilotState')?.textContent.includes('POINTING')",
+                      timeout=15000)
+                    assert await command.locator('[data-riven-preview="pointing"]').get_attribute('aria-pressed')=='true'
                     await command.locator('#companion').select_option('kiko')
+                    assert not await command.locator('#rivenPilotPane').is_visible()
+                    assert await command.locator('#chibiOperations').is_visible()
                     await command.wait_for_function(
                       "() => window.__exodiaDevelopmentPortraitStage?.state === 'idle'",timeout=15000)
                     assert await command.locator('#expressionCard.portrait-registry-active').count()==1
