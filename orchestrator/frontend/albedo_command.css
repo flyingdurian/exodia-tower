@@ -137,7 +137,7 @@
 @media(max-width:760px){.command-status-strip{gap:8px;padding:9px 11px}.command-status-item{flex:1 1 110px}.command-status-task{flex:1 1 180px}.command-status-item strong{font-size:10px}.chibi-floor{height:185px}.chibi-actor{width:50px;height:66px}.build-meta{display:none}}
 @media(prefers-reduced-motion:reduce){.chibi-actor{will-change:auto}}
 
-/* Phase 3: public task-driven in-room action cue, separate from artwork provenance. */
+/* Phase 3: public task-dliu_bei in-room action cue, separate from artwork provenance. */
 #chibiBehaviorCue{display:inline-flex;align-items:center;font-size:9px;color:#e2efff;font-weight:700;letter-spacing:.02em;min-width:0}
 #chibiOperations[data-behavior="success"] #chibiBehaviorCue{color:#b1ffda}
 #chibiOperations[data-behavior="failure"] #chibiBehaviorCue{color:#ffc1d8}
@@ -185,23 +185,23 @@
 }
 
 
-/* Phase 7 review-only Riven panel. Intentionally no image/collage placeholders. */
-.riven-pilot{border:1px solid #b34d7973;background:linear-gradient(145deg,#201a39,#132343 70%,#221827);padding:14px;display:grid;gap:11px}
-.riven-pilot[hidden]{display:none!important}
-.riven-pilot-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.riven-pilot-heading strong{font-size:10px;color:#ffafc7;letter-spacing:.08em}
-.riven-pilot-body{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(0,1.2fr);gap:14px}
-.riven-pilot-placeholder{border:1px dashed #b68ba7;border-radius:12px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;background:radial-gradient(ellipse at center,#43304e,#171c35 80%);text-align:center}
-.riven-pilot-mark{font-size:36px;color:#d987a5;opacity:.78}
-.riven-pilot-current{font-size:11px;color:#fae2ec;font-weight:750;letter-spacing:.05em}
-.riven-pilot-absence{font-size:10px;color:#ffc1b1;letter-spacing:.03em}
-.riven-pilot-controls{display:flex;flex-direction:column;gap:9px;justify-content:center}
-.riven-pilot-controls p{margin:0;color:#e7ccda;font-size:12px;line-height:1.5}
-.riven-pilot-controls small{color:#c2b5cf;font-size:10px;line-height:1.5}
-.riven-pilot-buttons{display:flex;flex-wrap:wrap;gap:6px}
-.riven-pilot-buttons button{color:#f9d8e7;background:#302044;border:1px solid #9d5173;border-radius:6px;padding:6px 9px;font-size:10px;cursor:pointer}
-.riven-pilot-buttons button[aria-pressed=true]{background:#79415a;border-color:#e7a2ba}
-.riven-pilot-buttons button:focus-visible{outline:2px solid #f3c4d2;outline-offset:2px}
-@media(max-width:620px){.riven-pilot-body{grid-template-columns:1fr}.riven-pilot-placeholder{min-height:150px}}
+/* Phase 7 review-only Liu Bei panel. Intentionally no image/collage placeholders. */
+.liu-bei-pilot{border:1px solid #b34d7973;background:linear-gradient(145deg,#201a39,#132343 70%,#221827);padding:14px;display:grid;gap:11px}
+.liu-bei-pilot[hidden]{display:none!important}
+.liu-bei-pilot-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.liu-bei-pilot-heading strong{font-size:10px;color:#ffafc7;letter-spacing:.08em}
+.liu-bei-pilot-body{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(0,1.2fr);gap:14px}
+.liu-bei-pilot-placeholder{border:1px dashed #b68ba7;border-radius:12px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px;background:radial-gradient(ellipse at center,#43304e,#171c35 80%);text-align:center}
+.liu-bei-pilot-mark{font-size:36px;color:#d987a5;opacity:.78}
+.liu-bei-pilot-current{font-size:11px;color:#fae2ec;font-weight:750;letter-spacing:.05em}
+.liu-bei-pilot-absence{font-size:10px;color:#ffc1b1;letter-spacing:.03em}
+.liu-bei-pilot-controls{display:flex;flex-direction:column;gap:9px;justify-content:center}
+.liu-bei-pilot-controls p{margin:0;color:#e7ccda;font-size:12px;line-height:1.5}
+.liu-bei-pilot-controls small{color:#c2b5cf;font-size:10px;line-height:1.5}
+.liu-bei-pilot-buttons{display:flex;flex-wrap:wrap;gap:6px}
+.liu-bei-pilot-buttons button{color:#f9d8e7;background:#302044;border:1px solid #9d5173;border-radius:6px;padding:6px 9px;font-size:10px;cursor:pointer}
+.liu-bei-pilot-buttons button[aria-pressed=true]{background:#79415a;border-color:#e7a2ba}
+.liu-bei-pilot-buttons button:focus-visible{outline:2px solid #f3c4d2;outline-offset:2px}
+@media(max-width:620px){.liu-bei-pilot-body{grid-template-columns:1fr}.liu-bei-pilot-placeholder{min-height:150px}}
 
 #chibiOperations[hidden]{display:none!important}
