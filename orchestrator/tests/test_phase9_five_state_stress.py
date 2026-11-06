@@ -117,10 +117,11 @@ def test_local_task_transitions_same_id_and_cross_agent_rejections(monkeypatch, 
             wrong = await client.get(path, headers=header, params={"task_id":other["id"],
                                                                   "preview_state":"working"})
             assert wrong.status_code == 409
+            # One immutable task ID advances through live states to a terminal
+            # answer. Real Inbox deliberately rejects late edits after ANSWERED.
             for state, expected in [
                 ("queued", "working"), ("running", "working"),
                 ("waiting_for_reply", "working"), ("answered", "confident"),
-                ("failed", "neutral"), ("cancelled", "neutral"),
             ]:
                 inbox.update(liu["id"], "state", state)
                 response = await client.get(path, headers=header, params={"task_id":liu["id"]})
@@ -132,17 +133,33 @@ def test_local_task_transitions_same_id_and_cross_agent_rejections(monkeypatch, 
                 assert item["display"]["asset_url"] is None
                 assert "DO_NOT_LEAK_PROMPT" not in response.text
                 assert "KIKO_ONLY_PRIVATE" not in response.text
-            inbox.update(liu["id"], "state", "running")
+
+            # Independent tasks represent failed/cancelled terminal lifecycles;
+            # never rewrite an answered task or bypass Inbox's recovery fence.
+            for terminal in ("failed", "cancelled"):
+                fresh = inbox.create("liu_bei", "ollama", "DO_NOT_LEAK_PROMPT")
+                if terminal == "cancelled":
+                    inbox.cancel(fresh["id"])
+                else:
+                    inbox.update(fresh["id"], "state", "failed")
+                response = await client.get(path, headers=header, params={"task_id":fresh["id"]})
+                assert response.status_code == 200
+                assert response.json()["selected_state"] == "neutral"
+                assert response.json()["display"]["asset_url"] is None
+                assert "DO_NOT_LEAK_PROMPT" not in response.text
+
+            active = inbox.create("liu_bei", "ollama", "DO_NOT_LEAK_PROMPT")
+            inbox.update(active["id"], "state", "running")
             for state in PILOT_STATES:
                 preview = await client.get(path, headers=header, params={
-                    "task_id":liu["id"], "preview_state":state,
+                    "task_id":active["id"], "preview_state":state,
                 })
                 assert preview.status_code == 200
                 assert preview.json()["selected_state"] == state
                 assert preview.json()["review_preview"] is True
                 assert preview.json()["display"]["asset_url"] is None
             illegal = await client.get(path, headers=header, params={
-                "task_id":liu["id"], "preview_state":"source_masters/router.png"
+                "task_id":active["id"], "preview_state":"source_masters/router.png"
             })
             assert illegal.status_code == 422
     asyncio.run(run())
