@@ -36,16 +36,34 @@ def correlate(watcher: dict, preflight: dict, runtime: dict, history: dict, cata
     """Build only an allowlisted redacted report from the four local services."""
     if watcher.get("schema") != "exodia.phase5.liu_bei-a0-watch-telemetry/v1":
         raise ValueError("Local watcher telemetry contract not installed")
+    if (preflight.get("schema") != "exodia.phase5.liu_bei-a0-preflight/v1"
+            or runtime.get("schema") != "exodia.phase7.liu_bei-five-state-review/v1"):
+        raise ValueError("Liu Bei preflight or review runtime contract changed")
     if preflight.get("character_id") != "liu_bei" or runtime.get("character_id") != "liu_bei":
         raise ValueError("Companion identity mismatch")
     if history.get("schema") != "exodia.command-history-health/v1":
         raise ValueError("Local SQLite health contract changed")
     states = runtime.get("states") or []
-    if not isinstance(states, list) or tuple(x.get("key") for x in states) != EXPECTED:
+    if (not isinstance(states, list) or len(states) != len(EXPECTED)
+            or any(not isinstance(x, dict) for x in states)
+            or tuple(x.get("key") for x in states) != EXPECTED):
         raise ValueError("Five-state review contract changed")
-    if (any(x.get("asset_url") is not None for x in states)
+    display = runtime.get("display")
+    if (not isinstance(display, dict) or display.get("mode") != "review_only_fallback"
+            or display.get("asset_url") is not None):
+        raise ValueError("Liu Bei display must remain artwork-free review fallback")
+    if (any(x.get("asset_url") is not None or
+            x.get("art_status") != "awaiting_exact_sha_owner_approval" for x in states)
             or runtime.get("production_release_enabled") is not False
+            or runtime.get("owner_identity_approval") != "pending"
+            or runtime.get("independent_original_authorship_verified") is not False
             or preflight.get("production_release_enabled") is not False
+            or preflight.get("native_production_certified") is not False
+            or preflight.get("owner_identity_approval") != "pending"
+            or preflight.get("independent_original_authorship_verified") is not False
+            or watcher.get("production_release_enabled") is not False
+            or watcher.get("native_production_certified") is not False
+            or watcher.get("owner_identity_approval") != "pending"
             or watcher.get("five_state_staging_authorized") is not False):
         raise ValueError("Native artwork lock changed; inspect manually")
     consistent = (
