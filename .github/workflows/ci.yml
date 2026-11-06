@@ -78,3 +78,6 @@ jobs:
       - run: node --check orchestrator/frontend/albedo_experience.mjs
       - run: node --check orchestrator/frontend/companion_voice.mjs
       - run: node --test orchestrator/tests/companion_voice.test.mjs
+      - run: node --check orchestrator/frontend/operator_workflow_contract.mjs
+      - run: node --check orchestrator/frontend/operator_workflow_console.mjs
+      - run: node --test orchestrator/tests/operator_workflow_contract.test.mjs
