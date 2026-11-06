@@ -115,14 +115,23 @@ class LiuBeiA0Watcher:
             raise
         except Exception:
             previous = self._status["intake_status"]
+            self._check_sequence += 1
+            checked_at = datetime.now(timezone.utc).isoformat()
+            if previous != "preflight_unavailable":
+                self._last_transition_utc = checked_at
             self._status = dict(
+                schema="exodia.phase5.liu_bei-a0-watch-telemetry/v1",
                 watcher_state="error", intake_status="preflight_unavailable",
+                check_sequence=self._check_sequence,
+                last_transition_utc=self._last_transition_utc,
+                geometry_ready_for_owner_review=False,
+                five_state_staging_authorized=False,
                 original_sha256=None, technical_source_pass=False,
                 image_bound_annotation_consistency=False,
                 owner_identity_approval="pending", production_release_enabled=False,
                 native_production_certified=False,
                 five_state_pilot="locked_pending_exact_sha_owner_approval",
-                last_checked_utc=datetime.now(timezone.utc).isoformat())
+                last_checked_utc=checked_at)
             self._next_retry = monotonic() + max(2.0, self.poll_seconds * 4)
             if self.events and previous != "preflight_unavailable":
                 self.events.publish("alert","Liu Bei A0 preflight unavailable","liu_bei_a0_check")
