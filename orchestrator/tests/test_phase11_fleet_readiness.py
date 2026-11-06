@@ -196,3 +196,13 @@ def test_local_fleet_api_guarded_task_owner_and_privacy(monkeypatch, isolated, t
             assert "PRIVATE_VAULT_TEXT" not in response.text
             assert "PRIVATE_NINJA_TEXT" not in response.text
     asyncio.run(run())
+
+
+def test_fleet_review_does_not_duplicate_legacy_chibi_controls():
+    html = (ROOT / "frontend/albedo_command.html").read_text(encoding="utf-8")
+    script = (ROOT / "frontend/fleet_readiness_boot.mjs").read_text(encoding="utf-8")
+    assert 'id="fleetReadinessPanel" class="fleet-review-controls"' in html
+    assert html.count('class="chibi-test-controls"') == 1
+    assert "fleet_readiness_boot.mjs" in html
+    assert "/api/fleet/readiness" in script
+    assert "remote_task_dispatch" not in script
