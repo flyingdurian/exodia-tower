@@ -154,7 +154,7 @@ def test_private_backup_rejects_linked_databases_and_backup_directories(isolated
         source.symlink_to(outside)
     except (OSError, NotImplementedError):
         pytest.skip("Symbolic links unavailable in this filesystem")
-    with pytest.raises(ValueError, match="Linked source"):
+    with pytest.raises(ValueError, match="linked source"):
         backup.backup_local(root, confirmed=True)
     source.unlink()
     target = root / "app_data/phase12_private_backups"
