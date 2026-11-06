@@ -160,3 +160,34 @@ def test_http_integrity_gate_requires_local_header_no_mutation(monkeypatch,store
             assert (await client.post(url,headers={
                 "X-Exodia-Client":"exodia-dashboard"})).status_code==405
     asyncio.run(run())
+
+
+def test_private_recovery_snapshot_includes_workflow_lineage_and_task_state(tmp_path):
+    from tools.phase12_local_backup import backup_local
+    root=tmp_path/"orchestrator"
+    data=root/"app_data"
+    data.mkdir(parents=True)
+    store=OperatorWorkflowStore(data/"operator_workflows.sqlite")
+    inbox=Inbox(data/"companion_tasks.sqlite")
+    plan=one_step(store)
+    task=inbox.create("vault","ollama","PRIVATE_DO_NOT_EXPORT")
+    store.bind(plan["id"],step_key="inspect",task_id=task["id"],
+               expected_revision=1,inbox=inbox)
+    inbox.update(task["id"],"state","failed")
+    recovery=WorkflowRecovery(store)
+    recovery.fork(plan["id"],expected_revision=2,
+                  confirmation=CONFIRMATION,inbox=inbox)
+    report=backup_local(root,confirmed=True)
+    assert "operator_workflows.sqlite" in report["databases_snapshotted"]
+    assert "companion_tasks.sqlite" in report["databases_snapshotted"]
+    assert report["network_upload_performed"] is False
+    assert report["snapshots_private_unencrypted"] is True
+    assert report["cross_database_atomic_snapshot"] is False
+    assert "PRIVATE_DO_NOT_EXPORT" not in json.dumps(report)
+    backup_dir=data/"phase12_private_backups"
+    snap=next(backup_dir.glob("operator_workflows-*.sqlite"))
+    with sqlite3.connect(snap) as conn:
+        assert conn.execute("PRAGMA quick_check(1)").fetchone()==("ok",)
+        assert conn.execute("SELECT COUNT(*) FROM operator_workflows").fetchone()[0]==2
+        assert conn.execute(
+            "SELECT COUNT(*) FROM operator_workflow_recovery").fetchone()[0]==1
