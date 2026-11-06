@@ -171,28 +171,47 @@ async def run_probe(client: httpx.AsyncClient, model: str, mode: str,
     return evidence
 
 
+def safe_error_code(exc: Exception) -> str:
+    """Use fixed codes, never expose browser paths, HTTP bodies or credentials."""
+    if isinstance(exc, httpx.TimeoutException):
+        return 'localhost_timeout'
+    if isinstance(exc, httpx.HTTPStatusError):
+        return 'localhost_http_error'
+    if isinstance(exc, httpx.HTTPError):
+        return 'localhost_connection_error'
+    if isinstance(exc, OSError):
+        return 'local_evidence_io_error'
+    if isinstance(exc, ValueError):
+        return 'invalid_local_probe_request'
+    return 'local_probe_error'
+
+
 async def main_async(args) -> int:
     url = loopback_url(args.base_url)
+    if args.mode != 'status':
+        if not args.model:
+            raise ValueError('Supply --model for a real request/cancellation probe')
+        if not args.confirm_real_dispatch:
+            raise ValueError('Explicit --confirm-real-dispatch required to create a live task')
+    if args.evidence is not None and Path(args.evidence).exists():
+        # Refuse before GET/POST: never dispatch then discover evidence cannot be saved.
+        raise ValueError('Existing evidence must not be overwritten')
     async with httpx.AsyncClient(base_url=url, timeout=httpx.Timeout(15.0, connect=3.0)) as client:
         report = {'timestamp_utc': datetime.now(timezone.utc).isoformat(),
                   'source': 'operator_localhost_real_api_probe',
                   'read_only': args.mode == 'status',
                   'status': await get_catalog(client)}
         if args.mode != 'status':
-            if not args.model:
-                raise ValueError('Supply --model for a real request/cancellation probe')
-            if not args.confirm_real_dispatch:
-                raise ValueError('Explicit --confirm-real-dispatch required to create a live task')
             report['probe'] = await run_probe(client, args.model, args.mode,
                 timeout_s=args.timeout, cancel_delay_s=args.cancel_delay)
     safe_json = json.dumps(report, indent=2, sort_keys=True)
     print(safe_json)
     if args.evidence:
         path = Path(args.evidence)
-        if path.exists():
-            raise ValueError('Refusing to overwrite existing evidence; choose a new output filename')
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(safe_json + '\n', encoding='utf-8')
+        # Exclusive create also rejects a race or symlink introduced after preflight.
+        with path.open('x', encoding='utf-8') as evidence:
+            evidence.write(safe_json + '\n')
     return 2 if args.mode != 'status' and report['probe']['result'] not in ('local_delivery_observed', 'local_cancellation_observed') else 0
 
 
@@ -211,6 +230,6 @@ def parse_args(argv=None):
 if __name__ == '__main__':
     try:
         sys.exit(asyncio.run(main_async(parse_args())))
-    except (ValueError, httpx.HTTPError, RuntimeError) as exc:
-        print(f'EXODIA provider probe unavailable: {exc}', file=sys.stderr)
+    except (ValueError, httpx.HTTPError, RuntimeError, OSError) as exc:
+        print('EXODIA provider probe unavailable (' + safe_error_code(exc) + ')', file=sys.stderr)
         sys.exit(2)

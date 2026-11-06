@@ -39,6 +39,39 @@ def test_status_is_observation_only_and_api_configuration_is_individual():
     with pytest.raises(ValueError):probe.public_status({'default':'ollama','options':[]},{},{},{})
 
 
+def test_existing_evidence_is_rejected_before_any_local_api_call(tmp_path, monkeypatch):
+    evidence = tmp_path / 'accepted.json'
+    evidence.write_text('DO_NOT_OVERWRITE_EXISTING_RESULT', encoding='utf-8')
+    def fail_if_network_attempted(*args, **kwargs):
+        raise AssertionError('Existing evidence must prevent even opening the client')
+    monkeypatch.setattr(probe.httpx, 'AsyncClient', fail_if_network_attempted)
+    args = probe.parse_args(['--mode', 'respond', '--model', 'chatgpt',
+                             '--confirm-real-dispatch', '--evidence', str(evidence)])
+    with pytest.raises(ValueError, match='Existing evidence'):
+        asyncio.run(probe.main_async(args))
+    assert evidence.read_text('utf-8') == 'DO_NOT_OVERWRITE_EXISTING_RESULT'
+
+
+def test_real_dispatch_requires_consent_before_local_api_call(monkeypatch):
+    def fail_if_network_attempted(*args, **kwargs):
+        raise AssertionError('Missing consent must prevent all client traffic')
+    monkeypatch.setattr(probe.httpx, 'AsyncClient', fail_if_network_attempted)
+    args = probe.parse_args(['--mode', 'cancel', '--model', 'gemini'])
+    with pytest.raises(ValueError, match='confirm-real-dispatch'):
+        asyncio.run(probe.main_async(args))
+
+
+def test_probe_error_codes_never_echo_path_credentials_or_http_body():
+    secret = 'PRIVATE_BROWSER_PROFILE_AND_KEY'
+    assert secret not in probe.safe_error_code(ValueError(secret))
+    assert probe.safe_error_code(OSError(secret)) == 'local_evidence_io_error'
+    assert probe.safe_error_code(httpx.ConnectError(secret)) == 'localhost_connection_error'
+    request = httpx.Request('GET', 'http://localhost:8767/api/build-info')
+    response = httpx.Response(503, request=request)
+    error = httpx.HTTPStatusError(secret, request=request, response=response)
+    assert probe.safe_error_code(error) == 'localhost_http_error'
+
+
 def mock_client(mode='respond'):
     state={'task':None,'seen':0,'calls':[]}
     def handler(request):
