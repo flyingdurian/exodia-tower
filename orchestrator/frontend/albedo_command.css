@@ -102,3 +102,43 @@
 #expressionCard.review-portrait-unavailable #expressionFace,#expressionCard.review-portrait-unavailable #agentPortrait{display:none!important;}
 #expressionCard .review-portrait-error{max-width:90%;color:#f8c0d7;background:#362343e8;border:1px solid #e47b9b;padding:10px;border-radius:8px;text-align:center;font-size:10px;}
 @media(max-width:620px){#expressionCard.portrait-registry-active{width:100%}#expressionCard .review-portrait-status{font-size:8px}}
+
+/* Phase 2: compact, searchable, accessible mission history; no provider HTML insertion. */
+.mission-filter-toolbar{display:flex;flex-direction:column;gap:6px;margin:10px 0;padding:9px;border-radius:9px;background:#101d47;border:1px solid #536b9c}
+.mission-filter-toolbar label{font-size:10px;color:#b7c9ef}.mission-filter-toolbar input,.mission-filter-toolbar select{width:100%;min-height:32px;padding:7px;border:1px solid #576fa5;border-radius:6px;color:#eaf2ff;background:#111e42;font-size:11px}
+.mission-filter-row{display:grid;grid-template-columns:1fr 1fr;gap:7px}.mission-filter-row label{min-width:0}.mission-filter-toolbar small{font-size:9px;color:#abc6ef}
+.task-item .task-error-preview{display:block;color:#ffc0b5;margin-top:4px;font-size:10px;max-height:2.8em;overflow:hidden}
+.task-item[data-state=cancelled]{border-left:3px solid #f4c58d}.task-item[data-state=failed]{border-left:3px solid #ff8894}
+.api-configuration{display:grid;gap:5px;margin:8px 0;border-top:1px solid #4a6896;padding-top:8px}.api-config-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;font-size:10px}.api-config-row span{color:#c8d6f3}.api-config-row strong{color:#eecc96;text-align:right;font-weight:600;font-size:9px}
+
+/* EXODIA v0.3 · at-a-glance mission ownership; task contents remain escaped text. */
+.build-meta{font:600 9px/1.3 Inter,sans-serif;color:#bbcaee;text-align:right}.build-meta code{font:inherit;color:#d7f4fd}
+.command-status-strip{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:stretch;padding:9px 18px;background:#0a1636ee;border-bottom:1px solid #5b7cb86b;position:relative;z-index:2;overflow:hidden}
+.command-status-item{min-width:95px;flex:1 1 120px;display:flex;flex-direction:column;gap:3px;border-left:2px solid #6275ad;padding:2px 6px 3px 9px}
+.command-status-item small{font-size:9px;font-weight:750;letter-spacing:.08em;color:#88a7d8}.command-status-item strong{color:#e2edff;font-size:11px;line-height:1.35;min-width:0;overflow-wrap:anywhere}
+.command-status-task{flex:2 1 190px}.command-result{flex:1.4 1 145px}
+.command-status-strip[data-busy=true] #summaryState{color:#9de3ff}.command-status-strip[data-state=answered] #summaryState,.command-status-strip[data-state=answered] #summaryResult{color:#9dedc5}
+.command-status-strip[data-state=failed] #summaryState,.command-status-strip[data-state=cancelled] #summaryState{color:#ffd0c9}
+/* Operations sprite is a SECOND, independent visual family; never the 33-state portrait master. */
+.chibi-operations{margin-top:11px;padding:12px 13px!important;background:linear-gradient(135deg,#111d48,#141b3b 75%,#201a4f);border:1px solid #738ac488;border-radius:12px}
+.chibi-header{display:flex;justify-content:space-between;align-items:center;gap:10px}.chibi-header p{font-size:11px;color:#a4b6dd;margin:5px 0 8px}.chibi-header strong{font-size:9px;max-width:45%;text-align:right;color:#f3ce90;letter-spacing:.04em}
+.chibi-floor{height:205px;position:relative;overflow:hidden;border-radius:10px;border:1px solid #6483bb;background:radial-gradient(ellipse at 79% 30%,#5a71bb55,transparent 32%),linear-gradient(155deg,#141b3a,#0b2944 65%,#192b51)}
+.chibi-floor:before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 19px,#a2cafa20 19px 20px),repeating-linear-gradient(90deg,transparent 0 26px,#a2cafa18 26px 27px);transform:perspective(400px) rotateX(4deg)}
+.chibi-zone{position:absolute;transform:translate(-50%,-50%);font-size:9px;font-weight:750;letter-spacing:.08em;white-space:nowrap;color:#aaccf0;border:1px solid #658ec3;border-radius:7px;background:#071836c7;padding:6px 9px;pointer-events:none}
+.chibi-actor{position:absolute;z-index:3;left:17%;top:77%;width:60px;height:80px;transform:translate(calc(-1 * var(--foot-x,50%)),calc(-1 * var(--foot-y,94%)));pointer-events:none;will-change:left,top}
+.chibi-actor[hidden],#chibiFrame[hidden],#chibiMarker[hidden]{display:none!important}
+.chibi-floor-shadow{position:absolute;left:var(--shadow-x,50%);top:var(--shadow-y,96%);width:35px;height:8px;border-radius:50%;background:#080d27a8;box-shadow:0 0 8px #aab2ff55;transform:translate(-50%,-35%)}
+.chibi-technical-marker{position:absolute;inset:6px 8px 12px;display:flex;flex-direction:column;justify-content:center;align-items:center;border:2px dashed #94d8f6;border-radius:42% 42% 27% 27%;background:linear-gradient(150deg,#204d7abb,#372b81cc);box-shadow:0 0 18px #a5dbff66;text-shadow:0 0 12px #badfff}
+.chibi-technical-marker b{font-size:20px;color:#f3edff}.chibi-technical-marker small{font-size:9px;font-weight:800;color:#b8ecff}.chibi-arrow{font-size:16px;color:#97e2ff;height:17px}
+.chibi-actor[data-heading=n] .chibi-arrow{transform:rotate(0deg)}.chibi-actor[data-heading=ne] .chibi-arrow{transform:rotate(45deg)}.chibi-actor[data-heading=e] .chibi-arrow{transform:rotate(90deg)}.chibi-actor[data-heading=se] .chibi-arrow{transform:rotate(135deg)}.chibi-actor[data-heading=s] .chibi-arrow{transform:rotate(180deg)}.chibi-actor[data-heading=sw] .chibi-arrow{transform:rotate(225deg)}.chibi-actor[data-heading=w] .chibi-arrow{transform:rotate(270deg)}.chibi-actor[data-heading=nw] .chibi-arrow{transform:rotate(315deg)}
+#chibiFrame{width:100%;height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 4px 7px #090e30);display:block}
+.chibi-footer{display:flex;justify-content:space-between;gap:6px;flex-wrap:wrap;font-size:9px;letter-spacing:.04em;color:#9bb6e0;margin-top:6px}.chibi-footer #chibiZoneState{color:#c5f1f9;font-weight:700}
+.chibi-test-controls{margin-top:8px;font-size:10px;color:#b3c7e9}.chibi-test-controls summary{cursor:pointer}.chibi-test-buttons{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}.chibi-test-buttons button{background:#203966;color:#dceeff;border:1px solid #6381be;border-radius:6px;font-size:10px;padding:5px 8px}
+@media(max-width:760px){.command-status-strip{gap:8px;padding:9px 11px}.command-status-item{flex:1 1 110px}.command-status-task{flex:1 1 180px}.command-status-item strong{font-size:10px}.chibi-floor{height:185px}.chibi-actor{width:50px;height:66px}.build-meta{display:none}}
+@media(prefers-reduced-motion:reduce){.chibi-actor{will-change:auto}}
+
+/* Phase 3: public task-driven in-room action cue, separate from artwork provenance. */
+#chibiBehaviorCue{display:inline-flex;align-items:center;font-size:9px;color:#e2efff;font-weight:700;letter-spacing:.02em;min-width:0}
+#chibiOperations[data-behavior="success"] #chibiBehaviorCue{color:#b1ffda}
+#chibiOperations[data-behavior="failure"] #chibiBehaviorCue{color:#ffc1d8}
+#chibiOperations[data-behavior="waiting"] #chibiBehaviorCue{color:#f5db9e}
