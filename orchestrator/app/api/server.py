@@ -77,8 +77,40 @@ class AskBody(BaseModel):
     model_choice: str = Field(default='chatgpt', pattern=r'^(chatgpt|gemini|deepseek|ollama|chatgpt:api|gemini:api|deepseek:api)$')
     transport: str | None = Field(default=None, pattern=r'^(browser|local|api)$')
 
+async def run_stale_task_cleanup_once():
+    """Expire inactive local tasks without claiming remote provider cancellation."""
+    stale=inbox.cleanup_stale(maximum_idle_seconds=3600)
+    for task_id in stale:
+        job=active_command_jobs.get(task_id)
+        if job is not None and not job.done():
+            job.cancel()
+    if stale:
+        events.publish('task','Stale local task recovery',f"expired_count:{len(stale)}")
+    return stale
+
+async def _task_cleanup_watchdog():
+    while True:
+        try:
+            await run_stale_task_cleanup_once()
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            events.publish('alert','Task cleanup check failed','Inspect local SQLite health')
+        await asyncio.sleep(120)
+
+@app.on_event('startup')
+async def start_task_cleanup_watchdog():
+    if getattr(app.state,'task_cleanup_watchdog',None) is None:
+        app.state.task_cleanup_watchdog=asyncio.create_task(_task_cleanup_watchdog())
+
 @app.on_event('shutdown')
 async def stop_browser_sessions():
+    watcher=getattr(app.state,'task_cleanup_watchdog',None)
+    if watcher is not None:
+        watcher.cancel()
+        try:await watcher
+        except asyncio.CancelledError:pass
+        app.state.task_cleanup_watchdog=None
     await chatgpt_tasks.close()
     await router.close_sessions()
     await asyncio.gather(*(runner.close() for runner in web_adapters.values()))
@@ -592,6 +624,11 @@ class CompanionTaskBody(BaseModel):
 class CompanionTaskAnswer(BaseModel):
     answer:str=Field(min_length=1,max_length=100000)
 
+class TaskRetryBody(BaseModel):
+    # Explicit operator consent is required for browser transports because the
+    # old consumer-site request may still be processing after local cancellation.
+    confirm_external_redelivery:bool=False
+
 async def _complete_local_task(task_id: str):
     """Run local inference asynchronously; task state is always persisted."""
     try:
@@ -846,6 +883,74 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     try:saved=model_instructions.save(body.provider, body.text)
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
+
+@app.get('/api/command/tasks/history')
+async def command_history(limit:int=50,offset:int=0,x_exodia_client:str=Header(default='')):
+    """Paginated history from durable SQLite, including linked retry attempts."""
+    require_local_dashboard(x_exodia_client)
+    try:page=inbox.list_page(limit,offset)
+    except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
+    return {**page,'tasks':[public_task(task) for task in page['tasks']]}
+
+@app.get('/api/command/tasks/{task_id}/events')
+async def command_task_events(task_id:str,x_exodia_client:str=Header(default='')):
+    """Return sanitized state transitions only: no prompt/private instructions."""
+    require_local_dashboard(x_exodia_client)
+    try:timeline=inbox.events(task_id)
+    except KeyError:raise HTTPException(404,detail='Task not found')
+    return {'task_id':task_id,'events':timeline}
+
+@app.post('/api/command/tasks/{task_id}/retry',status_code=201)
+async def command_retry(task_id:str,body:TaskRetryBody,
+                        x_exodia_client:str=Header(default='')):
+    """A deliberate, bounded retry creates a linked new task, never replays blindly.
+
+    Browser redelivery needs an explicit true flag; duplicated HTTP calls return
+    the already-created successor. No official API choice is silently substituted.
+    """
+    require_local_dashboard(x_exodia_client)
+    try:source=inbox.get(task_id)
+    except KeyError:raise HTTPException(404,detail='Task not found')
+    provider=source['provider']
+    if provider!='ollama' and not body.confirm_external_redelivery:
+        raise HTTPException(409,detail=(
+            'External resend requires confirm_external_redelivery=true; '
+            'the previous browser-site request may still finish remotely.'))
+    if provider in web_adapters and not web_adapters[provider].snapshot()['configured']:
+        raise HTTPException(422,detail='Original configured browser transport is not available')
+    try:next_task,created=inbox.retry(task_id,max_retries=3)
+    except ValueError as exc:raise HTTPException(409,detail=str(exc)) from exc
+    if not created:return public_task(next_task)
+    try:
+        if provider=='ollama':
+            next_task=inbox.update(next_task['id'],'state',
+                                   'researching' if next_task['web_research'] else 'running')
+            schedule_command_job(next_task['id'],_complete_local_task(next_task['id']))
+        elif provider in web_adapters:
+            next_task=inbox.update(next_task['id'],'state','opening')
+            schedule_command_job(next_task['id'],_complete_web_task(next_task['id']))
+        elif provider=='chatgpt':
+            next_task=inbox.update(next_task['id'],'state','opening')
+            schedule_command_job(next_task['id'],_submit_chatgpt_task(next_task['id']))
+        elif provider=='gemini':
+            next_task=inbox.update(next_task['id'],'state','opening')
+            schedule_command_job(next_task['id'],_complete_gemini_task(next_task['id']))
+        elif provider=='deepseek':
+            next_task=inbox.update(next_task['id'],'state','opening')
+            schedule_command_job(next_task['id'],_complete_deepseek_task(next_task['id']))
+        else:
+            inbox.update(next_task['id'],'error','Original provider is no longer supported')
+            next_task=inbox.update(next_task['id'],'state','failed')
+    except Exception:
+        # The attempt remains auditable even if its local dispatch cannot start.
+        try:
+            inbox.update(next_task['id'],'error','Local retry scheduling failed')
+            inbox.update(next_task['id'],'state','failed')
+        except (ValueError,KeyError):pass
+        raise HTTPException(503,detail='Local retry scheduling failed')
+    events.publish('task','Operator-authorized model task retry',
+                   f"{source['agent_id']}:{provider}:attempt{next_task['retry_index']}")
+    return public_task(next_task)
 
 @app.post('/api/command/tasks/{task_id}/prepare')
 async def command_prepare(task_id:str,x_exodia_client:str=Header(default='')):
