@@ -1,4 +1,4 @@
-"""Read-only, fail-closed A0 identity intake for Riven.
+"""Read-only, fail-closed A0 identity intake for Liu Bei.
 
 A technical pass is NEVER evidence of an independently authored source, actual
 facial landmarks, a stable character identity, or owner production approval.
@@ -15,7 +15,7 @@ from pathlib import Path
 from PIL import Image, UnidentifiedImageError
 
 ROOT = Path(__file__).resolve().parents[1]
-PILOT_MANIFEST = ROOT.parent / "assets/review/riven_pilot/pilot_manifest.json"
+PILOT_MANIFEST = ROOT.parent / "assets/review/liu_bei_pilot/pilot_manifest.json"
 LOCKED = (1536, 1920)
 SHA_RE = re.compile(r"^[a-f0-9]{64}$")
 
@@ -29,14 +29,14 @@ def sha256(path: Path) -> str:
 
 
 def verify_reference(manifest: dict, source_root: Path) -> dict:
-    """Pin the real historical Riven image, not an invented replacement."""
+    """Pin the real historical Liu Bei image, not an invented replacement."""
     reference = manifest["identity_reference"]
     source_root = source_root.resolve()
     file = (source_root / reference["path"]).resolve()
     if not file.is_relative_to(source_root) or not file.is_file():
         raise ValueError("reference_missing_or_unsafe")
-    if manifest.get("character_id") != "router" or manifest.get("name") != "Riven":
-        raise ValueError("riven_identity_id_drift")
+    if manifest.get("character_id") != "liu_bei" or manifest.get("name") != "Liu Bei":
+        raise ValueError("liu_bei_identity_id_drift")
     if manifest.get("production_release_enabled") is not False:
         raise ValueError("production_lock_changed")
     if manifest.get("native_canvas") != list(LOCKED):
@@ -65,8 +65,8 @@ def audit_identity(manifest: dict, source_root: Path, candidate: Path | None = N
     """Never assert source independence or owner signoff based on file metadata."""
     verified = verify_reference(manifest, source_root)
     result = {
-        "schema": "exodia.riven-a0-native-identity-review/v1",
-        "character_id": "router",
+        "schema": "exodia.liu_bei-a0-native-identity-review/v1",
+        "character_id": "liu_bei",
         "reference": verified,
         "canonical_canvas": list(LOCKED),
         "identity_candidate": "awaiting_independent_native_artwork",
@@ -133,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
         result = audit_identity(json.loads(args.manifest.read_text(encoding="utf-8")), args.root,
                                 args.candidate, args.expected_sha256)
     except (ValueError, FileNotFoundError, KeyError, json.JSONDecodeError) as error:
-        print(json.dumps({"schema": "exodia.riven-a0-native-identity-review/v1", "technical_source_pass": False,
+        print(json.dumps({"schema": "exodia.liu_bei-a0-native-identity-review/v1", "technical_source_pass": False,
                           "errors": [str(error)], "production_release_enabled": False}, indent=2))
         return 2
     print(json.dumps(result, indent=2, sort_keys=True))

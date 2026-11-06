@@ -1,4 +1,4 @@
-"""Fail-closed, non-registering manual Riven A0 intake from an ignored local folder.
+"""Fail-closed, non-registering manual Liu Bei A0 intake from an ignored local folder.
 
 This augments PR #14's native technical gate. Pixel-anchored annotation checks
 validate the supplied coordinates and actual image patches, NOT iris detection
@@ -19,24 +19,24 @@ from pathlib import Path
 
 from PIL import Image
 
-# Running `python tools/riven_manual_dropin.py` does not put orchestrator/
+# Running `python tools/liu_bei_manual_dropin.py` does not put orchestrator/
 # on sys.path. Match the documented direct Windows operator command without
 # depending on the developer's PYTHONPATH or an editable pip install.
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from tools.riven_native_identity_gate import (
+from tools.liu_bei_native_identity_gate import (
     ROOT, LOCKED, PILOT_MANIFEST, audit_identity, sha256,
 )
 
-SCHEMA = "exodia.riven-a0-image-landmarks/v1"
+SCHEMA = "exodia.liu_bei-a0-image-landmarks/v1"
 POINTS = (
     "left_iris_center", "right_iris_center",
     "left_shoulder_joint", "right_shoulder_joint",
     "head_left", "head_right",
 )
 PATCH_RADIUS = 9
-INBOX = ROOT / "app_data" / "riven_a0_inbox"
+INBOX = ROOT / "app_data" / "liu_bei_a0_inbox"
 
 
 def reject_linked_paths(candidate: Path, sidecar: Path | None = None):
@@ -176,7 +176,7 @@ def stamp_patches(candidate: Path, sidecar: Path) -> dict:
     tmp_path = None
     try:
         with NamedTemporaryFile(mode="w", encoding="utf-8", dir=sidecar.parent,
-                                prefix=".riven-a0-", suffix=".tmp", delete=False) as tmp:
+                                prefix=".liu_bei-a0-", suffix=".tmp", delete=False) as tmp:
             tmp.write(json.dumps(original, indent=2) + "\n")
             tmp_path = Path(tmp.name)
         os.replace(tmp_path, sidecar)
@@ -189,13 +189,13 @@ def stamp_patches(candidate: Path, sidecar: Path) -> dict:
 def scan_dropin(root: Path = ROOT, inbox: Path | None = None,
                 *, make_template: bool = False, stamp: bool = False) -> dict:
     root = root.resolve()
-    inbox = (inbox or root / "app_data" / "riven_a0_inbox").resolve()
+    inbox = (inbox or root / "app_data" / "liu_bei_a0_inbox").resolve()
     if not inbox.is_relative_to(root):
-        raise ValueError("riven_intake_must_be_within_isolated_worktree")
-    manifest = json.loads((root.parent / "assets/review/riven_pilot/pilot_manifest.json").read_text("utf-8"))
+        raise ValueError("liu_bei_intake_must_be_within_isolated_worktree")
+    manifest = json.loads((root.parent / "assets/review/liu_bei_pilot/pilot_manifest.json").read_text("utf-8"))
     report = {
-        "schema": "exodia.riven-a0-manual-intake/v1",
-        "character_id": "router",
+        "schema": "exodia.liu_bei-a0-manual-intake/v1",
+        "character_id": "liu_bei",
         "inbox": str(inbox),
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "status": "awaiting_manual_png",
@@ -215,7 +215,7 @@ def scan_dropin(root: Path = ROOT, inbox: Path | None = None,
         return report
     if len(pngs) != 1:
         report["status"] = "ambiguous_dropin"
-        report["errors"].append("exactly_one_riven_a0_png_required")
+        report["errors"].append("exactly_one_liu_bei_a0_png_required")
         return report
     candidate = pngs[0]
     try:
@@ -294,9 +294,9 @@ def main(argv=None) -> int:
         last_signature = None
         stable_count = 0
         last_reported = None
-        print("Watching local Riven A0 inbox (foreground); Ctrl+C exits.", flush=True)
+        print("Watching local Liu Bei A0 inbox (foreground); Ctrl+C exits.", flush=True)
         while True:
-            folder = (args.inbox or args.root / "app_data" / "riven_a0_inbox")
+            folder = (args.inbox or args.root / "app_data" / "liu_bei_a0_inbox")
             entries = sorted((p.name, p.stat().st_size, p.stat().st_mtime_ns)
                              for p in folder.iterdir() if p.is_file()) if folder.is_dir() else []
             signature = tuple(entries)
@@ -311,7 +311,7 @@ def main(argv=None) -> int:
         return 0
     except (ValueError, OSError, KeyError, json.JSONDecodeError) as exc:
         print(json.dumps({
-            "schema": "exodia.riven-a0-manual-intake/v1",
+            "schema": "exodia.liu_bei-a0-manual-intake/v1",
             "status": "intake_error", "error": str(exc),
             "owner_identity_approval": "pending",
             "production_release_enabled": False,
