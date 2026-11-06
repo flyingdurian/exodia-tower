@@ -282,3 +282,16 @@ def test_naive_sqlite_timestamp_is_not_silently_assumed_utc(tmp_path):
     changed=isolated.cleanup_stale(now=datetime.now(timezone.utc))
     assert changed==[]
     assert isolated.get(task['id'])['state']=='running'
+
+
+def test_retry_control_is_visible_only_for_failed_or_cancelled_tasks():
+    """Static browser contract supplements live API mock tests; never opens a provider."""
+    from pathlib import Path
+    root=Path(__file__).resolve().parents[1] / "frontend"
+    html=(root/"albedo_command.html").read_text(encoding="utf-8")
+    source=(root/"albedo_command.js").read_text(encoding="utf-8")
+    assert 'id="retryActiveTask"' in html
+    assert "state==='failed'||state==='cancelled'" in source
+    assert "confirm_external_redelivery:external" in source
+    assert "window.confirm" in source
+    assert "old browser-site request may still complete remotely" in source
