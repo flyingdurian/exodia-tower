@@ -166,8 +166,11 @@ def test_fleet_ownership_cannot_be_bypassed_with_another_agent_task(isolated):
 def test_local_fleet_api_guarded_task_owner_and_privacy(monkeypatch, isolated, tmp_path):
     async def run():
         monkeypatch.setattr(server, "inbox", Inbox(tmp_path / "phase11.sqlite"))
+        from app.fleet import fleet_readiness as fleet_service
+        original_projection = fleet_service.fleet_projection
         monkeypatch.setattr(
-            server, "fleet_projection", lambda root, **kw: fleet_projection(isolated, **kw)
+            fleet_service, "fleet_projection",
+            lambda root, **kw: original_projection(isolated, **kw)
         )
         a = server.inbox.create("vault", "ollama", "PRIVATE_VAULT_TEXT")
         b = server.inbox.create("ninja", "ollama", "PRIVATE_NINJA_TEXT")
