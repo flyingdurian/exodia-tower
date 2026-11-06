@@ -28,6 +28,11 @@ jobs:
       - run: node --check orchestrator/frontend/albedo_command.js
       - run: node --check orchestrator/frontend/liu_bei_pilot_boot.mjs
       - run: node --test orchestrator/tests/liu_bei_review_contract.test.mjs
+      - run: node --check orchestrator/frontend/liu_bei_variant_review.mjs
+      - run: node --test orchestrator/tests/liu_bei_variant_review.test.mjs
+      - run: node --check orchestrator/frontend/liu_bei_33_review_contract.mjs
+      - run: node --check orchestrator/frontend/liu_bei_33_review_boot.mjs
+      - run: node --test orchestrator/tests/liu_bei_33_review.test.mjs
       - run: node --check orchestrator/frontend/albedo_chibi_controller.mjs
       - run: node --check orchestrator/frontend/albedo_chibi_renderer.mjs
       - run: node --check orchestrator/frontend/albedo_chibi_boot.mjs
@@ -78,6 +83,9 @@ jobs:
       - run: node --check orchestrator/frontend/albedo_experience.mjs
       - run: node --check orchestrator/frontend/companion_voice.mjs
       - run: node --test orchestrator/tests/companion_voice.test.mjs
+      - run: node --check orchestrator/frontend/fleet_readiness_contract.mjs
+      - run: node --check orchestrator/frontend/fleet_readiness_boot.mjs
+      - run: node --test orchestrator/tests/fleet_readiness_contract.test.mjs
       - run: node --check orchestrator/frontend/operator_workflow_contract.mjs
       - run: node --check orchestrator/frontend/operator_workflow_console.mjs
       - run: node --test orchestrator/tests/operator_workflow_contract.test.mjs
