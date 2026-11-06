@@ -120,7 +120,7 @@ def collect_workflow_evidence(plan: dict, inbox) -> dict:
         "failed_linked_task_count": failures,
         "operator_review_confirmed": summary["operator_review_confirmed"],
         "all_tasks_answered": answered_count == len(evidence_steps),
-        "all_answered_events_corroborrated": (
+        "all_answered_events_corroborated": (
             event_confirmed_count == len(evidence_steps)
         ),
         "steps": evidence_steps,
