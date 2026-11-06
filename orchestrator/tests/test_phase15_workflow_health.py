@@ -99,3 +99,46 @@ def test_diagnostics_are_read_only_under_concurrent_sqlite_reads(stores):
     assert len(plan_store.list(20))==1
     with sqlite3.connect(plan_store.path) as c:
         assert c.execute("PRAGMA quick_check(1)").fetchone()[0] == "ok"
+
+
+def test_workflow_health_api_is_loopback_header_guarded_and_never_mutates(monkeypatch,stores):
+    import asyncio
+    import httpx
+    from app.api import server
+    async def run():
+        plan_store,inbox=stores
+        monkeypatch.setattr(server,"operator_workflows",plan_store)
+        monkeypatch.setattr(server,"inbox",inbox)
+        plan_store.create(title="SUPER_PRIVATE_TITLE",steps=[
+            {"key":"inspect","agent_id":"vault","label":"PRIVATE_STEP","depends_on":[]}
+        ])
+        url="/api/operations/workflow-health"
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=server.app),
+            base_url="http://testserver"
+        ) as client:
+            assert (await client.get(url)).status_code == 403
+            response=await client.get(
+                url,headers={"X-Exodia-Client":"exodia-dashboard"})
+            assert response.status_code == 200,response.text
+            report=response.json()
+            assert report["total_workflow_plans"]==1
+            assert report["remote_dispatch_performed"] is False
+            assert report["production_release_enabled"] is False
+            assert "SUPER_PRIVATE_TITLE" not in response.text
+            assert "PRIVATE_STEP" not in response.text
+            assert (await client.post(url,headers={
+                "X-Exodia-Client":"exodia-dashboard"
+            })).status_code==405
+    asyncio.run(run())
+
+
+def test_health_ui_lives_in_operator_console_not_companion_portrait_stage():
+    from tools.liu_bei_native_identity_gate import ROOT
+    html=(ROOT/"frontend/operator_workflow_console.html").read_text("utf-8")
+    boot=(ROOT/"frontend/workflow_health_boot.mjs").read_text("utf-8")
+    assert 'id="workflowHealthStatus"' in html
+    assert 'id="workflowHealthMetrics"' in html
+    assert "workflow_health_boot.mjs" in html
+    assert "/api/operations/workflow-health" in boot
+    assert "production_release" not in boot
