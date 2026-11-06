@@ -40,7 +40,7 @@ export async function startAlbedoChibi({doc=document,win=window,loadManifest=()=
   const onCompanion=()=>apply(behavior.selectCompanion(comp?.value||'kiko'));
   win.addEventListener('exodia:command-task',onTask);
   comp?.addEventListener('change',onCompanion);
-  const demo=root.querySelectorAll('[data-chibi-go]');
+  const demo=typeof doc.querySelectorAll==='function'?doc.querySelectorAll('[data-chibi-go]'):root.querySelectorAll('[data-chibi-go]');
   for(const button of demo)button.addEventListener('click',()=>{
     if((comp?.value||'kiko')!=='kiko')return;
     controller.goToZone(button.dataset.chibiGo);renderer.draw(controller.snapshot());
