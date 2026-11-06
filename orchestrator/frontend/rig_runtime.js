@@ -2,7 +2,7 @@
 // Developer diagnostic only. This animates independent skeletal joints;
 // it does not falsely present flattened images as articulated characters.
 const $=s=>document.querySelector(s),canvas=$("#rigCanvas"),ctx=canvas.getContext("2d");
-const names=["kiko","router","memory","archives","inventory","vault","ninja","cache","strategy","nova"];
+const names=["kiko","liu_bei","memory","archives","inventory","vault","ninja","cache","strategy","nova"];
 const emotions=["neutral","happy","excited","proud","curious","wonder","thinking","processing","concentrating","working","speaking","annoyed","angry","disappointed","sad","hurt","pain","alarmed","panic","bored","sleepy","sleeping","relieved","celebrating"];
 const length={hips:20,torso:36,neck:8,head:36,upper_arm_left:27,upper_arm_right:27,forearm_left:23,forearm_right:23,hand_left:11,hand_right:11,thigh_left:37,thigh_right:37,shin_left:31,shin_right:31,foot_left:12,foot_right:12};
 let rig=null,t=0,last=0;

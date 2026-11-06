@@ -14,7 +14,7 @@ def test_fleet_and_exact_owner_requested_art_coverage():
     art = json.loads(ART.read_text(encoding="utf-8"))
     assert art["schema_version"] == "exodia.companion-art/v1"
     assert [person["id"] for person in art["fleet"]] == [
-        "kiko", "router", "memory", "archives", "inventory",
+        "kiko", "liu_bei", "memory", "archives", "inventory",
         "vault", "ninja", "cache", "strategy", "nova"
     ]
     assert len(art["emotions"]) == 20

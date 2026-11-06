@@ -12,7 +12,7 @@ from app.operations.inbox import Inbox
 
 ROOT = Path(__file__).resolve().parents[2]
 APP_ROOT = ROOT / 'orchestrator'
-EXPECTED_IDS = ('kiko', 'router', 'memory', 'archives', 'inventory',
+EXPECTED_IDS = ('kiko', 'liu_bei', 'memory', 'archives', 'inventory',
                 'vault', 'ninja', 'cache', 'strategy', 'nova')
 EXPRESSIONS = set('neutral happy joyful excited gentle smiling_closed laughing amused confident serious focused thinking curious surprised concerned worried sad disappointed angered blushing'.split())
 ACTIONS = set('idle working monitoring pointing explaining celebrating defeat stretching sleeping waking_up tantrum thinking_deeper awaiting_command'.split())
@@ -26,7 +26,7 @@ def test_fleet_reconciled_ten_ids_twenty_expressions_thirteen_actions():
     for path in (APP_ROOT/'app/companions/roster.json', APP_ROOT/'frontend/companions/roster.json'):
         roster = json.loads(path.read_text())
         assert tuple(a['id'] for a in roster) == EXPECTED_IDS
-        assert tuple(a['name'] for a in roster) == ('Albedo', 'Riven', 'Mira', 'Lyra', 'Pip', 'Aurelia', 'Nyx', 'Mochi', 'Orion', 'Nova')
+        assert tuple(a['name'] for a in roster) == ('Albedo', 'Liu Bei', 'Mira', 'Lyra', 'Pip', 'Aurelia', 'Nyx', 'Mochi', 'Orion', 'Nova')
     registry = json.loads((APP_ROOT/'frontend/companions/production/kiko/portrait_registry.json').read_text())
     assert registry['character_id'] == 'kiko'
     assert len(registry['states']) == 33

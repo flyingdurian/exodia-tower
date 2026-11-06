@@ -38,6 +38,13 @@ class Inbox:
    c.execute("""INSERT INTO task_events(task_id,event,from_state,to_state,occurred_at)
      SELECT t.id,'legacy_snapshot',NULL,t.state,t.updated_at FROM tasks AS t
      WHERE NOT EXISTS(SELECT 1 FROM task_events AS e WHERE e.task_id=t.id)""")
+   # Atomic, additive identity migration: update existing owner keys, preserve
+   # primary task IDs, retries, answers, event chronology and source history.
+   # No provider IDs or browser-routing engine identifiers are touched.
+   old=c.execute("SELECT id,state FROM tasks WHERE agent_id='router'").fetchall()
+   for task_id,task_state in old:
+    c.execute("UPDATE tasks SET agent_id='liu_bei' WHERE id=? AND agent_id='router'",(task_id,))
+    self._event(c,task_id,'companion_id_migrated',task_state,task_state,'identity_renamed')
  def db(self):return sqlite3.connect(self.path,timeout=10)
  @staticmethod
  def _mapped(row):
@@ -56,7 +63,7 @@ class Inbox:
   # Only fixed machine-readable diagnostic codes are persisted. Raw provider
   # exceptions, prompts, private instructions and session paths are forbidden.
   allowed={None,'task_error','restart_interrupted','stale_expired',
-           'operator_cancelled','operator_retry'}
+           'operator_cancelled','operator_retry','identity_renamed'}
   if reason_code not in allowed:raise ValueError('Unsafe audit reason code')
   c.execute("""INSERT INTO task_events(
     task_id,event,from_state,to_state,occurred_at,reason_code)
@@ -72,6 +79,7 @@ class Inbox:
    c.row_factory=sqlite3.Row;rows=c.execute("SELECT * FROM tasks ORDER BY created_at DESC LIMIT 75").fetchall()
   return [self._mapped(x) for x in rows]
  def create(self,agent,provider,prompt,web_research=False,private_instructions=''):
+  if agent=='router':raise ValueError("Retired companion ID; use liu_bei")
   if provider not in ('ollama','custom_web','web_slot_2','web_slot_3','chatgpt','gemini','deepseek'):raise ValueError("Unsupported model")
   if not prompt.strip() or len(prompt)>12000:raise ValueError("Prompt length invalid")
   if not isinstance(private_instructions,str) or len(private_instructions)>4000:raise ValueError("Invalid private instructions")

@@ -3,7 +3,7 @@
 **Milestones:** A (sprite contract) and C scaffold (real command-center integration); frontshell status stream runs in parallel.  
 **Feature branch:** `feature/lead/albedo-chibi-runtime-status-v1`, based on merged integration commit `e2398b7ef74bc183ad9f747f836d11b921bc041e`.  
 **Artwork:** **40 slots intentionally pending. No 8-direction chibi frame is claimed to exist yet.**  
-**Scope:** Albedo only (`kiko`). Riven, Mira, Lyra, Pip, Aurelia, Nyx, Mochi, Orion and Nova art production is frozen by owner instruction.
+**Scope:** Albedo only (`kiko`). Liu Bei, Mira, Lyra, Pip, Aurelia, Nyx, Mochi, Orion and Nova art production is frozen by owner instruction.
 
 ## Identity / art contract
 

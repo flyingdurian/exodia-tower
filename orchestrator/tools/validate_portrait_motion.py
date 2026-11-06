@@ -14,7 +14,7 @@ from PIL import Image, UnidentifiedImageError
 
 SCHEMA="exodia.portrait-motion/v2"
 CANVAS=(1536,1920)
-AGENTS={"kiko","router","memory","archives","inventory","vault","ninja","cache","strategy","nova"}
+AGENTS={"kiko","liu_bei","memory","archives","inventory","vault","ninja","cache","strategy","nova"}
 REQUIRED_ANCHORS={"left_eye_corner","right_eye_corner","hair_ornament","left_shoulder","right_shoulder"}
 MOTION_PROFILES={
     "idle":{"min_frames":72,"min_seconds":3.0,"max_changed":0.055},

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {filterMissionHistory,describeTask,publicApiRows} from '../frontend/mission_history.mjs';
 const tasks=[
  {id:'1',provider:'chatgpt',agent_id:'kiko',state:'answered',prompt:'Summarize my report',answer:'ok',private_instructions:'DO NOT DISPLAY'},
- {id:'2',provider:'gemini',agent_id:'router',state:'failed',prompt:'Analyze region',error:'Could not connect'},
+ {id:'2',provider:'gemini',agent_id:'liu_bei',state:'failed',prompt:'Analyze region',error:'Could not connect'},
  {id:'3',provider:'ollama',agent_id:'kiko',state:'running',prompt:'Write summary'},
  {id:'4',provider:'deepseek',agent_id:'kiko',state:'cancelled',prompt:'Compute budget'}
 ];
@@ -11,7 +11,7 @@ test('searches prompt/provider/agent/ID but never private instructions or model 
  assert.deepEqual(filterMissionHistory(tasks,{query:'summary'}).map(x=>x.id),['3']);
  assert.deepEqual(filterMissionHistory(tasks,{query:'DO NOT DISPLAY'}),[]);
  assert.deepEqual(filterMissionHistory(tasks,{query:'ok'}),[]);
- assert.deepEqual(filterMissionHistory(tasks,{query:'router'}).map(x=>x.id),['2']);
+ assert.deepEqual(filterMissionHistory(tasks,{query:'liu_bei'}).map(x=>x.id),['2']);
 });
 test('provider and status filters are composable and do not modify persisted records',()=>{
  const before=JSON.stringify(tasks);

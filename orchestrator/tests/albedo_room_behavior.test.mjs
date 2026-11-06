@@ -20,10 +20,10 @@ test('actual task lifecycle maps terminal -> waiting -> results -> home, never f
 test('failures use recovery zone; task owner and selected companion both gate Albedo',()=>{
   const b=engine();let x=b.ingest({taskId:'failed',agentId:'kiko',state:'failed'});
   assert.equal(x.zone,'recovery');assert.equal(x.behavior,'failure');
-  x=b.selectCompanion('router');assert.equal(x.visible,false);
+  x=b.selectCompanion('liu_bei');assert.equal(x.visible,false);
   x=b.ingest({taskId:'new',agentId:'kiko',state:'running'});assert.equal(x.visible,false);
   x=b.selectCompanion('kiko');assert.equal(x.visible,true);
-  x=b.ingest({taskId:'another',agentId:'router',state:'answered'});assert.equal(x.visible,false);
+  x=b.ingest({taskId:'another',agentId:'liu_bei',state:'answered'});assert.equal(x.visible,false);
 });
 test('a slower poll for the same task cannot undo a newer cancellation or result',()=>{
  const b=engine();const base={taskId:'same',agentId:'kiko'};

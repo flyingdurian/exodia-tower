@@ -135,12 +135,25 @@ def test_33_state_workbench_desktop_and_mobile_browser():
                     await command.locator('#moodLabel').evaluate("el => el.textContent='IDLE'")
                     await command.wait_for_function(
                       "() => window.__exodiaDevelopmentPortraitStage?.state === 'idle'",timeout=15000)
-                    # Switching agents must not show Albedo on Riven.
-                    await command.locator('#companion').select_option('router')
+                    # Switching agents must not show Albedo on Liu Bei.
+                    await command.locator('#companion').select_option('liu_bei')
                     await command.wait_for_function(
                       "() => window.__exodiaDevelopmentPortraitStage?.state === null",timeout=5000)
                     assert await command.locator('#expressionCard.portrait-registry-active').count()==0
+                    assert await command.locator('#liu_beiPilotPane').is_visible()
+                    await command.wait_for_function(
+                      "() => document.querySelector('#liu_beiPilotState')?.textContent.includes('NEUTRAL')",
+                      timeout=15000)
+                    assert 'NATIVE LIU BEI ART PENDING' in await command.locator('#liu_beiPilotFallback').inner_text()
+                    assert not await command.locator('#chibiOperations').is_visible()
+                    await command.locator('[data-liu_bei-preview="pointing"]').click()
+                    await command.wait_for_function(
+                      "() => document.querySelector('#liu_beiPilotState')?.textContent.includes('POINTING')",
+                      timeout=15000)
+                    assert await command.locator('[data-liu_bei-preview="pointing"]').get_attribute('aria-pressed')=='true'
                     await command.locator('#companion').select_option('kiko')
+                    assert not await command.locator('#liu_beiPilotPane').is_visible()
+                    assert await command.locator('#chibiOperations').is_visible()
                     await command.wait_for_function(
                       "() => window.__exodiaDevelopmentPortraitStage?.state === 'idle'",timeout=15000)
                     assert await command.locator('#expressionCard.portrait-registry-active').count()==1

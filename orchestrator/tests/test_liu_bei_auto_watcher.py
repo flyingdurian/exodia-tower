@@ -1,4 +1,4 @@
-"""Real temporary-file tests for Riven's automatic local A0 scanner."""
+"""Real temporary-file tests for Liu Bei's automatic local A0 scanner."""
 from __future__ import annotations
 
 import asyncio
@@ -11,10 +11,10 @@ import pytest
 from PIL import Image, ImageDraw
 
 from app.api import server
-from app.fleet.riven_watcher import RivenA0Watcher
+from app.fleet.liu_bei_watcher import LiuBeiA0Watcher
 from app.monitoring.logger import EventLog
-from tools.riven_native_identity_gate import ROOT, PILOT_MANIFEST, LOCKED, sha256
-from tools.riven_manual_dropin import POINTS, stamp_patches, template_for
+from tools.liu_bei_native_identity_gate import ROOT, PILOT_MANIFEST, LOCKED, sha256
+from tools.liu_bei_manual_dropin import POINTS, stamp_patches, template_for
 
 
 @pytest.fixture
@@ -22,17 +22,17 @@ def sandbox(tmp_path):
     root = tmp_path / "orchestrator"
     (root / "frontend/companions/source_masters").mkdir(parents=True)
     (root / "app/companions").mkdir(parents=True)
-    (tmp_path / "assets/review/riven_pilot").mkdir(parents=True)
+    (tmp_path / "assets/review/liu_bei_pilot").mkdir(parents=True)
     shutil.copyfile(ROOT / "frontend/companions/source_masters/router.png",
                     root / "frontend/companions/source_masters/router.png")
     shutil.copyfile(ROOT / "app/companions/roster.json",
                     root / "app/companions/roster.json")
-    shutil.copyfile(PILOT_MANIFEST, tmp_path / "assets/review/riven_pilot/pilot_manifest.json")
+    shutil.copyfile(PILOT_MANIFEST, tmp_path / "assets/review/liu_bei_pilot/pilot_manifest.json")
     return root
 
 
 def synthetic_native_source(path):
-    """Test-only colored pixels, deliberately not author-approved Riven art."""
+    """Test-only colored pixels, deliberately not author-approved Liu Bei art."""
     im = Image.new("RGB", LOCKED)
     draw = ImageDraw.Draw(im)
     for y in range(0, LOCKED[1], 64):
@@ -48,19 +48,19 @@ async def until(predicate, timeout=6.0):
         if predicate():
             return
         await asyncio.sleep(0.025)
-    raise AssertionError("Riven watcher failed to reach expected stable state")
+    raise AssertionError("Liu Bei watcher failed to reach expected stable state")
 
 
 def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox):
     async def run():
         event_log = EventLog()
-        watch = RivenA0Watcher(sandbox, event_log, poll_seconds=0.02, stable_polls=2)
+        watch = LiuBeiA0Watcher(sandbox, event_log, poll_seconds=0.02, stable_polls=2)
         watch.start()
         try:
             await until(lambda: watch.snapshot()["watcher_state"] == "running")
             assert watch.folder.is_dir()
             assert watch.snapshot()["intake_status"] == "awaiting_manual_png"
-            candidate = watch.folder / "riven_A0_native.png"
+            candidate = watch.folder / "liu_bei_A0_native.png"
             await asyncio.to_thread(synthetic_native_source, candidate)
             await until(lambda: watch.snapshot()["technical_source_pass"] is True)
             state = watch.snapshot()
@@ -97,7 +97,7 @@ def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox)
             assert candidate.exists()
             serialized = json.dumps(event_log.latest(100))
             assert str(sandbox) not in serialized
-            assert "riven_A0_native.png" not in serialized
+            assert "liu_bei_A0_native.png" not in serialized
         finally:
             await watch.stop()
         assert watch._task is None
@@ -106,10 +106,10 @@ def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox)
 
 def test_partial_copy_recovers_when_complete(sandbox):
     async def run():
-        watch = RivenA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
+        watch = LiuBeiA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
         watch.start()
         try:
-            candidate = watch.folder / "riven_A0_native.png"
+            candidate = watch.folder / "liu_bei_A0_native.png"
             candidate.write_bytes(b"not a complete PNG yet")
             await until(lambda: watch.snapshot()["intake_status"] == "source_rejected")
             assert watch.snapshot()["production_release_enabled"] is False
@@ -124,8 +124,8 @@ def test_partial_copy_recovers_when_complete(sandbox):
 def test_corrupt_policy_fails_closed_then_recovers_without_mutating_registry(sandbox):
     async def run():
         log = EventLog()
-        watch = RivenA0Watcher(sandbox, log, poll_seconds=0.02, stable_polls=2)
-        policy = sandbox.parent / "assets/review/riven_pilot/pilot_manifest.json"
+        watch = LiuBeiA0Watcher(sandbox, log, poll_seconds=0.02, stable_polls=2)
+        policy = sandbox.parent / "assets/review/liu_bei_pilot/pilot_manifest.json"
         original = policy.read_bytes()
         watch.start()
         try:
@@ -147,16 +147,16 @@ def test_corrupt_policy_fails_closed_then_recovers_without_mutating_registry(san
 
 def test_watcher_status_endpoint_requires_local_header(sandbox, monkeypatch):
     async def run():
-        mock = RivenA0Watcher(sandbox, poll_seconds=0.02)
-        monkeypatch.setattr(server, "riven_a0_watcher", mock)
+        mock = LiuBeiA0Watcher(sandbox, poll_seconds=0.02)
+        monkeypatch.setattr(server, "liu_bei_a0_watcher", mock)
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=server.app),
             base_url="http://testserver",
         ) as client:
-            denied = await client.get("/api/fleet/riven-a0/watch-status")
+            denied = await client.get("/api/fleet/liu_bei-a0/watch-status")
             assert denied.status_code == 403
             accepted = await client.get(
-                "/api/fleet/riven-a0/watch-status",
+                "/api/fleet/liu_bei-a0/watch-status",
                 headers={"x-exodia-client": "exodia-dashboard"},
             )
             assert accepted.status_code == 200
@@ -175,13 +175,13 @@ def test_linked_intake_directory_does_not_scan_or_chmod_external_folder(sandbox,
         external.mkdir()
         (external / "private_note.txt").write_text("DO_NOT_READ_USER_FILE", encoding="utf-8")
         (sandbox / "app_data").mkdir()
-        link = sandbox / "app_data/riven_a0_inbox"
+        link = sandbox / "app_data/liu_bei_a0_inbox"
         try:
             link.symlink_to(external, target_is_directory=True)
         except (OSError, NotImplementedError):
             pytest.skip("Filesystem cannot create directory symbolic links")
         original_mode = external.stat().st_mode
-        watch = RivenA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
+        watch = LiuBeiA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
         watch.start()
         try:
             await until(lambda: watch.snapshot()["watcher_state"] == "error")

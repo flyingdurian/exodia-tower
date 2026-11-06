@@ -23,7 +23,7 @@ def canonical():
     registry = json.loads(REGISTRY.read_text(encoding='utf-8'))
     ids = [r['id'] for r in roster]
     if len(ids) != 10 or len(set(ids)) != 10 or set(ids) != {
-        'kiko','router','memory','archives','inventory','vault','ninja','cache','strategy','nova'}:
+        'kiko','liu_bei','memory','archives','inventory','vault','ninja','cache','strategy','nova'}:
         raise ValueError('Fleet roster drift: 10 stable IDs are mandatory')
     states = registry['states']
     expressions = [k for k, v in states.items() if v['category'] == 'expression']
@@ -31,7 +31,7 @@ def canonical():
     if len(states) != 33 or len(expressions) != 20 or len(actions) != 13:
         raise ValueError('Canonical state vocabulary drift: 20 expressions + 13 actions required')
     if len(set(PILOT_KEYS)) != 5 or any(k not in states for k in PILOT_KEYS):
-        raise ValueError('Riven pilot state mismatch')
+        raise ValueError('Liu Bei pilot state mismatch')
     return { 'roster':roster, 'registry': registry }
 
 
@@ -43,15 +43,15 @@ def sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def make_riven_manifest():
+def make_liu_bei_manifest():
     src=canonical()
-    riven=next(r for r in src['roster'] if r['id']=='router')
+    liu_bei=next(r for r in src['roster'] if r['id']=='liu_bei')
     ref=ROOT/'frontend/companions/source_masters/router.png'
     with Image.open(ref) as image: ref_size = list(image.size)
     states=src['registry']['states']
     return {
       'schema':'exodia.fleet-art-pilot/v1',
-      'character_id':'router', 'name':riven['name'],
+      'character_id':'liu_bei', 'name':liu_bei['name'],
       'identity_reference':{'path':str(ref.relative_to(ROOT)).replace('\\','/'),
         'sha256':sha256(ref),'dimensions':ref_size,
         'classification':'nonproduction_composite_poster_style_reference_only',
@@ -73,13 +73,13 @@ def make_riven_manifest():
           'actual_landmark_evidence':None,
           'status':'awaiting_native_source'} for key in PILOT_KEYS},
       'native_production_certified':False,
-      'note':'A0 Riven identity and 5 independent source masters require new owner review; this manifest never approves pixels.'
+      'note':'A0 Liu Bei identity and 5 independent source masters require new owner review; this manifest never approves pixels.'
     }
 
 
 def audit_pilot(manifest:dict, source_root:Path):
     canonical_data = canonical()
-    if manifest.get('character_id') != 'router' or manifest.get('production_release_enabled') is not False:
+    if manifest.get('character_id') != 'liu_bei' or manifest.get('production_release_enabled') is not False:
         raise ValueError('Pilot cannot reassign identity or enable production release')
     states=manifest.get('states',{})
     if set(states)!=set(PILOT_KEYS):raise ValueError('Pilot must retain its five exact state keys')
@@ -113,7 +113,7 @@ def audit_pilot(manifest:dict, source_root:Path):
             'landmarks_verified':False,'identity_owner_approved':False,
             'acting_approved':False,'native_certified':False}
     return {'schema':'exodia.fleet-art-pilot-audit/v1',
-        'character_id':'router','planned_states':5,
+        'character_id':'liu_bei','planned_states':5,
         'technical_source_passed':sum(v['technical_preflight']=='PASS' for v in results.values()),
         'native_production_certified':0,'production_release_enabled':False,
         'failures':failures,'states':results}
@@ -124,7 +124,7 @@ def main():
     parser.add_argument('--manifest',type=Path,help='Inspect an existing pilot manifest')
     parser.add_argument('--root',type=Path,default=ROOT,help='Root directory for supplied standalone PNGs')
     args=parser.parse_args()
-    doc=json.loads(args.manifest.read_text(encoding='utf-8')) if args.manifest else make_riven_manifest()
+    doc=json.loads(args.manifest.read_text(encoding='utf-8')) if args.manifest else make_liu_bei_manifest()
     print(json.dumps(audit_pilot(doc,args.root),indent=2,sort_keys=True))
 
 if __name__=='__main__':main()

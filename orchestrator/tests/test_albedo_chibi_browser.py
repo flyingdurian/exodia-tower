@@ -93,13 +93,13 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     assert 'local cancellation' in (await desktop.locator('#chibiBehaviorCue').inner_text()).lower()
                     await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{taskId:'qa-task',state:'running',agentId:'kiko',updatedAt:'2026-11-04T10:00:04Z'}}))")
                     assert await desktop.locator('#chibiOperations').get_attribute('data-task-phase') == 'cancelled'
-                    # Switching companions must never show Albedo on Riven's stage.
-                    await desktop.locator('#companion').select_option('router')
+                    # Switching companions must never show Albedo on Liu Bei's stage.
+                    await desktop.locator('#companion').select_option('liu_bei')
                     await desktop.wait_for_function("() => document.querySelector('#chibiActor').hidden",timeout=3000)
                     # Switching selected companion must NOT erase the selected historical task.
                     if await desktop.locator('.task-item.active').count():
                         assert await desktop.locator('#summaryTask').inner_text() != 'No task selected'
-                    assert await desktop.locator('#summarySelectedCompanion').inner_text() == 'Riven'
+                    assert await desktop.locator('#summarySelectedCompanion').inner_text() == 'Liu Bei'
                     # Polling a still-running Albedo task must never restore her
                     # chibi while the operator has selected another companion.
                     await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{state:'running',agentId:'kiko'}}))")

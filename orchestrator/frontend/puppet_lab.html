@@ -57,7 +57,7 @@ pre{font:11px/1.5 ui-monospace,monospace;color:#9dddff;white-space:pre-wrap;over
 <script type="module">
 import {PuppetEngine,ACTIVITIES,REQUIRED_LAYERS} from '/assets/puppet_engine.mjs';
 const q=s=>document.querySelector(s), CANVAS=q('#stage');
-const characters=['kiko','router','memory','archives','inventory','vault','ninja','cache','strategy','nova'];
+const characters=['kiko','liu_bei','memory','archives','inventory','vault','ninja','cache','strategy','nova'];
 let puppet=null,rig=null,prev=0,ticks=0,tourTimer=null,drag=null,localFiles={};
 function fill(element,items){element.replaceChildren();for(const item of items){const o=document.createElement('option');o.value=item;o.textContent=item.replaceAll('_',' ');element.append(o)}}
 fill(q('#agent'),characters);fill(q('#activity'),ACTIVITIES);fill(q('#bone'),REQUIRED_LAYERS);

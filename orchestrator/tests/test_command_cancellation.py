@@ -10,7 +10,7 @@ from app.api import server
 def test_inbox_cancel_is_atomic_idempotent_and_restart_safe(tmp_path):
     path = tmp_path / 'tasks.sqlite'
     inbox = Inbox(path)
-    task = inbox.create('router', 'gemini', 'Inspect this route', private_instructions='Private direction')
+    task = inbox.create('liu_bei', 'gemini', 'Inspect this route', private_instructions='Private direction')
     assert inbox.cancel(task['id'])['state'] == 'cancelled'
     assert inbox.cancel(task['id'])['state'] == 'cancelled'
     with pytest.raises(TaskCancelled):
@@ -54,7 +54,7 @@ def test_gemini_task_cancellation_suppresses_late_response(tmp_path, monkeypatch
                                      base_url='http://testserver') as client:
             headers = {'X-Exodia-Client': 'exodia-dashboard'}
             response = await client.post('/api/command/tasks', headers=headers, json={
-                'agent_id': 'router', 'model_choice': 'gemini', 'transport': 'browser',
+                'agent_id': 'liu_bei', 'model_choice': 'gemini', 'transport': 'browser',
                 'prompt': 'Safe synthetic local cancellation test',
                 'custom_instructions': 'Do not log this private test instruction',
             })

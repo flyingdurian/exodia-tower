@@ -54,5 +54,5 @@ def test_existing_portrait_release_remains_locked_separate_from_chibi():
     assert data['release']['enabled'] is False
     assert len(data['states'])==33
     assert all(s['status']=='pending_production_art' for s in data['states'].values())
-    for other in ('router','memory','archives','inventory','vault','ninja','cache','strategy','nova'):
+    for other in ('liu_bei','memory','archives','inventory','vault','ninja','cache','strategy','nova'):
         assert other not in (FRONT/'albedo_chibi_manifest.json').read_text()

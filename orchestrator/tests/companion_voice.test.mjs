@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import {VoiceDirector,readableSpeech,splitSpeechChunks,chooseVoice,PROFILES} from '../frontend/companion_voice.mjs';
 test('10 agents have different natural speech profiles',()=>{
  assert.equal(Object.keys(PROFILES).length,10);
- assert.notEqual(PROFILES.kiko.pitch,PROFILES.riven.pitch);
+ assert.notEqual(PROFILES.kiko.pitch,PROFILES.liu_bei.pitch);
 });
 test('speech reading strips formatting and media URLs',()=>{
  assert.equal(readableSpeech('**Weather**: 15°C. https://example.com/photo.png'),'Weather: 15°C.');

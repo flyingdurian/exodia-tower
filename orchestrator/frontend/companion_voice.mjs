@@ -2,7 +2,7 @@
 export const PROFILES={
  kiko:{pitch:1.18,rate:1.08,voiceHint:['zira','aria','jenny']},
  nova:{pitch:1.05,rate:1.09,voiceHint:['sonia','jenny','sara']},
- riven:{pitch:.85,rate:1.02,voiceHint:['guy','david','mark']},
+ liu_bei:{pitch:.85,rate:1.02,voiceHint:['guy','david','mark']},
  mira:{pitch:1.0,rate:.94,voiceHint:['emma','hazel','zira']},
  lyra:{pitch:1.09,rate:.93,voiceHint:['aria','susan','sonia']},
  pip:{pitch:1.22,rate:1.17,voiceHint:['jenny','sara']},

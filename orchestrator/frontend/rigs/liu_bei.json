@@ -1,7 +1,7 @@
 {
   "version": "exodia-rig/v1",
-  "agent_id": "router",
-  "name": "Riven",
+  "agent_id": "liu_bei",
+  "name": "Liu Bei",
   "status": "needs_separated_character_layers",
   "production_ready": false,
   "units": "pixel_100x180",
@@ -336,5 +336,5 @@
       "damping": 0.82
     }
   },
-  "reference": "/assets/companions/portraits/router.webp"
+  "reference": null
 }
