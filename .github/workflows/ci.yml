@@ -51,7 +51,7 @@ jobs:
       - run: node --check orchestrator/frontend/test_workbench_33.mjs
       - run: node --test orchestrator/tests/albedo_motion.test.mjs
       - run: python -m playwright install --with-deps chromium
-      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py tests/test_core5_browser.py tests/test_gate3_33_browser.py tests/test_albedo_chibi_browser.py -q
+      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py tests/test_core5_browser.py tests/test_gate3_33_browser.py tests/test_albedo_chibi_browser.py tests/test_phase15_workflow_browser.py -q
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -80,6 +80,13 @@ jobs:
           path: orchestrator/app_data/qa_chibi/*.png
           if-no-files-found: ignore
           retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-operator-workflows-desktop-mobile
+          path: orchestrator/app_data/qa_workflows/*.png
+          if-no-files-found: ignore
+          retention-days: 7
       - run: node --check orchestrator/frontend/albedo_experience.mjs
       - run: node --check orchestrator/frontend/companion_voice.mjs
       - run: node --test orchestrator/tests/companion_voice.test.mjs
@@ -91,3 +98,6 @@ jobs:
       - run: node --test orchestrator/tests/operator_workflow_contract.test.mjs
       - run: node --check orchestrator/frontend/workflow_evidence_contract.mjs
       - run: node --test orchestrator/tests/workflow_evidence_contract.test.mjs
+      - run: node --check orchestrator/frontend/workflow_health_contract.mjs
+      - run: node --check orchestrator/frontend/workflow_health_boot.mjs
+      - run: node --test orchestrator/tests/workflow_health_contract.test.mjs
