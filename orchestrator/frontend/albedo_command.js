@@ -14,7 +14,7 @@ const UI={
   promptBubble:$('#responsePrompt'),provider:$('#answerProvider'),timing:$('#answerTiming'),
   image:$('#responseImage'),attachment:$('#attachment'),sources:$('#sourceList'),
   taskList:$('#taskList'),feedback:$('#feedback'),diagnostic:$('#diagnosticText'),
-  terminalStatus:$('#terminalStatus'),cancelTask:$('#cancelActiveTask'),playback:$('#playbackInfo'),toggle:$('#motionToggle')
+  terminalStatus:$('#terminalStatus'),cancelTask:$('#cancelActiveTask'),retryTask:$('#retryActiveTask'),playback:$('#playbackInfo'),toggle:$('#motionToggle')
 };
 const HEADER={'X-Exodia-Client':'exodia-dashboard'};
 const MOODS=[
@@ -167,6 +167,11 @@ function renderAnswer(task){
  UI.sources.replaceChildren();
  const state=task?.state||'idle';
  if(UI.cancelTask)UI.cancelTask.hidden=!(task&&(ACTIVE.has(state)||state==='awaiting_operator'||state==='draft'));
+ if(UI.retryTask){
+  UI.retryTask.hidden=!(task&&(state==='failed'||state==='cancelled'));
+  UI.retryTask.disabled=Boolean(task&&Number(task.retry_index||0)>=3);
+  UI.retryTask.title=UI.retryTask.disabled?'Three retries are the current safety limit':'Creates a new linked task attempt';
+ }
  UI.terminalStatus.textContent=state==='cancelled'?'CANCELLED LOCALLY':state==='answered'?'RESPONSE READY':ACTIVE.has(state)?'LIVE · '+prettyName(state):state==='failed'?'TASK FAILED':'STANDBY';
  UI.provider.textContent=task?((modelLabels.get(task.provider)||task.provider)+' · '+task.agent_id+' / '+prettyName(task.state)):'NO MODEL RESULT';
  const m=task?.metrics||{};
@@ -345,6 +350,25 @@ UI.cancelTask?.addEventListener('click',async()=>{
   inform('Local task cancelled; previously submitted remote requests may still complete outside Exodia.');
   await loadTasks();
  }catch(e){inform(e.message,true)}finally{UI.cancelTask.disabled=false}
+});
+
+UI.retryTask?.addEventListener('click',async()=>{
+ const task=tasks.find(t=>t.id===activeTaskId);
+ if(!task||!['failed','cancelled'].includes(task.state)||Number(task.retry_index||0)>=3)return;
+ const external=task.provider!=='ollama';
+ if(external&&!window.confirm(
+   'This will resend a NEW request to '+(modelLabels.get(task.provider)||task.provider)+
+   '. The old browser-site request may still complete remotely. Proceed with explicit redelivery?'
+ ))return;
+ UI.retryTask.disabled=true;
+ try{
+   const next=await post('/api/command/tasks/'+encodeURIComponent(task.id)+'/retry',
+                          {confirm_external_redelivery:external});
+   activeTaskId=next.id;
+   inform('Created a linked retry attempt #'+next.retry_index+
+          '. External browser requests are not remotely revoked by local cancellation.');
+   await loadTasks();
+ }catch(e){inform(e.message,true)}finally{UI.retryTask.disabled=false;}
 });
 
 let savedModelInstructions={};
