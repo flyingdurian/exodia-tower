@@ -139,7 +139,11 @@ def test_new_review_ui_must_not_use_poster_or_claim_native_source():
     assert "NATIVE LIU BEI ART PENDING" in html
     assert 'asset_url' not in html.split('id="liu_beiPilotPane"')[1].split('</section>')[0]
     assert "production_release_enabled" in js
-    assert "asset_url!==null" in js
+    contract = (frontend/"liu_bei_review_contract.mjs").read_text(encoding="utf-8")
+    assert "safeReviewProjection" in js
+    assert "asset_url !== null" in contract
+    assert "reviewRequestKey(next, manual)" in js
+    assert "changedSignal" in js
     assert "exodia:command-task" in js
     assert "data-liu_bei-preview" in js
     assert "source_masters/router.png" not in js
