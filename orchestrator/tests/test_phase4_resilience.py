@@ -55,7 +55,7 @@ def test_state_events_persist_and_never_store_private_instructions(tmp_path):
 def test_retry_atomic_idempotent_and_lineage_is_restart_safe(tmp_path):
     path=tmp_path/'retry.sqlite'
     inbox=Inbox(path)
-    parent=inbox.create("router","deepseek","Retry from original",
+    parent=inbox.create("liu_bei","deepseek","Retry from original",
                         private_instructions="SECRET_RETRY_SENTINEL")
     inbox.update(parent['id'],'state','failed')
     with ThreadPoolExecutor(max_workers=5) as pool:
@@ -99,7 +99,7 @@ def test_invalid_retries_and_terminal_late_callbacks_are_rejected(tmp_path):
 def test_stale_cleanup_preserves_manual_and_completed_tasks(tmp_path):
     inbox=Inbox(tmp_path/'stale.sqlite')
     stalled=inbox.create('kiko','gemini','A stalled browser job')
-    manual=inbox.create('router','chatgpt','A manual handoff')
+    manual=inbox.create('liu_bei','chatgpt','A manual handoff')
     completed=inbox.create('kiko','ollama','A completed answer')
     inbox.update(stalled['id'],'state','waiting_for_reply')
     inbox.update(manual['id'],'state','awaiting_operator')
@@ -120,7 +120,7 @@ def test_restart_recovery_has_auditable_state_and_no_cancel_regression(tmp_path)
     path=tmp_path/'restart.sqlite'
     inbox=Inbox(path)
     active=inbox.create('kiko','ollama','Interrupted query')
-    cancelled=inbox.create('router','gemini','Cancellation survives restart')
+    cancelled=inbox.create('liu_bei','gemini','Cancellation survives restart')
     inbox.update(active['id'],'state','running')
     inbox.cancel(cancelled['id'])
     inbox.fail_interrupted()

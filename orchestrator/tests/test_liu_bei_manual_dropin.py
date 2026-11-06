@@ -10,8 +10,8 @@ from pathlib import Path
 import pytest
 from PIL import Image, ImageDraw
 
-from tools.riven_native_identity_gate import ROOT, PILOT_MANIFEST, LOCKED, sha256
-from tools.riven_manual_dropin import (
+from tools.liu_bei_native_identity_gate import ROOT, PILOT_MANIFEST, LOCKED, sha256
+from tools.liu_bei_manual_dropin import (
     SCHEMA, POINTS, audit_pixel_annotations, scan_dropin, stamp_patches, template_for
 )
 
@@ -20,19 +20,19 @@ from tools.riven_manual_dropin import (
 def isolated(tmp_path):
     root = tmp_path / "orchestrator"
     root.mkdir()
-    data = tmp_path / "assets" / "review" / "riven_pilot"
+    data = tmp_path / "assets" / "review" / "liu_bei_pilot"
     data.mkdir(parents=True)
     manifest = json.loads(PILOT_MANIFEST.read_text("utf-8"))
     manifest["identity_reference"]["path"] = "ref.png"
     (root/"ref.png").write_bytes((ROOT/"frontend/companions/source_masters/router.png").read_bytes())
     (data/"pilot_manifest.json").write_text(json.dumps(manifest))
-    inbox = root / "app_data" / "riven_a0_inbox"
+    inbox = root / "app_data" / "liu_bei_a0_inbox"
     inbox.mkdir(parents=True)
     return root, inbox, manifest
 
 
 def candidate_image(inbox):
-    path = inbox / "riven_A0_native.png"
+    path = inbox / "liu_bei_A0_native.png"
     image = Image.new("RGB", LOCKED)
     draw = ImageDraw.Draw(image)
     for y in range(0, LOCKED[1], 70):
@@ -122,14 +122,14 @@ def test_ambiguous_folder_and_path_escape_fail(isolated, tmp_path):
     file2.write_bytes(file.read_bytes())
     report = scan_dropin(root, inbox)
     assert report["status"] == "ambiguous_dropin"
-    assert report["errors"] == ["exactly_one_riven_a0_png_required"]
+    assert report["errors"] == ["exactly_one_liu_bei_a0_png_required"]
     with pytest.raises(ValueError, match="isolated_worktree"):
         scan_dropin(root, tmp_path.parent)
 
 
 def test_crop_or_non_native_cannot_pass_original_gate(isolated):
     root, inbox, _ = isolated
-    file = inbox / "riven_A0_native.png"
+    file = inbox / "liu_bei_A0_native.png"
     Image.new("RGB", (1122, 1402), "#161616").save(file)
     report = scan_dropin(root, inbox)
     assert report["technical_source_pass"] is False
@@ -141,7 +141,7 @@ def test_linked_candidate_is_rejected_before_reading_external_bytes(isolated, tm
     root, inbox, _ = isolated
     external = tmp_path / "outside.png"
     Image.new("RGB", LOCKED, "#102030").save(external)
-    link = inbox / "riven_A0_native.png"
+    link = inbox / "liu_bei_A0_native.png"
     try:
         link.symlink_to(external)
     except (OSError, NotImplementedError):
@@ -175,7 +175,7 @@ def test_linked_annotation_never_reads_or_overwrites_external_data(isolated, tmp
 
 def test_rejected_source_cannot_create_landmark_sidecar(isolated):
     root, inbox, _ = isolated
-    candidate = inbox / "riven_A0_native.png"
+    candidate = inbox / "liu_bei_A0_native.png"
     Image.new("RGB", (1122, 1402), "#202040").save(candidate)
     report = scan_dropin(root, inbox, make_template=True)
     assert not candidate.with_suffix(".landmarks.json").exists()
@@ -195,7 +195,7 @@ def test_invalid_annotation_root_is_reported_not_crashed(isolated):
 
 def test_documented_direct_cli_works_without_pythonpath(isolated):
     root, inbox, _ = isolated
-    script = ROOT / "tools" / "riven_manual_dropin.py"
+    script = ROOT / "tools" / "liu_bei_manual_dropin.py"
     env = {**os.environ, "PYTHONPATH": ""}
     command = [sys.executable, str(script), "--root", str(root)]
     result = subprocess.run(command, cwd=ROOT, env=env, text=True,

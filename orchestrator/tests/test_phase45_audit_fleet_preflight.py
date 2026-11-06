@@ -1,4 +1,4 @@
-"""Phase 4 audit telemetry + Phase 5 Riven preflight, without external actions."""
+"""Phase 4 audit telemetry + Phase 5 Liu Bei preflight, without external actions."""
 from __future__ import annotations
 
 import asyncio
@@ -12,17 +12,17 @@ import pytest
 from PIL import Image
 
 from app.api import server
-from app.fleet.riven_preflight import RIVEN_ID, PILOT_STATES, FROZEN_IDS, riven_a0_preflight
+from app.fleet.liu_bei_preflight import LIU_BEI_ID, PILOT_STATES, FROZEN_IDS, liu_bei_a0_preflight
 from app.operations.inbox import Inbox
-from tools.riven_native_identity_gate import ROOT as ORCHESTRATOR_ROOT, PILOT_MANIFEST
+from tools.liu_bei_native_identity_gate import ROOT as ORCHESTRATOR_ROOT, PILOT_MANIFEST
 
 
 @pytest.fixture
-def riven_sandbox(tmp_path):
+def liu_bei_sandbox(tmp_path):
     root=tmp_path/"orchestrator"
     (root/"frontend/companions/source_masters").mkdir(parents=True)
     (root/"app/companions").mkdir(parents=True)
-    target=tmp_path/"assets/review/riven_pilot"
+    target=tmp_path/"assets/review/liu_bei_pilot"
     target.mkdir(parents=True)
     shutil.copyfile(ORCHESTRATOR_ROOT/"frontend/companions/source_masters/router.png",
                     root/"frontend/companions/source_masters/router.png")
@@ -32,13 +32,13 @@ def riven_sandbox(tmp_path):
     return root
 
 
-def test_phase5_no_candidate_is_read_only_pending_and_all_other_companions_frozen(riven_sandbox):
-    root=riven_sandbox
-    manifest=root.parent/"assets/review/riven_pilot/pilot_manifest.json"
+def test_phase5_no_candidate_is_read_only_pending_and_all_other_companions_frozen(liu_bei_sandbox):
+    root=liu_bei_sandbox
+    manifest=root.parent/"assets/review/liu_bei_pilot/pilot_manifest.json"
     raw=manifest.read_bytes()
-    preview=riven_a0_preflight(root)
-    assert preview["schema"]=="exodia.phase5.riven-a0-preflight/v1"
-    assert preview["character_id"]==RIVEN_ID=="router"
+    preview=liu_bei_a0_preflight(root)
+    assert preview["schema"]=="exodia.phase5.liu_bei-a0-preflight/v1"
+    assert preview["character_id"]==LIU_BEI_ID=="liu_bei"
     assert preview["intake_status"]=="awaiting_manual_png"
     assert preview["canonical_canvas"]==[1536,1920]
     assert preview["original_sha256"] is None
@@ -53,14 +53,14 @@ def test_phase5_no_candidate_is_read_only_pending_and_all_other_companions_froze
     assert "inbox" not in json.dumps(preview).lower()
     assert str(root) not in json.dumps(preview)
     assert manifest.read_bytes()==raw
-    assert not (root/"app_data/riven_a0_inbox").exists()
+    assert not (root/"app_data/liu_bei_a0_inbox").exists()
 
 
-def test_phase5_rejects_non_native_art_and_does_not_approve_by_sha(riven_sandbox):
-    inbox=riven_sandbox/"app_data/riven_a0_inbox"
+def test_phase5_rejects_non_native_art_and_does_not_approve_by_sha(liu_bei_sandbox):
+    inbox=liu_bei_sandbox/"app_data/liu_bei_a0_inbox"
     inbox.mkdir(parents=True)
-    Image.new("RGB",(1122,1402),"#223344").save(inbox/"riven_A0_native.png")
-    status=riven_a0_preflight(riven_sandbox)
+    Image.new("RGB",(1122,1402),"#223344").save(inbox/"liu_bei_A0_native.png")
+    status=liu_bei_a0_preflight(liu_bei_sandbox)
     assert status["intake_status"]=="source_rejected"
     assert status["original_sha256"] is None
     assert status["technical_source_pass"] is False
@@ -69,9 +69,9 @@ def test_phase5_rejects_non_native_art_and_does_not_approve_by_sha(riven_sandbox
 
 
 @pytest.mark.parametrize("tamper",["release","state","roster"])
-def test_phase5_fails_closed_on_art_or_roster_mutation(riven_sandbox,tamper):
-    root=riven_sandbox
-    manifest_path=root.parent/"assets/review/riven_pilot/pilot_manifest.json"
+def test_phase5_fails_closed_on_art_or_roster_mutation(liu_bei_sandbox,tamper):
+    root=liu_bei_sandbox
+    manifest_path=root.parent/"assets/review/liu_bei_pilot/pilot_manifest.json"
     roster_path=root/"app/companions/roster.json"
     if tamper=="roster":
         roster=json.loads(roster_path.read_text("utf-8"))
@@ -85,7 +85,7 @@ def test_phase5_fails_closed_on_art_or_roster_mutation(riven_sandbox,tamper):
             manifest["states"]["neutral"]["source_file"]="fake_unapproved.png"
         manifest_path.write_text(json.dumps(manifest),encoding="utf-8")
     with pytest.raises(ValueError):
-        riven_a0_preflight(root)
+        liu_bei_a0_preflight(root)
 
 
 def test_sqlite_error_codes_are_durable_but_never_store_raw_error_text(tmp_path):
@@ -132,23 +132,23 @@ def test_legacy_task_event_table_migrates_reason_code_without_rewriting_events(t
     assert inbox.events(task["id"])[0]["reason_code"] is None
 
 
-def test_history_health_and_phase5_endpoints_are_local_and_redacted(monkeypatch,tmp_path,riven_sandbox):
+def test_history_health_and_phase5_endpoints_are_local_and_redacted(monkeypatch,tmp_path,liu_bei_sandbox):
     async def run():
         isolated=Inbox(tmp_path/"local.sqlite")
         isolated.create("kiko","ollama","ORIGINAL_PROMPT_PRIVATE",
                         private_instructions="NEVER_EXPOSE_PRIVATE_INSTRUCTION")
         monkeypatch.setattr(server,"inbox",isolated)
-        monkeypatch.setattr(server,"riven_a0_preflight",lambda unused:riven_a0_preflight(riven_sandbox))
+        monkeypatch.setattr(server,"liu_bei_a0_preflight",lambda unused:liu_bei_a0_preflight(liu_bei_sandbox))
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=server.app),
                                      base_url="http://testserver") as client:
-            for url in ("/api/command/history-health","/api/fleet/riven-a0/preflight"):
+            for url in ("/api/command/history-health","/api/fleet/liu_bei-a0/preflight"):
                 blocked=await client.get(url)
                 assert blocked.status_code==403
                 resp=await client.get(url,headers={"x-exodia-client":"exodia-dashboard"})
                 assert resp.status_code==200,resp.text
                 assert "ORIGINAL_PROMPT_PRIVATE" not in resp.text
                 assert "NEVER_EXPOSE_PRIVATE_INSTRUCTION" not in resp.text
-                assert str(riven_sandbox) not in resp.text
+                assert str(liu_bei_sandbox) not in resp.text
             assert (await client.get("/api/command/history-health",
                       headers={"x-exodia-client":"exodia-dashboard"})).json()["total_tasks"]==1
     asyncio.run(run())
@@ -176,10 +176,10 @@ def test_phase5_route_fails_safely_when_locked_manifest_is_invalid(monkeypatch):
     async def run():
         def corrupt(_):
             raise ValueError("SECRET_ART_PATH_DO_NOT_EXPOSE")
-        monkeypatch.setattr(server,"riven_a0_preflight",corrupt)
+        monkeypatch.setattr(server,"liu_bei_a0_preflight",corrupt)
         async with httpx.AsyncClient(transport=httpx.ASGITransport(app=server.app),
                                      base_url="http://testserver") as client:
-            resp=await client.get("/api/fleet/riven-a0/preflight",
+            resp=await client.get("/api/fleet/liu_bei-a0/preflight",
                                   headers={"x-exodia-client":"exodia-dashboard"})
         assert resp.status_code==503
         assert "SECRET_ART_PATH_DO_NOT_EXPOSE" not in resp.text

@@ -1,19 +1,19 @@
-"""Riven A0 preparation must not certify poster crops, upscales or clones."""
+"""Liu Bei A0 preparation must not certify poster crops, upscales or clones."""
 import copy
 import hashlib
 import json
 from pathlib import Path
 import pytest
 from PIL import Image
-from tools.fleet_portrait_pilot import canonical, make_riven_manifest, audit_pilot, PILOT_KEYS, ROOT
+from tools.fleet_portrait_pilot import canonical, make_liu_bei_manifest, audit_pilot, PILOT_KEYS, ROOT
 
 
-def test_riven_pilot_preserves_locked_roster_states_and_actual_reference():
+def test_liu_bei_pilot_preserves_locked_roster_states_and_actual_reference():
     source = canonical()
     assert len(source['roster'])==10
     assert len(source['registry']['states'])==33
-    manifest=make_riven_manifest()
-    assert manifest['name']=='Riven'
+    manifest=make_liu_bei_manifest()
+    assert manifest['name']=='Liu Bei'
     assert manifest['identity_reference']['dimensions']==[1122,1402]
     assert manifest['identity_reference']['native_identity_owner_approved'] is False
     assert manifest['identity_reference']['sha256']==hashlib.sha256(
@@ -27,7 +27,7 @@ def test_riven_pilot_preserves_locked_roster_states_and_actual_reference():
 
 
 def test_reject_non_native_and_duplicate_sources(tmp_path):
-    m=make_riven_manifest()
+    m=make_liu_bei_manifest()
     file=tmp_path/'not_native.png'
     Image.new('RGB',(1122,1402)).save(file)
     digest=hashlib.sha256(file.read_bytes()).hexdigest()
@@ -41,7 +41,7 @@ def test_reject_non_native_and_duplicate_sources(tmp_path):
 
 
 def test_native_pixel_dimensions_are_not_owner_approval(tmp_path):
-    m=make_riven_manifest()
+    m=make_liu_bei_manifest()
     p=tmp_path/'candidate.png'
     Image.new('RGB',(1536,1920)).save(p)
     m['states']['pointing'].update({'source_file':p.name,
@@ -54,7 +54,7 @@ def test_native_pixel_dimensions_are_not_owner_approval(tmp_path):
 
 
 def test_manifest_refuses_unauthorized_release_and_traversal(tmp_path):
-    m=make_riven_manifest()
+    m=make_liu_bei_manifest()
     m['production_release_enabled']=True
     with pytest.raises(ValueError):audit_pilot(m,tmp_path)
     m['production_release_enabled']=False

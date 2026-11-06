@@ -1,4 +1,4 @@
-"""A0 Riven identity review never confuses technical PNG checks with approval."""
+"""A0 Liu Bei identity review never confuses technical PNG checks with approval."""
 from __future__ import annotations
 
 import copy
@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from tools.riven_native_identity_gate import (
+from tools.liu_bei_native_identity_gate import (
     ROOT, LOCKED, PILOT_MANIFEST, audit_identity, main, sha256, verify_reference
 )
 import json
