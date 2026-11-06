@@ -1016,6 +1016,23 @@ async def fleet_review_readiness(selected_agent: str = 'kiko', task_id: str | No
         raise HTTPException(503, detail='Fleet state review unavailable')
 
 
+@app.get('/api/operations/production-preflight')
+async def production_preflight_status(x_exodia_client: str = Header(default='')):
+    """Local-only, read-only integrity health: never a production release."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.production_readiness import inspect_production_readiness
+    def inspect():
+        return inspect_production_readiness(
+            settings.root, host=settings.host, history_health=inbox.history_health()
+        )
+    try:
+        return await asyncio.to_thread(inspect)
+    except Exception:
+        events.publish('alert', 'Production readiness checks unavailable',
+                       'phase12_local_integrity_or_policy_failure')
+        raise HTTPException(503, detail='Local release preflight unavailable')
+
+
 @app.get('/api/command/history-health')
 async def command_history_health(x_exodia_client: str=Header(default='')):
     """Local-only, aggregate, read-only SQLite status with no sensitive rows."""
