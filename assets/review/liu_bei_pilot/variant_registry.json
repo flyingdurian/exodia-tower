@@ -1,0 +1,52 @@
+{
+  "schema": "exodia.liu-bei-variant-intake-registry/v1",
+  "character_id": "liu_bei",
+  "parent_state": "neutral",
+  "approved_a0_original_visual_sha256": "46e0a125a31586994f11e6660a55617ba50c5f073f6d882c671177ca8042a352",
+  "native_canvas": [
+    1536,
+    1920
+  ],
+  "intake_policy": "independent_standalone_png_per_state",
+  "automatic_registration_enabled": false,
+  "production_release_enabled": false,
+  "states": {
+    "confident": {
+      "category": "expression",
+      "status": "awaiting_independent_state_source",
+      "source_file": null,
+      "source_sha256": null,
+      "landmark_evidence": null,
+      "owner_approval_reference": null,
+      "production_release_enabled": false
+    },
+    "angered": {
+      "category": "expression",
+      "status": "awaiting_independent_state_source",
+      "source_file": null,
+      "source_sha256": null,
+      "landmark_evidence": null,
+      "owner_approval_reference": null,
+      "production_release_enabled": false
+    },
+    "working": {
+      "category": "action",
+      "status": "awaiting_independent_state_source",
+      "source_file": null,
+      "source_sha256": null,
+      "landmark_evidence": null,
+      "owner_approval_reference": null,
+      "production_release_enabled": false
+    },
+    "pointing": {
+      "category": "action",
+      "status": "awaiting_independent_state_source",
+      "source_file": null,
+      "source_sha256": null,
+      "landmark_evidence": null,
+      "owner_approval_reference": null,
+      "production_release_enabled": false
+    }
+  },
+  "note": "Original A0 visual approval SHA is provenance context, NOT the SHA of the formatted 1536x1920 file. Every downstream state needs independent source, image-bound landmarks, and separate owner approval. No automatic promotion."
+}

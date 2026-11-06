@@ -30,6 +30,7 @@ from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
 from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
+from app.fleet.liu_bei_variant_preflight import liu_bei_variant_preflight
 from app.fleet.liu_bei_runtime import runtime_projection, STATES as LIU_BEI_REVIEW_STATES
 from app.fleet.liu_bei_watcher import LiuBeiA0Watcher
 from app.automation.local_llm import OllamaBackend, LocalModelError
@@ -924,6 +925,18 @@ async def liu_bei_pilot_runtime(task_id: str | None = None, preview_state: str |
         events.publish('alert', 'Liu Bei review pilot unavailable',
                        'liu_bei_review_policy_failure')
         raise HTTPException(503, detail='Liu Bei review pilot is not available')
+
+@app.get('/api/fleet/liu_bei/variant-preflight')
+async def liu_bei_variant_preflight_status(x_exodia_client: str=Header(default='')):
+    """Local-only review of four independent candidate PNGs; never registers art."""
+    require_local_dashboard(x_exodia_client)
+    try:
+        return await asyncio.to_thread(liu_bei_variant_preflight, settings.root)
+    except Exception:
+        # Source paths, annotations and raw errors never leave local preflight.
+        events.publish('alert','Liu Bei variant preflight unavailable','liu_bei_variant_policy_error')
+        raise HTTPException(503,detail='Liu Bei variant preflight unavailable')
+
 
 @app.get('/api/fleet/liu_bei-a0/watch-status')
 async def liu_bei_watch_status(x_exodia_client: str=Header(default='')):
