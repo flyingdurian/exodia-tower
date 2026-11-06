@@ -42,6 +42,20 @@ class RivenA0Watcher:
             if item.suffix.lower() == ".png" or item.name.lower().endswith(".landmarks.json"):
                 stat = item.lstat()
                 entries.append((item.name, stat.st_size, stat.st_mtime_ns, stat.st_mode))
+        # Also observe immutable pilot policy and roster changes, so cached
+        # results never outlive a changed release/freeze specification.
+        control_paths = (
+            self.root.parent / "assets/review/riven_pilot/pilot_manifest.json",
+            self.root / "app/companions/roster.json",
+            self.root / "frontend/companions/source_masters/router.png",
+        )
+        for index, path in enumerate(control_paths):
+            try:
+                stat = path.lstat()
+                entries.append(("policy_" + str(index), stat.st_size,
+                                stat.st_mtime_ns, stat.st_mode))
+            except FileNotFoundError:
+                entries.append(("policy_" + str(index), "missing"))
         return tuple(sorted(entries))
 
     def _inspect(self):
@@ -98,6 +112,11 @@ class RivenA0Watcher:
 
     def start(self):
         if self._task is None or self._task.done():
+            self.folder.mkdir(parents=True, exist_ok=True)
+            try:
+                self.folder.chmod(0o700)
+            except OSError:
+                pass  # Windows uses its own ACL protection.
             self._task = asyncio.create_task(self.run(), name="riven-a0-watch")
 
     async def stop(self):
