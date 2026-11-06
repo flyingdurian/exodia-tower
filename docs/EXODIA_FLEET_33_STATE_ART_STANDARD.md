@@ -56,7 +56,7 @@ observed_head_center ~= 768.0  [horizontal tolerance must be fixed and approved 
 | Stable ID | Public name | Responsibility | Identity policy |
 |---|---|---|---|
 | `kiko` | Albedo | Central Command | Approved silver/lavender hair, violet eyes, celestial floral/gold ornaments, detailed white/lilac/black/gold outfit; approved Albedo master hashes only |
-| `router` | Riven | Task routing / Pathfinder Knight | Preserve Riven-specific approved source masters; do not apply Albedo facial features or costume |
+| `liu_bei` | Liu Bei | Task routing / Pathfinder Knight | Preserve Liu Bei-specific approved source masters; do not apply Albedo facial features or costume |
 | `memory` | Mira | Context / Prompt Scribe | Preserve Mira-specific face, silhouette, costume and established source masters |
 | `archives` | Lyra | Knowledge / Crystal Librarian | Preserve Lyra-specific identity and approved source masters |
 | `inventory` | Pip | Tools / Guild Engineer | Preserve Pip-specific identity and approved source masters |

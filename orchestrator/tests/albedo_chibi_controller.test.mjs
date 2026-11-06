@@ -64,7 +64,7 @@ test('provider task phases map to zones without invoking any provider adapter',(
  assert.equal(zoneForTaskState('cancelled',manifest),'home');
  const c=new AlbedoChibiController(manifest);
  c.dispatchTaskState('running','kiko');assert.equal(c.zone,'terminal');
- c.dispatchTaskState('answered','router');assert.equal(c.enabled,false);
+ c.dispatchTaskState('answered','liu_bei');assert.equal(c.enabled,false);
  c.dispatchTaskState('answered','kiko');assert.equal(c.enabled,true);assert.equal(c.zone,'result');
 });
 test('header summaries are explicit and never print model custom instructions',()=>{

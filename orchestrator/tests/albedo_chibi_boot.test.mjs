@@ -35,7 +35,7 @@ test('real module boot uses scoped manifest and binds task updates plus develope
   assert.equal(runtime.controller.zone,'terminal');assert.equal(h.root.dataset.behavior,'processing');
   assert.equal(h.children[0].textContent,'Working at terminal');
   h.clickCallbacks.get('waiting')();assert.equal(runtime.controller.zone,'waiting');
-  h.companion.value='router';h.callbacks['companion:change']();assert.equal(h.actor.hidden,true);
+  h.companion.value='liu_bei';h.callbacks['companion:change']();assert.equal(h.actor.hidden,true);
   h.clickCallbacks.get('terminal')();assert.equal(runtime.controller.zone,'waiting','Offstage test controls must not move Albedo');
   runtime.stop();
 });

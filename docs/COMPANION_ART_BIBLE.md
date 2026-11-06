@@ -10,7 +10,7 @@ Albedo: refined silver-lavender hair (NOT pink), violet irises, light floral met
 
 For 10 agents, share premium material response, scene lighting, type/ornament craftsmanship and UI quality. Different classes need distinct silhouette/props, palette and recognizable faces. Preserve IDs:
 - `kiko`: Albedo
-- `router`: Riven
+- `liu_bei`: Liu Bei
 - `memory`: Mira
 - `archives`: Lyra
 - `inventory`: Pip
