@@ -1,4 +1,5 @@
 import {AGENTS, safeWorkflow} from './operator_workflow_contract.mjs';
+import {safeRecoveryFork} from './workflow_recovery_contract.mjs';
 import {safeWorkflowEvidence} from './workflow_evidence_contract.mjs';
 
 const byId = id => document.getElementById(id);
@@ -278,21 +279,7 @@ byId('forkRecovery').addEventListener('click',async()=>{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({expected_revision:revision,confirmation:'CREATE LOCAL RECOVERY PLAN'})
     });
-    if(!payload || payload.schema!=='exodia.phase16.local-workflow-recovery/v1' ||
-       !payload.lineage || payload.lineage.source_workflow_id!==source ||
-       payload.lineage.source_revision!==revision ||
-       payload.lineage.source_unmodified!==true ||
-       payload.lineage.copied_task_id_count!==0 ||
-       payload.lineage.remote_dispatch_performed!==false ||
-       payload.lineage.production_release_enabled!==false ||
-       payload.lineage.social_publishing_performed!==false ||
-       payload.lineage.artwork_registration_performed!==false)
-      throw new Error('Recovery safety verification failed');
-    const fork=safeWorkflow(payload.workflow);
-    if(fork.status!=='operator_planning'||fork.completed!==0||
-       fork.steps.some(step=>step.linkedTaskId!==null) ||
-       payload.lineage.recovery_workflow_id!==fork.id)
-      throw new Error('Recovery inherited forbidden task links');
+    const {fresh:fork}=safeRecoveryFork(payload,source,revision);
     showNotice('New recovery plan saved. Existing tasks and approvals preserved.');
     window.dispatchEvent(new Event('exodia:workflow-change'));
     await selectPlan(fork.id);
