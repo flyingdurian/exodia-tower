@@ -28,14 +28,16 @@ ACTIVE = frozenset({
 
 def desired_state(task=None, *, manual_preview=None):
     """Never infer blocked-route anger or pointing from a generic failure."""
+    # Always validate task ownership *before* allowing a manual preview.
+    # A caller must never use a preview override to mask a cross-agent task.
+    if task and task.get("agent_id") != LIU_BEI_ID:
+        raise ValueError("Selected task is not owned by Liu Bei")
     if manual_preview is not None:
         if manual_preview not in STATES:
             raise ValueError("Unknown Liu Bei review state")
         return manual_preview, "explicit_review_preview"
     if not task:
         return "neutral", "no_selected_liu_bei_task"
-    if task.get("agent_id") != LIU_BEI_ID:
-        raise ValueError("Selected task is not owned by Liu Bei")
     state = task.get("state")
     metrics = task.get("metrics") or {}
     if not isinstance(metrics, dict):
