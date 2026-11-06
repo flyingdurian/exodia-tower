@@ -166,3 +166,30 @@ def test_watcher_status_endpoint_requires_local_header(sandbox, monkeypatch):
             assert payload["production_release_enabled"] is False
             assert str(sandbox) not in accepted.text
     asyncio.run(run())
+
+
+
+def test_linked_intake_directory_does_not_scan_or_chmod_external_folder(sandbox, tmp_path):
+    async def run():
+        external = tmp_path / "unrelated_user_folder"
+        external.mkdir()
+        (external / "private_note.txt").write_text("DO_NOT_READ_USER_FILE", encoding="utf-8")
+        (sandbox / "app_data").mkdir()
+        link = sandbox / "app_data/riven_a0_inbox"
+        try:
+            link.symlink_to(external, target_is_directory=True)
+        except (OSError, NotImplementedError):
+            pytest.skip("Filesystem cannot create directory symbolic links")
+        original_mode = external.stat().st_mode
+        watch = RivenA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
+        watch.start()
+        try:
+            await until(lambda: watch.snapshot()["watcher_state"] == "error")
+            assert watch.snapshot()["original_sha256"] is None
+            assert watch.snapshot()["owner_identity_approval"] == "pending"
+            assert watch.snapshot()["production_release_enabled"] is False
+            assert external.stat().st_mode == original_mode
+            assert (external / "private_note.txt").read_text("utf-8") == "DO_NOT_READ_USER_FILE"
+        finally:
+            await watch.stop()
+    asyncio.run(run())

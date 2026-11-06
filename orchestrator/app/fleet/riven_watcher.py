@@ -35,6 +35,8 @@ class RivenA0Watcher:
         return deepcopy(self._status)
 
     def _signature(self):
+        if self.folder.is_symlink() or not self.folder.resolve().is_relative_to(self.root):
+            raise ValueError("Unsafe local Riven intake directory")
         if not self.folder.is_dir():
             return ()
         entries = []
@@ -112,11 +114,15 @@ class RivenA0Watcher:
 
     def start(self):
         if self._task is None or self._task.done():
-            self.folder.mkdir(parents=True, exist_ok=True)
-            try:
-                self.folder.chmod(0o700)
-            except OSError:
-                pass  # Windows uses its own ACL protection.
+            if (not self.folder.is_symlink() and
+                    self.folder.resolve().is_relative_to(self.root)):
+                self.folder.mkdir(parents=True, exist_ok=True)
+                try:
+                    self.folder.chmod(0o700)
+                except OSError:
+                    pass  # Windows uses its own ACL protection.
+            # Unsafe directory links are reported via a generic status; they
+            # are never listed or chmod-ed, and EXODIA can still boot.
             self._task = asyncio.create_task(self.run(), name="riven-a0-watch")
 
     async def stop(self):
