@@ -248,3 +248,47 @@ def test_http_workflow_api_is_guarded_durable_and_never_sends_to_providers(setup
             assert linked.json()["production_release_enabled"] is False
             assert (await client.post(url+"/"+wid+"/link",headers=h,json={})).status_code == 404
     asyncio.run(run())
+
+
+def test_multiple_store_instances_serialise_linking_and_leave_no_orphan_rows(setup):
+    store, inbox = setup
+    one = OperatorWorkflowStore(store.path)
+    plan = store.create(title="Multiprocess lock", steps=[
+        {"key":"a","agent_id":"vault","label":"Safe shared step","depends_on":[]}
+    ])
+    tasks = [inbox.create("vault","ollama","Parallel source") for _ in range(16)]
+    def attempt(pair):
+        instance, task = pair
+        try:
+            instance.bind(plan["id"], step_key="a", task_id=task["id"],
+                          expected_revision=1, inbox=inbox)
+            return "linked"
+        except WorkflowConflictError:
+            return "conflict"
+    jobs = [(store if index % 2 else one, task)
+            for index, task in enumerate(tasks)]
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        outcomes = list(executor.map(attempt, jobs))
+    assert outcomes.count("linked") == 1
+    assert outcomes.count("conflict") == 15
+    with sqlite3.connect(store.path) as conn:
+        assert conn.execute(
+            "SELECT COUNT(*) FROM operator_workflow_task_links"
+        ).fetchone()[0] == 1
+    assert store.get(plan["id"])["revision"] == 2
+
+
+def test_operator_console_served_from_existing_local_application(setup):
+    async def run():
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=server.app),
+            base_url="http://testserver"
+        ) as client:
+            result = await client.get("/workflow-planner")
+            assert result.status_code == 200
+            assert "Operator Workflow Console" in result.text
+            assert 'id="stepEditors"' in result.text
+            assert "operator_workflow_console.mjs" in result.text
+            assert "no model dispatch" in result.text.lower()
+            assert "<img" not in result.text
+    asyncio.run(run())
