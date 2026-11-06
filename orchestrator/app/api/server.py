@@ -30,6 +30,7 @@ from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
 from app.fleet.riven_preflight import riven_a0_preflight
+from app.fleet.riven_runtime import runtime_projection, STATES as RIVEN_REVIEW_STATES
 from app.fleet.riven_watcher import RivenA0Watcher
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
@@ -898,6 +899,31 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     try:saved=model_instructions.save(body.provider, body.text)
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
+
+@app.get('/api/fleet/riven/pilot-runtime')
+async def riven_pilot_runtime(task_id: str | None = None, preview_state: str | None = None,
+                              x_exodia_client: str = Header(default='')):
+    """Live command-center Riven review state; never a native image URL or approval."""
+    require_local_dashboard(x_exodia_client)
+    if preview_state is not None and preview_state not in RIVEN_REVIEW_STATES:
+        raise HTTPException(422, detail='Unsupported Riven review state')
+    task = None
+    if task_id is not None:
+        if len(task_id) > 128 or re.fullmatch(r'[0-9a-zA-Z-]+',task_id) is None:
+            raise HTTPException(422, detail='Invalid task identifier')
+        try: task = inbox.get(task_id)
+        except KeyError: raise HTTPException(404, detail='Task not found')
+        if task.get('agent_id') != 'router':
+            raise HTTPException(409, detail='Selected task belongs to another companion')
+    try:
+        return await asyncio.to_thread(
+            runtime_projection, settings.root, task=task, manual_preview=preview_state)
+    except Exception:
+        # Never leak source or reference paths, hashes, local exceptions,
+        # browser sessions, or anything from the private task store.
+        events.publish('alert', 'Riven review pilot unavailable',
+                       'riven_review_policy_failure')
+        raise HTTPException(503, detail='Riven review pilot is not available')
 
 @app.get('/api/fleet/riven-a0/watch-status')
 async def riven_watch_status(x_exodia_client: str=Header(default='')):
