@@ -1,4 +1,5 @@
 import {AGENTS, safeWorkflow} from './operator_workflow_contract.mjs';
+import {safeWorkflowEvidence} from './workflow_evidence_contract.mjs';
 
 const byId = id => document.getElementById(id);
 const stageEditors = byId('stepEditors');
@@ -208,6 +209,25 @@ async function selectPlan(id) {
     if(serial!==selectionRevision)return;
     selected=plan;
     renderPlan(plan);
+    const evidenceSlot=byId('workflowEvidenceStatus');
+    if(evidenceSlot){
+      evidenceSlot.textContent='Corroborating Inbox task events…';
+      try {
+        const rawEvidence=await request('/api/command/workflows/'+
+          encodeURIComponent(plan.id)+'/evidence');
+        const audit=safeWorkflowEvidence(rawEvidence);
+        if(serial!==selectionRevision)return;
+        if(audit.workflowId!==plan.id||audit.revision!==plan.revision)
+          throw new Error('Stale workflow evidence');
+        evidenceSlot.textContent=audit.confirmed+'/'+audit.answered+
+          ' answered tasks have recorded transition evidence · '+
+          audit.nextAction.replaceAll('_',' ')+
+          ' · authenticated provider acceptance not established';
+      }catch(_){
+        if(serial!==selectionRevision)return;
+        evidenceSlot.textContent='Task event evidence unavailable · no success claimed';
+      }
+    }
     await refreshPlans();
   } catch (_) {
     if(serial!==selectionRevision)return;
