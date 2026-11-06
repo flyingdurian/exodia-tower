@@ -153,7 +153,7 @@ def test_unknown_task_agent_mismatch_and_double_assignment_are_blocked(setup):
       {"key":"b","agent_id":"vault","label":"B","depends_on":["b"]}
     ],
     [{"key":"a","agent_id":"router","label":"Old ID","depends_on":[]}],
-    [{"key":"a","agent_id":"vault","label":"No\\nNewline\\n","depends_on":[]}],
+    [{"key":"a","agent_id":"vault","label":"No\nNewline\n","depends_on":[]}],
     [{"key":"a","agent_id":"vault","label":"X","depends_on":[],
       "secret_payload":"blocked"}],
 ])
