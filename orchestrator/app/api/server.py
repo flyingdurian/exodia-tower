@@ -625,6 +625,24 @@ async def get_operator_workflow(workflow_id: str,
     except Exception:
         raise HTTPException(503, detail='Local workflow storage unavailable')
 
+@app.get('/api/command/workflows/{workflow_id}/evidence')
+async def operator_workflow_evidence_status(workflow_id: str,
+                                            x_exodia_client: str = Header(default='')):
+    """Read-only event-backed DAG evidence; no reply text or external action."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.workflow_evidence import collect_workflow_evidence
+    try:
+        plan = operator_workflows.get(workflow_id)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    try:
+        return await asyncio.to_thread(collect_workflow_evidence, plan, inbox)
+    except Exception:
+        events.publish('alert', 'Workflow evidence audit unavailable',
+                       'phase14_read_only_evidence_failure')
+        raise HTTPException(503, detail='Local workflow evidence unavailable')
+
+
 @app.post('/api/command/workflows/{workflow_id}/bind')
 async def bind_operator_workflow(workflow_id: str, body: OperatorWorkflowBind,
                                  x_exodia_client: str = Header(default='')):
