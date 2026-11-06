@@ -56,10 +56,11 @@ def validate_steps(steps):
         key, agent = s["key"], s["agent_id"]
         deps = s["depends_on"]
         if (not isinstance(key, str) or not STEP_KEY.fullmatch(key)
-                or key in seen or agent not in AGENTS
+                or key in seen or not isinstance(agent, str) or agent not in AGENTS
                 or not isinstance(deps, list) or len(deps) > 11
+                or any(not isinstance(d, str) for d in deps)
                 or len(set(deps)) != len(deps)
-                or any(not isinstance(d, str) or d not in seen for d in deps)):
+                or any(d not in seen for d in deps)):
             # A dependency must point to an earlier step; cycles and forward
             # references cannot enter the persistent graph.
             raise WorkflowInputError("Invalid, duplicate or cyclic step dependency")
