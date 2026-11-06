@@ -28,6 +28,7 @@ FILES = (
     "companion_tasks.sqlite",
     "editorial.sqlite",
     "exodia_tower.sqlite",
+    "operator_workflows.sqlite",
 )
 SCHEMA = "exodia.phase12.private-sqlite-backup/v1"
 
