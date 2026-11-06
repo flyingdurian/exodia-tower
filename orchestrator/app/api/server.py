@@ -29,9 +29,13 @@ from app.companions.rigs import load_all
 from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
+from app.operations.workflow_plans import (
+    OperatorWorkflowStore, WorkflowInputError, WorkflowConflictError, project_plan
+)
 from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
 from app.fleet.liu_bei_variant_preflight import liu_bei_variant_preflight
 from app.fleet.liu_bei_runtime import runtime_projection, STATES as LIU_BEI_REVIEW_STATES
+from app.fleet.liu_bei_33_review import phase10_projection, validate_library as validate_liu_bei_33
 from app.fleet.liu_bei_watcher import LiuBeiA0Watcher
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
@@ -47,6 +51,7 @@ model_instructions=InstructionStore(settings.root/'session_data'/'model_instruct
 director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
+operator_workflows=OperatorWorkflowStore(settings.root/'app_data'/'operator_workflows.sqlite')
 inbox.fail_interrupted()
 liu_bei_a0_watcher=LiuBeiA0Watcher(settings.root,events)
 local_model=OllamaBackend()
@@ -557,6 +562,131 @@ class SocialAdvance(BaseModel):
 class SocialApproval(BaseModel):
     confirmation: str
 
+class OperatorWorkflowStep(BaseModel):
+    key: str = Field(min_length=1, max_length=32)
+    agent_id: str = Field(min_length=1, max_length=32)
+    label: str = Field(min_length=1, max_length=80)
+    depends_on: list[str] = Field(default_factory=list, max_length=11)
+    class Config:
+        extra = 'forbid'
+
+class OperatorWorkflowCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=120)
+    steps: list[OperatorWorkflowStep] = Field(min_length=1, max_length=12)
+    class Config:
+        extra = 'forbid'
+
+class OperatorWorkflowBind(BaseModel):
+    step_key: str = Field(min_length=1, max_length=32)
+    task_id: str = Field(min_length=1, max_length=128)
+    expected_revision: int = Field(ge=1)
+    class Config:
+        extra = 'forbid'
+
+class OperatorWorkflowReview(BaseModel):
+    expected_revision: int = Field(ge=1)
+    confirmation: str = Field(min_length=1, max_length=64)
+    class Config:
+        extra = 'forbid'
+
+@app.get('/api/command/workflows')
+async def list_operator_workflows(limit: int = 20,
+                                  x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    if not 1 <= limit <= 50:
+        raise HTTPException(422, detail='Invalid workflow list limit')
+    try:
+        return {'schema':'exodia.phase13.operator-workflow-list/v1',
+                'workflows':[project_plan(p, inbox)
+                             for p in operator_workflows.list(limit)]}
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.post('/api/command/workflows', status_code=201)
+async def create_operator_workflow(body: OperatorWorkflowCreate,
+                                   x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        raw = [step.model_dump() for step in body.steps]
+        return project_plan(operator_workflows.create(title=body.title, steps=raw), inbox)
+    except WorkflowInputError:
+        raise HTTPException(422, detail='Workflow plan structure rejected')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.get('/api/command/workflows/{workflow_id}')
+async def get_operator_workflow(workflow_id: str,
+                                x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        return project_plan(operator_workflows.get(workflow_id), inbox)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.get('/api/command/workflows/{workflow_id}/evidence')
+async def operator_workflow_evidence_status(workflow_id: str,
+                                            x_exodia_client: str = Header(default='')):
+    """Read-only event-backed DAG evidence; no reply text or external action."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.workflow_evidence import collect_workflow_evidence
+    try:
+        plan = operator_workflows.get(workflow_id)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    try:
+        return await asyncio.to_thread(collect_workflow_evidence, plan, inbox)
+    except Exception:
+        events.publish('alert', 'Workflow evidence audit unavailable',
+                       'phase14_read_only_evidence_failure')
+        raise HTTPException(503, detail='Local workflow evidence unavailable')
+
+
+@app.post('/api/command/workflows/{workflow_id}/bind')
+async def bind_operator_workflow(workflow_id: str, body: OperatorWorkflowBind,
+                                 x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        plan = operator_workflows.bind(
+            workflow_id, step_key=body.step_key,
+            task_id=body.task_id, expected_revision=body.expected_revision,
+            inbox=inbox)
+        return project_plan(plan, inbox)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    except WorkflowConflictError:
+        raise HTTPException(409, detail='Workflow dependency, revision or task ownership conflict')
+    except WorkflowInputError:
+        raise HTTPException(422, detail='Invalid workflow task link')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.post('/api/command/workflows/{workflow_id}/review')
+async def review_operator_workflow(workflow_id: str, body: OperatorWorkflowReview,
+                                   x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        plan = operator_workflows.confirm_review(
+            workflow_id, expected_revision=body.expected_revision,
+            confirmation=body.confirmation, inbox=inbox)
+        return project_plan(plan, inbox)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    except WorkflowConflictError:
+        raise HTTPException(409, detail='Workflow incomplete or revision changed')
+    except WorkflowInputError:
+        raise HTTPException(422, detail='Explicit local review confirmation required')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+
+@app.get('/workflow-planner')
+async def operator_workflow_console():
+    """Manual-only workflow console; no action begins by loading this page."""
+    return FileResponse(settings.root / 'frontend/operator_workflow_console.html')
+
+
 @app.get('/api/social/status')
 async def social_status():
     return {'summary': social.summary(), 'connections':{
@@ -901,6 +1031,38 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
 
+@app.get('/api/fleet/liu_bei/33-review')
+async def liu_bei_33_review_status(task_id: str | None = None,
+                                  preview_state: str | None = None,
+                                  x_exodia_client: str = Header(default='')):
+    """Task-bound, read-only 33-state vocabulary review; never serves state art."""
+    require_local_dashboard(x_exodia_client)
+    if preview_state is not None:
+        try:
+            _manifest, canonical = await asyncio.to_thread(validate_liu_bei_33, settings.root)
+        except Exception:
+            raise HTTPException(503, detail='Liu Bei canonical review unavailable')
+        if preview_state not in canonical:
+            raise HTTPException(422, detail='Unsupported canonical preview state')
+    task = None
+    if task_id is not None:
+        if len(task_id) > 128 or re.fullmatch(r'[0-9a-zA-Z-]+', task_id) is None:
+            raise HTTPException(422, detail='Invalid task identifier')
+        try:
+            task = inbox.get(task_id)
+        except KeyError:
+            raise HTTPException(404, detail='Task not found')
+        if task.get('agent_id') != 'liu_bei':
+            raise HTTPException(409, detail='Selected task belongs to another companion')
+    try:
+        return await asyncio.to_thread(
+            phase10_projection, settings.root, task=task, preview_state=preview_state)
+    except Exception:
+        events.publish('alert', 'Liu Bei 33-state review unavailable',
+                       'liu_bei_33_read_only_contract_error')
+        raise HTTPException(503, detail='Liu Bei 33-state review unavailable')
+
+
 @app.get('/api/fleet/liu_bei/pilot-runtime')
 async def liu_bei_pilot_runtime(task_id: str | None = None, preview_state: str | None = None,
                               x_exodia_client: str = Header(default='')):
@@ -955,6 +1117,50 @@ async def liu_bei_a0_preflight_status(x_exodia_client: str=Header(default='')):
         # messages must never appear in response telemetry or remote logs.
         events.publish('alert','Liu Bei A0 preflight check unavailable','liu_bei_a0_preflight_error')
         raise HTTPException(503,detail='Liu Bei A0 preflight unavailable; review the local intake gate')
+
+@app.get('/api/fleet/readiness')
+async def fleet_review_readiness(selected_agent: str = 'kiko', task_id: str | None = None,
+                                 x_exodia_client: str = Header(default='')):
+    """Read-only ten-companion engineering status, never provider/art mutation."""
+    require_local_dashboard(x_exodia_client)
+    from app.fleet import fleet_readiness as fleet_service
+    if selected_agent not in fleet_service.EXPECTED_IDS:
+        raise HTTPException(422, detail='Unknown EXODIA companion')
+    task = None
+    if task_id is not None:
+        if len(task_id) > 128 or re.fullmatch(r'[A-Za-z0-9-]+', task_id) is None:
+            raise HTTPException(422, detail='Invalid task identifier')
+        try:
+            task = inbox.get(task_id)
+        except KeyError:
+            raise HTTPException(404, detail='Task not found')
+        if task.get('agent_id') != selected_agent:
+            raise HTTPException(409, detail='Selected task belongs to another companion')
+    try:
+        return await asyncio.to_thread(
+            fleet_service.fleet_projection, settings.root, selected_agent=selected_agent, task=task)
+    except Exception:
+        events.publish('alert', 'Fleet state readiness unavailable',
+                       'fleet_review_immutable_contract_error')
+        raise HTTPException(503, detail='Fleet state review unavailable')
+
+
+@app.get('/api/operations/production-preflight')
+async def production_preflight_status(x_exodia_client: str = Header(default='')):
+    """Local-only, read-only integrity health: never a production release."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.production_readiness import inspect_production_readiness
+    def inspect():
+        return inspect_production_readiness(
+            settings.root, host=settings.host, history_health=inbox.history_health()
+        )
+    try:
+        return await asyncio.to_thread(inspect)
+    except Exception:
+        events.publish('alert', 'Production readiness checks unavailable',
+                       'phase12_local_integrity_or_policy_failure')
+        raise HTTPException(503, detail='Local release preflight unavailable')
+
 
 @app.get('/api/command/history-health')
 async def command_history_health(x_exodia_client: str=Header(default='')):

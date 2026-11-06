@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080f20"><title>EXODIA — Operator Workflows</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,Segoe UI,Arial,sans-serif;background:#071020;color:#e7ecff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 88% -20%,#203966 0,transparent 44%),#080f20;min-height:100vh}
+header,main{max-width:1280px;margin:auto;padding:24px clamp(16px,3vw,34px)}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:1px solid #263754}
+h1{font-size:clamp(22px,2.5vw,32px);letter-spacing:.02em;margin:6px 0 8px}
+h2{font-size:18px;margin:0 0 12px}.eyebrow{font-size:11px;letter-spacing:.18em;color:#90b9ff;font-weight:700}
+a{color:#a2c8ff}p,small{color:#9aacc8;line-height:1.55}.muted{color:#9aacc8;font-size:13px}
+header a{text-decoration:none;border:1px solid #355073;border-radius:9px;padding:10px 14px}
+main{display:grid;grid-template-columns:minmax(300px,5fr) minmax(330px,7fr);gap:20px;align-items:start}
+section{background:#101c31;border:1px solid #2a3e5e;border-radius:16px;padding:22px;box-shadow:0 18px 40px #0003}
+.stack{display:flex;flex-direction:column;gap:12px}.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.row>*{min-width:0}
+label{display:flex;flex-direction:column;gap:6px;color:#cedbf5;font-size:13px;font-weight:600}
+input,select{border:1px solid #415475;background:#091426;color:#eef4ff;border-radius:9px;padding:10px 12px;width:100%;min-height:40px;font:inherit}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid #97bfff;outline-offset:2px}
+button{border:1px solid #5776ab;background:#204071;color:#edf3ff;cursor:pointer;border-radius:9px;padding:10px 14px;font-weight:650}
+button:hover:not(:disabled){background:#30538d}button:disabled{opacity:.48;cursor:not-allowed}
+button.secondary{background:#111e36}button.danger{border-color:#91536a;background:#44253a}
+fieldset{border:1px solid #364a68;border-radius:10px;margin:0;padding:12px}
+legend{color:#9ebbf0;font-size:12px;padding:0 6px}.stage{padding:14px;background:#0c1729;border:1px solid #2e4567;border-radius:12px}
+.stagehead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.stagefields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.checkline{display:flex;align-items:center;gap:6px;font-size:12px;color:#c7d8ef;cursor:pointer}
+.checkline input{width:auto;min-height:0}.dependencies{display:flex;flex-wrap:wrap;gap:12px}
+#planList{max-height:230px;overflow:auto}.planbutton{display:block;width:100%;text-align:left;margin-top:8px;background:#0c1a32}
+.planbutton[aria-current=true]{border-color:#90b8ff;background:#193258}
+#planSteps{display:grid;gap:10px;margin-top:14px}
+#planSteps article{border:1px solid #334965;background:#0d182b;border-radius:11px;padding:13px}
+.tag{border:1px solid #395174;background:#1b314e;color:#c3dafa;font-size:11px;padding:4px 9px;border-radius:100px;white-space:nowrap}
+.tasklink{display:flex;gap:8px;margin-top:12px}.tasklink input{flex:1;min-width:160px}.tasklink button{white-space:nowrap}
+#notice{min-height:24px;color:#b8cdf8;font-size:13px}
+#notice[data-error=true]{color:#ffb4c2}
+footer{max-width:1280px;margin:auto;padding:18px 30px 34px;color:#879ab9;font-size:12px}
+@media(max-width:850px){main{grid-template-columns:1fr}.stagefields{grid-template-columns:1fr}header{padding-bottom:15px}}
+@media(prefers-reduced-motion:no-preference){button{transition:background .12s,border-color .12s}}
+</style>
+<script type="module" src="/assets/operator_workflow_console.mjs?v=1"></script>
+</head><body>
+<header><div><span class="eyebrow">EXODIA TOWER · LOCAL COMMAND</span>
+<h1>Operator Workflow Console</h1>
+<p class="muted">Dependency-aware multi-agent planning. Manual task linking only; no model dispatch, publishing or production release.</p></div>
+<a href="/">Return to Command Center</a></header>
+<main>
+<section aria-label="Create workflow"><div class="row" style="justify-content:space-between"><h2>Compose a plan</h2><span class="tag">Up to 12 stages</span></div>
+<form id="planForm" class="stack"><label>Plan title<input name="title" id="planTitle" maxlength="120" placeholder="e.g. Research → analysis → review" required></label>
+<div id="stepEditors" class="stack" aria-label="Planned stages"></div>
+<div class="row"><button type="button" class="secondary" id="addStage">Add stage</button>
+<button type="submit" id="createPlan">Save operator plan</button></div></form>
+<hr style="border:0;border-top:1px solid #2b415f;margin:24px 0">
+<div class="row" style="justify-content:space-between"><h2>Recent plans</h2><button id="refreshPlans" type="button" class="secondary">Refresh</button></div>
+<div id="planList" aria-label="Previously saved local plans"></div>
+</section>
+<section aria-label="Inspect selected plan">
+<div class="row" style="justify-content:space-between"><h2>Mission evidence</h2><span class="tag">Review-only</span></div>
+<div id="selectedPlan"><p>Select a saved plan to link existing EXODIA task IDs.</p></div>
+<div id="planSteps" aria-label="Steps and dependency status"></div>
+<p id="workflowEvidenceStatus" class="muted" role="status">Inbox task history is checked only for selected plans.</p>
+<div class="row" style="justify-content:space-between;margin-top:18px"><small id="progressStatus">No plan selected</small><button type="button" id="confirmReview" disabled>Confirm local review</button></div>
+<p class="muted">Link a task that already exists in the Command Center. Downstream stages unlock only when prerequisite tasks actually reach <strong>answered</strong>. Confirmation records local review; it never authorizes external actions.</p>
+<p id="notice" role="status" aria-live="polite"></p>
+</section>
+</main><footer>EXODIA development workflow · SQLite local-only · Private task prompts and responses never leave the existing task inbox.</footer>
+</body></html>
