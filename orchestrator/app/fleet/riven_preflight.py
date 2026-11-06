@@ -86,7 +86,6 @@ def riven_a0_preflight(root: Path) -> dict:
             for name in PILOT_STATES
         ],
         "frozen_other_companion_ids": list(FROZEN_IDS),
-        "albedo_state_assets_unchanged": True,
         "production_release_enabled": False,
         "native_production_certified": False,
     }

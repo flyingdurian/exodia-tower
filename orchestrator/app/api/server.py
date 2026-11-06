@@ -29,6 +29,7 @@ from app.companions.rigs import load_all
 from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
+from app.fleet.riven_preflight import riven_a0_preflight
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
 from app.automation.configured_web import ConfiguredWebRunner, WebAdapterError
@@ -893,6 +894,18 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     try:saved=model_instructions.save(body.provider, body.text)
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
+
+@app.get('/api/fleet/riven-a0/preflight')
+async def riven_a0_preflight_status(x_exodia_client: str=Header(default='')):
+    """Local-only read-only Phase 5 status; never auto-register or release artwork."""
+    require_local_dashboard(x_exodia_client)
+    try:
+        return await asyncio.to_thread(riven_a0_preflight,settings.root)
+    except Exception:
+        # Unknown local file names, hashes, annotations, paths and exception
+        # messages must never appear in response telemetry or remote logs.
+        events.publish('alert','Riven A0 preflight check unavailable','riven_a0_preflight_error')
+        raise HTTPException(503,detail='Riven A0 preflight unavailable; review the local intake gate')
 
 @app.get('/api/command/history-health')
 async def command_history_health(x_exodia_client: str=Header(default='')):
