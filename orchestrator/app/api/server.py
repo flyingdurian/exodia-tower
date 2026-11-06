@@ -583,6 +583,12 @@ class OperatorWorkflowBind(BaseModel):
     class Config:
         extra = 'forbid'
 
+class OperatorRecoveryFork(BaseModel):
+    expected_revision: int = Field(ge=1)
+    confirmation: str = Field(min_length=1, max_length=64)
+    class Config:
+        extra = 'forbid'
+
 class OperatorWorkflowReview(BaseModel):
     expected_revision: int = Field(ge=1)
     confirmation: str = Field(min_length=1, max_length=64)
@@ -624,6 +630,34 @@ async def get_operator_workflow(workflow_id: str,
         raise HTTPException(404, detail='Workflow not found')
     except Exception:
         raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.post('/api/command/workflows/{workflow_id}/fork', status_code=201)
+async def fork_operator_workflow(workflow_id: str, body: OperatorRecoveryFork,
+                                 x_exodia_client: str = Header(default='')):
+    """Explicit local recovery only; creates no Inbox task or external action."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.workflow_recovery import (
+        WorkflowRecovery, safe_fork_result, CONFIRMATION)
+    if body.confirmation != CONFIRMATION:
+        raise HTTPException(422, detail='Explicit local recovery confirmation required')
+    try:
+        def do_recovery():
+            recovery=WorkflowRecovery(operator_workflows)
+            return safe_fork_result(
+                operator_workflows, recovery, workflow_id, body.expected_revision,
+                body.confirmation, inbox)
+        return await asyncio.to_thread(do_recovery)
+    except KeyError:
+        raise HTTPException(404, detail='Source workflow not found')
+    except WorkflowConflictError:
+        raise HTTPException(409, detail='Source workflow is not eligible or revision changed')
+    except WorkflowInputError:
+        raise HTTPException(422, detail='Invalid local recovery request')
+    except Exception:
+        events.publish('alert', 'Workflow recovery unavailable',
+                       'phase16_local_recovery_not_completed')
+        raise HTTPException(503, detail='Local workflow recovery unavailable')
+
 
 @app.get('/api/command/workflows/{workflow_id}/evidence')
 async def operator_workflow_evidence_status(workflow_id: str,
