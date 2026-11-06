@@ -56,9 +56,13 @@ async function refresh() {
 pane?.addEventListener('toggle',()=>{requestKey='';void refresh();});
 companion?.addEventListener('change',()=>{requestKey='';void refresh();});
 window.addEventListener('exodia:command-task',event=>{
-  task=publicTaskSignal(event.detail);
-  requestKey='';
-  void refresh();
+  const next=publicTaskSignal(event.detail);
+  const changed=next.agentId!==task.agentId || next.taskId!==task.taskId ||
+    next.state!==task.state || next.updatedAt!==task.updatedAt;
+  task=next;
+  // Task updates may rebroadcast every 650ms; avoid repeat disk/API reads
+  // unless the selected task or observed lifecycle actually changed.
+  if (changed) void refresh();
 });
 window.addEventListener('focus',()=>{
   if (pane?.open) {requestKey='';void refresh();}
