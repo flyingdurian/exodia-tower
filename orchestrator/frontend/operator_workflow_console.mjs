@@ -1,4 +1,5 @@
 import {AGENTS, safeWorkflow} from './operator_workflow_contract.mjs';
+import {safeRecoveryFork} from './workflow_recovery_contract.mjs';
 import {safeWorkflowEvidence} from './workflow_evidence_contract.mjs';
 
 const byId = id => document.getElementById(id);
@@ -200,6 +201,10 @@ function renderPlan(plan) {
     plan.status!=='operator_planning' ||
     plan.completed!==plan.stepCount
   );
+  byId('forkRecovery').disabled=!(
+    plan.status==='reviewed_local_only' ||
+    plan.steps.some(item=>item.status==='linked_task_failed')
+  );
 }
 
 async function selectPlan(id) {
@@ -258,6 +263,32 @@ byId('planForm').addEventListener('submit',async event=>{
   } catch (_) {
     showNotice('Plan not saved. Check labels, companion IDs and stage dependencies.',true);
   } finally {btn.disabled=false;}
+});
+byId('forkRecovery').addEventListener('click',async()=>{
+  if(!selected ||
+    !(selected.status==='reviewed_local_only' ||
+      selected.steps.some(step=>step.status==='linked_task_failed')))return;
+  if(!window.confirm('Create a NEW unlinked local recovery plan? All existing tasks, approvals and results remain unchanged. No providers are contacted.'))
+    return;
+  const source=selected.id;
+  const revision=selected.revision;
+  const control=byId('forkRecovery');
+  control.disabled=true;
+  try {
+    const payload=await request('/api/command/workflows/'+encodeURIComponent(source)+'/fork',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({expected_revision:revision,confirmation:'CREATE LOCAL RECOVERY PLAN'})
+    });
+    const {fresh:fork}=safeRecoveryFork(payload,source,revision);
+    showNotice('New recovery plan saved. Existing tasks and approvals preserved.');
+    window.dispatchEvent(new Event('exodia:workflow-change'));
+    await selectPlan(fork.id);
+  }catch(_){
+    showNotice('Recovery fork rejected; check failed/reviewed status and current revision.',true);
+    await selectPlan(source);
+  }finally{
+    control.disabled=false;
+  }
 });
 byId('confirmReview').addEventListener('click',async()=>{
   if(!selected || selected.completed!==selected.stepCount ||
