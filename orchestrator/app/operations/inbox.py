@@ -206,9 +206,10 @@ class Inbox:
    rows=c.execute("SELECT id,state,updated_at FROM tasks WHERE state IN ("+
                   ",".join("?" for _ in active)+")",active).fetchall()
    for task_id,state,last in rows:
-    try:updated=datetime.fromisoformat(last).astimezone(timezone.utc)
+    try:updated=datetime.fromisoformat(last)
     except (ValueError,TypeError,AttributeError):continue
     if updated.tzinfo is None:continue
+    updated=updated.astimezone(timezone.utc)
     if updated > cutoff:continue
     c.execute("UPDATE tasks SET state='failed',error=?,updated_at=? WHERE id=? AND state=?",
               ('Stale task stopped locally; the external provider may continue. Retry explicitly.',

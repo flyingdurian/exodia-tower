@@ -240,3 +240,45 @@ def test_stale_reaper_cancels_local_job_without_remote_revoke_claim(tmp_path,mon
         except asyncio.CancelledError:pass
         server.active_command_jobs.pop(task['id'],None)
     asyncio.run(run())
+
+
+def test_explicit_retry_resumes_only_unstarted_draft_after_restart(tmp_path,monkeypatch):
+    async def run():
+        isolated=Inbox(tmp_path/'restart_retry.sqlite')
+        monkeypatch.setattr(server,'inbox',isolated)
+        parent=isolated.create('kiko','ollama','Previously failed local task')
+        isolated.update(parent['id'],'state','failed')
+        draft,created=isolated.retry(parent['id'])
+        assert created and draft['state']=='draft'
+        mock_calls=[]
+        async def fake_local(prompt,*,companion):
+            mock_calls.append(prompt)
+            return {'answer':'Recovered draft'}
+        monkeypatch.setattr(server.local_model,'generate',fake_local)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=server.app),
+                                      base_url='http://testserver') as client:
+            url='/api/command/tasks/'+parent['id']+'/retry'
+            h={'x-exodia-client':'exodia-dashboard'}
+            response=await client.post(url,headers=h,json={})
+            assert response.status_code==201,response.text
+            assert response.json()['id']==draft['id']
+            await asyncio.wait_for(server.active_command_jobs[draft['id']],3)
+            assert isolated.get(draft['id'])['state']=='answered'
+            assert mock_calls==['Previously failed local task']
+            duplicate=await client.post(url,headers=h,json={})
+            assert duplicate.status_code==201
+            assert duplicate.json()['id']==draft['id']
+            assert len(mock_calls)==1
+    asyncio.run(run())
+
+
+def test_naive_sqlite_timestamp_is_not_silently_assumed_utc(tmp_path):
+    isolated=Inbox(tmp_path/'naive.sqlite')
+    task=isolated.create('kiko','ollama','Untrusted legacy timestamp')
+    isolated.update(task['id'],'state','running')
+    with isolated.db() as c:
+        c.execute("UPDATE tasks SET updated_at=? WHERE id=?",
+                  ('2011-01-01T01:00:00',task['id']))
+    changed=isolated.cleanup_stale(now=datetime.now(timezone.utc))
+    assert changed==[]
+    assert isolated.get(task['id'])['state']=='running'

@@ -920,7 +920,12 @@ async def command_retry(task_id:str,body:TaskRetryBody,
         raise HTTPException(422,detail='Original configured browser transport is not available')
     try:next_task,created=inbox.retry(task_id,max_retries=3)
     except ValueError as exc:raise HTTPException(409,detail=str(exc)) from exc
-    if not created:return public_task(next_task)
+    # If a process crashed after the durable retry row was inserted but before
+    # the job was scheduled, an explicit repeat of the same POST resumes that
+    # still-draft attempt. Never resend a task that reached 'opening' or later.
+    if not created and (next_task['state']!='draft' or
+                        next_task['id'] in active_command_jobs):
+        return public_task(next_task)
     try:
         if provider=='ollama':
             next_task=inbox.update(next_task['id'],'state',
