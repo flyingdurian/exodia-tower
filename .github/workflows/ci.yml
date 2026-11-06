@@ -30,6 +30,9 @@ jobs:
       - run: node --test orchestrator/tests/liu_bei_review_contract.test.mjs
       - run: node --check orchestrator/frontend/liu_bei_variant_review.mjs
       - run: node --test orchestrator/tests/liu_bei_variant_review.test.mjs
+      - run: node --check orchestrator/frontend/liu_bei_33_review_contract.mjs
+      - run: node --check orchestrator/frontend/liu_bei_33_review_boot.mjs
+      - run: node --test orchestrator/tests/liu_bei_33_review.test.mjs
       - run: node --check orchestrator/frontend/albedo_chibi_controller.mjs
       - run: node --check orchestrator/frontend/albedo_chibi_renderer.mjs
       - run: node --check orchestrator/frontend/albedo_chibi_boot.mjs

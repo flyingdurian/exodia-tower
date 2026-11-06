@@ -32,6 +32,7 @@ from app.operations.inbox import Inbox
 from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
 from app.fleet.liu_bei_variant_preflight import liu_bei_variant_preflight
 from app.fleet.liu_bei_runtime import runtime_projection, STATES as LIU_BEI_REVIEW_STATES
+from app.fleet.liu_bei_33_review import phase10_projection, validate_library as validate_liu_bei_33
 from app.fleet.liu_bei_watcher import LiuBeiA0Watcher
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
@@ -900,6 +901,38 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     try:saved=model_instructions.save(body.provider, body.text)
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
+
+@app.get('/api/fleet/liu_bei/33-review')
+async def liu_bei_33_review_status(task_id: str | None = None,
+                                  preview_state: str | None = None,
+                                  x_exodia_client: str = Header(default='')):
+    """Task-bound, read-only 33-state vocabulary review; never serves state art."""
+    require_local_dashboard(x_exodia_client)
+    if preview_state is not None:
+        try:
+            _manifest, canonical = await asyncio.to_thread(validate_liu_bei_33, settings.root)
+        except Exception:
+            raise HTTPException(503, detail='Liu Bei canonical review unavailable')
+        if preview_state not in canonical:
+            raise HTTPException(422, detail='Unsupported canonical preview state')
+    task = None
+    if task_id is not None:
+        if len(task_id) > 128 or re.fullmatch(r'[0-9a-zA-Z-]+', task_id) is None:
+            raise HTTPException(422, detail='Invalid task identifier')
+        try:
+            task = inbox.get(task_id)
+        except KeyError:
+            raise HTTPException(404, detail='Task not found')
+        if task.get('agent_id') != 'liu_bei':
+            raise HTTPException(409, detail='Selected task belongs to another companion')
+    try:
+        return await asyncio.to_thread(
+            phase10_projection, settings.root, task=task, preview_state=preview_state)
+    except Exception:
+        events.publish('alert', 'Liu Bei 33-state review unavailable',
+                       'liu_bei_33_read_only_contract_error')
+        raise HTTPException(503, detail='Liu Bei 33-state review unavailable')
+
 
 @app.get('/api/fleet/liu_bei/pilot-runtime')
 async def liu_bei_pilot_runtime(task_id: str | None = None, preview_state: str | None = None,
