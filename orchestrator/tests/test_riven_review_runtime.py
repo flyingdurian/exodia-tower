@@ -137,7 +137,7 @@ def test_new_review_ui_must_not_use_poster_or_claim_native_source():
     assert 'id="rivenPilotPane"' in html
     assert 'data-riven-preview="pointing"' in html
     assert "NATIVE RIVEN ART PENDING" in html
-    assert "selected" not in html.split('id="rivenPilotPane"')[0][-70:].lower() or True
+    assert 'asset_url' not in html.split('id="rivenPilotPane"')[1].split('</section>')[0]
     assert "production_release_enabled" in js
     assert "asset_url!==null" in js
     assert "exodia:command-task" in js
