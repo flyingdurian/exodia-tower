@@ -86,3 +86,6 @@ jobs:
       - run: node --check orchestrator/frontend/fleet_readiness_contract.mjs
       - run: node --check orchestrator/frontend/fleet_readiness_boot.mjs
       - run: node --test orchestrator/tests/fleet_readiness_contract.test.mjs
+      - run: node --check orchestrator/frontend/operator_workflow_contract.mjs
+      - run: node --check orchestrator/frontend/operator_workflow_console.mjs
+      - run: node --test orchestrator/tests/operator_workflow_contract.test.mjs
