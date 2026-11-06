@@ -7,8 +7,21 @@
 <body>
 <div class="app-shell">
 <header class="masthead"><a href="/" class="logo" aria-label="Exodia Tower home"><span class="brand-mark">✦</span><span><b>EXODIA TOWER</b><small>AI COMPANION COMMAND CENTER</small></span></a>
-<nav class="top-nav" aria-label="Primary"><a href="/" aria-current="page">◈ Command</a><a href="/operations-legacy">◉ Operations</a><a href="/companions">✦ Companions</a><a href="/art-studio">✧ Art Studio</a><a href="/companion-art-qa">✦ Art QA</a><a href="/test-workbench">⊹ 33 State Review</a><a href="/puppet-lab">♙ Rig Lab</a></nav>
-<div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span><span id="buildBadge" class="build-badge" aria-label="Application build">EXODIA v0.3.0-dev · unknown</span><span class="build-meta" aria-label="Build channel and Git revision"><span id="buildChannel">development</span> · <code id="buildShortSha">unknown</code></span></div></header>
+<nav class="top-nav" aria-label="Primary"><a href="/" aria-current="page">◈ Command</a><a href="/operations-legacy">◉ Operations</a><a href="/companions">✦ Companions</a></nav>
+<div class="online"><span class="online-pip"></span><span>LOCAL ENGINE</span></div>
+<details id="developerDrawer" class="developer-drawer">
+ <summary id="developerToggle" aria-label="Open Developer and Debug tools">Developer / Debug</summary>
+ <div class="developer-panel" aria-label="Development diagnostics and internal tools">
+  <div class="developer-heading"><strong>Developer / Debug</strong><small>Internal QA, not provider-certification evidence</small></div>
+  <div class="developer-build"><span id="buildBadge" class="build-badge" aria-label="Application build">EXODIA v0.3.0-dev · unknown</span><span class="build-meta" aria-label="Build channel and Git revision"><span id="buildChannel">development</span> · <code id="buildShortSha">unknown</code></span></div>
+  <nav class="developer-links" aria-label="Developer tools"><a href="/art-studio">Art Studio</a><a href="/companion-art-qa">Art QA</a><a href="/test-workbench">33 State Review</a><a href="/puppet-lab">Rig Lab</a></nav>
+  <div class="developer-guardrail">CI results, art preflight, or local session status are not authenticated-provider proof or native production release.</div>
+  <details class="chibi-test-controls"><summary>Developer movement / zone test</summary>
+  <div class="chibi-test-buttons"><button type="button" data-chibi-go="home">Home</button><button type="button" data-chibi-go="terminal">Terminal</button><button type="button" data-chibi-go="waiting">Waiting</button><button type="button" data-chibi-go="result">Result</button><button type="button" data-chibi-go="recovery">Recovery</button></div>
+ </details>
+  <section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
+ </div>
+</details></header>
 <section class="command-status-strip" id="commandStatusStrip" aria-label="Current mission status" data-state="idle">
  <div class="command-status-item"><small>SELECTED COMPANION</small><strong id="summarySelectedCompanion">Albedo</strong></div>
  <div class="command-status-item command-status-task"><small>SELECTED TASK</small><strong id="summaryTask">No task selected</strong></div>
@@ -72,9 +85,7 @@
   </div>
  </div>
  <div class="chibi-footer"><span id="chibiZoneState" role="status">HOME · IDLE · S</span><span>Motion marker only · final 40-frame artwork pending</span></div>
- <details class="chibi-test-controls"><summary>Developer movement / zone test</summary>
-  <div class="chibi-test-buttons"><button type="button" data-chibi-go="home">Home</button><button type="button" data-chibi-go="terminal">Terminal</button><button type="button" data-chibi-go="waiting">Waiting</button><button type="button" data-chibi-go="result">Result</button><button type="button" data-chibi-go="recovery">Recovery</button></div>
- </details>
+ 
 </section>
 </section>
 <section class="output-col">
@@ -127,7 +138,7 @@
  <small id="historyCount" role="status">Loading mission history…</small>
 </div><div class="task-list" id="taskList"><div class="muted">No tasks yet.</div></div></section>
 <section class="card model-status"><div class="aside-heading"><span class="section-kicker">ENGINE STATUS</span><span class="live-dot"></span></div><div id="providerStatus" class="status-list">Checking providers…</div><div id="apiModelConfiguration" class="api-configuration" aria-label="Individual official API configuration status"></div><small id="engineChecked" role="status">Checking local browser sessions…</small><button type="button" id="openChatgptSession" class="outline-button">Open ChatGPT browser</button><button type="button" id="openDeepseekSession" class="outline-button">Open DeepSeek browser</button><button type="button" id="openWebSessions" class="outline-button">Open all browser sessions</button></section>
-<section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
+
 </aside>
 </main>
 <footer class="site-footer">EXODIA TOWER · COMPANION TASK STATION <span id="stageDisclaimer">Expression portraits change automatically · articulated cutouts disabled</span></footer>

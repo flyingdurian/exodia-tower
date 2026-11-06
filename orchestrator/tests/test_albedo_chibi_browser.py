@@ -45,9 +45,27 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     await desktop.wait_for_function(
                         "label => document.querySelector('#buildBadge')?.textContent === label",
                         arg=info['label'],timeout=15000)
-                    assert await desktop.locator('#buildBadge').inner_text()==info['label']
-                    assert await desktop.locator('#buildChannel').inner_text()==info['channel']
-                    assert await desktop.locator('#buildShortSha').inner_text()==info['short_sha']
+                    assert await desktop.locator('#buildBadge').text_content()==info['label']
+                    assert await desktop.locator('#buildChannel').text_content()==info['channel']
+                    assert await desktop.locator('#buildShortSha').text_content()==info['short_sha']
+                    assert not await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert not await desktop.locator('#diagnosticText').is_visible()
+                    assert await desktop.locator('#chibiOperations').is_visible()
+                    # The central operations stage is the desktop visual anchor.
+                    # The mobile DOM order remains stage, response, controls.
+                    positioning=await desktop.evaluate("""() => {
+                       const box=selector=>{
+                          const rect=document.querySelector(selector).getBoundingClientRect();
+                          return {left:rect.left,width:rect.width};
+                       };
+                       return {response:box('.output-col'),center:box('.hero-col'),controls:box('.control-col')};
+                    }""")
+                    assert positioning['response']['left'] < positioning['center']['left'], positioning
+                    assert positioning['center']['left'] < positioning['controls']['left'], positioning
+                    assert positioning['center']['width'] > positioning['response']['width'], positioning
+                    # A short answer may not stretch to the height of the entire operations floor.
+                    response_rect=await desktop.locator('.response').bounding_box()
+                    assert response_rect and response_rect['height'] < 460, response_rect
                     assert '40 ART FRAMES PENDING' in await desktop.locator('#chibiArtStatus').inner_text()
                     assert await desktop.locator('#chibiFrame').is_hidden()
                     assert await desktop.locator('#chibiMarker').is_visible()
@@ -55,6 +73,9 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     assert await desktop.locator('#summaryProvider').inner_text()
                     # Simulate *public* task status events: no provider automation or auth side effects.
                     await desktop.evaluate("() => window.dispatchEvent(new CustomEvent('exodia:command-task',{detail:{state:'idle',agentId:'kiko'}}))")
+                    await desktop.locator('#developerToggle').click()
+                    assert await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert await desktop.locator('#diagnosticText').is_visible()
                     await desktop.locator('.chibi-test-controls summary').click()
                     await desktop.locator('[data-chibi-go="terminal"]').click()
                     await desktop.wait_for_function("() => window.__exodiaChibiRuntime?.controller.zone==='terminal' && window.__exodiaChibiRuntime?.controller.mode==='walk'",timeout=5000)
@@ -86,6 +107,30 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     await desktop.locator('#companion').select_option('kiko')
                     await desktop.wait_for_function("() => !document.querySelector('#chibiActor').hidden",timeout=3000)
                     assert not errors,errors
+                    # Paired QA captures: explicit debug-open evidence and clean default frontshell.
+                    await desktop.screenshot(path=str(proof/'operations_albedo_chibi_DESKTOP_DEBUG.png'),full_page=True)
+                    await desktop.locator('#developerToggle').click()
+                    assert not await desktop.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert not await desktop.locator('#diagnosticText').is_visible()
+                    # Long answers scroll inside a bounded terminal without increasing page width.
+                    # This uses disposable DOM text only: no fake task dispatch or provider claim.
+                    long_layout = await desktop.evaluate("""() => {
+                      const screen=document.querySelector('.response-screen');
+                      const frame=document.querySelector('#answerFrame');
+                      const sample=document.createElement('p');
+                      sample.textContent=('Large response line. '.repeat(25)+'\\n').repeat(90);
+                      sample.style.whiteSpace='pre-wrap';
+                      frame.append(sample);
+                      const result={clipped:screen.scrollHeight>screen.clientHeight,
+                        height:screen.clientHeight,
+                        pageWidth:document.documentElement.scrollWidth,
+                        viewportWidth:window.innerWidth};
+                      sample.remove();
+                      return result;
+                    }""")
+                    assert long_layout['clipped'] and long_layout['height'] <= 650, long_layout
+                    assert long_layout['pageWidth']<=long_layout['viewportWidth']+10, long_layout
+                    await desktop.evaluate('() => window.scrollTo(0, 0)')
                     await desktop.screenshot(path=str(proof/'operations_albedo_chibi_DESKTOP.png'),full_page=True)
                     mobile=await browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True)
                     await mobile.goto('http://127.0.0.1:8915/',wait_until='domcontentloaded')
@@ -99,10 +144,19 @@ def test_command_chibi_movement_and_live_status_desktop_mobile():
                     assert await mobile.locator('#summaryAgent').count()==1
                     assert await mobile.locator('#summarySelectedCompanion').inner_text() == 'Albedo'
                     assert await mobile.locator('#chibiMarker').is_visible()
+                    assert not await mobile.locator('#developerDrawer').evaluate('(el) => el.open')
                     assert 'MOTION PROOF' in await mobile.locator('#chibiArtStatus').inner_text()
                     size=await mobile.evaluate("() => ({scroll:document.documentElement.scrollWidth,viewport:window.innerWidth})")
                     assert size['scroll']<=size['viewport']+10,size
                     await mobile.screenshot(path=str(proof/'operations_albedo_chibi_MOBILE.png'),full_page=True)
+                    # Mobile debug is opt-in too; test accessibility via keyboard and capture separately.
+                    await mobile.locator('#developerToggle').focus()
+                    await mobile.keyboard.press('Enter')
+                    assert await mobile.locator('#developerDrawer').evaluate('(el) => el.open')
+                    assert await mobile.locator('#diagnosticText').is_visible()
+                    await mobile.screenshot(path=str(proof/'operations_albedo_chibi_MOBILE_DEBUG.png'),full_page=True)
+                    await mobile.keyboard.press('Enter')
+                    assert not await mobile.locator('#developerDrawer').evaluate('(el) => el.open')
                 finally:await browser.close()
         finally:
             proc.terminate()
