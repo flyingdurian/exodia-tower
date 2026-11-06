@@ -1179,6 +1179,19 @@ async def fleet_review_readiness(selected_agent: str = 'kiko', task_id: str | No
         raise HTTPException(503, detail='Fleet state review unavailable')
 
 
+@app.get('/api/operations/workflow-integrity')
+async def operator_workflow_integrity(x_exodia_client: str = Header(default='')):
+    """Bounded local DAG/index/recovery audit; no restore or model action."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.workflow_integrity import audit_workflows
+    try:
+        return await asyncio.to_thread(audit_workflows, operator_workflows, inbox)
+    except Exception:
+        events.publish('alert', 'Workflow integrity audit unavailable',
+                       'phase17_read_only_integrity_check_failed')
+        raise HTTPException(503, detail='Local workflow integrity audit unavailable')
+
+
 @app.get('/api/operations/workflow-health')
 async def workflow_health_status(x_exodia_client: str = Header(default='')):
     """Local-only, bounded persisted workflow health; never a dispatch."""
