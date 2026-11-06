@@ -30,6 +30,7 @@ from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
 from app.fleet.riven_preflight import riven_a0_preflight
+from app.fleet.riven_watcher import RivenA0Watcher
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
 from app.automation.configured_web import ConfiguredWebRunner, WebAdapterError
@@ -45,6 +46,7 @@ director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
 inbox.fail_interrupted()
+riven_a0_watcher=RivenA0Watcher(settings.root,events)
 local_model=OllamaBackend()
 researcher=PublicWebResearcher()
 web_adapters={slot:ConfiguredWebRunner(settings.root,slot=slot)
@@ -113,9 +115,11 @@ async def _task_cleanup_watchdog():
 async def start_task_cleanup_watchdog():
     if getattr(app.state,'task_cleanup_watchdog',None) is None:
         app.state.task_cleanup_watchdog=asyncio.create_task(_task_cleanup_watchdog())
+    riven_a0_watcher.start()
 
 @app.on_event('shutdown')
 async def stop_browser_sessions():
+    await riven_a0_watcher.stop()
     watcher=getattr(app.state,'task_cleanup_watchdog',None)
     if watcher is not None:
         watcher.cancel()
@@ -894,6 +898,12 @@ async def write_model_instructions(body:ModelInstructionBody,x_exodia_client:str
     try:saved=model_instructions.save(body.provider, body.text)
     except ValueError as exc:raise HTTPException(422,detail=str(exc)) from exc
     return {'models':[{'provider':name,'text':saved[name]} for name in BROWSER_MODELS]}
+
+@app.get('/api/fleet/riven-a0/watch-status')
+async def riven_watch_status(x_exodia_client: str=Header(default='')):
+    """Safe, non-secret live watcher snapshot; requires local dashboard access."""
+    require_local_dashboard(x_exodia_client)
+    return riven_a0_watcher.snapshot()
 
 @app.get('/api/fleet/riven-a0/preflight')
 async def riven_a0_preflight_status(x_exodia_client: str=Header(default='')):
