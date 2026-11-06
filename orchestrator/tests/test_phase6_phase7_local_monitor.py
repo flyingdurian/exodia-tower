@@ -24,16 +24,26 @@ def fixtures(*, ready=False):
         "geometry_ready_for_owner_review": ready,
         "five_state_staging_authorized": False,
         "owner_identity_approval": "pending",
+        "production_release_enabled": False,
+        "native_production_certified": False,
     }
     preflight = {
+        "schema": "exodia.phase5.liu_bei-a0-preflight/v1",
         "character_id": "liu_bei", "intake_status": status,
         "original_sha256": sha, "technical_source_pass": True,
         "image_bound_annotation_consistency": ready,
-        "production_release_enabled": False,
+        "production_release_enabled": False, "native_production_certified": False,
+        "owner_identity_approval": "pending",
+        "independent_original_authorship_verified": False,
     }
     runtime = {
+        "schema": "exodia.phase7.liu_bei-five-state-review/v1",
         "character_id": "liu_bei", "production_release_enabled": False,
-        "states": [{"key": name, "asset_url": None}
+        "owner_identity_approval": "pending",
+        "independent_original_authorship_verified": False,
+        "display": {"mode": "review_only_fallback", "asset_url": None},
+        "states": [{"key": name, "asset_url": None,
+                    "art_status": "awaiting_exact_sha_owner_approval"}
                    for name in monitor.EXPECTED],
     }
     health = {
@@ -95,6 +105,42 @@ def test_any_review_state_image_or_policy_unlock_is_rejected():
     watcher["five_state_staging_authorized"] = False
     runtime["character_id"] = "router"
     with pytest.raises(ValueError):
+        monitor.correlate(watcher, preflight, runtime, health, catalog)
+
+
+def test_unapproved_runtime_display_cannot_bypass_per_state_asset_gate():
+    watcher, preflight, runtime, health, catalog = fixtures(ready=True)
+    runtime["display"]["asset_url"] = "/unapproved-portrait.png"
+    with pytest.raises(ValueError, match="artwork-free"):
+        monitor.correlate(watcher, preflight, runtime, health, catalog)
+    runtime["display"]["asset_url"] = None
+    runtime["display"]["mode"] = "production"
+    with pytest.raises(ValueError, match="artwork-free"):
+        monitor.correlate(watcher, preflight, runtime, health, catalog)
+
+
+def test_unsafe_native_release_and_authorship_claims_fail_closed():
+    watcher, preflight, runtime, health, catalog = fixtures(ready=True)
+    preflight["native_production_certified"] = True
+    with pytest.raises(ValueError, match="artwork lock"):
+        monitor.correlate(watcher, preflight, runtime, health, catalog)
+    preflight["native_production_certified"] = False
+    runtime["independent_original_authorship_verified"] = True
+    with pytest.raises(ValueError, match="artwork lock"):
+        monitor.correlate(watcher, preflight, runtime, health, catalog)
+    runtime["independent_original_authorship_verified"] = False
+    watcher["owner_identity_approval"] = "approved"
+    with pytest.raises(ValueError, match="artwork lock"):
+        monitor.correlate(watcher, preflight, runtime, health, catalog)
+
+
+def test_malformed_review_states_raise_redacted_contract_error():
+    watcher, preflight, runtime, health, catalog = fixtures(ready=True)
+    runtime["states"][0] = "NOT_A_STATE_WITH_PRIVATE_DATA"
+    with pytest.raises(ValueError, match="Five-state review contract changed"):
+        monitor.correlate(watcher, preflight, runtime, health, catalog)
+    runtime["states"] = []
+    with pytest.raises(ValueError, match="Five-state review contract changed"):
         monitor.correlate(watcher, preflight, runtime, health, catalog)
 
 
