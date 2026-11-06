@@ -82,10 +82,13 @@ companion?.addEventListener('change',()=>{
 });
 window.addEventListener('exodia:command-task',event=>{
   const next = publicTaskSignal(event.detail);
-  if (next.agentId!==task.agentId || next.taskId!==task.taskId) preview=null;
+  const changedTask = next.agentId!==task.agentId || next.taskId!==task.taskId;
+  const changedState = next.state!==task.state || next.updatedAt!==task.updatedAt;
+  if (changedTask) preview=null;
   task=next;
-  lastKey='';
-  void update();
+  // Don't repeatedly read large native preflight/registry files when the
+  // command center republishes an unchanged task during its refresh loop.
+  if (changedTask || changedState) void update();
 });
 window.addEventListener('focus',()=>{
   if (active()) {lastKey='';void update();}
