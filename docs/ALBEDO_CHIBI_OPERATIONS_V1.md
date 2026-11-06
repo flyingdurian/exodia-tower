@@ -3,7 +3,7 @@
 **Milestones:** A (sprite contract) and C scaffold (real command-center integration); frontshell status stream runs in parallel.  
 **Feature branch:** `feature/lead/albedo-chibi-runtime-status-v1`, based on merged integration commit `e2398b7ef74bc183ad9f747f836d11b921bc041e`.  
 **Artwork:** **40 slots intentionally pending. No 8-direction chibi frame is claimed to exist yet.**  
-**Scope:** Albedo only (`kiko`). Riven, Mira, Lyra, Pip, Aurelia, Nyx, Mochi, Orion and Nova art production is frozen by owner instruction.
+**Scope:** Albedo only (`kiko`). Liu Bei, Mira, Lyra, Pip, Aurelia, Nyx, Mochi, Orion and Nova art production is frozen by owner instruction.
 
 ## Identity / art contract
 
@@ -46,7 +46,7 @@ Chibi movement is suppressed when the currently selected task/companion is **not
 1. **A/C scaffold — in this PR:** manifest, controller, technical marker renderer, boot wiring, actual frontshell strip and UI/browser tests. No production sprite animation claim.
 2. **B — gated art production:** 40 individually authored, visually consistent frames and SHA-verified owner-approved asset manifest. Owner art review required for native sprite sources and movement appearance; no composite cutouts.
 3. **C/D completion:** swap the approved frame set, inspect true gait and transitions in all eight directions, measure foot drift, resolve occlusion/path collisions, and certify desktop/mobile fluidity before calling the chibi sprite done.
-4. **Platform Milestones 1–4:** provider E2E verification (Cursor-owned transports), frontshell usability, task-driven companion behaviors, and persistence/retry/cancellation hardening continue in separate reviewed feature PRs. Fleet art remains frozen.
+4. **Platform Milestones 1–4:** provider E2E verification (Cursor-owned transports), frontshell usability, task-dliu_bei companion behaviors, and persistence/retry/cancellation hardening continue in separate reviewed feature PRs. Fleet art remains frozen.
 
 ### Source / isolation safeguards
 
