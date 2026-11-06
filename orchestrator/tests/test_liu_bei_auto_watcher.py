@@ -11,7 +11,7 @@ import pytest
 from PIL import Image, ImageDraw
 
 from app.api import server
-from app.fleet.liu_bei_watcher import Liu BeiA0Watcher
+from app.fleet.liu_bei_watcher import LiuBeiA0Watcher
 from app.monitoring.logger import EventLog
 from tools.liu_bei_native_identity_gate import ROOT, PILOT_MANIFEST, LOCKED, sha256
 from tools.liu_bei_manual_dropin import POINTS, stamp_patches, template_for
@@ -54,7 +54,7 @@ async def until(predicate, timeout=6.0):
 def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox):
     async def run():
         event_log = EventLog()
-        watch = Liu BeiA0Watcher(sandbox, event_log, poll_seconds=0.02, stable_polls=2)
+        watch = LiuBeiA0Watcher(sandbox, event_log, poll_seconds=0.02, stable_polls=2)
         watch.start()
         try:
             await until(lambda: watch.snapshot()["watcher_state"] == "running")
@@ -106,7 +106,7 @@ def test_auto_detects_native_and_sidecar_changes_without_owner_approval(sandbox)
 
 def test_partial_copy_recovers_when_complete(sandbox):
     async def run():
-        watch = Liu BeiA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
+        watch = LiuBeiA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
         watch.start()
         try:
             candidate = watch.folder / "liu_bei_A0_native.png"
@@ -124,7 +124,7 @@ def test_partial_copy_recovers_when_complete(sandbox):
 def test_corrupt_policy_fails_closed_then_recovers_without_mutating_registry(sandbox):
     async def run():
         log = EventLog()
-        watch = Liu BeiA0Watcher(sandbox, log, poll_seconds=0.02, stable_polls=2)
+        watch = LiuBeiA0Watcher(sandbox, log, poll_seconds=0.02, stable_polls=2)
         policy = sandbox.parent / "assets/review/liu_bei_pilot/pilot_manifest.json"
         original = policy.read_bytes()
         watch.start()
@@ -147,7 +147,7 @@ def test_corrupt_policy_fails_closed_then_recovers_without_mutating_registry(san
 
 def test_watcher_status_endpoint_requires_local_header(sandbox, monkeypatch):
     async def run():
-        mock = Liu BeiA0Watcher(sandbox, poll_seconds=0.02)
+        mock = LiuBeiA0Watcher(sandbox, poll_seconds=0.02)
         monkeypatch.setattr(server, "liu_bei_a0_watcher", mock)
         async with httpx.AsyncClient(
             transport=httpx.ASGITransport(app=server.app),
@@ -181,7 +181,7 @@ def test_linked_intake_directory_does_not_scan_or_chmod_external_folder(sandbox,
         except (OSError, NotImplementedError):
             pytest.skip("Filesystem cannot create directory symbolic links")
         original_mode = external.stat().st_mode
-        watch = Liu BeiA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
+        watch = LiuBeiA0Watcher(sandbox, poll_seconds=0.02, stable_polls=2)
         watch.start()
         try:
             await until(lambda: watch.snapshot()["watcher_state"] == "error")

@@ -8,7 +8,7 @@ from time import monotonic
 from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
 from tools.liu_bei_manual_dropin import scan_dropin
 
-class Liu BeiA0Watcher:
+class LiuBeiA0Watcher:
     def __init__(self, root, events=None, poll_seconds=0.65, stable_polls=2):
         if poll_seconds < 0.02 or not 1 <= stable_polls <= 10:
             raise ValueError("Invalid watch cadence")

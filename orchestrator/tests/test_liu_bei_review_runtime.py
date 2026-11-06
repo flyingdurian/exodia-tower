@@ -136,7 +136,7 @@ def test_new_review_ui_must_not_use_poster_or_claim_native_source():
     js = (frontend/"liu_bei_pilot_boot.mjs").read_text(encoding="utf-8")
     assert 'id="liu_beiPilotPane"' in html
     assert 'data-liu_bei-preview="pointing"' in html
-    assert "NATIVE LIU_BEI ART PENDING" in html
+    assert "NATIVE LIU BEI ART PENDING" in html
     assert 'asset_url' not in html.split('id="liu_beiPilotPane"')[1].split('</section>')[0]
     assert "production_release_enabled" in js
     assert "asset_url!==null" in js

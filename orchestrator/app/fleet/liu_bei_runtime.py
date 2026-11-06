@@ -85,7 +85,7 @@ def runtime_projection(root: Path, *, task=None, manual_preview=None):
         },
         "states": [
             {"key": name, **STATES[name], "art_status": "awaiting_exact_sha_owner_approval",
-             "asset_url": None, "fallback": "NATIVE LIU_BEI ART PENDING"}
+             "asset_url": None, "fallback": "NATIVE LIU BEI ART PENDING"}
             for name in PILOT_STATES
         ],
         "display": {

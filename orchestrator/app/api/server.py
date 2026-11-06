@@ -31,7 +31,7 @@ from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
 from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
 from app.fleet.liu_bei_runtime import runtime_projection, STATES as LIU_BEI_REVIEW_STATES
-from app.fleet.liu_bei_watcher import Liu BeiA0Watcher
+from app.fleet.liu_bei_watcher import LiuBeiA0Watcher
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
 from app.automation.configured_web import ConfiguredWebRunner, WebAdapterError
@@ -47,7 +47,7 @@ director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
 inbox.fail_interrupted()
-liu_bei_a0_watcher=Liu BeiA0Watcher(settings.root,events)
+liu_bei_a0_watcher=LiuBeiA0Watcher(settings.root,events)
 local_model=OllamaBackend()
 researcher=PublicWebResearcher()
 web_adapters={slot:ConfiguredWebRunner(settings.root,slot=slot)
