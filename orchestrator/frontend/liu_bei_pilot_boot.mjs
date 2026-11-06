@@ -19,11 +19,11 @@ function refreshButtonState(){
   for(const item of buttons)
     item.setAttribute('aria-pressed', String(item.dataset.liu_beiPreview === (manual||'automatic')));
 }
-function isLiu Bei(){
+function isLiuBei(){
   return companion?.value === 'liu_bei';
 }
 function showForSelection(){
-  const enabled=isLiu Bei();
+  const enabled=isLiuBei();
   if(panel)panel.hidden=!enabled;
   if(floor)floor.hidden=enabled;
   if(!enabled){
@@ -48,7 +48,7 @@ async function update(){
     const response=await fetch('/api/fleet/liu_bei/pilot-runtime?'+key,{headers:HEADER});
     if(!response.ok)throw Error('Liu Bei local review preflight unavailable');
     const record=await response.json();
-    if(serial!==revision||!isLiu Bei())return;
+    if(serial!==revision||!isLiuBei())return;
     if(record.character_id!=='liu_bei'||record.production_release_enabled!==false||
        !STATES.has(record.selected_state)||record.display?.asset_url!==null||
        record.states?.length!==5||record.states.some(x=>x.asset_url!==null)){
@@ -62,7 +62,7 @@ async function update(){
       'A0 source preflight observed; exact-SHA owner approval still pending.':
       'Native A0 identity not yet technically accepted.');
   }catch(_){
-    if(serial!==revision||!isLiu Bei())return;
+    if(serial!==revision||!isLiuBei())return;
     stateLabel.textContent='REVIEW LOCKED';
     absence.textContent='NO VERIFIED LIU BEI STATE ART';
     statusLabel.textContent='The Liu Bei review validator is unavailable. No artwork will be displayed.';
@@ -96,7 +96,7 @@ window.addEventListener('exodia:command-task', event=>{
   chosen=next;
   if(taskChanged)manual=null;
   refreshButtonState();
-  if(taskChanged||isLiu Bei()){
+  if(taskChanged||isLiuBei()){
     const key=new URLSearchParams({
       ...(next.agentId==='liu_bei'&&next.taskId?{task_id:next.taskId}:{}),
       ...(manual?{preview_state:manual}:{})
