@@ -124,3 +124,40 @@ def test_restart_durability_corroborates_original_existing_task(stores,tmp_path)
     assert output["answered_event_recorded_count"] == 1
     with sqlite3.connect(store.path) as c:
         assert c.execute("PRAGMA quick_check(1)").fetchone()[0] == "ok"
+
+
+def test_guarded_evidence_http_endpoint_is_non_mutating_and_redacted(stores,monkeypatch):
+    import asyncio
+    import httpx
+    from app.api import server
+    async def run():
+        store,inbox=stores
+        monkeypatch.setattr(server,"operator_workflows",store)
+        monkeypatch.setattr(server,"inbox",inbox)
+        plan=store.create(title="Private plan",steps=[
+            {"key":"inspect","agent_id":"vault","label":"Inspect","depends_on":[]}
+        ])
+        task=inbox.create("vault","ollama","TOP_SECRET_PROMPT")
+        store.bind(plan["id"],step_key="inspect",task_id=task["id"],
+                   expected_revision=1,inbox=inbox)
+        inbox.update(task["id"],"state","answered")
+        async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=server.app),
+                base_url="http://testserver") as client:
+            url="/api/command/workflows/"+plan["id"]+"/evidence"
+            assert (await client.get(url)).status_code==403
+            response=await client.get(
+                url,headers={"X-Exodia-Client":"exodia-dashboard"})
+            assert response.status_code==200,response.text
+            body=response.json()
+            assert body["answered_event_recorded_count"]==1
+            assert body["read_only"] is True
+            assert body["external_dispatch_performed"] is False
+            assert "TOP_SECRET_PROMPT" not in response.text
+            assert (await client.post(url,headers={
+                "X-Exodia-Client":"exodia-dashboard"})).status_code==405
+            missing=await client.get(
+                "/api/command/workflows/missing/evidence",
+                headers={"X-Exodia-Client":"exodia-dashboard"})
+            assert missing.status_code==404
+    asyncio.run(run())
