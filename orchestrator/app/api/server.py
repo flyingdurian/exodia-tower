@@ -913,7 +913,7 @@ async def liu_bei_pilot_runtime(task_id: str | None = None, preview_state: str |
             raise HTTPException(422, detail='Invalid task identifier')
         try: task = inbox.get(task_id)
         except KeyError: raise HTTPException(404, detail='Task not found')
-        if task.get('agent_id') != 'router':
+        if task.get('agent_id') != 'liu_bei':
             raise HTTPException(409, detail='Selected task belongs to another companion')
     try:
         return await asyncio.to_thread(
