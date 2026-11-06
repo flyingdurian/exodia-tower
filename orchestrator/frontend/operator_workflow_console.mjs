@@ -200,6 +200,10 @@ function renderPlan(plan) {
     plan.status!=='operator_planning' ||
     plan.completed!==plan.stepCount
   );
+  byId('forkRecovery').disabled=!(
+    plan.status==='reviewed_local_only' ||
+    plan.steps.some(item=>item.status==='linked_task_failed')
+  );
 }
 
 async function selectPlan(id) {
@@ -258,6 +262,46 @@ byId('planForm').addEventListener('submit',async event=>{
   } catch (_) {
     showNotice('Plan not saved. Check labels, companion IDs and stage dependencies.',true);
   } finally {btn.disabled=false;}
+});
+byId('forkRecovery').addEventListener('click',async()=>{
+  if(!selected ||
+    !(selected.status==='reviewed_local_only' ||
+      selected.steps.some(step=>step.status==='linked_task_failed')))return;
+  if(!window.confirm('Create a NEW unlinked local recovery plan? All existing tasks, approvals and results remain unchanged. No providers are contacted.'))
+    return;
+  const source=selected.id;
+  const revision=selected.revision;
+  const control=byId('forkRecovery');
+  control.disabled=true;
+  try {
+    const payload=await request('/api/command/workflows/'+encodeURIComponent(source)+'/fork',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({expected_revision:revision,confirmation:'CREATE LOCAL RECOVERY PLAN'})
+    });
+    if(!payload || payload.schema!=='exodia.phase16.local-workflow-recovery/v1' ||
+       !payload.lineage || payload.lineage.source_workflow_id!==source ||
+       payload.lineage.source_revision!==revision ||
+       payload.lineage.source_unmodified!==true ||
+       payload.lineage.copied_task_id_count!==0 ||
+       payload.lineage.remote_dispatch_performed!==false ||
+       payload.lineage.production_release_enabled!==false ||
+       payload.lineage.social_publishing_performed!==false ||
+       payload.lineage.artwork_registration_performed!==false)
+      throw new Error('Recovery safety verification failed');
+    const fork=safeWorkflow(payload.workflow);
+    if(fork.status!=='operator_planning'||fork.completed!==0||
+       fork.steps.some(step=>step.linkedTaskId!==null) ||
+       payload.lineage.recovery_workflow_id!==fork.id)
+      throw new Error('Recovery inherited forbidden task links');
+    showNotice('New recovery plan saved. Existing tasks and approvals preserved.');
+    window.dispatchEvent(new Event('exodia:workflow-change'));
+    await selectPlan(fork.id);
+  }catch(_){
+    showNotice('Recovery fork rejected; check failed/reviewed status and current revision.',true);
+    await selectPlan(source);
+  }finally{
+    control.disabled=false;
+  }
 });
 byId('confirmReview').addEventListener('click',async()=>{
   if(!selected || selected.completed!==selected.stepCount ||
