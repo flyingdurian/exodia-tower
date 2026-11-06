@@ -33,6 +33,7 @@ from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
 from app.fleet.liu_bei_variant_preflight import liu_bei_variant_preflight
 from app.fleet.liu_bei_runtime import runtime_projection, STATES as LIU_BEI_REVIEW_STATES
 from app.fleet.liu_bei_watcher import LiuBeiA0Watcher
+from app.fleet.fleet_readiness import fleet_projection, EXPECTED_IDS as FLEET_REVIEW_AGENT_IDS
 from app.automation.local_llm import OllamaBackend, LocalModelError
 from app.automation.public_web import PublicWebResearcher, ResearchError, evidence_prompt
 from app.automation.configured_web import ConfiguredWebRunner, WebAdapterError
@@ -955,6 +956,32 @@ async def liu_bei_a0_preflight_status(x_exodia_client: str=Header(default='')):
         # messages must never appear in response telemetry or remote logs.
         events.publish('alert','Liu Bei A0 preflight check unavailable','liu_bei_a0_preflight_error')
         raise HTTPException(503,detail='Liu Bei A0 preflight unavailable; review the local intake gate')
+
+@app.get('/api/fleet/readiness')
+async def fleet_review_readiness(selected_agent: str = 'kiko', task_id: str | None = None,
+                                 x_exodia_client: str = Header(default='')):
+    """Read-only ten-companion engineering status, never provider/art mutation."""
+    require_local_dashboard(x_exodia_client)
+    if selected_agent not in FLEET_REVIEW_AGENT_IDS:
+        raise HTTPException(422, detail='Unknown EXODIA companion')
+    task = None
+    if task_id is not None:
+        if len(task_id) > 128 or re.fullmatch(r'[A-Za-z0-9-]+', task_id) is None:
+            raise HTTPException(422, detail='Invalid task identifier')
+        try:
+            task = inbox.get(task_id)
+        except KeyError:
+            raise HTTPException(404, detail='Task not found')
+        if task.get('agent_id') != selected_agent:
+            raise HTTPException(409, detail='Selected task belongs to another companion')
+    try:
+        return await asyncio.to_thread(
+            fleet_projection, settings.root, selected_agent=selected_agent, task=task)
+    except Exception:
+        events.publish('alert', 'Fleet state readiness unavailable',
+                       'fleet_review_immutable_contract_error')
+        raise HTTPException(503, detail='Fleet state review unavailable')
+
 
 @app.get('/api/command/history-health')
 async def command_history_health(x_exodia_client: str=Header(default='')):
