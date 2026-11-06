@@ -54,7 +54,7 @@ def desired_state(task=None, *, manual_preview=None):
 
 
 def runtime_projection(root: Path, *, task=None, manual_preview=None):
-    """Strict source-lock preflight + task-dliu_bei fallback, never image serving."""
+    """Strict source-lock preflight + task-driven fallback, never image serving."""
     # The preflight public projection deliberately returns locked release
     # flags; verify the underlying immutable pilot manifest independently.
     root = Path(root).resolve()
