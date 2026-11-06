@@ -29,6 +29,9 @@ from app.companions.rigs import load_all
 from app.core.classifier import classify
 from app.social.workflow import EditorialStore, WorkflowError
 from app.operations.inbox import Inbox
+from app.operations.workflow_plans import (
+    OperatorWorkflowStore, WorkflowInputError, WorkflowConflictError, project_plan
+)
 from app.fleet.liu_bei_preflight import liu_bei_a0_preflight
 from app.fleet.liu_bei_variant_preflight import liu_bei_variant_preflight
 from app.fleet.liu_bei_runtime import runtime_projection, STATES as LIU_BEI_REVIEW_STATES
@@ -47,6 +50,7 @@ model_instructions=InstructionStore(settings.root/'session_data'/'model_instruct
 director = CompanionDirector(settings.root, events)
 social = EditorialStore(settings.root / "app_data" / "editorial.sqlite")
 inbox=Inbox(settings.root/'app_data'/'companion_tasks.sqlite')
+operator_workflows=OperatorWorkflowStore(settings.root/'app_data'/'operator_workflows.sqlite')
 inbox.fail_interrupted()
 liu_bei_a0_watcher=LiuBeiA0Watcher(settings.root,events)
 local_model=OllamaBackend()
@@ -556,6 +560,107 @@ class SocialAdvance(BaseModel):
 
 class SocialApproval(BaseModel):
     confirmation: str
+
+class OperatorWorkflowStep(BaseModel):
+    key: str = Field(min_length=1, max_length=32)
+    agent_id: str = Field(min_length=1, max_length=32)
+    label: str = Field(min_length=1, max_length=80)
+    depends_on: list[str] = Field(default_factory=list, max_length=11)
+    class Config:
+        extra = 'forbid'
+
+class OperatorWorkflowCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=120)
+    steps: list[OperatorWorkflowStep] = Field(min_length=1, max_length=12)
+    class Config:
+        extra = 'forbid'
+
+class OperatorWorkflowBind(BaseModel):
+    step_key: str = Field(min_length=1, max_length=32)
+    task_id: str = Field(min_length=1, max_length=128)
+    expected_revision: int = Field(ge=1)
+    class Config:
+        extra = 'forbid'
+
+class OperatorWorkflowReview(BaseModel):
+    expected_revision: int = Field(ge=1)
+    confirmation: str = Field(min_length=1, max_length=64)
+    class Config:
+        extra = 'forbid'
+
+@app.get('/api/command/workflows')
+async def list_operator_workflows(limit: int = 20,
+                                  x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    if not 1 <= limit <= 50:
+        raise HTTPException(422, detail='Invalid workflow list limit')
+    try:
+        return {'schema':'exodia.phase13.operator-workflow-list/v1',
+                'workflows':[project_plan(p, inbox)
+                             for p in operator_workflows.list(limit)]}
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.post('/api/command/workflows', status_code=201)
+async def create_operator_workflow(body: OperatorWorkflowCreate,
+                                   x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        raw = [step.model_dump() for step in body.steps]
+        return project_plan(operator_workflows.create(title=body.title, steps=raw), inbox)
+    except WorkflowInputError:
+        raise HTTPException(422, detail='Workflow plan structure rejected')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.get('/api/command/workflows/{workflow_id}')
+async def get_operator_workflow(workflow_id: str,
+                                x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        return project_plan(operator_workflows.get(workflow_id), inbox)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.post('/api/command/workflows/{workflow_id}/bind')
+async def bind_operator_workflow(workflow_id: str, body: OperatorWorkflowBind,
+                                 x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        plan = operator_workflows.bind(
+            workflow_id, step_key=body.step_key,
+            task_id=body.task_id, expected_revision=body.expected_revision,
+            inbox=inbox)
+        return project_plan(plan, inbox)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    except WorkflowConflictError:
+        raise HTTPException(409, detail='Workflow dependency, revision or task ownership conflict')
+    except WorkflowInputError:
+        raise HTTPException(422, detail='Invalid workflow task link')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
+@app.post('/api/command/workflows/{workflow_id}/review')
+async def review_operator_workflow(workflow_id: str, body: OperatorWorkflowReview,
+                                   x_exodia_client: str = Header(default='')):
+    require_local_dashboard(x_exodia_client)
+    try:
+        plan = operator_workflows.confirm_review(
+            workflow_id, expected_revision=body.expected_revision,
+            confirmation=body.confirmation, inbox=inbox)
+        return project_plan(plan, inbox)
+    except KeyError:
+        raise HTTPException(404, detail='Workflow not found')
+    except WorkflowConflictError:
+        raise HTTPException(409, detail='Workflow incomplete or revision changed')
+    except WorkflowInputError:
+        raise HTTPException(422, detail='Explicit local review confirmation required')
+    except Exception:
+        raise HTTPException(503, detail='Local workflow storage unavailable')
+
 
 @app.get('/api/social/status')
 async def social_status():
