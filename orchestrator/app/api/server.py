@@ -1145,6 +1145,19 @@ async def fleet_review_readiness(selected_agent: str = 'kiko', task_id: str | No
         raise HTTPException(503, detail='Fleet state review unavailable')
 
 
+@app.get('/api/operations/workflow-health')
+async def workflow_health_status(x_exodia_client: str = Header(default='')):
+    """Local-only, bounded persisted workflow health; never a dispatch."""
+    require_local_dashboard(x_exodia_client)
+    from app.operations.workflow_health import workflow_health
+    try:
+        return await asyncio.to_thread(workflow_health, operator_workflows, inbox)
+    except Exception:
+        events.publish('alert', 'Workflow health diagnostics unavailable',
+                       'phase15_local_workflow_health_unavailable')
+        raise HTTPException(503, detail='Local workflow health unavailable')
+
+
 @app.get('/api/operations/production-preflight')
 async def production_preflight_status(x_exodia_client: str = Header(default='')):
     """Local-only, read-only integrity health: never a production release."""
