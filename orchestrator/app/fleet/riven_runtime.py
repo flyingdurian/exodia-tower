@@ -7,6 +7,7 @@ EXODIA command center when Riven is selected.
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from app.fleet.riven_preflight import RIVEN_ID, PILOT_STATES, riven_a0_preflight
@@ -54,6 +55,13 @@ def desired_state(task=None, *, manual_preview=None):
 
 def runtime_projection(root: Path, *, task=None, manual_preview=None):
     """Strict source-lock preflight + task-driven fallback, never image serving."""
+    # The preflight public projection deliberately returns locked release
+    # flags; verify the underlying immutable pilot manifest independently.
+    root = Path(root).resolve()
+    manifest = json.loads((root.parent / "assets/review/riven_pilot/pilot_manifest.json").read_text("utf-8"))
+    if (manifest.get("production_release_enabled") is not False or
+        manifest.get("native_production_certified") is not False):
+        raise ValueError("Riven production release requires separate owner authorization")
     preflight = riven_a0_preflight(root)
     names = tuple(preflight["pilot_states"][i]["state"] for i in range(len(PILOT_STATES)))
     if names != PILOT_STATES:
