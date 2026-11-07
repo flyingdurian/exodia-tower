@@ -144,11 +144,25 @@ def test_frontshell_phase2_telemetry_terminal_layout_and_persistence():
                                 await page.locator("#fsTerminalLog").inner_text())
 
                             # Reorder, minimize, expand and refresh (browser local).
-                            await page.locator(
-                                '.hero-col [data-layout-action="left"]').click()
+                            if name=="desktop":
+                                await page.locator(
+                                    '.hero-col [data-layout-action="left"]').click()
+                                property_name="order"
+                                expected=["hero","output","control"]
+                            else:
+                                # Compact default preserves Stage → Response → Controls
+                                # rather than unexpectedly putting response first.
+                                initial=await page.evaluate(
+                                    "() => window.__exodiaPhase2Layout.layout.compactOrder")
+                                assert initial==["hero","output","control"],initial
+                                await page.locator(
+                                    '.hero-col [data-layout-action="right"]').click()
+                                property_name="compactOrder"
+                                expected=["output","hero","control"]
                             order=await page.evaluate(
-                                "() => window.__exodiaPhase2Layout.layout.order")
-                            assert order==["hero","output","control"],order
+                                "property_name => window.__exodiaPhase2Layout.layout[property_name]",
+                                property_name)
+                            assert order==expected,order
                             await page.locator(
                                 '.control-col [data-layout-action="minimize"]').click()
                             assert await page.locator("#dispatch").is_hidden()
@@ -167,12 +181,16 @@ def test_frontshell_phase2_telemetry_terminal_layout_and_persistence():
                                 "document.querySelector('#fsTelemetry')?.dataset.ready==='1'",
                                 timeout=18000)
                             assert await page.evaluate(
-                                "() => window.__exodiaPhase2Layout.layout.order"
-                            )==["hero","output","control"]
+                                "property_name => window.__exodiaPhase2Layout.layout[property_name]",
+                                property_name
+                            )==expected
                             await page.locator("#fsLayoutReset").click()
                             assert await page.evaluate(
                                 "() => window.__exodiaPhase2Layout.layout.order"
                             )==["output","hero","control"]
+                            assert await page.evaluate(
+                                "() => window.__exodiaPhase2Layout.layout.compactOrder"
+                            )==["hero","output","control"]
                             geom=await page.evaluate("""() => ({
                               content:document.documentElement.clientWidth,
                               scroll:document.documentElement.scrollWidth
