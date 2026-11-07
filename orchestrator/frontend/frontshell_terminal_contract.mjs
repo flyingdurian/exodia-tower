@@ -62,7 +62,8 @@ export function runOperatorCommand(raw,{telemetry=null,layout=null}={}){
       'Task prompts, answers and private instructions are not exposed here.'];
   }else if(action==='layout'){
     const view=layout?.layout;
-    lines=['Panel order: '+(Array.isArray(view?.order)?view.order.join(' → '):'unavailable'),
+    lines=['Desktop order: '+(Array.isArray(view?.order)?view.order.join(' → '):'unavailable'),
+      'Compact order: '+(Array.isArray(view?.compactOrder)?view.compactOrder.join(' → '):'unavailable'),
       'Expanded: '+(view?.expanded||'none'),
       'Preferences: browser-local only'];
   }else if(action==='layout reset'){
