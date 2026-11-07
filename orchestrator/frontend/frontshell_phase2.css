@@ -1,0 +1,167 @@
+/* EXODIA Frontshell Phase 2 · telemetry, operator console and modular panels.
+   Intentionally presentation-only: no backend/provider contract mutation. */
+.fs-telemetry{margin:16px clamp(17px,2.5vw,38px) 0;padding:17px 18px 12px;
+  background:linear-gradient(160deg,#111d33,#0a1729);
+  border:1px solid #3a5274;border-radius:16px;
+  box-shadow:0 15px 35px #02071455,inset 0 1px #b6dbff17;}
+.fs-telemetry-heading{display:flex;align-items:center;justify-content:space-between;
+  gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.fs-telemetry-heading .section-kicker{font-size:10px;letter-spacing:.15em;color:#8cbbea;font-weight:800}
+.fs-telemetry-heading h2{font:760 clamp(17px,1.55vw,22px)/1.25 Inter,system-ui,sans-serif;
+  letter-spacing:-.035em;margin:5px 0 0;color:#eaf4ff}
+.fs-telemetry-heading h2 span{font-size:12px;font-weight:550;color:#a5b7d0;letter-spacing:0}
+.fs-telemetry-connection{display:flex;align-items:center;gap:9px}
+#fsTelemetryLink{display:inline-flex;gap:7px;align-items:center;font-size:9px;
+  font-weight:850;letter-spacing:.11em;padding:8px 10px;border:1px solid #54637f;
+  background:#1b273e;border-radius:10px;color:#bdcee6}
+#fsTelemetryLink:before{content:"";width:7px;height:7px;background:#9cb0d0;
+  border-radius:50%}
+#fsTelemetryLink[data-link=connected]{color:#b4f3dc;border-color:#427e72}
+#fsTelemetryLink[data-link=connected]:before{background:#72ecc1;box-shadow:0 0 8px #6becc6}
+#fsTelemetryLink[data-link=disconnected]{color:#ffc3c7;border-color:#95535e}
+#fsTelemetryLink[data-link=disconnected]:before{background:#e69da6}
+.fs-telemetry-refresh,.fs-layout-reset{font:750 10px/1 Inter,system-ui,sans-serif;
+  border:1px solid #56739b;border-radius:9px;background:#192d4b;color:#d6eaff;
+  padding:10px 12px;cursor:pointer;min-height:35px}
+.fs-telemetry-refresh:hover,.fs-layout-reset:hover{background:#28456c;border-color:#9ec7f5}
+.fs-layout-saved{font:750 9px/1.4 Inter,system-ui,sans-serif;color:#a9bfd6;
+  letter-spacing:.04em;max-width:155px}
+.fs-telemetry-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+.fs-provider-card{min-width:0;background:linear-gradient(165deg,#172941,#0d1b2d 85%);
+  padding:14px 14px 12px;border:1px solid #3b5678;border-radius:12px;
+  box-shadow:inset 0 1px #e1f3ff0d;display:grid;gap:9px}
+.fs-provider-top{display:flex;align-items:center;justify-content:space-between;
+  gap:6px;min-width:0}
+.fs-provider-label{display:flex;gap:7px;align-items:center;min-width:0}
+.fs-provider-label strong{font:800 12px/1.2 Inter,system-ui,sans-serif;color:#f0f5ff}
+.fs-provider-emblem{display:grid;place-items:center;width:24px;height:24px;
+  background:#253c63;color:#b1d9ff;border:1px solid #6583b2;
+  border-radius:7px;font-size:16px;flex:none}
+.fs-socket-badge{font:800 8px/1.15 Inter,system-ui,sans-serif;color:#b8cbe0;
+  border:1px solid #455e81;border-radius:7px;background:#172a46;padding:6px 7px;
+  letter-spacing:.02em;text-align:center;max-width:95px}
+.fs-socket-badge[data-link=connected]{color:#c6f6dd;border-color:#467868;background:#183b39}
+.fs-socket-badge[data-link=disconnected]{color:#ecb5c2;border-color:#875568}
+.fs-provider-session{font:550 10px/1.35 Inter,system-ui,sans-serif;
+  min-height:27px;color:#a8c5df;overflow-wrap:anywhere}
+.fs-provider-session[data-health=attention]{color:#ffccbc}
+.fs-provider-session[data-health=unavailable]{color:#f7b8b7}
+.fs-provider-metrics{display:flex;align-items:baseline;gap:8px}
+.fs-provider-metrics strong{font:800 26px/1 Inter,system-ui,sans-serif;
+  letter-spacing:-.04em;color:#c5f7ed;font-variant-numeric:tabular-nums}
+.fs-provider-metrics span{font:700 9px/1.4 Inter,system-ui,sans-serif;color:#99b7d6}
+.fs-chart{border-top:1px solid #304d6b;padding-top:9px;min-width:0;overflow:hidden}
+.fs-chart svg{width:100%;height:47px;display:block;overflow:visible}
+.fs-chart-baseline{stroke:#375576;stroke-width:1;fill:none;stroke-dasharray:3 4}
+.fs-chart-trace{stroke:#79e5db;stroke-width:2.35;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.fs-chart-key{display:block;font:700 8px/1.3 Inter,system-ui,sans-serif;
+  letter-spacing:.08em;color:#87a5c5;margin-top:6px}
+.fs-telemetry-note{display:flex;align-items:flex-start;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;font:500 9px/1.5 Inter,system-ui,sans-serif;
+  color:#8ea8c4;margin:12px 2px 0}
+.fs-telemetry-note span:last-child{max-width:800px}
+.fs-operator-terminal{margin:12px clamp(17px,2.5vw,38px) 0;
+  background:linear-gradient(155deg,#0a1628,#0d1d2e);
+  border:1px solid #3f5c7b;border-radius:12px;color:#d9edff;overflow:hidden}
+.fs-operator-terminal>summary{list-style:none;display:flex;justify-content:space-between;
+  gap:10px;align-items:center;padding:13px 16px;cursor:pointer;
+  background:#12253d;color:#d9f4ff;font:800 11px Inter,system-ui,sans-serif;
+  letter-spacing:.13em}
+.fs-operator-terminal>summary::-webkit-details-marker{display:none}
+.fs-operator-terminal>summary span{font-size:9px;color:#8fabca;letter-spacing:.06em}
+.fs-operator-terminal[open]>summary{border-bottom:1px solid #476b88;background:#173450}
+.fs-terminal-workspace{padding:15px 18px 17px;display:grid;gap:12px}
+.fs-terminal-top{display:flex;justify-content:space-between;gap:10px;
+  font:780 10px/1.4 ui-monospace,Consolas,monospace;color:#9fdff7}
+.fs-terminal-top span{color:#9fd2b8;text-align:right}
+.fs-terminal-log{height:182px;overflow:auto;overscroll-behavior:contain;
+  border:1px solid #3c5d7b;border-radius:10px;
+  background:radial-gradient(ellipse at 80% 20%,#16325170,transparent 65%),#061324;
+  padding:11px 13px;font:12px/1.6 ui-monospace,Consolas,monospace;color:#c9e1f1;
+  overflow-wrap:anywhere;scrollbar-color:#3d6280 #0b1d31}
+.fs-terminal-entry{margin:0 0 9px;border-bottom:1px solid #3c587a48;padding-bottom:8px}
+.fs-terminal-line{white-space:pre-wrap}
+.fs-terminal-echo{font-weight:800;color:#d0faff;margin-bottom:3px}
+.fs-terminal-error .fs-terminal-line{color:#ffc0cb}
+.fs-terminal-form{display:grid;gap:7px}
+.fs-terminal-form>label{font:650 10px Inter,system-ui,sans-serif;color:#a4c4df}
+.fs-terminal-line-input{display:flex;align-items:center;gap:9px;
+  border:1px solid #527398;border-radius:9px;background:#07192b;padding:5px 7px 5px 12px}
+.fs-terminal-line-input>span{color:#92f0d8;font-size:16px}
+.fs-terminal-line-input input{background:transparent!important;border:0!important;
+  flex:1;min-width:0;outline:0!important;color:#f0f7ff;font:13px/1.45 ui-monospace,Consolas,monospace;
+  padding:7px 0!important}
+.fs-terminal-line-input button{border:1px solid #5e9db1;border-radius:7px;
+  color:#e5fcff;background:#20556b;padding:8px 16px;font-weight:800;cursor:pointer}
+.fs-terminal-syntax{font:11px/1.3 ui-monospace,Consolas,monospace;
+  display:block;min-height:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.fs-token-keyword{color:#76f1d5}.fs-token-argument{color:#b1c7ff}
+.fs-token-unknown{color:#ffc5ad}.fs-token-invalid{color:#ff9eaf}
+.fs-token-space{color:inherit}
+.fs-terminal-quick{display:flex;gap:8px;flex-wrap:wrap}
+.fs-terminal-quick button{border:1px solid #456b88;background:#15344d;
+  color:#d8efff;border-radius:7px;padding:8px 12px;
+  font:800 10px Inter,system-ui,sans-serif;cursor:pointer}
+.fs-terminal-quick button:hover{background:#2e526a}
+.command-grid .fs-panel-toolbar{order:-3!important;display:flex!important;
+  align-items:center;justify-content:space-between;gap:8px;
+  background:#14233c;border:1px solid #395679;border-radius:10px;
+  padding:8px 10px;min-height:39px;flex:0 0 auto;grid-column:1/-1}
+.fs-panel-title{font:800 10px/1.4 Inter,system-ui,sans-serif;
+  letter-spacing:.06em;text-transform:uppercase;color:#afcfee}
+.fs-panel-actions{display:flex;gap:5px;align-items:center}
+.fs-layout-button{border:1px solid #466789;background:#1c3553;color:#d8eeff;
+  display:grid;place-items:center;width:27px;height:25px;padding:0;
+  border-radius:6px;font-size:13px;cursor:pointer}
+.fs-layout-button:hover:not(:disabled){border-color:#8ccfe1;background:#2e506f}
+.fs-layout-button[aria-pressed=true]{background:#3e6482;color:#fff}
+.fs-layout-button:disabled{opacity:.35;cursor:not-allowed}
+.command-grid [data-fs-minimized=true] > :not(.fs-panel-toolbar){display:none!important}
+.command-grid [data-fs-minimized=true]{min-height:0!important;gap:0!important}
+.command-grid [data-fs-expanded=true]{min-width:0}
+.app-shell[data-fs-expanded=hero] .command-grid > :not(.hero-col),
+.app-shell[data-fs-expanded=output] .command-grid > :not(.output-col),
+.app-shell[data-fs-expanded=control] .command-grid > :not(.control-col){
+  display:none!important}
+.app-shell[data-frontshell-focus=true] .command-grid .hero-col{grid-column:1!important;grid-row:1!important}
+.app-shell[data-frontshell-focus=true] .command-grid .output-col,
+.app-shell[data-frontshell-focus=true] .command-grid .control-col{display:none!important}
+.fs-telemetry :is(button,[role=img]):focus-visible,
+.fs-operator-terminal :is(button,input,summary):focus-visible,
+.fs-layout-button:focus-visible,.fs-layout-reset:focus-visible{
+  outline:2px solid #9bdaff;outline-offset:2px}
+@media(max-width:1210px){
+  .fs-telemetry-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .fs-telemetry,.fs-operator-terminal{margin-inline:12px}
+  .fs-telemetry{padding:13px}
+  .fs-telemetry-heading h2{font-size:18px}
+  .fs-operator-terminal>summary{font-size:10px;letter-spacing:.07em}
+  .fs-operator-terminal>summary span{font-size:8px}
+  .fs-terminal-workspace{padding:12px}
+  .fs-telemetry-note{font-size:9px}
+}
+@media(max-width:490px){
+  .fs-telemetry-grid{grid-template-columns:1fr}
+  .fs-provider-card{gap:6px}
+  .fs-telemetry-heading{align-items:flex-start}
+  .fs-provider-session{min-height:0}
+  .fs-chart svg{height:34px}
+  .fs-operator-terminal>summary span{display:none}
+  .fs-panel-title{font-size:9px}
+  .command-grid .fs-panel-toolbar{padding:8px;gap:5px}
+  .fs-layout-button{width:25px}
+  .fs-layout-saved{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .fs-provider-card,.fs-chart *,.fs-layout-button{transition:none!important;animation:none!important}
+}
+
+/* Every workspace is its own paint boundary. After focus/expand transitions
+   an overflowing response card must never intercept a Chibi floor station. */
+.command-grid .output-col{position:relative;isolation:isolate;z-index:1;overflow:clip}
+.command-grid .hero-col{position:relative;isolation:isolate;z-index:3}
+.command-grid .control-col{position:relative;isolation:isolate;z-index:1}
+.command-grid .hero-col .chibi-floor{isolation:isolate}
