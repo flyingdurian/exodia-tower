@@ -1,6 +1,7 @@
 /** Four provider observation cards from existing read-only API snapshots.
  * A SINGLE local event WebSocket triggers refresh; provider-site WS is not claimed.
  */
+import {sanitizeTasks} from './frontshell_diagnostics_contract.mjs';
 import {PROVIDERS,ActivityHistory,projectProviders,
         sparklinePath,summariseActivity} from './frontshell_telemetry_contract.mjs';
 const NAMES=Object.freeze({chatgpt:'ChatGPT',gemini:'Gemini',deepseek:'DeepSeek',ollama:'Ollama'});
@@ -14,6 +15,10 @@ function elt(tag,cls,text){
 function cardFor(id){
   const card=elt('article','fs-provider-card');
   card.dataset.provider=id;
+  card.tabIndex=0;
+  card.setAttribute('role','button');
+  card.setAttribute('aria-label',NAMES[id]+' task and local session details');
+  card.setAttribute('aria-controls','fsProviderDrilldown');
   const top=elt('div','fs-provider-top');
   const label=elt('div','fs-provider-label');
   const symbol=elt('span','fs-provider-emblem',id==='ollama'?'◎':'✧');
@@ -63,6 +68,7 @@ export function startFrontshellTelemetry({
   function paint(){
     const compact=summariseActivity(snapshot,link);
     root.dataset.link=link;
+    try{win.dispatchEvent(new CustomEvent('exodia:frontshell-link',{detail:{link}}));}catch(_){}
     if(health){
       health.textContent=compact.transportLabel;
       health.dataset.link=link;
@@ -101,6 +107,12 @@ export function startFrontshellTelemetry({
         snapshot=next;
         history.append(snapshot);
         root.dataset.ready='1';
+        try{
+          // Only allowlisted task keys/states/agents; never publish prompt/results.
+          win.dispatchEvent(new CustomEvent('exodia:frontshell-observation',{
+            detail:{tasks:sanitizeTasks(tasks),observedAt:Date.now(),link}
+          }));
+        }catch(_){/* Local diagnostics must not break provider telemetry. */}
         if(updated)updated.textContent='Snapshot: '+new Date().toLocaleTimeString()+
           ' · Local service observations, not vendor authentication';
         paint();
