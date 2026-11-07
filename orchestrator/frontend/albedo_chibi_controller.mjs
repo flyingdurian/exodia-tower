@@ -112,6 +112,12 @@ export class AlbedoChibiController {
     this.enabled=true;this.arrived=true;this.totalDistance=0;
     this.floorAspect=1;this.waypoints=[];
   }
+  /** Heading-only idle gaze never changes foot anchors, walk phase, or position. */
+  faceIdle(heading){
+    if(!DIRECTIONS.includes(heading))throw RangeError('Unregistered idle heading');
+    if(this.enabled&&this.arrived&&this.mode==='idle')this.heading=heading;
+    return this.snapshot();
+  }
   setFloorAspect(aspect){if(!finite(aspect)||aspect<=0)throw Error('Invalid floor pixel aspect');this.floorAspect=aspect;return this.snapshot();}
   setEnabled(on){this.enabled=!!on;if(!on){this.mode='idle';this.frame=0;}else if(!this.arrived)this.mode='walk';return this.snapshot();}
   goToZone(name){
