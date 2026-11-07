@@ -294,3 +294,13 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
 .command-grid .response .welcome{padding:28px 9px 25px}
 .command-grid .response .welcome-glyph{font-size:43px}
 .command-grid .response .answer-frame{padding:10px 8px}
+
+/* Retain the established compact-terminal invariant across all content sizes.
+   Long responses scroll inside the screen instead of enlarging the shell. */
+.command-grid .output-col .response{
+  height:clamp(370px,45vh,440px);max-height:440px;min-height:0;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.command-grid .output-col .response-screen{
+  flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;
+}
