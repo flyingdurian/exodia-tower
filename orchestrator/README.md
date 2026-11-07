@@ -1,144 +1,120 @@
-# ✦ The Command Tower — local prototype v0.1
+# Exodia Tower — Local Orchestrator v0.3
 
-A local-first, chibi-themed **operator dashboard and routing foundation** for GitHub, Etsy, YouTube and Gmail. **Kiko** has four animated operating states. This is a functioning scaffold, not a production-ready autonomous agent or a promise of unlimited access to commercial AI chat services.
+**Authoritative project:** https://github.com/flyingdurian/exodia-tower
 
-## Quick start
+The approved V0.2 backend and artwork are preserved. The current dashboard is the redesigned technology-first Exodia operations interface. Nova is the tenth specialist for YouTube, TikTok and Instagram editorial planning. **Navigation projections are not articulated character rigs.** No publishing adapters have been authorized or connected.
 
-Python 3.11+ is recommended. In **PowerShell** or another terminal:
+Run: `pip install -r requirements.txt` then `python main.py`. Browse `http://127.0.0.1:8765`. Your `.env` is local and must stay uncommitted.
 
-```bash
+Local workflow API: `GET /api/social/status`, `GET /api/social/jobs`, `POST /api/social/jobs`, `PATCH /api/social/jobs/{id}`, `POST /api/social/jobs/{id}/advance`, `POST /api/social/jobs/{id}/approve`, `GET /api/social/jobs/{id}/brief`. Mutations require `X-Exodia-Client: exodia-dashboard` in the localhost environment. These measures are not sufficient for public exposure.
+
+For more details and release limitations see the repository root README and `/docs/`.
+
+
+## V0.4 — Operator-assisted model workspaces
+
+Exodia Tower does not require paid developer API keys for the local model handoff workflow. It can launch **three persistent Chromium profiles** for ChatGPT, Gemini and DeepSeek under ignored `session_data/`. Install once: `playwright install chromium`, then open the sessions from the dashboard. Log in yourself. Prompt filling requires an operator action; browser submission and output extraction are deliberately manual. This is not unlimited or automated consumer-chat inference.
+
+Model session endpoints: `GET /api/web/sessions`, `POST /api/web/sessions/start`, `POST /api/web/sessions/{model_choice}/prepare`, `POST /api/web/sessions/{model_choice}/record`.
+
+All mutation routes require `X-Exodia-Client: exodia-dashboard` and localhost; these are only local guardrails, not full authentication. Never commit browser profiles, .env, databases, or DOM screenshots.
+
+## Articulated animation engineering
+
+Ten rig manifests define 22 joints and 24 emotional poses per character. Use `/api/rigs` and `/rig-lab` to inspect motion **diagnostics**. Existing approved portraits are flattened; production-quality animated characters still require transparent registered body segments, complete face/eye/mouth layers, mesh deformation, lip-sync and fidelity review. Do not label these debug skeletons as finished characters.
+
+## Automatic companion inference — local Ollama
+
+To run tasks without manual response copying **or a developer key**, install [Ollama](https://ollama.com/download) on Windows, then in PowerShell run:
+
+```powershell
+ollama pull llama3.2:3b
+ollama list
+```
+
+Start Exodia Tower as before (`py main.py` inside the project environment). In Task Dispatch choose **Local model (automatic · Ollama)** and your assigned companion, then **Create task**. Exodia persists the task, starts the local inference, displays Working, and saves the answer automatically to the companion's terminal. If Ollama isn't installed/running or the selected model is missing, it displays Failed with an actionable error instead of inventing a reply.
+
+No background browser scraping is performed. The ChatGPT, Gemini, and DeepSeek consumer-web modes remain manually operated because their consumer sessions are not a supported automatic-inference contract. An authorized ChatGPT route using Sign in with ChatGPT / approved plan-usage OAuth is separately documented for supported client eligibility; no user credentials or cookies are copied.
+
+This is **local text inference**, not an image generator, autonomous web researcher, or social publishing agent. For useful research/analytics, add authorized external retrieval tools. Performance depends on PC hardware and the selected downloaded model.
+
+If a local inference task is interrupted by an application restart, the task changes to Failed and may be resubmitted. The `/api/command/providers` endpoint checks whether Ollama is reachable and the desired model is installed.
+
+## U3 — Autonomous live public-web research
+
+In **Command Center**, choose **Local model (automatic · Ollama)**, select a companion, check **Research public web sources**, and submit a request. For precise live information, include one to three `https://` source URLs within the prompt. Exodia uses a fresh, cookie-free Playwright Chromium context to read each permitted page, then gives cited evidence to local Ollama. The companion shows `RESEARCHING → RUNNING → ANSWERED` or `FAILED` and clickable source links. There is **no manual response copying** in this flow.
+
+Safety: Only hosts explicitly listed in `RESEARCH_ALLOWED_HOSTS` can be visited. The default is `en.wikipedia.org`. To read other *public* sites, edit your local `.env`, e.g. `RESEARCH_ALLOWED_HOSTS=en.wikipedia.org,example.org` and restart Exodia. The browser checks DNS for public IPs, rejects credentials/localhost/IP URLs, blocks third-party requests, runs without accounts/cookies, and never disables anti-bot protections. Content may be incomplete on dynamic or restricted pages; failures remain visible, not invented.
+
+Without a URL, Exodia performs a free Wikipedia encyclopedia search (which is **not** a broad current-news or trends search). For current trends and analytics, provide specific permitted sources or add an authorized search connector later. Do not assume Wikipedia search alone answers rapidly changing questions. A research-enabled task is capped at 4,000 prompt characters because of the added evidence context. The local model still requires its Ollama download and may hallucinate; verify citations.
+
+This implementation does **not** scrape prompts or answers from the ChatGPT, Gemini or DeepSeek consumer websites. Those workflows still require authorized provider integration. See issue #6 for ChatGPT authorization-based integration.
+
+## React-rich text input correction
+
+The operator-assisted browser preparation now clicks rich-text/contenteditable prompt editors and sends actual keyboard events (`ControlOrMeta+A`, then typed characters). Native `textarea` inputs still use Playwright's `fill()`. This improves editor compatibility but deliberately does not press Send or extract consumer chat responses.
+
+A general DOM stream-stability watcher for **authorized, automatable sites** is provided separately in `app/automation/interactive_dom.py`. It requires a page that the operator has rights to automate and is not connected to the consumer ChatGPT, Gemini or DeepSeek sessions.
+
+## Custom authorized website automation — complete task loop
+
+A complete, configurable Playwright runner is available at `app/automation/configured_web.py`. It uses an isolated persistent Chromium profile, real keyboard events for contenteditable fields, submit click, detection of a **new** answer, stream-stability and stop-button checking, serialization, diagnostics, and automatic delivery to the assigned companion's terminal.
+
+To try it with the safe local simulation (no third-party account required):
+
+```powershell
 cd orchestrator
-python -m venv .venv
-# Windows PowerShell: .\.venv\Scripts\Activate.ps1
-# macOS/Linux: source .venv/bin/activate
-python -m pip install -r requirements.txt
-cp .env.example .env  # PowerShell: Copy-Item .env.example .env
-python main.py
+New-Item -ItemType Directory -Force session_data | Out-Null
+Copy-Item examples/custom_web.example.json session_data/custom_web.json
+.\\.venv\\Scripts\\python.exe -m playwright install chromium
+.\\.venv\\Scripts\\python.exe main.py
 ```
 
-Open **http://127.0.0.1:8765** on the same machine. Runs with **no credentials** in local mode. Click **Index workspace** to index accessible source and documents; search with the **Local** route. Sample questions: `check system status`, `search indexed documentation`, `check GitHub repo stats`.
+Choose **Configured website (automatic)** in the Command Center, assign Kiko/Nova, and submit a prompt. The runner opens `http://127.0.0.1:8765/automation-demo`, types, clicks Send, waits until the demo stops streaming, then delivers its simulated response to the companion. The demo response is **not an AI model**.
 
-Run automated tests:
+To adapt the code to a website you are authorized to automate, change the URL and selectors in the ignored `session_data/custom_web.json` profile, and verify that the site's terms and your access rights allow automation. Do not supply account credentials to Exodia; sign in manually within the persistent browser profile. The app does not include consumer ChatGPT/Gemini/DeepSeek auto-scraping connectors or anti-detection code.
 
-```bash
-python -m pip install pytest
-python -m pytest -q
-```
+Task states: `opening -> typing -> submitting -> waiting_for_reply -> answered`, or `failed`. Browser errors save screenshots in ignored `debug_snapshots`; incomplete tasks are marked failed upon restart. This system does not bypass paywalls, CAPTCHAs, or account security challenges.
 
-### Configure services
 
-Edit `.env` based on `.env.example`:
+### Three independent authorized browser slots
 
-| Provider | Configuration | MVP capability |
-| --- | --- | --- |
-| GitHub | `GITHUB_TOKEN`, `GITHUB_REPO=owner/name` | Repository metadata and issue count |
-| Etsy | `ETSY_API_KEY`, `ETSY_ACCESS_TOKEN`, `ETSY_SHOP_ID` | Shop metadata and active listing count |
-| YouTube | `YOUTUBE_ACCESS_TOKEN` (OAuth Analytics scope) | Recent 28-day views, watch time and subscribers gained |
-| Gmail | `GMAIL_ACCESS_TOKEN` (OAuth Gmail read-only scope) | Unread estimate and sample message IDs, **no email bodies** |
-| Reasoning API | `OPENAI_API_KEY`, `OPENAI_MODEL` | Text answers via the OpenAI Responses API |
+Custom browser configurations are `session_data/custom_web.json`, `session_data/web_slot_2.json` and `session_data/web_slot_3.json`. All three are optional, private and gitignored. Their persistent profiles live in separate folders. The Command Center provides **Configured browser A, B, C** task choices. Separate tasks on different slots run concurrently; tasks on the same slot serialize to avoid interleaving prompts. To test all slots, copy the example JSON to each filename. These are configurable authorized-site slots—not prewired consumer account scrapers.
 
-**MCP support:** the main dashboard calls the same read-only REST adapters directly. An **optional genuine MCP stdio server** is provided at `app/mcp/server.py`, exposing the four provider checks plus local archive search to an MCP-compatible client. Install and run:
+## Gemini automatic text tasks (experimental)
 
-```bash
-python -m pip install -r requirements-mcp.txt
-python -m app.mcp.server
-```
+Gemini browser (automatic · text) runs a task in the Gemini Playwright browser profile under ignored `session_data/gemini`. Open Browser Workspaces and sign in manually when required; then choose Gemini in Task Dispatch, assign a companion, and Create task. Exodia prepares React-rich text, submits using Gemini's visible send button (or Enter if unavailable), waits for **new** streamed text to finish, and puts it into the companion's terminal without manual copying. Task states are opening/typing/submitting/waiting_for_reply/answered or failed. The original model answer is displayed as text, not recomposed by Ollama.
 
-The separate process communicates over stdin/stdout; an MCP client must launch it. This project does *not yet* include OAuth sign-in, secure token-refresh workflows, GitHub PR writes, Etsy inventory mutations, Gmail draft creation, or YouTube upload controls. User-granted tokens expire; use appropriately scoped credentials and rotate them. Setup is not synonymous with verified access: press the ↗ icon on a network card to test.
+This is a **best-effort experimental website integration**, not an official Gemini API contract. DOM selectors can change; no end-to-end live authenticated Google account test is included in CI. Session login, rate limits, permissions, verification challenges and website access instructions still apply. This implementation does not evade bot detection or authentication challenges. Debug screenshots of failed browser interactions are saved privately in ignored `debug_snapshots`. Any automatically generated images are not yet captured by this text-only adapter.
 
-**Etsy:** Your app must use a properly configured Etsy developer key and OAuth grant. Token/key headers and rate limits are documented at [Etsy developer docs](https://developers.etsy.com/documentation/). Never bypass quotas.
+### Gemini automated task smoke test (Windows)
 
-**YouTube:** channel Analytics requires user authorization with the [Analytics report scopes](https://developers.google.com/youtube/analytics/reference/reports/query); the report is not a real-time subscriber counter.
+Update the development branch, restart the backend, click **Browser Workspaces → Open three visible sessions**, and sign in to Gemini in the Chromium window. The session persists in `session_data/gemini` but login isn't verified until the prompt editor is accessible. Select **Gemini browser (automatic · text)** in Task Dispatch, choose an agent, create a text prompt, and watch the task progress to `answered`. Successful plain text appears on the companion monitor automatically. If a page or selector fails, the task shows `failed`; look in your ignored `debug_snapshots` folder. No stealth, bot-detection bypass, or CAPTCHA solver is installed. The adapter has mocked integration coverage but has not been tested in a real signed-in Gemini session from CI.
 
-### Local vector search
+### Gemini guest page and Google browser security warning
 
-Default: SQLite FTS5, no model downloads. Optional hybrid dense search uses `sqlite-vec` (the actively developed successor to deprecated `sqlite-vss`) plus a local sentence-transformer:
+**Basic Gemini text chat can work without sign-in.** A welcome page without a prompt editor is not sufficient proof that login is required. Exodia now waits up to ~10 seconds for the guest editor to render and reports `editor_unavailable` if there is no visible prompt input. Manually reload the page in the *same Exodia browser*, confirm the guest textbox appears and accepts a test prompt, and then create a fresh Gemini task. If the page continues showing only a welcome screen, check blocked page scripts, network filtering and regional availability.
 
-```bash
-python -m pip install -r requirements-vector.txt
-# set DENSE_SEARCH=true in .env, then restart
-```
+Google may reject Google Account login attempts in automated browsers with the message **\"This browser or app may not be secure\"**, even with a new Chromium binary. This is a Google account security decision, not reliable evidence that Playwright installed an outdated browser. Do not try to circumvent the rejection. For personal Google account sign-in, use a normal independently opened supported browser; it does not transfer the login to Exodia's separate Playwright profile. Updating Playwright itself is optional for compatibility (`.\\.venv\\Scripts\\python.exe -m pip install -U playwright` followed by `-m playwright install chromium`); it is **not a guaranteed fix** for Google's security restrictions.
 
-The first dense-enabled index may download a `sentence-transformers/all-MiniLM-L6-v2` model; use only when you agree to that download. Dense indexing may be slower; FTS5-only works without it. Vector data is stored in `app_data/command_tower.sqlite`. Local document search results are **extracts**, not hallucinated summaries. The exact-answer cache is intentionally limited to RAG search and is invalidated on reindex.
 
-### Browser-assisted session (optional)
+### Gemini latency diagnostics
 
-To use the read-only Playwright inspection channel, install Chromium:
+For every completed Gemini browser task, Exodia stores and displays a timing breakdown: browser setup, editor detection, prompt typing, submit action, time to first response text, response completion and end-to-end elapsed time. These timings use the application's monotonic clock and are persisted in the task's local SQLite `metrics` field. Short prompts type via React-compatible keyboard events with no fixed per-character delay; long prompts (250+ chars) use Playwright's input-event-based `insert_text`. Exodia polls the new response every 250 ms and waits 1.5 s of stable text after the stop-generation control is absent, reducing avoidable display overhead. Active tasks refresh the dashboard roughly every 650 ms.
 
-```bash
-python -m playwright install chromium
-```
+If `first_text_s` is the large number, the remaining delay is Gemini/browser/server processing rather than Exodia's after-response wait. If `editor_wait_s` or `typing_s` is large, optimize the local browser/selector/input path. The timing diagnostics are not a service-level guarantee or proof of the provider's internal model processing time. Retest on your Windows machine; the synthetic CI browser cannot measure actual Gemini latency.
 
-Set `BROWSER_ENABLED=true`, `BROWSER_ALLOWED_HOSTS=example.com` and `BROWSER_READ_URL=https://example.com/your-page` in `.env`. Browser mode opens the **allowlisted page** in a persistent desktop Chromium profile and returns a limited body-text snapshot. Login can be completed manually in the open window when needed. State is saved in `session_data/approved_browser/` (gitignored). On navigation/DOM errors, the tool may save a screenshot in `debug_snapshots/` and report a fallback. Screenshots can contain sensitive content: review before sharing.
+### Optional browser startup experiment
 
-No browser-fingerprint spoofing, anti-bot evasion, CAPTCHAs, or authentication-wall bypass. **No automatic scraping or message submission on consumer AI chat websites.** Paid chat subscriptions are **not** assumed to authorize programmatic access or unlimited inference; respect each service's terms and limits. The browser route only reads permitted pages. If it fails, the router switches to the configured API reasoning channel, or provides an honest local error if no API credentials exist.
+The dedicated Playwright browser profiles support `EXODIA_BROWSER_USER_AGENT` for an explicit UA override (prefer the browser's truthful native UA), and `EXODIA_EXPERIMENTAL_CHROMIUM_FLAG=true` to add the requested Chromium argument `--disable-blink-features=AutomationControlled`. Both are optional and disabled by default. Close all Playwright Chrome windows and restart Exodia after changing these options. This is a *diagnostic experiment*, not a supported Google sign-in method, credential-management feature, or a claim that website automation will be accepted. Google's account-security system can still block the connection, and Playwright warns that custom browser arguments can break functionality. No account login, security challenge, or CAPTCHA is automated by this flag.
 
-### What each of the eight pillars does in this build
 
-1. **Dual-Blade Router:** deterministic rule-based routing to local search, four official REST adapters, optional API reasoning, or supervised browser page reading; error-state fallback.
-2. **Scroll of Memories:** system persona and untrusted user-state, metric, and knowledge blocks in `app/prompts/builder.py`; an optional `USER_STATE` value supplied from `.env`, and trusted local snippets / recent non-sensitive provider metrics in reasoning prompts.
-3. **Crystal Archives:** FTS5 document search, optional dense local vectors, source snippets.
-4. **Relic Inventory:** read-only REST adapters and an optional MCP stdio tool server; writing tools are future milestones.
-5. **Master Key Vault:** environment secrets, gitignored profile and debug directories; OS keychain and token encryption are not yet implemented.
-6. **Browser Assistance:** HTTPS origin allowlist, persistent sessions, captures on failure. Intentionally **no stealth**.
-7. **Speedrunner Cache:** TTL exact-answer cache for RAG only; no cached live finance/mail data.
-8. **Strategy Map:** FastAPI/WebSocket real-time event feed, stateful Kiko, result details and route/latency display. Snapshot file viewer and historical persistence are future milestones.
+## Albedo portrait expression, generated media and local voices
 
-### Local security boundaries
+The central command page no longer exposes emotion-preview buttons or runs the rejected cutout rig. The previous automatic state timing is preserved: `idle -> processing -> waiting -> happy -> excited -> proud` or `failed -> frustration`. The visual uses a static full-character portrait plus expression portraits; the expression image transitions with the task state instead of faking bone animation. The portrait-art pack was extracted from the owner's approved character concept board and is supplied as a separate downloadable ZIP. Install it by extracting into the repository root, so the files appear in `orchestrator/frontend/companions/expressions/albedo_prime_portrait.webp` and `albedo_expression_atlas.webp`. Without these optional files, the app falls back to the existing portrait; the expressions won't look like the reference. These crops are concept-board resolution, not final high-definition art masters.
 
-- HTTP only binds to loopback by default; server rejects public binding. No remote authentication or multi-user access.
-- `.env`, cookie profiles, local DB, and debug captures are ignored by Git. Protect local computer access; tokens are not encrypted at rest by this prototype.
-- The local indexer ignores hidden files, build folders and saved session data; it never uploads them through the local search route.
-- External service content is **untrusted**. Do not treat retrieved text as instructions.
-- **Read-only integrations** are deliberate until a permission/approval/confirmation layer exists.
-- Do not deploy as-is to a cloud server or shared LAN.
+**Gemini generated media:** Automatic Gemini generation requests (for example, `Generate an image of…` or `Create a video of…`) use a separate DOM watcher that waits for new generated image/video elements, not a text-only markdown response. Exodia validates signatures and saves supported PNG/JPEG/WebP/MP4/WebM output to the ignored `app_data/artifacts` directory, records `media` metadata on the task, and displays images and playback controls in the companion terminal. If CORS prevents a full-image download, an image element screenshot may be saved and clearly marked as a preview. Generated videos may still fail to export when Gemini exposes no accessible video source; incomplete captures are explicit instead of hanging silently. The backend code and simulated media-flow tests are complete, but the exact signed-in Gemini media DOM is subject to change and **has not been verified on the owner's account**.
 
-## Folder map
+**Speech:** Browser-native `SpeechSynthesis` uses available installed English voices (preferring local voices where present); each of the ten companions has a preferred rate, pitch, and voice family. Click **Speak** to start immediately. **Speak answers automatically** is off by default; enable it to speak new completed responses. The voice dropdown shows voices actually installed in your browser/OS. No paid TTS service, external synthesis queue, or audio files are required. Voice uniqueness and synthesis quality depend on the OS; the same voice can be selected when Windows doesn't provide enough installed voices. No realistic lip-sync is claimed for static portraits.
 
-```text
-orchestrator/
-  app/
-    api/server.py             # HTTP endpoints and /ws/events
-    automation/stealth.py     # safe browser assistance (legacy spec path)
-    core/{classifier,router,cache}.py
-    mcp/clients.py            # REST provider adapters
-    mcp/server.py             # optional official MCP stdio tool server
-    prompts/builder.py
-    rag/engine.py
-    security/vault.py
-    monitoring/logger.py
-  frontend/{index.html,styles.css,app.js}
-  app_data/                  # local DB (gitignored)
-  session_data/              # browser credentials (gitignored)
-  debug_snapshots/           # local error snapshots (gitignored)
-  tests/test_engine.py
-  main.py
-```
-
-## Next gates
-
-**Gate 2:** full OAuth PKCE or native service SDK authorization and refresh (no raw manual tokens), encrypted keychain integration, connector health checks, rate-limit backoff. **Gate 3:** deeper MCP tool permissions, human approvals and audit log (basic read-only MCP stdio tools are already included). **Gate 4:** richer local reasoning model, proper semantic-cache evaluation, background jobs, dashboard screenshot inspection and replay tests. **Gate 5:** packaging, OS integration and authentication for any remote access.
-
----
-
-## Companion Studio · animation integration (v0.2)
-
-Open **http://127.0.0.1:8765/companions**. The original dashboard also contains a Companion Studio shortcut and now uses the approved Kiko Prime illustration instead of the CSS-only avatar.
-
-**Assets provided:** all nine approved portrait illustrations converted to high-quality WebP, nine thumbnail portraits, one cast illustration and **nine 4-second silent H.264 ambient motion loops** (608 × 760, 12 fps). All clips are local, with no paid generation credits used. The idle loops feature seamless camera movement, gently drifting light particles and glow pulses; these are *not articulated face or body animations*. The 2.5D browser renderer adds pointer parallax, rotating halos, procedural particles, lighting sweeps and distinctive task-mode reactions around the original artwork.
-
-**The nine companions:** Kiko Prime (Overseer), Riven (Vanguard / Router), Mira (Scholar / Prompt Scribe), Lyra (Archivist), Pip (Artificer / MCP), Aurelia (Guardian / Security), Nyx (Scout / Browser), Mochi (Support / Cache), and Orion (Tactician / Monitoring). Each has a biography, unique visual identity and dialog for six preview states: `idle`, `thinking`, `working`, `success`, `rest`, and `alert`. These are visual roles linked to existing router operations, **not nine separately running LLMs**.
-
-**Live integration:** the backend `CompanionDirector` sends sanitized state events over the existing `/ws/events` channel. `/api/ask` changes the relevant specialist and Kiko to `working`, then `success`, `rest` or `alert` according to the genuine result. Indexing activates Lyra; network checks activate Pip; clearing the cache activates Mochi. The Studio receives real events and also has manual preview controls. Preview reactions do not run external tools.
-
-**API:**
-
-- `GET /api/companions` returns the roster, latest UI states, and available video-loop file URLs.
-- `POST /api/companions/{agent_id}/react` with `{"state":"thinking"}` triggers only a local visual reaction/event. Invalid IDs or states return HTTP 422.
-- `GET /companions` serves the interactive studio.
-
-**Media replacement contract:** for higher-quality character animation, add your generated or rigged `.webm`/`.mp4` to `frontend/companions/clips/<agent_id>/<state>.webm`, where `agent_id` is one of `kiko`, `router`, `memory`, `archives`, `inventory`, `vault`, `ninja`, `cache`, or `strategy` and `state` is `idle`, `thinking`, `working`, `success`, `rest`, or `alert`. Restart the server to rediscover new clips. Each state should loop naturally, preserve the approved character design, and return to a matching resting pose. Keep the same aspect ratio, framing, costume, hairstyle and face across every state. Use footage without baked-in text for production UI; labels should remain live DOM text.
-
-**Quality gate before calling these fully animated agents:** asset separation into foreground/midground/background, isolated and registered face/eye/mouth/hand components, intentional blinking and speaking/gesture performances, clean state-to-state continuity, and no image-text warping. The present 2.5D loops intentionally do not claim this gate is complete.
-
-**Performance:** the default high-fidelity stage runs on current desktop browsers using ordinary canvas, video and CSS, without a WebGL requirement. A reduced-motion toggle freezes decorative animation and stops video loops; OS-level `prefers-reduced-motion` is respected. All media is served locally. The design works without API credentials. The fullscreen Studio also has arrow-key companion navigation and number keys 1–6 for reactions.
+**ChatGPT consumer website:** Its existing separate persistent browser workspace and supervised task preparation remain available. The consumer website does not have a supported automated-output extraction connection in this gate. For automatic hosted-model execution, an authorized API/app connection is required; the local Ollama and Gemini experimental browser tasks remain functional.

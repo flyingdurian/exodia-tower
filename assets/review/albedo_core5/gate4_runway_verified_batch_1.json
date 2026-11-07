@@ -1,0 +1,249 @@
+{
+  "schema": "exodia.gate4.runway-source-verified/v1",
+  "batch": 1,
+  "source": "Runway separate completed independent 2K generation tasks",
+  "production_release_enabled": false,
+  "owner_approved_count": 0,
+  "states": [
+    {
+      "state": "neutral",
+      "task_id": "7846b22b-2027-4772-8cc3-145ee5eccb7b",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "c91fbaede642868f0edcb018e2f2f4182f5e0c0a133fc840069fac60526272e4",
+      "normalized_sha256": "c5e06e112eccf607a98c18cd93c58a27f88c48c8443f7c3c9f757c427a680a86",
+      "normalized_pixel_sha256": "565b99607ef3b9a9390160d0589cb848b1e915b0219cb991f2e506adbe1f2f7a",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6328044,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/7846b22b-2027-4772-8cc3-145ee5eccb7b/8f921837-195c-4c38-8df8-6c1bee7e3ba0/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiOTMxM2E2OTJmYTc4MTc0ZiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg3Nzc3OH0.uxqwAELf-prVBn3gC7LXcpQERi6CGJUUfLqbPX6U9Kg",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    },
+    {
+      "state": "happy",
+      "task_id": "5f985619-47ed-4023-b2cf-d6e11a201906",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "dd55d0c94e4f6428d331d800a60188a3b915195e7cfcf01c42d4aafa6a0e4f16",
+      "normalized_sha256": "e294687563e045f8cbc1d4b620b7a3a0bdc4d44e6435102975572751da94140c",
+      "normalized_pixel_sha256": "5dd990fd1ccd1b5c88f6def471295c75914a9de9a13f0fef92a22c80b2d0cb31",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6571288,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/5f985619-47ed-4023-b2cf-d6e11a201906/59a85413-2183-474f-944a-7d01c421231f/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNDQ0Y2EzNmRmODFkZWQzZCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg3MzI2MX0.ahoBjVtKwas_YFrXedQuLfhD6QVZZbySh0QNOhNTn_o",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    },
+    {
+      "state": "joyful",
+      "task_id": "379ab324-8498-4e10-b6d6-b904156c4eb7",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "c3d5ba364f6deeb6a4715e5dd4d6ff035b9289c84404a54fadd272da831517e7",
+      "normalized_sha256": "8525e702518abb615a018be1f40a7304636c66c89989039e7be84f9486e9da68",
+      "normalized_pixel_sha256": "9fde1b815cd1860958befa5a83d9c4c0d21a49ff388d4fd1754606c0193dc650",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6709803,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/379ab324-8498-4e10-b6d6-b904156c4eb7/2db16e6c-df79-4625-bc20-08f5f487296f/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNTU4ZTlkMTYzZWY2ZWZiNyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg4MzI4Nn0.0vwj4vbASzTZBrXmbLb0alZooiHhenMEjpGR0Ilu-zM",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    },
+    {
+      "state": "excited",
+      "task_id": "2ab05f4c-48e0-45dd-87de-cf6aaa50c01a",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "1d96afa0bd40ab96e6179687b9f29ed1db51861dbd03d1e1a8910334577e2912",
+      "normalized_sha256": "f44fc26eae2e4714adac32cda387cbbe75bccf504eef44ad378c8ab179771832",
+      "normalized_pixel_sha256": "897005dbe2703487dd6b2e1bebd302138a009b199076157bf287a23a097c1911",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6719864,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/2ab05f4c-48e0-45dd-87de-cf6aaa50c01a/80f52248-51ed-4d63-9b30-cfbc301d2272/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNDYyN2VkOTRhMDczYWMzYyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzkxNzg0NH0.Qkm1mZ7aYQLe18ksZN_tSRZ1EmLLJoae-MVwG7TWTm4",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    },
+    {
+      "state": "gentle",
+      "task_id": "df100314-6e23-4a60-8eee-1b2ed491d042",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "cdd475c43113b1113909d1ea4b2600ca4fb3a804ec457727869b69ebe0975980",
+      "normalized_sha256": "b4af6dbaeb01b125c80ac4d036709b076b304adf9b3ffd1a85ed6a689464e7fa",
+      "normalized_pixel_sha256": "62714ef959a118959d229dd69730ff403244611c708bd87b284d885473f31cbb",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6577432,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/df100314-6e23-4a60-8eee-1b2ed491d042/f48cbbe4-f63c-4cf2-9ba8-7e21e1c18a1b/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZTdiNjBhN2RhYzEwNWU5MSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzkwODczM30.ts5kjSRxarDdmseeudzHaxBzdX5Oq64Nl1u-gnBE8CQ",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    },
+    {
+      "state": "smiling_closed",
+      "task_id": "c357b7df-d4c6-4ecb-800a-31fde8472e8a",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "55a40a3c7bf97e859bc6fde00d51347c57ae88936af89b4a0bded10a4bd73453",
+      "normalized_sha256": "20bc0a1ff5652e2d8ca88d2b9893e20891d2d655e72f55e5b4c9fce94b8582f3",
+      "normalized_pixel_sha256": "05601b590854c97d9c821effd6ee265603e393f6774f8e49f38b01d078f2d849",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6590200,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/c357b7df-d4c6-4ecb-800a-31fde8472e8a/ab664c7f-e3fd-4efa-9b47-fb4858104d1c/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZTdmMGZlM2U2MDg2OWFiMCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg4NDIyMn0.LaCAXK-_GRBZVE3NA2nunrztIou5iNl75CBWxpZz0fc",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    },
+    {
+      "state": "laughing",
+      "task_id": "326aa3d1-6eb8-4683-b6a4-15039755db9c",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "a14a53dfcef55f813d01377551d3b8dfae2d34391a73ab37beaa26d560ba9ac0",
+      "normalized_sha256": "f724341697e9e4d93393cfd040fd01852811fe239bd7c99c08ed4e30cdc38777",
+      "normalized_pixel_sha256": "89cdfacba770b092553d4dd5394a7a20b122531c85b9452384a572ac5a13ea83",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6556807,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/326aa3d1-6eb8-4683-b6a4-15039755db9c/bc6a64ee-deca-4b58-8400-a71eb6248881/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZmFlNGU5OGU3YjZkMjg5MSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzkwNzU5OH0.dY2ugoskZv8UQadrC6qaBK_g6mWfpH_RRjLqMoCxdI4",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    },
+    {
+      "state": "amused",
+      "task_id": "cf55a2ac-1073-4f02-9828-5ceed272582e",
+      "status": "ACTUAL_STANDALONE_SOURCE_VERIFIED",
+      "model": "Runway nano-banana-2 2K",
+      "source_sha256": "4a44bc1980a4158a50402856d98ee45d4469b60bd8379d50b1b6a36ab2909641",
+      "normalized_sha256": "ee5a247a2533bb7072a71969938763ac2d69a30f9de1374002ab9f5fb6c29232",
+      "normalized_pixel_sha256": "5aca131ec4abffe69a040b04715b1199500754c00eedbff3ff53cde02fdc3f99",
+      "source_dimensions": [
+        1856,
+        2304
+      ],
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "source_file_bytes": 6869815,
+      "result_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/cf55a2ac-1073-4f02-9828-5ceed272582e/09340ea9-c71c-4770-948b-761aeab0eab8/Create_an_original_single_person_fantasy_anime_portrait_insp.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMTdlMmQ4ZjJiMTBhMjIyNyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg1NjI0Mn0.aAwnYw4JFeJYu2cwYnlEVRAfdgvtl3pwOEA6zwrjDKo",
+      "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "review_status": "UNAPPROVED",
+      "generation_prompt_sha256": null
+    }
+  ]
+}

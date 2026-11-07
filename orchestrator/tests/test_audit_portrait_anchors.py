@@ -1,0 +1,104 @@
+"""Synthetic-only pixel detector tests; never production owner approval."""
+import sys,json,hashlib
+from pathlib import Path
+import cv2,numpy as np
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'tools'))
+from audit_portrait_anchors import measure_png,audit,CORE
+def draw(p,y=634):
+    im=np.zeros((1920,1536,3),np.uint8)
+    for x in (658,878):
+        cv2.circle(im,(x,y),21,(180,40,130),-1)
+        cv2.circle(im,(x,y),5,(25,6,19),-1)
+    for x in (495,1050):
+        cv2.rectangle(im,(x-18,980),(x+18,995),(240,240,240),-1)
+    cv2.imwrite(str(p),im)
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+def hints(sha,y=634,review='owner_confirmed'):
+    return dict(source_sha256=sha,left_eye_search=[658,y],right_eye_search=[878,y],
+        left_shoulder_search=[495,980],right_shoulder_search=[1050,980],review_status=review)
+def test_real_pixels_can_match_exact_targets(tmp_path):
+    p=tmp_path/'im.png';draw(p)
+    m=measure_png(p,hints('none'))
+    assert abs(m['eye_y_px']-633.6)<=2
+    assert abs(m['shoulder_y_px']-980)<=2
+def test_wrong_canvas_rejected(tmp_path):
+    p=tmp_path/'im.png';cv2.imwrite(str(p),np.zeros((300,300,3),np.uint8))
+    try:measure_png(p,hints('none'))
+    except ValueError as e:assert 'incorrect_canvas' in str(e)
+    else:raise AssertionError('accepted incorrect size')
+def test_core_gate_rejects_misaligned_gold(tmp_path):
+    data={};regions={}
+    for key in CORE:
+        p=tmp_path/(key+'.png');sha=draw(p,674 if key=='working' else 634)
+        data[key]=dict(path=p.name,sha256=sha,distinct_source_verified=True)
+        regions[key]=hints(sha,674 if key=='working' else 634)
+    reg=tmp_path/'reg.json';h=tmp_path/'h.json'
+    reg.write_text(json.dumps({'states':data}))
+    h.write_text(json.dumps({'states':regions}))
+    report=audit(reg,h)
+    assert report['full_batch_unlocked'] is False
+    assert 'eye_anchor_out_of_range' in report['states']['working']['errors']
+def test_unreviewed_sources_never_unlock(tmp_path):
+    p=tmp_path/'idle.png';sha=draw(p)
+    r=tmp_path/'reg.json';h=tmp_path/'h.json'
+    r.write_text(json.dumps({'states':{'idle':dict(path=p.name,sha256=sha,distinct_source_verified=False)}}))
+    h.write_text(json.dumps({'states':{'idle':hints(sha,review='pending')}}))
+    report=audit(r,h)
+    assert report['full_batch_unlocked'] is False
+    assert 'search_regions_not_owner_reviewed' in report['states']['idle']['errors']
+
+def test_synthetic_perfect_pixels_cannot_unlock_without_native_provenance_and_owner_ledger(tmp_path):
+    # Synthetic detection is a useful unit test, never production certification.
+    data={};regions={}
+    for key in CORE:
+        p=tmp_path/(key+'.png');digest=draw(p)
+        data[key]=dict(path=p.name,sha256=digest,distinct_source_verified=True)
+        regions[key]=hints(digest)
+    reg=tmp_path/'reg.json';h=tmp_path/'regions.json'
+    reg.write_text(json.dumps({'states':data}))
+    h.write_text(json.dumps({'states':regions}))
+    report=audit(reg,h)
+    assert report['core_pass'] is False
+    assert report['full_batch_unlocked'] is False
+    assert report['approval_ledger_supplied'] is False
+    for key in CORE:
+        errors=report['states'][key]['errors']
+        assert 'owner_hash_bound_approval_missing' in errors
+        assert 'native_standalone_source_not_verified' in errors
+        assert 'original_source_sha256_missing_or_invalid' in errors
+
+def test_native_master_cannot_bypass_headwidth_and_human_anatomical_checks(tmp_path):
+    # Synthetic image and metadata must NOT unlock production despite matched
+    # midpoint pixel detections and a falsely asserted 'native' flag.
+    p=tmp_path/'idle.png';digest=draw(p)
+    r=tmp_path/'r.json';h=tmp_path/'h.json'
+    r.write_text(json.dumps({'states':{'idle':{
+        'path':'idle.png','sha256':digest,
+        'distinct_source_verified':True,
+        'original_source_sha256':digest,
+        'source_kind':'independent_standalone_native',
+        'native_canvas':[1536,1920],
+        'independent_generation_job_id':'fixture-not-real'}}}))
+    regions=hints(digest)
+    regions['head_edges_px']=[355,1045]  # FALSE: 690 px head
+    regions['head_edges_image_sha256']=digest
+    regions['anatomy_review_status']='pending'
+    h.write_text(json.dumps({'states':{'idle':regions}}))
+    out=audit(r,h)
+    errors=out['states']['idle']['errors']
+    assert 'native_geometry_head_width_out_of_range' in errors
+    assert 'native_geometry_anatomical_identity_unverified' in errors
+    assert 'owner_hash_bound_approval_missing' in errors
+    assert not out['full_batch_unlocked']
+
+def test_native_master_missing_head_edges_is_rejected_independent_of_eye_shoulder_pass(tmp_path):
+    p=tmp_path/'idle.png';digest=draw(p)
+    reg=tmp_path/'r.json';zones=tmp_path/'z.json'
+    reg.write_text(json.dumps({'states':{'idle':{
+        'path':'idle.png','sha256':digest,'distinct_source_verified':True,
+        'source_kind':'independent_standalone_native',
+        'native_canvas':[1536,1920],'original_source_sha256':digest,
+        'independent_generation_job_id':'fixture'}}}))
+    zones.write_text(json.dumps({'states':{'idle':hints(digest)}}))
+    out=audit(reg,zones)
+    assert 'native_head_and_independent_landmarks_missing' in out['states']['idle']['errors']

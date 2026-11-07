@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exodia Tower · Rig Diagnostics</title>
+<style>
+:root{font-family:Inter,system-ui,sans-serif;background:#071422;color:#def3fb}
+*{box-sizing:border-box}body{margin:0}header{display:flex;justify-content:space-between;padding:24px;border-bottom:1px solid #284557}
+main{max-width:1300px;padding:24px;margin:auto;display:grid;grid-template-columns:minmax(420px,2fr) minmax(300px,1fr);gap:20px}
+section{background:#0e2231;border:1px solid #2b4a61;border-radius:12px;padding:20px}
+.stage{display:grid;place-items:center;min-height:620px;background:radial-gradient(circle,#1d3957,#091a2b 70%);border-radius:10px}
+canvas{width:min(100%,480px);height:620px;object-fit:contain}
+label{display:block;margin:18px 0;color:#a9cfdb}
+select,input{display:block;width:100%;margin-top:6px;padding:10px;background:#122f40;border:1px solid #4a7182;color:#e0f5f9;border-radius:7px}
+a{color:#76e8d2}.note{font-size:12px;color:#a4beca;line-height:1.6}
+@media(max-width:850px){main{grid-template-columns:1fr}.stage{min-height:420px}canvas{height:420px}}
+</style></head>
+<body><header><strong>EXODIA // RIG ENGINEERING</strong><a href="/">Return to operations</a></header>
+<main><section><h2>Articulation diagnostic</h2><div class="stage">
+<canvas id="rigCanvas" width="480" height="650" aria-label="Joint animation inspection, not final artwork"></canvas></div>
+<p class="note">Diagnostic forward-kinematics skeleton. Not an approved production character render.</p></section>
+<section><h2>Animation controls</h2><label>Companion<select id="agent"></select></label>
+<label>Emotion<select id="emotion"></select></label>
+<label>Activity<select id="activity"><option value="idle">Breathing</option><option value="walk">Walking</option>
+<option value="talk">Speaking</option><option value="work">Working</option></select></label>
+<label>Playback speed<input id="speed" type="range" min="0" max="2" step=".1" value="1"></label>
+<p id="readout"></p><img id="reference" alt="Approved appearance reference" width="185">
+<p id="assetStatus" class="note"></p><p class="note">The production upgrade requires transparent, registered facial/body sprites and mesh deformations. Existing flattened paintings cannot be animated as independent limbs.</p></section></main>
+<script src="/assets/rig_runtime.js" defer></script></body></html>

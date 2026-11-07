@@ -1,0 +1,30 @@
+name: ChatGPT supervised manual-handoff contract
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths:
+      - 'orchestrator/app/automation/chatgpt_bridge.py'
+      - 'orchestrator/app/api/server.py'
+      - 'orchestrator/tests/test_chatgpt_bridge.py'
+      - 'orchestrator/tests/test_command_workstations.py'
+      - '.github/workflows/chatgpt-manual-contract.yml'
+  pull_request:
+    paths:
+      - 'orchestrator/app/automation/chatgpt_bridge.py'
+      - 'orchestrator/app/api/server.py'
+      - 'orchestrator/tests/test_chatgpt_bridge.py'
+      - 'orchestrator/tests/test_command_workstations.py'
+      - '.github/workflows/chatgpt-manual-contract.yml'
+jobs:
+  manual-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install application test dependencies
+        run: python -m pip install -r orchestrator/requirements.txt pytest
+      - name: Verify single-send and manual-result contract
+        run: cd orchestrator && python -m pytest -q tests/test_chatgpt_bridge.py tests/test_command_workstations.py

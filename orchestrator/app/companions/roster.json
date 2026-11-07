@@ -1,17 +1,17 @@
 [
   {
     "id": "kiko",
-    "name": "Kiko Prime",
+    "name": "Albedo",
     "agent_class": "Overseer",
     "pillar": "Central Command",
-    "title": "Celestial Commander",
+    "title": "Exodia Tower Companion",
     "portrait": "/assets/companions/portraits/kiko.webp",
     "thumbnail": "/assets/companions/thumbs/kiko.webp",
     "accent": "#75b6ff",
     "secondary": "#6578d8",
     "persona": "Friendly, curious, disciplined; sees the big picture and asks before dangerous actions.",
     "lines": {
-      "idle": "The whole tower is awake! What shall we tackle today?",
+      "idle": "Welcome back. I am ready to coordinate your next mission.",
       "thinking": "I have a few ideas. Let me connect the clues.",
       "working": "Coordinating the guild. Every action goes in the quest log.",
       "success": "Quest complete! I knew this crew could do it.",
@@ -20,13 +20,13 @@
     }
   },
   {
-    "id": "router",
-    "name": "Riven",
+    "id": "liu_bei",
+    "name": "Liu Bei",
     "agent_class": "Vanguard",
     "pillar": "Dual-Blade Router",
     "title": "Pathfinder Knight",
-    "portrait": "/assets/companions/portraits/router.webp",
-    "thumbnail": "/assets/companions/thumbs/router.webp",
+    "portrait": null,
+    "thumbnail": null,
     "accent": "#ff648d",
     "secondary": "#8b5aff",
     "persona": "Bold, tactical, quick to adapt; honest about unreliable routes.",
@@ -177,6 +177,26 @@
       "success": "The plan worked. Metrics confirm the outcome.",
       "rest": "Leaving the map open for the next mission.",
       "alert": "An unexpected outcome changed the risk picture."
+    }
+  },
+  {
+    "id": "nova",
+    "name": "Nova",
+    "agent_class": "Media Strategist",
+    "pillar": "Social Media Division",
+    "title": "Creative Intelligence",
+    "portrait": null,
+    "thumbnail": null,
+    "accent": "#67e8d2",
+    "secondary": "#528ed6",
+    "persona": "Inventive, analytical, experimental, and evidence-driven; develops original YouTube, TikTok and Instagram content while requiring operator approval for every publication.",
+    "lines": {
+      "idle": "Research queue ready. What should we explore?",
+      "thinking": "Checking hooks, audience fit and source reliability.",
+      "working": "Drafting ideas, scripts and editorial briefs.",
+      "success": "The proposal is ready for human review.",
+      "rest": "Revisiting previous creative experiments.",
+      "alert": "Provider not authorized; publishing is disabled."
     }
   }
 ]

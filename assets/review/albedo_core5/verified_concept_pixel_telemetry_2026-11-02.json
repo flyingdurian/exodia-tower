@@ -1,0 +1,273 @@
+{
+  "schema": "exodia.gate1-verified-source-and-pixel-provisional/v1",
+  "snapshot_date": "2026-11-02",
+  "audit_scope": "Review previews. Not native production. Pixel scanner evidence is provisional and shoulder edge requires owner anatomy confirmation.",
+  "input_archive": {
+    "filename": "EXODIA_TOWER_HANDOFF_WITH_CORE5_SOURCES_2026-11-02(1).zip",
+    "sha256": "24553003a69c133d1c9036c36abada89dd15a608a78f2bd63f265923c8d60c21",
+    "asset_manifest_sha256": "081bb91bf3a23f7bb395ee047a8bc4d7d66647df902851364de5b8de2db4f966",
+    "originals_recovered_sha_verified": 5,
+    "concept_canvas": [
+      1122,
+      1402
+    ]
+  },
+  "review_canvas": [
+    1536,
+    1920
+  ],
+  "immutable_targets": {
+    "eye_y": 633.6,
+    "eye_tolerance_px": 2,
+    "shoulder_y": 980,
+    "shoulder_tolerance_px": 2,
+    "center_x": 768,
+    "head_width_approx": 614.4
+  },
+  "review_board": {
+    "filename": "core5_dual_anchor_comparison_v2.png",
+    "sha256": "bf8201351e62025cc21b16d027203aaa62cfde0566014b74f9fb1ba58e0236e4",
+    "distribution": "conversation download; binary PNG not yet present in GitHub"
+  },
+  "states": {
+    "idle": {
+      "source_filename": "albedo_in_a_celestial_orbital_halo.png",
+      "original_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+      "review_preview_sha256": "f43f54567ea30dd25a396744b8d8fb8eb15c1bbd74e560b938988d2c70d19ebe",
+      "original_landmarks": {
+        "iris_centers": [
+          [
+            501,
+            389
+          ],
+          [
+            635,
+            383
+          ]
+        ],
+        "upper_shoulder_candidates": [
+          [
+            343,
+            628
+          ],
+          [
+            755,
+            632
+          ]
+        ],
+        "source_of_coordinates": "assistant_visual_estimate_pending_owner_visual_check"
+      },
+      "transform": {
+        "kind": "uniform_affine_from_original_only",
+        "scale": 1.38012889,
+        "translate_x_px": -15.9132,
+        "translate_y_px": 102.2556,
+        "iterations": 2
+      },
+      "measured_output_eye_y_px": 633.672,
+      "measured_output_shoulder_y_px": 980.5,
+      "eye_delta_px": 0.072,
+      "shoulder_delta_px": 0.5,
+      "estimated_head_width_px": 587.93,
+      "provisional_numeric_pass": true,
+      "production_pass": false,
+      "owner_approved": false,
+      "native_master": false
+    },
+    "working": {
+      "source_filename": "albedo_s_celestial_holographic_workstation.png",
+      "original_source_sha256": "ec8e85610853591a0a46cdfac97c302b7359851681678ca4c64b179677ab7287",
+      "review_preview_sha256": "bd060049b6203dbfd9989e3b66f5ecea591f3677c59453955eadf30ef2980702",
+      "original_landmarks": {
+        "iris_centers": [
+          [
+            497,
+            393
+          ],
+          [
+            628,
+            382
+          ]
+        ],
+        "upper_shoulder_candidates": [
+          [
+            384,
+            588
+          ],
+          [
+            719,
+            593
+          ]
+        ],
+        "source_of_coordinates": "assistant_visual_estimate_pending_owner_visual_check"
+      },
+      "transform": {
+        "kind": "uniform_affine_from_original_only",
+        "scale": 1.66982588,
+        "translate_x_px": -171.2771,
+        "translate_y_px": -15.8178,
+        "iterations": 2
+      },
+      "measured_output_eye_y_px": 633.659,
+      "measured_output_shoulder_y_px": 980,
+      "eye_delta_px": 0.059,
+      "shoulder_delta_px": 0,
+      "estimated_head_width_px": 692.98,
+      "provisional_numeric_pass": true,
+      "production_pass": false,
+      "owner_approved": false,
+      "native_master": false
+    },
+    "explaining": {
+      "source_filename": "albedo_s_luminous_arcane_explanation.png",
+      "original_source_sha256": "162c999377522e4c93df8b7d286072d2ca8cc82cfa51b0af64410c174768a134",
+      "review_preview_sha256": "8b817005b2eb5f3dd34dc7670c415dd78c3b2f8c730664e0137f5703250242c0",
+      "original_landmarks": {
+        "iris_centers": [
+          [
+            504,
+            374
+          ],
+          [
+            625,
+            362
+          ]
+        ],
+        "upper_shoulder_candidates": [
+          [
+            375,
+            582
+          ],
+          [
+            744,
+            590
+          ]
+        ],
+        "source_of_coordinates": "assistant_visual_estimate_pending_owner_visual_check"
+      },
+      "transform": {
+        "kind": "uniform_affine_from_original_only",
+        "scale": 1.54960212,
+        "translate_x_px": -106.7504,
+        "translate_y_px": 67.0571,
+        "iterations": 2
+      },
+      "measured_output_eye_y_px": 633.613,
+      "measured_output_shoulder_y_px": 979.5,
+      "eye_delta_px": 0.013,
+      "shoulder_delta_px": -0.5,
+      "estimated_head_width_px": 649.28,
+      "provisional_numeric_pass": true,
+      "production_pass": false,
+      "owner_approved": false,
+      "native_master": false
+    },
+    "monitoring": {
+      "source_filename": "albedo_in_a_celestial_command_halo.png",
+      "original_source_sha256": "4f75754980023b7596f7b0b9ccf9d36e695d936d40fb0efd7233c725d4be8d46",
+      "review_preview_sha256": "c013a2128e92672d7021ecdee0f76f4eed24141cc8967a16f467d9f751170fc9",
+      "original_landmarks": {
+        "iris_centers": [
+          [
+            506,
+            376
+          ],
+          [
+            631,
+            365
+          ]
+        ],
+        "upper_shoulder_candidates": [
+          [
+            369,
+            582
+          ],
+          [
+            726,
+            588
+          ]
+        ],
+        "source_of_coordinates": "assistant_visual_estimate_pending_owner_visual_check"
+      },
+      "transform": {
+        "kind": "uniform_affine_from_original_only",
+        "scale": 1.53538764,
+        "translate_x_px": -104.8679,
+        "translate_y_px": 68.4877,
+        "iterations": 2
+      },
+      "measured_output_eye_y_px": 633.642,
+      "measured_output_shoulder_y_px": 980,
+      "eye_delta_px": 0.042,
+      "shoulder_delta_px": 0,
+      "estimated_head_width_px": 635.65,
+      "provisional_numeric_pass": true,
+      "production_pass": false,
+      "owner_approved": false,
+      "native_master": false
+    },
+    "pointing": {
+      "source_filename": "albedo_s_celestial_pointing_portrait.png",
+      "original_source_sha256": "d55da7f4ca4e93a5d40592e97fe5c04cc6e3d9aaa8cbe8f24c64ee7e08de3b62",
+      "review_preview_sha256": "46aa1186a1b92e5ce60d410a73c7462fb7d77d7e3249f3d4ec9819b23bb1a412",
+      "original_landmarks": {
+        "iris_centers": [
+          [
+            499,
+            393
+          ],
+          [
+            635,
+            382
+          ]
+        ],
+        "upper_shoulder_candidates": [
+          [
+            358,
+            629
+          ],
+          [
+            768,
+            634
+          ]
+        ],
+        "source_of_coordinates": "assistant_visual_estimate_pending_owner_visual_check"
+      },
+      "transform": {
+        "kind": "uniform_affine_from_original_only",
+        "scale": 1.39025366,
+        "translate_x_px": -20.2738,
+        "translate_y_px": 97.1584,
+        "iterations": 2
+      },
+      "measured_output_eye_y_px": 633.676,
+      "measured_output_shoulder_y_px": 980,
+      "eye_delta_px": 0.076,
+      "shoulder_delta_px": 0,
+      "estimated_head_width_px": 592.25,
+      "provisional_numeric_pass": true,
+      "production_pass": false,
+      "owner_approved": false,
+      "native_master": false
+    }
+  },
+  "actual_production_audit": {
+    "cli_exit_code": 1,
+    "core_pass": false,
+    "passed_count": 0,
+    "full_batch_unlocked": false,
+    "fail_reasons_for_every_state": [
+      "search_regions_not_owner_reviewed",
+      "native_standalone_source_not_verified",
+      "owner_hash_bound_approval_missing"
+    ]
+  },
+  "visual_risks": [
+    "Working estimated head width 692.98 px (12.79% above target 614.4px).",
+    "Pixel shoulder edge is not proof of true anatomical identity.",
+    "All previews upscale concepts; independently authored native masters are required."
+  ],
+  "release_enabled": false,
+  "remaining_28_generated": 0,
+  "gate1_status": "AWAITING_OWNER_VISUAL_SIGNOFF_OF_REVIEW_PREVIEWS"
+}

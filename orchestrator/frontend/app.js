@@ -1,117 +1,71 @@
 'use strict';
-const $ = (selector)=>document.querySelector(selector);
-const $$ = (selector)=>Array.from(document.querySelectorAll(selector));
-let busy = false;
-const statuses = {idle:['☾','IDLE · DREAMING OF QUESTS','Standing by for your next brilliant idea. Maybe after one tiny nap...'],battle:['⚔','BATTLE · ON THE CASE','Quest underway! My tiny paws are moving at maximum speed.'],rest:['🍱','RESTING · CACHE HIT','Found it in the archives! That was a deliciously quick quest.'],panic:['!','PANIC · RECOVERY','An unexpected obstacle! I have captured the issue and checked the fallback.']};
-function setKiko(state){
-  const [icon,label,caption] = statuses[state] || statuses.idle;
-  $('#kiko').dataset.state = state;
-  $('#stateDot').textContent=icon; $('#mascotStatus').textContent=label; $('#mascotCaption').textContent=caption;
-  $('#kiko').setAttribute('aria-label', `Kiko the chibi mascot in ${state} mode`);
+const $=(s)=>document.querySelector(s), $$=(s)=>Array.from(document.querySelectorAll(s));
+const state={roster:[],states:{},agents:[],selected:'kiko',jobs:[],selectedJob:null,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches,lastTick:0,linked:false};
+const MOODS=['idle','curious','wonder','thinking','processing','concentrating','working','speaking','happy','excited','proud','annoyed','angry','bored','sleepy','sleeping','sad','disappointed','hurt','pain','alarmed','panic','relieved','celebrating'];
+const STAGES=['idea','research','script','assets','edit','review','approved','scheduled','published','monitored'];
+function txt(el,v){const node=typeof el==='string'?$(el):el;if(node)node.textContent=String(v??'');}
+function time(){return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Vancouver',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date())}
+function showMessage(message,problem=false){txt('#jobFeedback',message);$('#jobFeedback').style.color=problem?'#ff989f':'#8de7c9'}
+async function api(url,opts={}){const headers={'Content-Type':'application/json',...opts.headers};if(opts.method && opts.method!=='GET')headers['X-Exodia-Client']='exodia-dashboard';const resp=await fetch(url,{...opts,headers});let body;try{body=await resp.json()}catch{body={detail:'Invalid server response'}}if(!resp.ok)throw Error(body.detail||`HTTP ${resp.status}`);return body}
+function nav(name){const labels={command:'OPERATIONS',social:'MEDIA DIVISION',agents:'COMPANION FLEET',activity:'DIAGNOSTICS'};$$('.view').forEach(e=>e.hidden=e.id!==name+'View');$$('.navbtn').forEach(e=>e.classList.toggle('selected',e.dataset.view===name));txt('#viewBreadcrumb',labels[name]);if(name==='social')loadSocial();if(name==='activity')loadEvents();if(name==='agents')renderRoster()}
+$$('.navbtn').forEach(e=>e.addEventListener('click',()=>nav(e.dataset.view)));
+$('#socialShortcut').addEventListener('click',()=>nav('social'));
+$('#motionToggle').addEventListener('click',()=>{state.reduced=!state.reduced;txt('#motionToggle',`Motion: ${state.reduced?'Off':'On'}`);$('#motionToggle').setAttribute('aria-pressed',String(state.reduced))});
+if(state.reduced)txt('#motionToggle','Motion: Off');
+
+// Tactical-floor projection navigation: collision separation, workstation patrols and pointer selection.
+// These UI projections are not character-body rigs; avoid claiming limb animation.
+const starts=[ [46,29],[14,22],[22,75],[78,22],[85,74],[16,52],[66,85],[30,30],[78,52],[62,12] ];
+const palette=['#73baff','#ff6986','#89ceec','#c6a5ff','#f2bd67','#e6d397','#a785ff','#ff90c5','#73dad7','#65efce'];
+function createProjection(a,i){const b=document.createElement('button');b.className='agent-projection';b.type='button';b.style.setProperty('--agent-accent',a.accent||palette[i]);b.title=`${a.name}: ${a.pillar}`;b.setAttribute('aria-label',`Inspect ${a.name}`);const c=document.createElement('div');c.className='portrait-shell';if(a.thumbnail){const im=document.createElement('img');im.src=a.thumbnail;im.alt='';c.append(im)}else{const glyph=document.createElement('span');glyph.className='holo-glyph';glyph.textContent='✦';c.append(glyph)}const label=document.createElement('span');label.textContent=a.name;b.append(c,label);b.addEventListener('click',()=>{state.selected=a.id;renderAgentDetail();nav('agents');});$('#movingAgents').append(b);const xy=starts[i]||[60,40];return {a,el:b,x:xy[0],y:xy[1],tx:xy[0],ty:xy[1],speed:3.2+i%3*1.3,wait:Math.random()*5,angle:0}}
+function pickDestination(p){const i=state.agents.indexOf(p),dock=({kiko:[49,30],liu_bei:[14,25],memory:[12,48],archives:[12,61],inventory:[83,40],vault:[77,70],ninja:[28,80],cache:[72,78],strategy:[54,74],nova:[78,20]})[p.a.id]||[50,50];const r=Math.random();p.tx=r<.45?dock[0]+(Math.random()-.5)*15:10+Math.random()*80;p.ty=r<.45?dock[1]+(Math.random()-.5)*13:12+Math.random()*76;p.tx=Math.max(8,Math.min(92,p.tx));p.ty=Math.max(10,Math.min(88,p.ty));}
+function animateFloor(ms){const dt=Math.min((ms-(state.lastTick||ms))/1000,.05);state.lastTick=ms;const movable=!state.reduced && !document.hidden;for(const p of state.agents){const active=state.states[p.a.id]||'idle';p.el.classList.toggle('busy',['working','processing','thinking'].includes(active));p.el.classList.toggle('alert',['alert','panic','alarmed'].includes(active));p.el.classList.toggle('focused',p.a.id===state.selected);if(movable){p.wait-=dt;if(p.wait<=0){pickDestination(p);p.wait=5+Math.random()*9;}let dx=p.tx-p.x,dy=p.ty-p.y,dist=Math.hypot(dx,dy);if(dist>.5){let vx=dx/dist,vy=dy/dist;for(const other of state.agents){if(other===p)continue;const ox=p.x-other.x,oy=p.y-other.y,d=Math.hypot(ox,oy);if(d>0 && d<9){vx+=ox/d*(9-d)/8;vy+=oy/d*(9-d)/8;}}const mag=Math.hypot(vx,vy)||1;p.x+=vx/mag*p.speed*dt;p.y+=vy/mag*p.speed*dt;}p.x=Math.max(7,Math.min(93,p.x));p.y=Math.max(9,Math.min(91,p.y));}p.el.style.left=p.x+'%';p.el.style.top=p.y+'%';}requestAnimationFrame(animateFloor)}
+function paintAgents(){const base=state.roster;const nova={id:'nova',name:'Nova',pillar:'Media Division',agent_class:'Media Strategist',title:'Social Intelligence',accent:'#61e5d1',thumbnail:null,portrait:null,persona:'Editorial strategist coordinating research, production, review and evidence-based channel planning.',lines:{idle:'Ready to plan a new content idea.',working:'Building an editorial brief.',thinking:'Reviewing audience fit and research sources.',success:'Draft ready for your review.',alert:'No authorized publishing adapter is connected.'}};state.roster=base.some(a=>a.id==='nova')?base:[...base,nova];$('#movingAgents').replaceChildren();state.agents=state.roster.map(createProjection);requestAnimationFrame(animateFloor)}
+function renderRoster(){const holder=$('#agentList');holder.replaceChildren();for(const a of state.roster){const b=document.createElement('button');b.className='agent-select';b.classList.toggle('active',a.id===state.selected);const visual=a.thumbnail?document.createElement('img'):document.createElement('div');if(a.thumbnail){visual.src=a.thumbnail;visual.alt='';visual.loading='lazy'}else{visual.className='holo-glyph';visual.textContent='✦';visual.style.cssText='height:110px;display:grid;place-items:center;font-size:60px;color:#65e5d1'}const name=document.createElement('strong');name.textContent=a.name;const subtitle=document.createElement('small');subtitle.textContent=a.agent_class;b.append(visual,name,subtitle);b.addEventListener('click',()=>{state.selected=a.id;renderRoster();renderAgentDetail()});holder.append(b)}renderAgentDetail()}
+function renderAgentDetail(){const a=state.roster.find(v=>v.id===state.selected);if(!a)return;txt('#agentName',a.name);txt('#agentPersona',a.persona);txt('#agentClass',`${a.agent_class} / ${a.pillar}`);const art=$('#agentArt');art.replaceChildren();if(a.portrait){const im=document.createElement('img');im.src=a.portrait;im.alt=`Approved ${a.name} illustration`;art.append(im)}else{art.textContent='✦ NOVA · ART PRODUCTION PENDING';art.style.color='#77e9d8'}const actions=$('#emotionControls');actions.replaceChildren();for(const mood of MOODS){const b=document.createElement('button');b.textContent=mood;b.classList.toggle('selected',(state.states[a.id]||'idle')===mood);b.addEventListener('click',async()=>{try{if(a.id!=='nova'){await api(`/api/companions/${a.id}/react`,{method:'POST',body:JSON.stringify({state:mood})})}state.states[a.id]=mood;renderAgentDetail()}catch(e){txt('#agentSpeech',e.message)}});actions.append(b)}txt('#agentSpeech',a.lines?.[state.states[a.id]||'idle']||`${a.name}: ${state.states[a.id]||'idle'} (articulated performance not available)`)}
+
+async function loadStats(){try{const s=await api('/api/stats');txt('#uptimeStat',s.uptime_seconds<3600?`${Math.floor(s.uptime_seconds/60)} min`:`${(s.uptime_seconds/3600).toFixed(1)} h`);txt('#chunkStat',s.indexed_chunks);txt('#cacheStat',s.cache_entries);txt('#routeStat',s.last_route);const available=s.config.integrations||{};const host=$('#integrations');host.replaceChildren();for(const name of ['github','etsy','youtube','gmail']){const item=document.createElement('div');item.className='integration';const title=document.createElement('strong');title.textContent=name.toUpperCase();const desc=document.createElement('small');desc.textContent=({github:'Repositories & pull requests',etsy:'Shop & inventory',youtube:'Channel reports',gmail:'Inbox pulse'})[name];const status=document.createElement('b');status.textContent=available[name]?'TOKEN CONFIGURED (UNVERIFIED)':'NOT CONFIGURED';const btn=document.createElement('button');btn.textContent='Check connection ↗';btn.addEventListener('click',async()=>{btn.disabled=true;try{const res=await api(`/api/integrations/${name}/check`,{method:'POST'});status.textContent=res.error?'CHECK FAILED':'CHECK COMPLETE · SEE RESULT';showAnswer(res)}catch(e){status.textContent=e.message}finally{btn.disabled=false;loadEvents()}});item.append(title,desc,status,btn);host.append(item)}}catch(e){txt('#linkStatus','OFFLINE')}}
+function showAnswer(r){$('#responsePanel').hidden=false;txt('#resultMeta',`${r.route||'LOCAL'} · ${r.latency_ms||0}ms`);txt('#responseText',r.answer||r.error||JSON.stringify(r.data||r,null,2))}
+$('#askForm').addEventListener('submit',async e=>{e.preventDefault();const btn=$('#submitBtn');btn.disabled=true;try{const r=await api('/api/ask',{method:'POST',body:JSON.stringify({question:$('#question').value,channel:$('#channel').value,model_choice:$('#modelChoice').value})});showAnswer(r);if(r.status==='awaiting_operator')$('#manualReplyPanel').hidden=false;loadStats();loadEvents();loadRosterStates()}catch(e){showAnswer({error:e.message})}finally{btn.disabled=false}});
+$('#indexBtn').addEventListener('click',async()=>{try{const r=await api('/api/index',{method:'POST'});showAnswer({route:'archive',answer:`Indexed ${r.files} files into ${r.chunks} chunks.`});loadStats()}catch(e){showAnswer({error:e.message})}});
+$('#cacheClear').addEventListener('click',async()=>{try{await api('/api/cache/clear',{method:'POST'});loadStats()}catch(e){showAnswer({error:e.message})}});
+async function loadRosterStates(){try{const data=await api('/api/companions');state.states={...state.states,...data.states};if(!state.roster.length){state.roster=data.agents;paintAgents()}if(!$('#agentsView').hidden)renderAgentDetail()}catch(e){console.warn('Roster unavailable',e.message)}}
+async function loadEvents(){try{const data=await api('/api/events');const host=$('#timeline');host.replaceChildren();if(!data.events.length){host.textContent='No events yet.';return}for(const e of data.events){const row=document.createElement('div');row.className='event';const at=document.createElement('time');at.textContent=new Date(e.at).toLocaleTimeString();const type=document.createElement('b');type.textContent=(e.kind||'system').toUpperCase();const desc=document.createElement('span');desc.textContent=e.message+(e.detail?' · '+e.detail:'');row.append(at,type,desc);host.append(row)}}catch(e){txt('#timeline','Event link unavailable')}}
+$('#refreshEvents').addEventListener('click',loadEvents);
+async function loadSocial(){try{const [status,data]=await Promise.all([api('/api/social/status'),api('/api/social/jobs')]);state.jobs=data.jobs;txt('#jobCount',`${state.jobs.length} ITEMS`);renderJobs();}catch(e){txt('#socialJobs',e.message)}}
+function renderJobs(){const host=$('#socialJobs');host.replaceChildren();if(!state.jobs.length){host.innerHTML='<div class="empty">No ideas yet. Create a brief to begin.</div>';return}for(const j of state.jobs){const b=document.createElement('button');b.className='job';b.classList.toggle('active',j.id===state.selectedJob);const left=document.createElement('div');const title=document.createElement('strong');title.textContent=j.title;const sm=document.createElement('small');sm.textContent=j.platforms.join(' · ').toUpperCase();left.append(title,sm);const stage=document.createElement('span');stage.textContent=j.stage;b.append(left,stage);b.addEventListener('click',()=>{state.selectedJob=j.id;renderJobs();displayJob(j)});host.append(b)}const sel=state.jobs.find(j=>j.id===state.selectedJob);if(sel)displayJob(sel)}
+$('#socialCreate').addEventListener('submit',async e=>{e.preventDefault();const btn=$('#createJob');btn.disabled=true;const platforms=$$('.platform-picks input:checked').map(x=>x.value);const raw=$('#socialSource').value.trim();try{const job=await api('/api/social/jobs',{method:'POST',body:JSON.stringify({title:$('#socialTitle').value.trim(),concept:$('#socialConcept').value,platforms,source_urls:raw?[raw]:[]})});$('#socialCreate').reset();state.selectedJob=job.id;await loadSocial();displayJob(job)}catch(e){alert(e.message)}finally{btn.disabled=false}});
+async function displayJob(j){$('#jobDetails').hidden=false;txt('#jobTitle',j.title);txt('#jobStage',j.stage.toUpperCase());$('#jobScript').value=j.script;$('#jobCaption').value=j.caption;$('#approveJob').hidden=j.stage!=='review';$('#advanceJob').disabled=STAGES.indexOf(j.stage)>=5;txt('#advanceJob',STAGES.indexOf(j.stage)<5?`Move to ${STAGES[STAGES.indexOf(j.stage)+1]} →`:'Awaiting approval or provider');showMessage('');await renderBrief(j.id)}
+async function renderBrief(id){try{const b=await api(`/api/social/jobs/${id}/brief`),host=$('#briefQuestions');host.replaceChildren();const ol=document.createElement('ol');for(const q of b.research_questions){const li=document.createElement('li');li.textContent=q;ol.append(li)}host.append(ol);const note=document.createElement('p');note.textContent=`${b.sources_supplied} source URL(s) supplied · Research not auto-verified`;host.append(note)}catch(e){txt('#briefQuestions',e.message)}}
+$('#refreshBrief').addEventListener('click',()=>state.selectedJob&&renderBrief(state.selectedJob));
+$('#saveJob').addEventListener('click',async()=>{if(!state.selectedJob)return;try{const j=await api(`/api/social/jobs/${state.selectedJob}`,{method:'PATCH',body:JSON.stringify({fields:{script:$('#jobScript').value,caption:$('#jobCaption').value}})});showMessage('Draft saved to local SQLite.');await loadSocial()}catch(e){showMessage(e.message,true)}});
+$('#advanceJob').addEventListener('click',async()=>{const j=state.jobs.find(j=>j.id===state.selectedJob);if(!j)return;const next=STAGES[STAGES.indexOf(j.stage)+1];try{await api(`/api/social/jobs/${j.id}/advance`,{method:'POST',body:JSON.stringify({stage:next})});showMessage(`Moved to ${next}`);await loadSocial()}catch(e){showMessage(e.message,true)}});
+$('#approveJob').addEventListener('click',async()=>{const j=state.jobs.find(j=>j.id===state.selectedJob);if(!j||j.stage!=='review')return;const answer=prompt('Type APPROVE CONTENT to approve this draft. No publishing will occur.');if(answer===null)return;try{await api(`/api/social/jobs/${j.id}/approve`,{method:'POST',body:JSON.stringify({confirmation:answer})});showMessage('Approved for future submission; nothing published.');await loadSocial()}catch(e){showMessage(e.message,true)}});
+function connect(){let ws;try{ws=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/events')}catch{return}ws.onopen=()=>{state.linked=true;txt('#linkStatus','LINKED')};ws.onmessage=e=>{try{const v=JSON.parse(e.data);if(v.kind==='companion'){const [id,mood]=(v.detail||'').split(':');if(id&&mood)state.states[id]=mood;}if(!$('#activityView').hidden)loadEvents()}catch{}};ws.onclose=()=>{state.linked=false;txt('#linkStatus','OFFLINE');setTimeout(connect,4000)}}
+function boot(){txt('#dateNow',time());setInterval(()=>txt('#dateNow',time()),30000);loadStats();loadRosterStates();loadEvents();setInterval(loadStats,20000);setInterval(loadRosterStates,12000);connect();}
+boot();
+
+async function refreshWebModels(){
+ try{
+  const r=await api('/api/web/sessions');
+  txt('#webSessionStatus',Object.entries(r.models).map(([k,v])=>k+': '+v.status).join(' · '));
+ }catch(e){txt('#webSessionStatus',e.message)}
 }
-function localizedTime(iso){try{return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Vancouver',hour:'numeric',minute:'2-digit'}).format(new Date(iso))}catch{return '--'}}
-function paintEvents(events){
-  const container=$('#timeline'); container.replaceChildren();
-  if(!events.length){container.textContent='No events yet.';return}
-  for(const evt of events.slice(0,7)){
-    const item=document.createElement('div');item.className='timeline-item';
-    const mark=document.createElement('span');mark.className='timeline-mark '+evt.kind;
-    mark.textContent = ({success:'✓',alert:'!',task:'⚔',system:'✦'})[evt.kind]||'✧';
-    const content=document.createElement('div');content.className='timeline-content';
-    const top=document.createElement('div');top.className='timeline-top';
-    const title=document.createElement('strong');title.textContent=evt.message;
-    const time=document.createElement('time');time.textContent=localizedTime(evt.at);
-    const detail=document.createElement('p');detail.textContent=evt.detail||evt.kind;
-    top.append(title,time);content.append(top,detail);item.append(mark,content);container.append(item);
-  }
-}
-async function fetchJSON(url, options={}){
-  const res=await fetch(url,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});
-  if(!res.ok)throw Error('Server returned HTTP '+res.status);
-  return res.json();
-}
-async function loadStats(){
-  try{
-    const stats=await fetchJSON('/api/stats');
-    $('#chunkStat').textContent=stats.indexed_chunks.toLocaleString();
-    $('#cacheStat').textContent=stats.cache_entries.toLocaleString();
-    $('#routeStat').textContent=stats.last_route==='idle'?'Idle':stats.last_route;
-    $('#uptimeStat').textContent=stats.uptime_seconds<3600 ? `${Math.floor(stats.uptime_seconds/60)}m`: `${(stats.uptime_seconds/3600).toFixed(1)}h`;
-    const availability=stats.config.integrations||{};
-    for(const [name,on] of Object.entries(availability)){
-      const el=$(`[data-status="${name}"]`);
-      if(el && !el.classList.contains('verified') && !el.classList.contains('failed')){
-        el.textContent=on?'KEY SET':'UNCONFIGURED';el.classList.toggle('configured',on);
-      }
-    }
-    const provider=$('#channel option[value="browser"]');
-    provider.textContent=stats.config.browser_enabled ? '◉ Browser' : '◉ Browser (off)';
-  }catch(e){console.warn('Status unavailable:',e.message)}
-}
-function showAnswer(result){
-  $('#responsePanel').hidden=false;
-  const meta = `${(result.route||'unknown').toUpperCase()} · ${result.latency_ms||0} ms ${result.cache_hit?'· CACHE HIT':''}`;
-  $('#resultMeta').textContent=meta;
-  const duration=Number(result.latency_ms)||0;
-  $('#latencyValue').textContent=duration?`${duration} ms`:'—';
-  $('#latencyFill').style.width=duration?`${Math.max(2,Math.min(100,(duration/3000)*100))}%`:'0%';
-  $('#responseText').textContent=result.answer || 'No content returned.';
-  $('#responseData').hidden=!result.data;
-  $('#responseData').textContent=result.data?JSON.stringify(result.data,null,2):'';
-  $('#responsePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-async function runQuest(question,channel='auto'){
-  if(busy)return;
-  busy=true;setKiko('battle');$('#submitBtn').disabled=true;$('#submitBtn').textContent='On the case…';
-  try{
-    const res=await fetchJSON('/api/ask',{method:'POST',body:JSON.stringify({question,channel})});
-    showAnswer(res);setKiko(res.error || res.data?.browser_error?'panic':res.cache_hit?'rest':'idle');
-    await refreshEvents(); await loadStats();
-  }catch(e){setKiko('panic');showAnswer({answer:e.message,route:'error',error:true});}
-  finally{busy=false;$('#submitBtn').disabled=false;$('#submitBtn').innerHTML='Launch quest <span>↗</span>'}
-}
-async function refreshSnapshots(){
-  try{const result=await fetchJSON('/api/snapshots');
-    $('#snapshotRow').hidden=!result.latest;
-    if(result.latest){$('#snapshotLink').href='/api/snapshots/'+encodeURIComponent(result.latest)}
-  }catch(e){console.warn('Snapshot list unavailable:',e.message)}
-}
-async function refreshEvents(){try{const data=await fetchJSON('/api/events');paintEvents(data.events)}catch(e){console.warn(e.message)}}
-$('#askForm').addEventListener('submit',(e)=>{e.preventDefault();const q=$('#question').value.trim();if(q.length>1)runQuest(q,$('#channel').value)});
-$$('[data-prompt]').forEach(btn=>btn.addEventListener('click',()=>{$('#question').value=btn.dataset.prompt;runQuest(btn.dataset.prompt)}));
-$$('[data-check]').forEach(btn=>btn.addEventListener('click',async()=>{
-  if(busy)return;busy=true;btn.disabled=true;setKiko('battle');
-  const name=btn.dataset.check;
-  try{
-    const res=await fetchJSON(`/api/integrations/${name}/check`,{method:'POST'});
-    showAnswer(res);
-    const el=$(`[data-status="${name}"]`);
-    el.classList.remove('configured','verified','failed');el.classList.add(res.error?'failed':'verified');
-    el.textContent=res.error?'NEEDS SETUP':'VERIFIED';setKiko(res.error?'panic':'idle');
-    await refreshEvents();await loadStats();
-  }catch(err){setKiko('panic');showAnswer({answer:err.message,route:name,error:true})}
-  finally{busy=false;btn.disabled=false}
-}));
-$('#indexBtn').addEventListener('click',async()=>{
-  $('#indexBtn').disabled=true;setKiko('battle');$('#indexBtn').textContent='Indexing...';
-  try{const r=await fetchJSON('/api/index',{method:'POST'});showAnswer({route:'local archive',answer:`Indexed ${r.files} files into ${r.chunks} chunks. ${r.errors} file errors. Dense search: ${r.dense_enabled?'enabled':'off (FTS5 active)'}.`,data:r});setKiko('idle');}
-  catch(e){setKiko('panic');showAnswer({answer:e.message,route:'index',error:true})}
-  finally{$('#indexBtn').disabled=false;$('#indexBtn').textContent='✧ Index workspace';await loadStats();await refreshEvents()}
+$('#sessionStart').addEventListener('click',async()=>{
+ const b=$('#sessionStart');b.disabled=true;
+ try{await api('/api/web/sessions/start',{method:'POST',body:'{}'});await refreshWebModels();}
+ catch(e){txt('#webSessionStatus',e.message);}
+ finally{b.disabled=false;}
 });
-$('#clearCache').addEventListener('click',async()=>{
-  try{await fetchJSON('/api/cache/clear',{method:'POST'});setKiko('rest');await refreshEvents();await loadStats()}
-  catch(e){setKiko('panic')}
+$('#recordModelReply').addEventListener('click',async()=>{
+ const b=$('#recordModelReply');b.disabled=true;
+ try{
+  const r=await api('/api/web/sessions/'+$('#modelChoice').value+'/record',{
+   method:'POST',body:JSON.stringify({response:$('#manualReply').value})});
+  showAnswer({route:r.model_choice,answer:r.answer,latency_ms:0});
+  $('#manualReplyPanel').hidden=true;$('#manualReply').value='';
+  await refreshWebModels();
+ }catch(e){showAnswer({error:e.message})}
+ finally{b.disabled=false;}
 });
-$$('[data-go]').forEach(link=>link.addEventListener('click',()=>{
-  $$('.nav-link').forEach(btn=>btn.classList.toggle('active',btn===link));
-  document.getElementById(link.dataset.go)?.scrollIntoView({behavior:'smooth',block:'start'});
-}));
-const clock=()=>{$('#localDate').textContent=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Vancouver',weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date())};
-clock();setInterval(clock,60000);loadStats();refreshEvents();refreshSnapshots();setInterval(loadStats,15000);setInterval(refreshSnapshots,15000);
-function connectEvents(){
-  const url=(location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/ws/events';
-  const sock=new WebSocket(url);
-  sock.onmessage=()=>refreshEvents();
-  sock.onclose=()=>setTimeout(connectEvents,4000);
-}
-connectEvents();
+refreshWebModels();

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10112c">
+<title>EXODIA Tower · Albedo Visual Workbench</title>
+<link rel="stylesheet" href="/assets/test_workbench.css">
+<link rel="stylesheet" href="/assets/test_workbench_33.css">
+<script type="module" src="/assets/test_workbench_33.mjs"></script>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon">✧</div><div><strong>EXODIA <span>TOWER</span></strong><small>OPERATIONS / CHARACTER LAB</small></div></div>
+    <div class="top-center">AI COMPANION <b>·</b> VISUAL STATE WORKBENCH <span>V5 · 33-STATE DEVELOPMENT</span></div>
+    <div class="top-right"><i class="live-dot"></i><span>LOCAL PREVIEW</span><span id="buildBadge" class="build-badge" aria-label="Application build">EXODIA v0.3.0-dev · unknown</span><span class="clock" id="clock">00:00</span></div>
+  </header>
+  <main class="dashboard">
+    <aside class="state-rail" aria-label="Choose companion state">
+      <p class="eyebrow">01 / STATE LIBRARY</p>
+      <h2>Albedo's activities</h2>
+      <p class="rail-copy">All 33 individual review portraits are present. All 33 designs are accepted for development. Four non-native replacements are approved for installation; check the live SHA inspector to verify the active files.</p>
+      <nav id="stateMenu" class="state-menu"></nav>
+      <div class="rail-bottom"><div class="small-line"></div><b>STATE DRIVER</b><span>Manual selection or all-state review cycle</span><label class="toggle"><input id="autoCycle" type="checkbox"/> Cycle all 33 states</label><div class="kbd-tip">Keyboard: <kbd>←</kbd> <kbd>→</kbd> to switch</div></div>
+    </aside>
+
+    <section class="hero" aria-label="Interactive portrait display">
+      <div class="hero-grid"></div><div class="hero-glow"></div>
+      <div class="stage-meta"><span>LIVE COMPANION / TASK WORKSTATION</span><div><i class="live-dot"></i> PREVIEW ACTIVE</div></div>
+      <div class="hero-title"><p>CELESTIAL OPERATIVE // A1</p><h1>Albedo</h1><span>Central Command · Living Companion</span></div>
+      <div class="portrait-zone">
+        <div class="ornament orbit orbit-one"></div><div class="ornament orbit orbit-two"></div><div class="star star-a">✦</div><div class="star star-b">✧</div><div class="star star-c">✦</div>
+        <div class="reticle reticle-left"><div class="reticle-line"></div><span>SOUL SIGNATURE</span><strong>ALB-001</strong></div>
+        <div id="portraitFrame" class="portrait-frame" role="img" aria-label="Loading Albedo portrait"><div class="portrait-loading">Preparing preview…</div></div>
+        <div class="reticle reticle-right"><div class="reticle-line"></div><span>INNER STATE</span><strong id="innerState">STANDBY</strong></div>
+        <div id="gestureBeam" class="gesture-beam" hidden><i></i><span>FOCUS TARGET</span></div>
+      </div>
+      <div class="stage-bottom"><div class="status-chip"><i class="live-dot"></i><span id="statusLabel">Awaiting command</span></div><p id="statusText">The companion is ready for a new mission.</p><div class="stage-note">Whole-stage opacity transitions. No cloned character images for missing states.</div></div>
+      <div class="cosmic-footer"><span>✦ STARLINK STABLE</span><span>CONSTELLATION: LYRA</span><span>◉ HEARTBEAT 01</span></div>
+    </section>
+
+    <aside class="inspector" aria-label="Asset inspector and simulation controls">
+      <p class="eyebrow">02 / LIVE TELEMETRY</p><h2>State inspector</h2><p class="rail-copy">Inspect 33 states, inspect exact image SHA-256 when artwork exists, and distinguish missing art from verified concept previews.</p>
+      <section class="side-card">
+        <div class="card-heading">CURRENT STATE <span id="stateKey">IDLE</span></div>
+        <div class="big-state" id="stateTitle">Awaiting command</div>
+        <p id="actionDetails">Standing by for a command</p>
+        <div class="signal"><span>EMOTION SIGNAL</span><b>LIVE</b></div><div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </section>
+      <section class="side-card technical">
+        <div class="card-heading">ASSET READINESS <span class="proto-tag" id="artStatusTag">REVIEW ONLY</span></div>
+        <dl><dt>Canvas</dt><dd>1536 × 1920</dd><dt>Format</dt><dd>PNG · 4:5</dd><dt>Rendering</dt><dd>Contain + pad</dd><dt>Motion</dt><dd>Opacity only</dd><dt>Provenance</dt><dd id="sourceName">Loading…</dd><dt>SHA-256</dt><dd class="sha" id="assetHash">Verifying…</dd><dt>Eye / shoulder Y</dt><dd id="dualAnchors">Not audited</dd><dt>Head width</dt><dd id="headWidth">Not audited</dd>
+          <dt>Geometric verdict</dt><dd id="geometryVerdict">Awaiting artwork</dd>
+          <dt>Left / right iris</dt><dd id="irisDetail">Not measured</dd>
+          <dt>Left / right shoulder</dt><dd id="shoulderDetail">Not measured</dd>
+          <dt>Horizontal center</dt><dd id="centerDetail">Not measured</dd>
+          <dt>Owner development review</dt><dd id="ownerDevelopmentStatus">Loading…</dd><dt>Production registry</dt><dd id="registryStatus">33 / 33 pending</dd></dl>
+      </section>
+      <section class="side-card interactive">
+        <div class="card-heading">TRANSITION CONTROL</div>
+        <label for="transitionSpeed">Cross-fade <b id="speedValue">240 ms</b></label><input id="transitionSpeed" type="range" min="0" max="650" step="10" value="240"/>
+        <div class="quick-actions"><button id="restart" class="secondary">Restart Idle</button><button id="copyDebug" class="secondary">Copy Telemetry</button></div>
+        <label class="toggle small-toggle"><input type="checkbox" id="ambientMotion" checked /> Animated cosmic ambience</label><label class="toggle small-toggle"><input type="checkbox" id="observeTasks" /> Follow live task status (read-only)</label>
+      </section>
+      <div class="nonproduction"><span>!</span><div><b>REVIEW ART · NOT PRODUCTION</b><p>All 33 standalone portrait review candidates are available. All 33 designs are accepted for development review; the four targeted replacements are 1122×1402 originals with non-native presentation previews. Their installed status is verified by the live SHA index. No portrait has production approval.</p></div></div>
+      <section class="side-card batch-intake"><div class="card-heading">LOCAL ART INTAKE</div><label for="coreZip">Gate 1 Core-Five review ZIP (verified sources)</label><input type="file" id="coreZip" accept=".zip,application/zip"><button id="coreImport" type="button" class="secondary">Load 5 references</button>
+      <label for="reviewOnlyZip">Owner-approved four-state DEVELOPMENT review ZIP (1122×1402 originals)</label>
+      <input type="file" id="reviewOnlyZip" accept=".zip,application/zip">
+      <button id="reviewOnlyImport" type="button" class="secondary">Install 4 resampled review portraits</button>
+      <button id="reviewRollback" type="button" class="secondary">Rollback 4 review portraits</button>
+      <p>Preserves real original PNG bytes and replaces only four DISPLAY images. Every 1536×1920 presentation copy is explicitly labeled **RESAMPLED — NOT NATIVE**. All 29 other artwork hashes stay locked.</p>
+      <label for="stateZip">Future native-resolution four-state originals ZIP</label><input type="file" id="stateZip" accept=".zip,application/zip"><button id="stateImport" type="button" class="secondary">Validate 4 genuine native masters</button>
+      <p>Only Angered, Awaiting Command, Neutral and Tantrum may be replaced together. The other 29 exact image hashes are locked. Real individual originals, source provenance and integrity are required; production approval remains disabled.</p></section>
+    </aside>
+  </main>
+  <footer class="footer-bar"><span id="loadStatus">Loading 33-state development manifest…</span><div><span class="footer-led"></span> UI STATE ENGINE ONLINE <span class="footer-divider">|</span> <span id="frameCount">0 / 33</span> STATES TESTED</div></footer>
+</div>
+</body></html>

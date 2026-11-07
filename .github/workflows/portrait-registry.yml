@@ -1,0 +1,221 @@
+name: Albedo portrait registry gate
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths:
+      - 'orchestrator/tools/portrait_registry_audit.py'
+      - 'orchestrator/tools/audit_portrait_anchors.py'
+      - 'orchestrator/tools/reanchor_core5_preview.py'
+      - 'orchestrator/tests/test_audit_portrait_anchors.py'
+      - 'assets/blueprints/albedo_anchor_blueprint_v1.json'
+      - 'assets/blueprints/albedo_28_state_batch_gate.json'
+      - 'orchestrator/tools/ingest_static_portraits.py'
+      - 'orchestrator/tools/ingest_standalone_portrait.py'
+      - 'orchestrator/tools/portrait_normalization.py'
+      - 'orchestrator/tools/ingest_core_action_batch.py'
+      - 'orchestrator/tests/test_core_action_batch.py orchestrator/tests/test_albedo_uniform_batch_matrix.py'
+      - 'assets/staging_intake/core_actions_batch.json'
+      - 'assets/staging_intake/albedo_static_33_batch.json'
+      - 'orchestrator/tests/test_albedo_uniform_batch_matrix.py'
+      - 'orchestrator/tests/test_portrait_normalization.py'
+      - 'orchestrator/tests/test_ingest_standalone_portrait.py'
+      - 'assets/staging_intake/manifest_template.json'
+      - 'orchestrator/tests/test_standalone_only_gate.py'
+      - 'orchestrator/tests/test_portrait_registry_audit.py'
+      - 'orchestrator/tests/portrait_state_manager.test.mjs'
+      - 'orchestrator/frontend/portrait_state_manager.mjs'
+      - 'orchestrator/frontend/portrait_state_boot.mjs'
+      - 'orchestrator/frontend/companions/production/kiko/portrait_registry.json'
+      - 'orchestrator/tools/recover_core5_sources.py'
+      - 'orchestrator/tools/calibrate_core5_concepts.py'
+      - 'orchestrator/tests/test_core5_gate1_recovery.py'
+      - 'assets/review/albedo_core5/source_anatomy_annotation_template.json'
+      - 'assets/review/albedo_core5/source_access_report.json'
+      - 'assets/review/albedo_core5/authorized_28_state_art_queue.json'
+      - 'assets/review/albedo_core5/gate4_generated_review_candidates.json'
+      - 'assets/review/albedo_core5/gate4_celebrating_provisional_landmarks.json'
+      - 'assets/review/albedo_core5/gate4_native_review_art_actual_report.json'
+      - 'orchestrator/tools/gate4_ingest_independent_render.py'
+      - 'orchestrator/tools/gate4_stage_runway_verified.py'
+      - 'orchestrator/tools/apply_gate4_four_corrections.py'
+      - 'orchestrator/tools/apply_gate4_four_review_only.py'
+      - 'orchestrator/tests/test_gate4_four_review_only.py'
+      - 'assets/review/albedo_core5/gate4_four_accepted_development_review_only.json'
+      - 'orchestrator/tests/test_gate4_targeted_owner_corrections.py'
+      - 'assets/review/albedo_core5/gate4_four_state_correction_lock.json'
+      - 'assets/review/albedo_core5/gate4_runway_verified_sources.json'
+      - 'assets/review/albedo_core5/gate4_runway_verified_report.json'
+      - 'orchestrator/app_data/albedo_33_review/**'
+      - 'orchestrator/tools/audit_33_state_candidates.py'
+      - 'orchestrator/tests/test_gate3_33_states.py'
+      - '.github/workflows/portrait-registry.yml'
+      - 'orchestrator/tools/build_core5_review.py'
+      - 'orchestrator/tools/core5_geometry_gate.py'
+      - 'orchestrator/tools/core5_native_candidate_gate.py'
+      - 'orchestrator/tests/test_core5_native_candidates.py'
+      - 'assets/review/albedo_core5/verified_concept_pixel_telemetry_2026-11-02.json'
+      - 'orchestrator/tools/recover_core5_sources.py'
+      - 'orchestrator/tools/calibrate_core5_concepts.py'
+      - 'orchestrator/tests/test_core5_gate1_recovery.py'
+      - 'assets/review/albedo_core5/source_anatomy_annotation_template.json'
+      - 'assets/review/albedo_core5/source_access_report.json'
+  pull_request:
+    branches: [development/exodia-foundation]
+jobs:
+  validate:
+    name: Portrait
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install QA dependencies
+        run: python -m pip install "Pillow>=11,<13" "pytest>=8,<10" "opencv-python-headless>=4.10,<5"
+      - name: Run registry regression tests
+        run: python -m pytest -q orchestrator/tests/test_portrait_registry_audit.py orchestrator/tests/test_static_portrait_release.py orchestrator/tests/test_standalone_only_gate.py orchestrator/tests/test_ingest_standalone_portrait.py orchestrator/tests/test_portrait_normalization.py orchestrator/tests/test_core_action_batch.py
+      - name: Strict dual-anchor regression and 28-state generation gate
+        run: |
+          python -m pytest -q orchestrator/tests/test_audit_portrait_anchors.py orchestrator/tests/test_core5_gate1_recovery.py orchestrator/tests/test_core5_native_candidates.py
+          python - <<'PY'
+          import json
+          p=json.load(open('assets/blueprints/albedo_28_state_batch_gate.json'))
+          assert p['status']=='REVIEW_ART_GENERATION_AUTHORIZED_PRODUCTION_LOCKED'
+          from pathlib import Path
+          queue=json.load(open('assets/review/albedo_core5/authorized_28_state_art_queue.json'))
+          count=sum(s['generation_status'] in ('generated_unapproved_native_candidate',
+                           'generated_owner_development_review_only')
+                    for s in queue['states'])
+          assert p['generated_states']==count
+          assert queue['generated_count']==count
+          for s in queue['states']:
+              if s['generation_status'] in ('generated_unapproved_native_candidate',
+                                             'generated_owner_development_review_only'):
+                  assert Path('orchestrator/app_data/albedo_33_review/images',s['state_key']+'.png').is_file()
+                  assert Path('orchestrator/app_data/albedo_33_review/sources',s['state_key']+'_original.png').is_file()
+                  if s['generation_status']=='generated_owner_development_review_only':
+                      assert s['source_native_resolution_eligible'] is False
+                      assert s['native_production_certified'] is False
+                      assert s['original_canvas']==[1122,1402]
+          assert p['native_core_five_certified_count']==0
+          assert p['production_release_enabled'] is False
+          assert p['review_generation_approved_count']==28
+          registry=json.load(open('orchestrator/frontend/companions/production/kiko/portrait_registry.json'))
+          assert registry['release']['enabled'] is False
+          assert len([s for s in registry['states'].values() if s['status']=='pending_production_art'])==33
+          assert len([s for s in registry['states'].values() if s.get('tentative_visual_reference')])==5
+          assert all(not s['tentative_visual_reference']['owner_visual_approved_native_master']
+                     for s in registry['states'].values() if s.get('tentative_visual_reference'))
+          print(f'PASS: 28-state review generation authorized, {count} actual image files; production remains locked')
+          PY
+      - name: Audit 28-state generation queue (native art missing expected fail)
+        shell: bash
+        run: |
+          set +e
+          python orchestrator/tools/audit_33_state_candidates.py --project-root orchestrator --annotations assets/review/albedo_core5/gate4_celebrating_provisional_landmarks.json --report 28_review_audit_report.json > /tmp/exodia_28_art_audit.txt
+          audit_code=$?
+          set -e
+          if [ "$audit_code" -ne 1 ]; then
+            echo "FAIL: uncreated native assets must not be declared production ready."
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          q=json.load(open('assets/review/albedo_core5/authorized_28_state_art_queue.json'))
+          r=json.load(open('28_review_audit_report.json'))
+          assert q['count']==28 and len(q['states'])==28
+          assert len({row['state_key'] for row in q['states']})==28
+          from pathlib import Path
+          from hashlib import sha256
+          count=sum(row['generation_status'] in ('generated_unapproved_native_candidate',
+                                                'generated_owner_development_review_only')
+                    for row in q['states'])
+          assert q['generated_count']==count
+          for row in q['states']:
+              if row['generation_status'] in ('generated_unapproved_native_candidate',
+                                                'generated_owner_development_review_only'):
+                  image=Path('orchestrator/app_data/albedo_33_review/images')/(row['state_key']+'.png')
+                  original=Path('orchestrator/app_data/albedo_33_review/sources')/(row['state_key']+'_original.png')
+                  assert image.is_file() and original.is_file()
+                  assert sha256(image.read_bytes()).hexdigest()==row['output_sha256']
+                  assert sha256(original.read_bytes()).hexdigest()==row['source_sha256']
+                  assert row['production_status']=='pending_production_art'
+                  if row['generation_status']=='generated_owner_development_review_only':
+                      from PIL import Image
+                      with Image.open(original) as im:
+                          assert im.format=='PNG' and im.size==(1122,1402)
+                      with Image.open(image) as im:
+                          assert im.format=='PNG' and im.size==(1536,1920)
+                      assert row['native_production_certified'] is False
+              else:
+                  assert row['generation_status']=='authorized_not_generated'
+                  assert not row['source_sha256']
+          assert len({row['raw_generation_prompt'] for row in q['states']})==28
+          assert r['states_expected']==28 and r['candidate_image_count']==count
+          assert r['originals_sha_checked_count']==count
+          assert 1 <= r['independently_audited_numeric_count'] <= count
+          if count:
+              c=r['states']['celebrating']
+              assert c['output_sha256']=='cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e'
+              assert c['pixel_scan'] and c['measured_geometry']['eye_delta_px'] < -2
+              assert c['measured_geometry']['shoulder_delta_px'] < -2
+              assert c['status']=='FAIL'
+              assert c['owner_approved'] is False
+          assert r['provisional_numeric_pass_count']==0
+          assert r['production_release_enabled'] is False
+          print(f'PASS: 28 distinct jobs, {count} verified originals, no invented masters')
+          PY
+      - name: Verify targeted owner correction lock (29 protected)
+        run: |
+          python orchestrator/tools/apply_gate4_four_corrections.py --verify-baseline
+          python -m pytest -q orchestrator/tests/test_gate4_targeted_owner_corrections.py -k 'not real_api'
+          python -m pytest -q orchestrator/tests/test_gate4_four_review_only.py -k 'not fastapi'
+      - name: Run state-manager tests
+        run: node --test orchestrator/tests/portrait_state_manager.test.mjs
+      - name: Build SHA-verified review-only Core-Five preview board
+        run: |
+          python orchestrator/tools/build_core5_review.py --out-png core5_preview_review.png --out-json core5_preview_diagnostic.json
+          python - <<'PY'
+          import json
+          d=json.load(open('core5_preview_diagnostic.json'))
+          assert d['preview_only_count']==4 and d['unavailable_count']==1
+          assert d['five_of_five_production_pass'] is False and d['released_28_states'] is False
+          print('PASS: preview-only board, missing Pointing; 28-state gate locked')
+          PY
+      - name: Run production-intake audit (missing art expected to fail closed)
+        shell: bash
+        run: |
+          set +e
+          python orchestrator/tools/portrait_registry_audit.py orchestrator/frontend/companions/production/kiko/portrait_registry.json --report portrait_registry_report.json > /tmp/exodia_portrait_audit.txt
+          status=$?
+          set -e
+          if [ "$status" -ne 1 ]; then
+            cat /tmp/exodia_portrait_audit.txt
+            echo "FAIL: registry should stay blocked until approved assets are committed."
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          r=json.load(open("portrait_registry_report.json"))
+          assert r["status"]=="FAILED" and not r["production_ready"]
+          assert 0 <= r["states_verified"] <= 33 and r["loops_verified"]==0
+          assert r["states_verified"] == sum(item["passed"] is True for item in r["states"].values())
+          registry=json.load(open("orchestrator/frontend/companions/production/kiko/portrait_registry.json"))
+          assert registry["release"]["enabled"] is False
+          print("PASS: production art remains blocked; no false approvals")
+          PY
+      - name: Audit priority action queue (no unreviewed commits)
+        run: python orchestrator/tools/ingest_core_action_batch.py --report core_actions_batch_report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: albedo-registry-audit
+          path: |
+            portrait_registry_report.json
+            core_actions_batch_report.json
+            core5_preview_review.png
+            core5_preview_diagnostic.json
+            28_review_audit_report.json

@@ -4,7 +4,10 @@ import json
 from pathlib import Path
 from threading import RLock
 
-STATES=frozenset({'idle','thinking','working','success','rest','alert'})
+STATES=frozenset({'idle','thinking','working','success','rest','alert',
+    'curious','wonder','processing','concentrating','speaking','happy','excited','proud',
+    'annoyed','angry','bored','sleepy','sleeping','sad','disappointed','hurt','pain',
+    'alarmed','panic','relieved','celebrating'})
 
 class CompanionDirector:
     def __init__(self, root: Path, events):

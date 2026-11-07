@@ -1,0 +1,95 @@
+name: EXODIA Gate 4 — Verify and stage independently rendered Runway review portraits
+on:
+  push:
+    branches: [development/exodia-foundation]
+    paths:
+      - 'assets/review/albedo_core5/gate4_runway_verified_sources.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: exodia-gate4-runway-authentic-art-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  stage-verified-sources:
+    if: github.ref == 'refs/heads/development/exodia-foundation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development/exodia-foundation
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed image normalization environment
+        run: python -m pip install 'Pillow==12.3.0'
+      - name: Verify every independently rendered original and exact native pixel transform
+        run: python orchestrator/tools/gate4_stage_runway_verified.py --repo-root .
+      - name: Fail closed unless source files, hashes, queue and approval lockdown agree
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from hashlib import sha256
+          import json
+          from PIL import Image
+          root=Path('.')
+          queue=json.loads((root/'assets/review/albedo_core5/authorized_28_state_art_queue.json').read_text())
+          idx=json.loads((root/'orchestrator/app_data/albedo_33_review/review_index.json').read_text())
+          blueprint=json.loads((root/'assets/blueprints/albedo_28_state_batch_gate.json').read_text())
+          expected=sum(row['generation_status']=='generated_unapproved_native_candidate' for row in queue['states'])
+          assert expected==queue['generated_count']==blueprint['generated_states']
+          assert expected >= 2
+          assert blueprint['production_release_enabled'] is False
+          prod=json.loads((root/'orchestrator/frontend/companions/production/kiko/portrait_registry.json').read_text())
+          assert prod['release']['enabled'] is False
+          assert all(state['status']=='pending_production_art' for state in prod['states'].values())
+          source_hashes=set()
+          for state in queue['states']:
+              if state['generation_status']!='generated_unapproved_native_candidate':
+                  continue
+              name=state['state_key']
+              orig=root/'orchestrator/app_data/albedo_33_review/sources'/f'{name}_original.png'
+              norm=root/'orchestrator/app_data/albedo_33_review/images'/f'{name}.png'
+              assert orig.is_file() and norm.is_file(),name
+              assert sha256(orig.read_bytes()).hexdigest()==state['source_sha256'],name
+              assert sha256(norm.read_bytes()).hexdigest()==state['output_sha256'],name
+              assert state['source_sha256'] not in source_hashes,name
+              source_hashes.add(state['source_sha256'])
+              with Image.open(norm) as im:assert im.size==(1536,1920) and im.format=='PNG'
+              assert idx['states'][name]['owner_approved'] is False
+              assert idx['states'][name]['production_status']=='pending_production_art'
+          print('PASS:',expected,'real individual expansion originals; production still locked')
+          PY
+      - name: Persist genuine verified artwork only on the development branch
+        run: |
+          git config user.name 'exodia-art-qa[bot]'
+          git config user.email 'exodia-art-qa[bot]@users.noreply.github.com'
+          git add -f orchestrator/app_data/albedo_33_review/sources/*.png
+          git add -f orchestrator/app_data/albedo_33_review/images/*.png
+          git add -f -- orchestrator/app_data/albedo_33_review/review_index.json
+          git add -- \
+            assets/review/albedo_core5/authorized_28_state_art_queue.json \
+            assets/review/albedo_core5/gate4_runway_verified_report.json \
+            assets/blueprints/albedo_28_state_batch_gate.json
+          if git diff --cached --quiet; then
+            echo "Exact artwork checksums already committed"
+          else
+            git commit -m "art(albedo): stage SHA-verified independent Runway portraits for 33-state review"
+            git push origin HEAD:development/exodia-foundation
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-gate4-runway-verified-artwork
+          path: |
+            orchestrator/app_data/albedo_33_review/sources/*.png
+            orchestrator/app_data/albedo_33_review/images/*.png
+            orchestrator/app_data/albedo_33_review/review_index.json
+            assets/review/albedo_core5/gate4_runway_verified_report.json
+          if-no-files-found: ignore
+          retention-days: 30

@@ -1,0 +1,57 @@
+{
+  "schema": "exodia.gate4-independent-render-seeds/v1",
+  "phase": "Gate4",
+  "candidate_count_proven_by_actual_image_bytes": 1,
+  "total_expected_expansion_states": 28,
+  "remaining_not_generated": 27,
+  "source_source_kind": "independently_authored_higher_resolution",
+  "review_only": true,
+  "owner_approved": false,
+  "production_release_enabled": false,
+  "notes": "Exactly one independently generated Nano Banana 2.1 2K PNG was downloaded, file-hashed and visually inspected. This provenance record does not assert native anatomy PASS, owner approval or 28-state completion.",
+  "jobs": [
+    {
+      "state": "celebrating",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "generator_model": "nano_banana_2_1",
+      "generator_job_id": "a1966bad-8d42-4e75-8ae0-c5bcd3696b60",
+      "result_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3JEbazkCX92Kd0K6P0PCEPoIKXS/hf_20261103_043625_a1966bad-8d42-4e75-8ae0-c5bcd3696b60.png",
+      "original_filename": "celebrating_original.png",
+      "original_sha256": "25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "original_file_bytes": 9553812,
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_filename": "celebrating.png",
+      "expected_normalized_file_sha256": "cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e",
+      "expected_normalized_pixel_sha256": "32941e53f8f0ff96ebd3a4faed2b6441b4545b3884e8ef23fc001665b64a73ac",
+      "normalization": "symmetric_center_crop_then_uniform_lanczos",
+      "pose_evidence_description": "Distinct jubilant open-mouth smile, raised clenched victory fist with naturally connected arm and opposite hand presenting a tiny crystal sigil. Not an Idle, Working, Explaining, Monitoring or Pointing pose.",
+      "generation_request": {
+        "model": "nano_banana_2_1",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "thinking_level": "high",
+        "prompt": "ONE SINGLE STANDALONE PORTRAIT PNG, NOT A SHEET, COLLAGE, CONTACT SHEET, APP SCREENSHOT OR DASHBOARD. Fully reillustrate the exact adult anime character shown in the provided original Albedo reference images as a wholly new, independently rendered premium anime-painted portrait for the emotion/action: CELEBRATING. Her distinct identity: long silver-to-lavender flowing layered hair, violet eyes, ornate celestial floral gold hair accessory, white/lilac/black/gold intricately patterned celestial costume and crystal jewel. Pose unique to CELEBRATING: joyful open smile, eyes brightly delighted, one full arm raised with a celebratory clenched fist (arm and wrist continuously connected, five believable fingers), opposite hand presenting a small sparkling victory crystal signet; posture dynamically buoyant, but face front-on toward camera. Do not duplicate either reference pose; preserve exact character identity but change the original body gesture, facial acting and lighting organically through entirely redrawn artwork. Exactly ONE character occupying ONE centered bust/upper-torso illustration on a gently glowing celestial blue-violet field, no typography, no logos, no frames, no panels, no grids. Precise composition: portrait aspect 4:5, final source resolution ≥1536x1920, facial irises around 33% of height, anatomical shoulder line around 51% of height, eye/face horizontal center at 50% of width, facial head silhouette width 40% of canvas. Keep face, both upper arms, hand anatomy, head ornament and pendants entirely visible; do not crop anatomy, no warped limbs, no repeated character, no cutout/pasted fragments. High quality professional anime illustration with exquisite painted highlights, detailed hands, delicate expression, consistent frontal camera and body anatomy. This is an ART ASSET, not a UI, not a validation report.",
+        "reference_original_sha256s": [
+          "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+          "d55da7f4ca4e93a5d40592e97fe5c04cc6e3d9aaa8cbe8f24c64ee7e08de3b62"
+        ],
+        "reference_media_ids": [
+          "55dcfd00-f577-42bb-964d-556c2960efc9",
+          "ddcdf6d1-0cd1-4dd5-b434-1458ab11109c"
+        ]
+      },
+      "review_status": "PENDING_OWNER_ANATOMICAL_AND_GEOMETRIC_INSPECTION",
+      "owner_approved": false,
+      "production_release_enabled": false
+    }
+  ]
+}

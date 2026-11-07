@@ -1,0 +1,6 @@
+incoming/*
+!incoming/.gitkeep
+registration/*
+!registration/.gitkeep
+approvals/*
+!approvals/.gitkeep

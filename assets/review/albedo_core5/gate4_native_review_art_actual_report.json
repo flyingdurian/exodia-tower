@@ -1,0 +1,47 @@
+{
+  "generated_unapproved_native_review_images": 1,
+  "owner_approved_count": 0,
+  "production_release_enabled": false,
+  "remaining_28_review_images_pending": 27,
+  "schema": "exodia.gate4-real-image-proof/v1",
+  "states": {
+    "celebrating": {
+      "anatomy_and_geometry_final_status": "NOT_MEASURED_FAIL_CLOSED",
+      "generator_job_id": "a1966bad-8d42-4e75-8ae0-c5bcd3696b60",
+      "native_review_image_generated": true,
+      "normalization": {
+        "crop_xyxy": [
+          8,
+          2,
+          1848,
+          2302
+        ],
+        "cropped_size": [
+          1840,
+          2300
+        ],
+        "kind": "symmetric_center_crop_then_uniform_lanczos",
+        "output_size": [
+          1536,
+          1920
+        ],
+        "source_pixel_sha256": "32941e53f8f0ff96ebd3a4faed2b6441b4545b3884e8ef23fc001665b64a73ac"
+      },
+      "normalized_dimensions": [
+        1536,
+        1920
+      ],
+      "normalized_pixel_sha256": "32941e53f8f0ff96ebd3a4faed2b6441b4545b3884e8ef23fc001665b64a73ac",
+      "normalized_sha256": "cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "original_sha256": "25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759",
+      "owner_approved": false,
+      "production_release_enabled": false,
+      "source_kind": "independently_authored_higher_resolution",
+      "state": "celebrating"
+    }
+  }
+}

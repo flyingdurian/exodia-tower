@@ -1,0 +1,9 @@
+# Requests review from the repository owner; enforcement needs GitHub branch rules.
+* @flyingdurian
+# Shared provider and orchestration integration surfaces require cross-agent review.
+/orchestrator/app/api/server.py @flyingdurian
+/orchestrator/app/automation/ @flyingdurian
+/orchestrator/app/operations/inbox.py @flyingdurian
+/orchestrator/frontend/ @flyingdurian
+/docs/EXODIA_MULTI_AGENT_DEVELOPMENT.md @flyingdurian
+/docs/EXODIA_PROVIDER_INTEGRATION_CONTRACT.md @flyingdurian

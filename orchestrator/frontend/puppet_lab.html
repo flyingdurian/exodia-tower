@@ -1,0 +1,110 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exodia Tower · Articulated Motion Studio</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#080d18;color:#e9f4ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -25%,#19405b,transparent 65%),#080d18}
+header{padding:20px 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #294357;background:#0d1723df}
+h1{font-size:40px;letter-spacing:-.05em;margin:10px 0}h1 em{color:#62e2d7;font-style:normal}
+h2{font-size:20px;margin:10px 0 20px}.brand{font-weight:800;letter-spacing:.2em}.brand i{color:#70e7e0;font-size:26px;font-style:normal}
+a{color:#90e8de;text-decoration:none;font-size:12px}.small,.eyebrow{color:#7fd3d8;font-size:10px;letter-spacing:.17em;font-weight:700}
+main{max-width:1510px;padding:30px;margin:auto;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px}
+.hero{display:flex;justify-content:space-between;gap:20px;margin-bottom:22px}.hero p,p{font-size:12px;color:#91aabe;line-height:1.65}
+.stages{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.reference,.stage{position:relative;height:600px;min-width:0;border-radius:11px;border:1px solid #355269;overflow:hidden;background:#0e1b2a}
+.reference img{height:100%;width:100%;object-fit:cover}.reference .label,.stage .label{position:absolute;top:17px;left:17px;z-index:2;color:#d3ecf9;background:#0a1a29d8;border:1px solid #406176;padding:10px;font-size:10px;letter-spacing:.08em}
+.stage{display:flex;justify-content:center;align-items:center;background:radial-gradient(circle at 50% 45%,#17405b,#07101d 70%)}
+.stage:before{content:'';position:absolute;inset:0;background-image:linear-gradient(#a0ddf509 1px,transparent 1px),linear-gradient(90deg,#a0ddf509 1px,transparent 1px);background-size:34px 34px;pointer-events:none}
+.stage canvas{display:block;width:100%;max-width:530px;height:auto;max-height:100%;touch-action:none;position:relative;z-index:1}
+.help{position:absolute;bottom:14px;left:12px;right:12px;color:#96c5d9;text-align:center;font-size:10px;z-index:2}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);background:#0e1c29;border:1px solid #294456;margin-top:16px;border-radius:10px}
+.stats>div{padding:18px;border-right:1px solid #294456}.stats>div:last-child{border:0}
+.stats strong{display:block;color:#76eadd;font-size:23px}.stats small{display:block;color:#8fa7ba;font-size:11px;margin-top:7px}
+.side{display:flex;flex-direction:column;gap:16px}.card{border:1px solid #2a4257;border-radius:11px;background:#0d1b28;padding:21px}
+label{display:flex;flex-direction:column;gap:7px;font-size:11px;color:#b1c9d7;margin:12px 0}
+input,select,textarea,button{width:100%;background:#12293a;color:#e8f8ff;border:1px solid #365c71;border-radius:6px;padding:10px;font:12px ui-sans-serif,system-ui}
+input[type=checkbox]{width:auto;accent-color:#67e6d6}.check{flex-direction:row;align-items:center}
+button{cursor:pointer;background:#64e4d4;color:#092b31;font-weight:800}.secondary{background:#183f52;color:#b6fcf2}
+.row{display:flex;gap:6px;margin:9px 0}.row button{font-size:10px;padding:9px 6px}
+.row label{flex:1;min-width:0}.status{border:1px solid #655537;background:#30291d;color:#f4d8a9;padding:12px;font-size:11px;line-height:1.55}
+pre{font:11px/1.5 ui-monospace,monospace;color:#9dddff;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:1200px){main{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){main{padding:15px}.stages,.side{grid-template-columns:1fr}.hero{display:block}.reference,.stage{height:480px}.stats{grid-template-columns:repeat(2,1fr)}.brand{font-size:12px}}
+</style></head><body>
+<header><div class="brand"><i>✦</i> EXODIA TOWER <span class="small">/ A1 MOTION STUDIO</span></div><a href="/">↖ COMMAND CENTER</a></header>
+<main>
+<section><div class="hero"><div><span class="eyebrow">ARTICULATED PERFORMANCE / ENGINEERING</span><h1>Motion <em>Studio.</em></h1><p>Inspect independent joint transforms, IK, blinking, gaze and speech. Approved art remains a reference until real transparent character layers exist.</p></div><button style="max-width:190px;height:44px" id="tour">▶ Expression tour</button></div>
+<div class="stages">
+<div class="reference"><div class="label">APPROVED ORIGINAL CHARACTER ART</div><img id="reference" alt="Approved Kiko Prime portrait" src="/assets/companions/portraits/kiko.webp"></div>
+<div class="stage"><div class="label">LIVE ARTICULATED FK / IK · DIAGNOSTIC</div><canvas id="stage" width="530" height="625" aria-label="Live animated bone rig"></canvas><div class="help">Click to move · Drag hands to reach · Move pointer to direct gaze</div></div>
+</div>
+<div class="stats"><div><strong>22</strong><small>Bone transforms</small></div><div><strong>24</strong><small>Emotion poses</small></div><div><strong>2-bone</strong><small>Arm IK</small></div><div><strong id="registered">0 / 20</strong><small>Art layers imported</small></div></div></section>
+<aside class="side"><section class="card"><span class="eyebrow">DIRECTOR CONTROLS</span><h2>Companion performance</h2>
+<label>Companion<select id="agent"></select></label><label>Emotion<select id="emotion"></select></label>
+<label>Activity<select id="activity"></select></label>
+<div class="row"><button id="reachL">Left reach</button><button id="reachR">Right reach</button><button id="release">Release</button></div>
+<div class="row"><button id="speak">Speak</button><button id="blink">Blink</button><button id="pause">Pause</button></div>
+<label>Speech text<textarea id="words" rows="3">I reviewed your workflow. Here is my recommendation!</textarea></label>
+<label class="check"><input id="debug" type="checkbox" checked> Show skeletal engineering overlay</label>
+<label class="check"><input id="reduced" type="checkbox"> Reduce motion</label>
+</section><section class="card"><span class="eyebrow">PRODUCTION ART INPUT</span><h2>Register independent layers</h2><p>Select a transparent image and link its pivot to a specific bone. Images remain in your browser; this does not upload artwork.</p>
+<label>Bone layer<select id="bone"></select></label><label>Transparent PNG or WebP<input id="imageFile" type="file" accept="image/png,image/webp"></label>
+<div class="row"><label>Origin X<input id="originX" type="number" value="0"></label><label>Origin Y<input id="originY" type="number" value="0"></label><label>Scale<input id="scale" type="number" value="1" step=".05" min=".05" max="6"></label></div>
+<div class="row"><button id="register">Register part</button><button id="export" class="secondary">Export mapping</button></div>
+<div class="status" id="status">Production character layers are missing. Skeleton visualization is intentional.</div>
+<p>Do not accept final animation without separate face layers, clothing overlap repairs, consistent registration, and a full-body visual review.</p></section>
+<section class="card"><span class="eyebrow">LIVE RIG TELEMETRY</span><pre id="data">Loading…</pre></section></aside>
+</main>
+<script type="module">
+import {PuppetEngine,ACTIVITIES,REQUIRED_LAYERS} from '/assets/puppet_engine.mjs';
+const q=s=>document.querySelector(s), CANVAS=q('#stage');
+const characters=['kiko','liu_bei','memory','archives','inventory','vault','ninja','cache','strategy','nova'];
+let puppet=null,rig=null,prev=0,ticks=0,tourTimer=null,drag=null,localFiles={};
+function fill(element,items){element.replaceChildren();for(const item of items){const o=document.createElement('option');o.value=item;o.textContent=item.replaceAll('_',' ');element.append(o)}}
+fill(q('#agent'),characters);fill(q('#activity'),ACTIVITIES);fill(q('#bone'),REQUIRED_LAYERS);
+async function load(id){const r=await fetch('/assets/rigs/'+encodeURIComponent(id)+'.json');if(!r.ok)throw Error('Missing rig');rig=await r.json();
+ puppet=new PuppetEngine(CANVAS,rig);fill(q('#emotion'),Object.keys(rig.poses));q('#reference').src=rig.reference||'/assets/companions/ensemble.webp';
+ q('#status').textContent=rig.name+': all production painted sprite parts still require visual acceptance.';
+ q('#registered').textContent='0 / '+REQUIRED_LAYERS.length;localFiles={};
+}
+function position(ev){const r=CANVAS.getBoundingClientRect();return {x:(ev.clientX-r.left)*CANVAS.width/r.width,y:(ev.clientY-r.top)*CANVAS.height/r.height}}
+CANVAS.addEventListener('pointerdown',e=>{if(!puppet)return;const p=position(e),l=puppet.world.hand_left,r=puppet.world.hand_right;
+ const d=j=>j?Math.hypot(p.x-j.x,p.y-j.y):999;drag=d(l)<30?'left':d(r)<30?'right':null;
+ CANVAS.setPointerCapture(e.pointerId);if(drag)puppet.reach(drag,p.x,p.y);else puppet.moveTo(p.x,p.y)});
+CANVAS.addEventListener('pointermove',e=>{if(!puppet)return;const p=position(e);puppet.lookAt(p.x,p.y);if(drag)puppet.reach(drag,p.x,p.y)});
+CANVAS.addEventListener('pointerup',()=>{drag=null});
+CANVAS.addEventListener('pointercancel',()=>{drag=null});
+q('#agent').addEventListener('change',e=>load(e.target.value).catch(error=>q('#status').textContent=error.message));
+q('#emotion').addEventListener('change',e=>puppet?.setEmotion(e.target.value));
+q('#activity').addEventListener('change',e=>puppet?.setActivity(e.target.value));
+q('#reachL').onclick=()=>puppet?.reach('left',puppet.position.x-70,puppet.position.y-100);
+q('#reachR').onclick=()=>puppet?.reach('right',puppet.position.x+70,puppet.position.y-100);
+q('#release').onclick=()=>puppet?.releaseHands();
+q('#speak').onclick=()=>puppet?.speak(q('#words').value);
+q('#blink').onclick=()=>{if(puppet)puppet.blink=1};
+q('#pause').onclick=e=>{if(!puppet)return;puppet.reducedMotion=!puppet.reducedMotion;e.target.textContent=puppet.reducedMotion?'Resume':'Pause'};
+q('#debug').onchange=e=>{if(puppet)puppet.debug=e.target.checked};
+q('#reduced').onchange=e=>{if(puppet)puppet.reducedMotion=e.target.checked};
+let tourIdx=0;const tour=['neutral','thinking','processing','speaking','happy','excited','angry','disappointed','wonder','sleeping'];
+q('#tour').onclick=e=>{if(tourTimer){clearInterval(tourTimer);tourTimer=null;e.target.textContent='▶ Expression tour';return}
+ tourIdx=0;tourTimer=setInterval(()=>{if(!puppet)return;puppet.setEmotion(tour[tourIdx%tour.length]);
+ puppet.setActivity(['idle','work','work','talk','wave','wave','idle','idle','idle','sleep'][tourIdx%tour.length]);
+ q('#emotion').value=puppet.emotion;q('#activity').value=puppet.activity;tourIdx++},1900);e.target.textContent='■ Stop tour'};
+q('#register').onclick=async()=>{const file=q('#imageFile').files?.[0];if(!file||!puppet)return;
+ const img=new Image();img.src=URL.createObjectURL(file);try{await img.decode()}catch{q('#status').textContent='Cannot decode image';return}
+ const part=q('#bone').value,origin=[+q('#originX').value,+q('#originY').value],scale=+q('#scale').value;
+ try{puppet.attachLayer(part,img,origin,scale);localFiles[part]=file.name;
+ q('#registered').textContent=REQUIRED_LAYERS.filter(n=>puppet.sprites.has(n)).length+' / '+REQUIRED_LAYERS.length;
+ q('#status').textContent=part+' independently registered. Still requires costume seam and joint QA.';
+ }catch(error){q('#status').textContent=error.message}};
+q('#export').onclick=()=>{if(!puppet)return;const layers=Object.fromEntries(Object.entries(puppet.spriteDefs).map(([k,v])=>[k,{...v,src:localFiles[k]||v.src}]));
+ const data={version:'exodia-visual-layers/v1',agent_id:rig.agent_id,production_ready:false,layers};
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+ a.download=rig.agent_id+'_visual_registration.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};
+function frame(time){if(puppet){puppet.step(Math.min((time-(prev||time))/1000,.05));ticks++;
+ if(ticks%10===0){const s=puppet.getCapture();
+ q('#data').textContent=JSON.stringify({agent:rig.name,emotion:s.emotion,activity:s.activity,mouth:s.viseme,blink:s.blink.toFixed(2),
+ root:{x:s.position.x.toFixed(1),y:s.position.y.toFixed(1)},
+ angles:Object.fromEntries(['head','torso','upper_arm_left','forearm_left','upper_arm_right','forearm_right','thigh_left','thigh_right'].map(k=>[k,(s.pose[k]||0).toFixed(1)]))},null,2)}}
+ prev=time;requestAnimationFrame(frame)}
+load('kiko').then(()=>requestAnimationFrame(frame)).catch(e=>q('#status').textContent=e.message);
+</script></body></html>

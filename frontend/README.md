@@ -1,0 +1,2 @@
+# Exodia modern UI concept
+Open operations.html in a local web browser. This is an explicit DESIGN PREVIEW, not the app's live command dashboard. Agent rigs and movement are not faked with rotating portraits. Live API bindings and production locomotion require follow-up gate U1/A1 implementation.

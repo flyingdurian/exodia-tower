@@ -102,8 +102,8 @@ def test_router_does_not_forge_answers(tmp_path, monkeypatch):
     arc=CrystalArchives(tmp_path/'d.sqlite',tmp_path)
     cache=SpeedrunnerCache(tmp_path/'d.sqlite')
     conf=SimpleNamespace(root=tmp_path, allowed_hosts=(),browser_enabled=False,browser_read_url='',
-                         openai_model='test', public_config=lambda:{'mode':'local'})
+                         web_headless=False, public_config=lambda:{'mode':'local'})
     r=Router(conf,arc,cache,EventLog())
     answer=asyncio.run(r.answer('Draft an original marketing strategy'))
-    assert 'No reasoning API is configured' in answer['answer']
+    assert 'session not started' in answer['answer']
     assert answer['route']=='reasoning'

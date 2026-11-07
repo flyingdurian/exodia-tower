@@ -1,0 +1,29 @@
+{
+  "schema": "exodia.albedo-core-actions-report/v1",
+  "states": [
+    {
+      "key": "working",
+      "priority": 1,
+      "status": "AWAITING_SOURCE"
+    },
+    {
+      "key": "explaining",
+      "priority": 2,
+      "status": "AWAITING_SOURCE"
+    },
+    {
+      "key": "monitoring",
+      "priority": 3,
+      "status": "AWAITING_SOURCE"
+    },
+    {
+      "key": "pointing",
+      "priority": 4,
+      "status": "AWAITING_SOURCE"
+    }
+  ],
+  "verified_total": 0,
+  "target": 33,
+  "committed_this_run": 0,
+  "release_enabled": false
+}

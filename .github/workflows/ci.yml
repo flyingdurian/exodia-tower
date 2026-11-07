@@ -1,0 +1,176 @@
+name: exodia-foundation-ci
+on:
+  push:
+  pull_request:
+jobs:
+  python-and-ui:
+    name: Foundation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m pip install -r orchestrator/requirements.txt -r orchestrator/requirements-portrait-qa.txt pytest
+      - run: cd orchestrator && python -m pytest tests -q
+      - run: node --check orchestrator/frontend/app.js
+      - run: node --check orchestrator/frontend/companions.js
+
+      - run: node --check orchestrator/frontend/puppet_engine.mjs
+      - run: node --test orchestrator/tests/puppet_engine.test.mjs
+      - run: node --test orchestrator/tests/foot_plant.test.mjs
+      - run: node --test orchestrator/tests/roster_motion.test.mjs
+      - run: node --test orchestrator/tests/kiko_art_engine.test.mjs
+      - run: node --test orchestrator/tests/kiko_layer_runtime.test.mjs
+      - run: node --check orchestrator/frontend/albedo_command.js
+      - run: node --check orchestrator/frontend/liu_bei_pilot_boot.mjs
+      - run: node --test orchestrator/tests/liu_bei_review_contract.test.mjs
+      - run: node --check orchestrator/frontend/liu_bei_variant_review.mjs
+      - run: node --test orchestrator/tests/liu_bei_variant_review.test.mjs
+      - run: node --check orchestrator/frontend/liu_bei_33_review_contract.mjs
+      - run: node --check orchestrator/frontend/liu_bei_33_review_boot.mjs
+      - run: node --test orchestrator/tests/liu_bei_33_review.test.mjs
+      - run: node --check orchestrator/frontend/albedo_chibi_controller.mjs
+      - run: node --check orchestrator/frontend/albedo_chibi_renderer.mjs
+      - run: node --check orchestrator/frontend/albedo_chibi_boot.mjs
+      - run: node --check orchestrator/frontend/albedo_chibi_choreography.mjs
+      - run: node --test orchestrator/tests/albedo_chibi_choreography.test.mjs
+      - run: node --check orchestrator/frontend/frontshell_signal.mjs
+      - run: node --check orchestrator/frontend/frontshell_ui.mjs
+      - run: node --test orchestrator/tests/frontshell_signal.test.mjs
+      - run: node --check orchestrator/frontend/frontshell_telemetry_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_telemetry_boot.mjs
+      - run: node --check orchestrator/frontend/frontshell_resilience_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_resilience_boot.mjs
+      - run: node --test orchestrator/tests/frontshell_phase6_resilience.test.mjs
+      - run: node --check orchestrator/frontend/frontshell_terminal_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_terminal_boot.mjs
+      - run: node --check orchestrator/frontend/frontshell_layout_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_layout_boot.mjs
+      - run: node --test orchestrator/tests/frontshell_phase2_telemetry.test.mjs
+      - run: node --test orchestrator/tests/frontshell_phase2_terminal.test.mjs
+      - run: node --test orchestrator/tests/frontshell_phase2_layout.test.mjs
+      - run: node --check orchestrator/frontend/frontshell_diagnostics_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_diagnostics_boot.mjs
+      - run: node --test orchestrator/tests/frontshell_phase3_diagnostics.test.mjs
+      - run: node --check orchestrator/frontend/frontshell_presets_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_palette_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_palette_boot.mjs
+      - run: node --test orchestrator/tests/frontshell_phase4_productivity.test.mjs
+      - run: node --test orchestrator/tests/frontshell_chibi_integration.test.mjs
+      - run: node --test orchestrator/tests/albedo_chibi_renderer_signed_frames.test.mjs
+      - run: node --check orchestrator/frontend/albedo_room_behavior.mjs
+      - run: node --test orchestrator/tests/albedo_room_behavior.test.mjs
+      - run: node --test orchestrator/tests/albedo_chibi_boot.test.mjs
+      - run: node --check orchestrator/frontend/command_status.mjs
+      - run: node --test orchestrator/tests/albedo_chibi_controller.test.mjs
+      - run: node --check orchestrator/frontend/mission_history.mjs
+      - run: node --test orchestrator/tests/mission_history.test.mjs
+      - run: node --check orchestrator/frontend/development_portrait_stage.mjs
+      - run: node --check orchestrator/frontend/development_portrait_boot.mjs
+      - run: node --test orchestrator/tests/development_portrait_stage.test.mjs
+      - run: node --check orchestrator/frontend/albedo_motion.mjs
+      - run: node --check orchestrator/frontend/core5_review_workbench.mjs
+      - run: node --check orchestrator/frontend/test_workbench_33.mjs
+      - run: node --test orchestrator/tests/albedo_motion.test.mjs
+      - run: python -m playwright install --with-deps chromium
+      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py tests/test_core5_browser.py tests/test_gate3_33_browser.py tests/test_albedo_chibi_browser.py tests/test_phase15_workflow_browser.py tests/test_frontshell_polish_browser.py tests/test_frontshell_phase2_browser.py tests/test_frontshell_phase3_browser.py tests/test_frontshell_phase4_browser.py tests/test_frontshell_phase5_browser.py tests/test_frontshell_phase6_browser.py -q
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: albedo-motion-browser-proof
+          path: orchestrator/app_data/qa_albedo/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-core5-workbench-responsive-qa
+          path: orchestrator/app_data/qa_core5/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-state33-responsive-browser-proof
+          path: orchestrator/app_data/qa_state33/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-albedo-chibi-operations-proof
+          path: orchestrator/app_data/qa_chibi/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-operator-workflows-desktop-mobile
+          path: orchestrator/app_data/qa_workflows/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-frontshell-controlroom-visual-proof
+          path: orchestrator/app_data/qa_frontshell/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-frontshell-phase2-responsive-proof
+          path: orchestrator/app_data/qa_frontshell_phase2/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-frontshell-phase3-operator-diagnostics
+          path: orchestrator/app_data/qa_frontshell_phase3/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-frontshell-phase4-command-palette
+          path: orchestrator/app_data/qa_frontshell_phase4/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-frontshell-phase5-motion-review
+          path: orchestrator/app_data/qa_frontshell_phase5/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-frontshell-phase6-release-visual-gate
+          path: orchestrator/app_data/qa_frontshell_phase6/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - run: node --check orchestrator/frontend/albedo_experience.mjs
+      - run: node --check orchestrator/frontend/companion_voice.mjs
+      - run: node --test orchestrator/tests/companion_voice.test.mjs
+      - run: node --check orchestrator/frontend/fleet_readiness_contract.mjs
+      - run: node --check orchestrator/frontend/fleet_readiness_boot.mjs
+      - run: node --test orchestrator/tests/fleet_readiness_contract.test.mjs
+      - run: node --check orchestrator/frontend/operator_workflow_contract.mjs
+      - run: node --check orchestrator/frontend/operator_workflow_console.mjs
+      - run: node --test orchestrator/tests/operator_workflow_contract.test.mjs
+      - run: node --check orchestrator/frontend/workflow_evidence_contract.mjs
+      - run: node --test orchestrator/tests/workflow_evidence_contract.test.mjs
+      - run: node --check orchestrator/frontend/workflow_health_contract.mjs
+      - run: node --check orchestrator/frontend/workflow_health_boot.mjs
+      - run: node --test orchestrator/tests/workflow_health_contract.test.mjs
+      - run: node --check orchestrator/frontend/workflow_recovery_contract.mjs
+      - run: node --test orchestrator/tests/workflow_recovery_contract.test.mjs
+      - run: node --check orchestrator/frontend/workflow_integrity_contract.mjs
+      - run: node --check orchestrator/frontend/workflow_integrity_boot.mjs
+      - run: node --test orchestrator/tests/workflow_integrity_contract.test.mjs

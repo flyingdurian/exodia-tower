@@ -1,0 +1,32 @@
+/* Phase 5 — technical movement polish; artwork approval remains a separate gate. */
+#chibiOperations .chibi-floor{isolation:isolate}
+.chibi-route-overlay{position:absolute;inset:0;width:100%;height:100%;
+ z-index:1;pointer-events:none;overflow:visible}
+#chibiRouteLine{fill:none;stroke:#6be9dc;stroke-width:2.7;
+ vector-effect:non-scaling-stroke;stroke-dasharray:8 7;opacity:.78;
+ stroke-linejoin:round;stroke-linecap:round;
+ filter:drop-shadow(0 0 5px #70e3ef63)}
+#chibiRouteTarget{fill:#c1fff1;stroke:#3c9b9e;stroke-width:2;
+ vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 5px #88f7e3)}
+#chibiRouteTarget[hidden]{display:none!important}
+.chibi-activity-readout{font:750 9px/1.6 ui-monospace,Consolas,monospace;
+ letter-spacing:.02em;color:#b8f8ee;border:1px solid #386f80;
+ border-radius:7px;background:#13364c;padding:6px 8px}
+#chibiOperations[data-activity=success] .chibi-activity-readout{color:#c5ffdb;border-color:#5a916c}
+#chibiOperations[data-activity=failure] .chibi-activity-readout{color:#ffd1d9;border-color:#a76b7c}
+#chibiOperations .chibi-floor:focus-visible{outline:2px solid #b5f8ef;
+ outline-offset:3px}
+#chibiOperations .chibi-technical-marker{transform-origin:50% 95%}
+#chibiOperations[data-activity=success] .chibi-technical-marker{
+ box-shadow:0 0 0 4px #79eccf3a,0 0 25px #73eecf7c}
+#chibiOperations[data-activity=failure] .chibi-technical-marker{
+ border-color:#ffb6c4;box-shadow:0 0 18px #e57a9d66}
+#chibiOperations .chibi-actor{transition:none!important}
+@media(max-width:600px){
+ .chibi-activity-readout{font-size:8px}
+ .chibi-route-overlay{opacity:.85}
+}
+@media(prefers-reduced-motion:reduce){
+ #chibiRouteLine{stroke-dasharray:none!important}
+ #chibiOperations .chibi-technical-marker{animation:none!important}
+}

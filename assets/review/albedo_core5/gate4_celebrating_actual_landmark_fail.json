@@ -1,0 +1,106 @@
+{
+  "schema": "exodia.gate4-celebrating-independent-pixel-inspection/v1",
+  "status": "FAIL_GEOMETRY_AND_PENDING_ANATOMICAL_REVIEW",
+  "state": "celebrating",
+  "original_source_file": "celebrating_original.png",
+  "original_dimensions": [
+    1856,
+    2304
+  ],
+  "original_sha256": "25affe7f46d60cdee0c016ec691a997d22963ee62f77bb8107dcaee4cbb24759",
+  "output_file": "celebrating.png",
+  "output_dimensions": [
+    1536,
+    1920
+  ],
+  "output_sha256": "cc4612e7565f6659e5349fdf20d9daa9c795fbb0e9a7fab87fd45c8e9c56c08e",
+  "generation_job_id": "a1966bad-8d42-4e75-8ae0-c5bcd3696b60",
+  "original_source_kind": "independently_authored_higher_resolution",
+  "normalization": {
+    "kind": "symmetric_center_crop_then_uniform_lanczos",
+    "crop_xyxy": [
+      8,
+      2,
+      1848,
+      2302
+    ],
+    "crop_dimensions": [
+      1840,
+      2300
+    ],
+    "output_dimensions": [
+      1536,
+      1920
+    ],
+    "nonuniform_stretch": false
+  },
+  "actual_pixel_measurements": {
+    "iris_left": {
+      "x": 688.091,
+      "y": 526.879,
+      "signal": 342.582
+    },
+    "iris_right": {
+      "x": 890.894,
+      "y": 511.976,
+      "signal": 375.081
+    },
+    "shoulder_left": {
+      "x": 520,
+      "y": 861,
+      "signal": 359.5
+    },
+    "shoulder_right": {
+      "x": 1030,
+      "y": 878,
+      "signal": 364.3
+    },
+    "eye_mid_y_px": 519.427,
+    "eye_delta_px": -114.173,
+    "shoulder_mid_y_px": 869.5,
+    "shoulder_delta_px": -110.5,
+    "eye_center_x_px": 789.493,
+    "center_delta_px": 21.493,
+    "eye_separation_px": 202.803,
+    "eye_vertical_asymmetry_px": 14.903,
+    "shoulder_vertical_asymmetry_px": 17,
+    "head_width_px": null
+  },
+  "canonical_targets": {
+    "iris_mid_y_px": 633.6,
+    "iris_tolerance_px": 2,
+    "shoulder_mid_y_px": 980,
+    "shoulder_tolerance_px": 2,
+    "head_width_px": 614.4,
+    "head_width_tolerance_px": 4,
+    "eye_center_x_px": 768,
+    "eye_asymmetry_limit_px": 12,
+    "shoulder_asymmetry_limit_px": 14
+  },
+  "checks": {
+    "real_standalone_png_file": true,
+    "original_sha_verified": true,
+    "normalized_sha_verified": true,
+    "uniform_resampling_source_larger": true,
+    "native_output_canvas": true,
+    "iris_midline": false,
+    "shoulder_midline": false,
+    "head_width": null,
+    "center_x": false,
+    "eye_separation_plausible": true,
+    "eye_asymmetry": false,
+    "shoulder_asymmetry": false,
+    "anatomy_confirmed_by_owner": false,
+    "owner_visual_approved": false,
+    "production_release_enabled": false
+  },
+  "evidence_level": "assistant_annotated_pixel_scanner_provisional",
+  "caveats": [
+    "Region hints were visually selected on the real image, not reverse-engineered from target positions.",
+    "Violet pigment and Sobel shoulder edges are actual image pixels, but their anatomical identity is pending owner review.",
+    "Head silhouette width is deliberately unmeasured rather than invented.",
+    "Distinct generation job is documented, but human pose/identity acceptance remains pending."
+  ],
+  "production_status": "pending_production_art",
+  "human_visual_acceptance": "PENDING"
+}

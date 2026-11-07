@@ -1,0 +1,13 @@
+{
+  "standard": "exodia.portrait-4x5/v1",
+  "kind": "emotion",
+  "character_id": "kiko",
+  "status": "candidate_pending_review",
+  "registration": {
+    "eye_x": 0.5,
+    "eye_y": 0.33,
+    "head_width": 0.4
+  },
+  "human_visual_review": "pending",
+  "legacy_reframe": false
+}

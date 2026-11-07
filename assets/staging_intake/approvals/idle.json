@@ -1,0 +1,27 @@
+{
+  "schema": "exodia.portrait-static-approval-record/v1",
+  "state_key": "idle",
+  "category": "action",
+  "source_image_sha256": "84be5d2f9c6a33eb7bf7ac45b951e5ce241fbf41c44e758fbb3ca7123af12a4a",
+  "source_provenance": {
+    "schema": "exodia.independent-portrait-source/v1",
+    "source_kind": "independent_standalone_native",
+    "derived_from_composite": false,
+    "native_canvas": [
+      1856,
+      2304
+    ],
+    "original_sha256": "84be5d2f9c6a33eb7bf7ac45b951e5ce241fbf41c44e758fbb3ca7123af12a4a",
+    "original_filename": "idle.png",
+    "source_method": "independent_image_render",
+    "human_source_review": "pending",
+    "generation_job_id": "73d2785e-5e91-4c1e-9f88-5f627a1bd580",
+    "generation_model": "nano_banana_flash"
+  },
+  "allow_normalization": true,
+  "normalized_visual_review": "pending",
+  "approved_by": null,
+  "owner_confirmation_reference": null,
+  "reviewed_by": null,
+  "status": "PENDING_OWNER_ARTWORK_AND_LANDMARK_APPROVAL"
+}

@@ -1,0 +1,101 @@
+/* Gate 3: extend the existing Workbench without altering main command center. */
+.state-menu{max-height:min(60vh,730px);overflow-y:auto;overscroll-behavior:contain;padding-right:6px;scrollbar-width:thin;scrollbar-color:#7063aa #151b3e}
+.state-button{min-height:55px;padding:9px 11px}
+.state-button .detail small{font-size:9.5px}
+.state-button[data-availability="PENDING_INDEPENDENT_ART"] .detail small{color:#f0bf92}
+.state-button[data-availability="INDEPENDENT_ART_UNAPPROVED_REVIEW"] .detail small{color:#7fe7dd}
+.state-button[data-availability="CONCEPT_REVIEW_AVAILABLE"] .detail small{color:#d4bbff}
+.state-button[data-category="expression"] .glyph{color:#f9cced}
+.state-button[data-category="action"] .glyph{color:#a2efe9}
+.portrait-zone{min-height:450px}
+.portrait-frame{width:min(52%,350px);border-radius:46% 46% 8% 8%;isolation:isolate}
+.portrait-preview-layer,.portrait-missing-layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;opacity:0;transform:none!important;filter:none!important;pointer-events:none}
+.portrait-missing-layer{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;text-align:center;padding:26px;background:radial-gradient(ellipse at 50% 43%,#393262,#141b3b);border:2px dashed #8779ac}
+.portrait-missing-layer .missing-sigil{font-size:46px;color:#a7a8ce;line-height:1}
+.portrait-missing-layer b{font:20px Georgia,serif;color:#dfd1ff}
+.portrait-missing-layer p{margin:0;font-size:12px;color:#b6b4d4}
+.portrait-missing-layer small{font-size:10px;color:#eac99c;text-transform:uppercase;letter-spacing:.12em}
+.hero[data-signal="warning_pulse"] .portrait-frame,.hero[data-signal="strain_glitch"] .portrait-frame{border-color:#e5ab9b;box-shadow:0 0 35px #c7745b66}
+.hero[data-signal="focus_resonance"] .portrait-frame{border-color:#65e9da;box-shadow:0 0 30px #64d9de62}
+.hero[data-signal="triumphant_halo"] .portrait-frame{border-color:#f6dd9c;box-shadow:0 0 38px #f6d69260}
+.hero[data-signal="warning_pulse"] .gesture-beam,.hero[data-signal="strain_glitch"] .gesture-beam{color:#efb7a1}
+.hero[data-signal="strain_glitch"] .hero-glow{background:radial-gradient(circle,#ee71613d,transparent 70%)}
+.hero[data-signal="triumphant_halo"] .hero-glow{background:radial-gradient(circle,#f1c55c30,transparent 70%)}
+.inspector .batch-intake{border-color:#7964ab}
+.batch-intake label{display:block;font-size:10px;color:#b9cbed;margin-top:11px;font-weight:700}
+.batch-intake input[type=file]{display:block;max-width:100%;font-size:10px;margin:4px 0 6px}
+.batch-intake button{font-size:11px;padding:8px 12px;cursor:pointer}
+.batch-intake button:disabled{cursor:wait;opacity:.45}
+.batch-intake p{font-size:10px;line-height:1.5}
+.technical dd{overflow-wrap:anywhere}
+#dualAnchors,#headWidth{font-variant-numeric:tabular-nums}
+#registryStatus{color:#f1c79a}
+#artStatusTag{color:#f2d2a0!important}
+.rail-bottom{margin-top:18px}
+.rail-bottom .kbd-tip{margin-top:3px}
+.hero .stage-note{color:#acbde0}
+@media (max-width:1120px){.dashboard{grid-template-columns:minmax(185px,225px) minmax(300px,1fr)}.inspector{grid-column:1/-1}.state-menu{max-height:530px}.inspector .batch-intake{max-width:650px}}
+@media (max-width:700px){.dashboard{display:flex;flex-direction:column;min-height:0}.state-rail,.inspector{padding:15px}.state-rail h2,.inspector h2{font-size:22px}.state-menu{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-height:300px;overflow-y:auto;gap:6px}.state-button{padding:8px 6px;min-height:62px;gap:6px}.state-button .glyph{width:23px;height:23px;font-size:13px}.state-button .detail strong{font-size:10px}.state-button .detail small{font-size:8px}.state-button .arrow{display:none}.hero{min-height:690px}.portrait-zone{min-height:370px}.portrait-frame{width:min(70%,315px)}.orbit-one{width:330px;height:330px;margin:-165px 0 0 -165px}.orbit-two{width:365px;height:315px;margin:-157px 0 0 -182px}.reticle{display:none}.top-center{display:none}.hero-title{margin:10px 0}.stage-meta{padding:13px}.stage-bottom{margin-top:10px}.batch-intake{margin-top:10px}.app-shell{padding:10px}.footer-bar{flex-wrap:wrap;gap:7px}}
+@media(prefers-reduced-motion:reduce){.orbit,.star,.signal-bars i{animation:none!important}}
+
+/* Browser-validated stage-height lock: inspector and expanded state list may
+   scroll internally, but must not push Albedo below the desktop viewport. */
+.portrait-loading[hidden]{display:none!important}
+@media(min-width:1121px){
+ .app-shell{height:100dvh;min-height:700px;max-height:100dvh;overflow:hidden}
+ .dashboard{min-height:0;height:auto;flex:1}
+ .state-rail,.inspector{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+ .hero{min-height:0}
+ .portrait-zone{min-height:0;padding:4px 0}
+ .portrait-frame{width:min(40%,300px);max-height:min(44vh,375px)}
+ .rail-bottom{margin-top:18px}
+ .state-menu{max-height:calc(100vh - 365px)}
+ .footer-bar{flex-shrink:0}
+}
+@media(max-width:1120px){
+ .app-shell{height:auto;min-height:100vh;max-height:none;overflow:visible}
+ .dashboard{min-height:0;height:auto}
+ .state-rail,.inspector{overflow:visible}
+}
+
+/* Missing art is a first-class real state, not a fade-hidden image placeholder. */
+.portrait-missing-layer{opacity:1!important;visibility:visible!important}
+
+/* Legible empty-state proof. This overlay contains no counterfeit portrait
+   pixels; it must remain readable on 1600px desktop captures and on mobile. */
+.portrait-display-layer{z-index:4}
+.portrait-display-layer .portrait-missing-layer{
+ z-index:5;opacity:1!important;
+ background:radial-gradient(ellipse at 48% 35%,#293363 0%,#192143 78%);
+ border:1px dashed #b7a1e4;
+ text-shadow:0 1px 2px #0d0b24;
+}
+.portrait-display-layer .portrait-missing-layer b{
+ color:#fff4ff!important;font-size:20px;font-weight:700;letter-spacing:.07em;
+}
+.portrait-display-layer .portrait-missing-layer p{
+ color:#e6e0ff!important;font-size:12px;font-weight:500;
+}
+.portrait-display-layer .portrait-missing-layer small{
+ color:#ffe0a1!important;font-size:10px;font-weight:750;
+}
+
+/* Label the 5/28 boundary without inventing art or changing production IDs. */
+.state-group-heading{font-size:10px;font-weight:800;letter-spacing:.08em;color:#bbb0e9;
+ text-transform:uppercase;border-bottom:1px solid #55547f;padding:12px 2px 7px;margin:0 0 3px;}
+.state-group-heading:not(:first-child){margin-top:13px}
+@media(max-width:700px){
+ .state-group-heading{grid-column:1/-1;margin-top:4px!important}
+}
+
+/* Four targeted correction states are REVIEW-only, not artwork failures or production approvals. */
+.state-button[data-owner-review="CORRECTION_REQUIRED"]{outline:1px solid #f4bb8d;outline-offset:-2px;background:linear-gradient(110deg,#4a2f49,#22203e)}
+.state-button[data-owner-review="CORRECTION_REQUIRED"] .detail small{color:#ffd4a8;font-weight:800}
+.state-button[data-owner-review="CORRECTION_RENDERED_OWNER_REVIEW_PENDING"]{outline:1px solid #a2cad4;outline-offset:-2px}
+#ownerDevelopmentStatus{font-weight:650;overflow-wrap:anywhere}
+
+/* Protect full review-status text in narrow sidebars: no clipped approval ambiguity. */
+.technical .card-heading{display:flex;flex-wrap:wrap;align-items:flex-start;gap:7px}
+.technical .card-heading #artStatusTag{white-space:normal;overflow-wrap:anywhere;word-break:break-word;font-size:10px;max-width:100%;line-height:1.4}
+
+.build-badge{display:inline-block;font:600 10px/1.4 system-ui,sans-serif;border:1px solid #7089cf;border-radius:6px;background:#202955;color:#e7eafb;padding:4px 8px;white-space:nowrap}

@@ -1,0 +1,321 @@
+{
+  "schema": "exodia.gate4-runway-verified-jobs/v1",
+  "phase": "Gate4",
+  "artwork_kind": "standalone_independently_rendered_high_resolution_source",
+  "count_verified_original_sources": 13,
+  "reference_source_sha256": "4de9758f8ea2f3f6f24af18d5e5dba8ac8c723c18afa7d55af6668456d2c6e9d",
+  "native_output": [
+    1536,
+    1920
+  ],
+  "original_source": [
+    1856,
+    2304
+  ],
+  "production_release_enabled": false,
+  "owner_approved": false,
+  "notes": "These 13 outputs were each downloaded and verified by original source SHA-256, normalized pixel SHA-256 and output PNG SHA-256 in the processing sandbox. They remain unapproved art candidates; signed production registry does not change.",
+  "jobs": [
+    {
+      "state": "neutral",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "4310bb7e-c55a-4357-be65-0f0e7419c9d9",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/4310bb7e-c55a-4357-be65-0f0e7419c9d9/a694d9ee-e91f-46c3-96d3-8b376247dd20/Create_one_standalone_premium_painted_anime_portrait_of_the_.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYzZkMDdkYTNlNzc4NWQ4MCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzkxNzIxOX0.0YTUzReteFno6I0IOcLSZiI_RvS1GRU7FZvQAguMNDo",
+      "original_sha256": "05f6e69150c717f44638eb218162cbd6f9d7b070c6bfe1e010c02913d238c3ef",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "fca587591061a9975d96d726de99d9dbf681adbb226bd5f02bad7883c4313640",
+      "normalized_pixel_sha256": "66d8b046ac065d9ae70e9f254294f9108306d023c1592917fe05c0e2cc633808",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "happy",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "1995a389-4a69-454f-aadc-857d8c4672c7",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/1995a389-4a69-454f-aadc-857d8c4672c7/e73338cb-24fb-4de6-b73e-ff759d588da3/Create_one_independently_illustrated__standalone_vertical_an.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNzhlYjg1MTJlYzdkYTIyZSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg2NTc0Nn0.Ii21VunwOFh8iBr5qs2uYYZQRW5-8nW3qNLHxiuWhWc",
+      "original_sha256": "1b9e76a7cae98dc594d325de98a7d9bbaf041c14eb1b5c3d2d43bca8d6956209",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "06429e65af9f40db58bd4a480941812a0d623265f0e98dfe1011e482d2b3ae69",
+      "normalized_pixel_sha256": "0fa0184d8c3c9e13913a071808bbae1a306e3ba1a2bd734450f1b8af800db2f0",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "joyful",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "91d1fe25-5d8b-4a2a-acdc-a6c7c239762d",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/91d1fe25-5d8b-4a2a-acdc-a6c7c239762d/743e1de7-4955-42e2-a0e0-25acf58ba5b5/Create_one_independently_illustrated__standalone_vertical_an.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYmExNzI0MDEzZDYyMjljYiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg1MTUyMX0.h5qCGPivWa5yAuUys0llmEOp6iADb2z8jqUwn0DDmaE",
+      "original_sha256": "a8539f1f8a6232e021a35242b2789627c1324a94484bae390cd043aba8bed35a",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "8cb3d3b5c8285b9455d568c63a0715b57fcb156abfece3b5c5258ae6dca45ec8",
+      "normalized_pixel_sha256": "7085d43b2182842f526bcbf209b7ded094d88ddd759f83af9aa016bafa0180c3",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "excited",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "3f7a1443-35ff-430e-aa5a-c29eb3008c96",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/3f7a1443-35ff-430e-aa5a-c29eb3008c96/b9d31114-0af6-4b5c-af19-32fed71f326e/Create_one_independently_illustrated__standalone_vertical_an.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMTkyYzdkZDNkOTEzZGJjNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg1OTc5NX0.kvJHD_s3JnT7yXhx8KXM6lbMtQNabXyMKR3QOl6aLVY",
+      "original_sha256": "65974ceae1e2688e46852ec373b88cec7ab529978424499c411ea252368aeee0",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "5af737403fb303787e952ce0f017287a3422dc357ef0f1a938e0e1d623b04331",
+      "normalized_pixel_sha256": "1c3fcf044d768b3d236d0d10652c94302ab9c9f08f270c41c4de2ba92bfb997d",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "gentle",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "508745ac-1ef5-43b2-821c-36317a0a1528",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/508745ac-1ef5-43b2-821c-36317a0a1528/72ad522d-7cce-4d27-993d-4dc188a1aafe/Create_one_independently_illustrated__standalone_vertical_an.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNzY2MWY1NWNkMzlhODljYSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg5MTI5Mn0.UdJ5_zKaJPur08ieY63bzq1zfEHYrcDhIEOiKe6y_JI",
+      "original_sha256": "121470b524951bd5de93bc85563d1fd3096387c4e8e2e7bafcb70118852b8561",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "ce7156e8dfca155d86679c77287d07838bdb495d41aba6c7e9e22a1f9d9038bd",
+      "normalized_pixel_sha256": "24efc14e05ee175bfde502b5cd1e77f2a8db48a1083329956b3688e90c4ea351",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "smiling_closed",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "8a2a4b03-ffd5-4398-b7ab-09dc6824ef34",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/8a2a4b03-ffd5-4398-b7ab-09dc6824ef34/d1fed178-7d57-4ab4-96f3-af08274820f6/Create_one_independently_illustrated__standalone_vertical_an.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMWJhOTdlZmIzYjUyZjA1OSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg3NTMyM30.5rxpXsB-9EdqNNNk_-pj_OvYH1pIYILwldv9wqKE9Uw",
+      "original_sha256": "0e1eaed46c9bcf85b2d83b6df730fbe02a469a13006832d90298d6f0415a868c",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "daf492e750814f7516aa80b48329f17ebea05cb64f38f6dbfdf23f781a989adf",
+      "normalized_pixel_sha256": "56cf7c2effa7804aaeea8290bfe1a66c73d0dd1658fe537a4c906c533ae1001d",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "laughing",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "bce8d1dd-7f44-4379-88e9-fa9a51fde69d",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/bce8d1dd-7f44-4379-88e9-fa9a51fde69d/0936f6e3-88e8-4f60-bef9-70c4a8bb8e85/One_standalone_hand_painted_anime_portrait_of_the_adult_silv.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjBhZDMzOGNjMGViNmNmMyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg1MDYzNn0.wSiIELYWnVW7hwuOeh4_BNHCNH26CaEjXGlhEsg3pTg",
+      "original_sha256": "94de59169d884395c6ef0660bcc8e71c875a81f64fb05d9a68a83ee324839abc",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "f735d600978c89157b02c294fdcb211db658174a073bb72f9011c70d42060f4b",
+      "normalized_pixel_sha256": "8bba03bfdb3710a7848006c149055b3f99e8759dcb38b671ba1719294668b093",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "amused",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "857e195e-b469-4b10-a194-7b77dbe257db",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/857e195e-b469-4b10-a194-7b77dbe257db/39ea5c68-b722-49c7-a550-4986db2a1b78/One_standalone_hand_painted_anime_portrait_of_the_adult_silv.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZmZjOGIwOTI0MWQyOTgzMCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg2NDA4Mn0.N5q3KV-glUP3H57hQEGoanPk4UX1dw6MUte01ggVb68",
+      "original_sha256": "4a63659259559884932b92d12ff0c7597f6f9f590cad080018f0d30c6ea02548",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "b6b417f93df2fe00486cfacc623fb8fa5af43079e0b6c9a25408afa9f79902ec",
+      "normalized_pixel_sha256": "ba630802869366e685ab319f3bdb59e67b1eb88feaf73a8fc8ba6649e3cf6fd9",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "confident",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "1e6add94-e47f-471c-bf8f-59479fab2ab3",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/1e6add94-e47f-471c-bf8f-59479fab2ab3/77c0625c-4980-4cb5-8eb6-d0e01258abfc/One_standalone_hand_painted_anime_portrait_of_the_adult_silv.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNzhlODc5NzNkMmU0ZmVjNCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzkyNTM2M30.j9OT0pRKGJjJVZHxZIkIlJDYwesHB1ZpklcVaX5pyHw",
+      "original_sha256": "d0d0dd4cc951a1a55dc7718e398cf96d3e24a719dee930f28b26e26b03734689",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "3c74bd02c952b79a57d3fc06dbf7ca2afd578424e8e58b5a467b48e3200c9f30",
+      "normalized_pixel_sha256": "31129bda6f2a49990b44451a916e2d26b0176f4e8a0d455b718f4daf236a44ec",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "serious",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "eaf2b082-3af6-44bd-bd2d-d4419f30caad",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/eaf2b082-3af6-44bd-bd2d-d4419f30caad/09fefdcf-8b91-4a36-a37c-8a6f4ef5c9c0/One_standalone_hand_painted_anime_portrait_of_the_adult_silv.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZmJhZmU1MDg0ZDM3Njc5YiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzkwNDY0OH0.Mm_6sZwf39b3w8HT-V_aWmiiEqFOFJzEpd1Ave2a4LU",
+      "original_sha256": "8238f557fd7f8fdcb19752d89ddbeb9bf96d7bb58027ddf3167d4b524f5f1701",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "5b1de38d97635ae0a47fabfb9c3b2c4d317934cfc43df78c978cfdc4a7810aca",
+      "normalized_pixel_sha256": "515f7a07d72aa3ba6f1dd8f9e10b0a95e89fafe25ed72f756e57dab63de79c45",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "focused",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "5ef376e1-d257-427a-9fb5-64c2358bd906",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/5ef376e1-d257-427a-9fb5-64c2358bd906/8528579d-3a16-490b-91c3-0c8ffade25a4/One_standalone_hand_painted_anime_portrait_of_the_adult_silv.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZWE5ZDZiZTNmMzljOTI0MiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg5NzMxNX0.sdr1jHjswvn6txWygjSfJBIGIZRlnUK8c0cYouZZYIA",
+      "original_sha256": "b18c2a583b6c053083da2ca1328a2d795a329b6b8ab4e668b0094aa63e07aea4",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "072be5de39c0a85fd968353b9dcc74e1416da88fbe91790368615fea0123c598",
+      "normalized_pixel_sha256": "f5e5ae51c4c2cae6d400ca0da05a6feba31222e8c75ae38723ae21190ed81e05",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "thinking",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "fb4b03e8-9e9e-4f1e-b46c-efaf71eb4ac9",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/fb4b03e8-9e9e-4f1e-b46c-efaf71eb4ac9/8c0320cf-bf84-4725-beeb-8528e5eb090a/One_standalone_hand_painted_anime_portrait_of_the_adult_silv.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiZmE1NTYzN2QzMTI1ODM1MSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzkxOTIyOX0.q3SJx2YQrqQwNTaXiCupuetD2rZo30kt9VVyHH1uRk0",
+      "original_sha256": "f70e8b2f8ac808f8a4690966d47553b2f171c8fd8442fc53e95ee3e2bda195ca",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "a5838732f16e13fa5ea155694ee90007a5532de6370bb5e95fe9ab6308458cfe",
+      "normalized_pixel_sha256": "af71d5120ae18f01b5e91f913dc5dd68597c325e554be4b74fcddf62d5c7fae2",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    },
+    {
+      "state": "curious",
+      "status": "GENERATED_ORIGINAL_BYTES_VERIFIED_UNAPPROVED",
+      "task_id": "a0ae7dc0-55f5-4e00-bffa-9382d8bf383a",
+      "model": "nano-banana-2",
+      "source_url": "https://dnznrvs05pmza.cloudfront.net/gemini/gemini-3.1-flash-image/images/a0ae7dc0-55f5-4e00-bffa-9382d8bf383a/cbe82c9f-a3f3-4913-b380-ccfb5d999b78/Single_high_quality_fantasy_anime_character_portrait__vertic.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNjUyZDQ2M2ZiYjExZjFhYyIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg4ODMxOX0.S7oZZWoLx0FHogbpV3sTyDRcjiAIFevh2IRXux8F9Yc",
+      "original_sha256": "f389783f2f25d15142534a15df510ede1781b653d77e1e82ed4fdc23ab12821e",
+      "original_dimensions": [
+        1856,
+        2304
+      ],
+      "crop_xyxy": [
+        8,
+        2,
+        1848,
+        2302
+      ],
+      "normalized_sha256": "e592bc48a1f8f24cc72a4d3b365798fbcb45f8d84ad898f819acc6db92169076",
+      "normalized_pixel_sha256": "204400434fa2a186aa557c98a8111bf54af543db2990cfe4de20969c2d7e88da",
+      "review_status": "PENDING_OWNER_ANATOMY_AND_GEOMETRY",
+      "owner_approved": false,
+      "production_release_enabled": false
+    }
+  ],
+  "binary_staging_retry_reason": "First GitHub run downloaded, re-rendered and SHA-verified all thirteen standalone originals and their exact normalized PNGs; the final git-add step needed force-add for an ignored review_index.json. This retry changes no source artwork or hashes.",
+  "previously_verified_in_actions_run": 41753770033
+}

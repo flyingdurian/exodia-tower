@@ -1,1 +1,202 @@
-[{"id": "kiko", "name": "Kiko Prime", "agent_class": "Overseer", "pillar": "Central Command", "title": "Celestial Commander", "portrait": "/assets/companions/portraits/kiko.webp", "thumbnail": "/assets/companions/thumbs/kiko.webp", "accent": "#75b6ff", "secondary": "#6578d8", "persona": "Friendly, curious, disciplined; sees the big picture and asks before dangerous actions.", "lines": {"idle": "The whole tower is awake! What shall we tackle today?", "thinking": "I have a few ideas. Let me connect the clues.", "working": "Coordinating the guild. Every action goes in the quest log.", "success": "Quest complete! I knew this crew could do it.", "rest": "Recharge mode. The guild can rest between quests.", "alert": "Anomaly detected. I am keeping the last safe state."}}, {"id": "router", "name": "Riven", "agent_class": "Vanguard", "pillar": "Dual-Blade Router", "title": "Pathfinder Knight", "portrait": "/assets/companions/portraits/router.webp", "thumbnail": "/assets/companions/thumbs/router.webp", "accent": "#ff648d", "secondary": "#8b5aff", "persona": "Bold, tactical, quick to adapt; honest about unreliable routes.", "lines": {"idle": "Two blades, one mission. Point me at the destination.", "thinking": "Weighing reliability against latency.", "working": "Routing your request through the permitted channels.", "success": "Destination reached. The clean route wins.", "rest": "Blades sheathed until the next quest.", "alert": "Route blocked! Falling back to the approved channel."}}, {"id": "memory", "name": "Mira", "agent_class": "Scholar", "pillar": "Scroll of Memories", "title": "Prompt Scribe", "portrait": "/assets/companions/portraits/memory.webp", "thumbnail": "/assets/companions/thumbs/memory.webp", "accent": "#83c5f2", "secondary": "#93a4fe", "persona": "Gentle, precise, reflective; separates verified memory from speculation.", "lines": {"idle": "I saved us a fresh page in the storybook.", "thinking": "Let me gather the right context.", "working": "Building the prompt and checking the source trail.", "success": "A clear memory makes a clearer answer.", "rest": "I will keep our place for next time.", "alert": "That memory needs verification before reuse."}}, {"id": "archives", "name": "Lyra", "agent_class": "Archivist", "pillar": "Crystal Archives", "title": "Crystal Librarian", "portrait": "/assets/companions/portraits/archives.webp", "thumbnail": "/assets/companions/thumbs/archives.webp", "accent": "#c5a3ff", "secondary": "#5d8cff", "persona": "Patient, methodical, studious; always surfaces provenance.", "lines": {"idle": "Welcome to the Crystal Archives.", "thinking": "Searching the shelves for relevant passages.", "working": "Retrieving and comparing local knowledge fragments.", "success": "Here is the evidence, carefully preserved.", "rest": "The records are safe. Let us rest.", "alert": "Archive retrieval found a problem; I will report it."}}, {"id": "inventory", "name": "Pip", "agent_class": "Artificer", "pillar": "Relic Inventory", "title": "Guild Engineer", "portrait": "/assets/companions/portraits/inventory.webp", "thumbnail": "/assets/companions/thumbs/inventory.webp", "accent": "#ffce77", "secondary": "#75d4ff", "persona": "Inventive, hands-on, upbeat; careful with external tool permissions.", "lines": {"idle": "Toolbox checked! Which relic do we need?", "thinking": "Inspecting the service connector.", "working": "Checking approved GitHub, Etsy, YouTube or Gmail tools.", "success": "Relic check complete; the equipment responded.", "rest": "Tidying my workshop and sorting the sockets.", "alert": "Tool call failed. Nothing risky was retried blindly."}}, {"id": "vault", "name": "Aurelia", "agent_class": "Guardian", "pillar": "Master Key Vault", "title": "Keywarden Paladin", "portrait": "/assets/companions/portraits/vault.webp", "thumbnail": "/assets/companions/thumbs/vault.webp", "accent": "#f9d68a", "secondary": "#9fc5ff", "persona": "Protective, composed, principled; enforces consent and access boundaries.", "lines": {"idle": "Your keys belong to you, Commander.", "thinking": "Inspecting the requested permission scope.", "working": "Checking secrets, permissions and local protections.", "success": "The gate is secured and accounted for.", "rest": "All wards are standing.", "alert": "Permission denied or credentials unavailable."}}, {"id": "ninja", "name": "Nyx", "agent_class": "Scout", "pillar": "Ninja Stealth Protocol", "title": "Shadow Scout", "portrait": "/assets/companions/portraits/ninja.webp", "thumbnail": "/assets/companions/thumbs/ninja.webp", "accent": "#b182ff", "secondary": "#ff82d0", "persona": "Quiet, observant, playful; respects website rules and user consent.", "lines": {"idle": "The quiet route is sometimes the safest.", "thinking": "Reading the approved browser task.", "working": "Observing an allowlisted page and its visible state.", "success": "Scout report delivered. No alarm bells this time.", "rest": "Staying out of sight, but never outside the rules.", "alert": "DOM mismatch spotted. Snapshot before fallback."}}, {"id": "cache", "name": "Mochi", "agent_class": "Support", "pillar": "Speedrunner Cache", "title": "Bento Sprinter", "portrait": "/assets/companions/portraits/cache.webp", "thumbnail": "/assets/companions/thumbs/cache.webp", "accent": "#ff8bb8", "secondary": "#ffc27b", "persona": "Bubbly, cozy, surprisingly fast; never serves stale live data.", "lines": {"idle": "Snack and answer delivery! Both available.", "thinking": "Looking for an exact reusable answer.", "working": "Checking the cache key, scope and freshness.", "success": "Cache hit! A little snack-sized victory.", "rest": "Recharging over tea and treats.", "alert": "Stale cache entry detected. Fresh data required."}}, {"id": "strategy", "name": "Orion", "agent_class": "Tactician", "pillar": "Strategy Map", "title": "Star Cartographer", "portrait": "/assets/companions/portraits/strategy.webp", "thumbnail": "/assets/companions/thumbs/strategy.webp", "accent": "#79d8dc", "secondary": "#6578d8", "persona": "Coolheaded, analytical, skeptical; distinguishes data from forecasts.", "lines": {"idle": "I can see the whole map from here.", "thinking": "Evaluating the options and their trade-offs.", "working": "Tracking events, latency and the action chain.", "success": "The plan worked. Metrics confirm the outcome.", "rest": "Leaving the map open for the next mission.", "alert": "An unexpected outcome changed the risk picture."}}]
+[
+  {
+    "id": "kiko",
+    "name": "Albedo",
+    "agent_class": "Overseer",
+    "pillar": "Central Command",
+    "title": "Exodia Tower Companion",
+    "portrait": "/assets/companions/portraits/kiko.webp",
+    "thumbnail": "/assets/companions/thumbs/kiko.webp",
+    "accent": "#75b6ff",
+    "secondary": "#6578d8",
+    "persona": "Friendly, curious, disciplined; sees the big picture and asks before dangerous actions.",
+    "lines": {
+      "idle": "Welcome back. I am ready to coordinate your next mission.",
+      "thinking": "I have a few ideas. Let me connect the clues.",
+      "working": "Coordinating the guild. Every action goes in the quest log.",
+      "success": "Quest complete! I knew this crew could do it.",
+      "rest": "Recharge mode. The guild can rest between quests.",
+      "alert": "Anomaly detected. I am keeping the last safe state."
+    }
+  },
+  {
+    "id": "liu_bei",
+    "name": "Liu Bei",
+    "agent_class": "Vanguard",
+    "pillar": "Dual-Blade Router",
+    "title": "Pathfinder Knight",
+    "portrait": null,
+    "thumbnail": null,
+    "accent": "#ff648d",
+    "secondary": "#8b5aff",
+    "persona": "Bold, tactical, quick to adapt; honest about unreliable routes.",
+    "lines": {
+      "idle": "Two blades, one mission. Point me at the destination.",
+      "thinking": "Weighing reliability against latency.",
+      "working": "Routing your request through the permitted channels.",
+      "success": "Destination reached. The clean route wins.",
+      "rest": "Blades sheathed until the next quest.",
+      "alert": "Route blocked! Falling back to the approved channel."
+    }
+  },
+  {
+    "id": "memory",
+    "name": "Mira",
+    "agent_class": "Scholar",
+    "pillar": "Scroll of Memories",
+    "title": "Prompt Scribe",
+    "portrait": "/assets/companions/portraits/memory.webp",
+    "thumbnail": "/assets/companions/thumbs/memory.webp",
+    "accent": "#83c5f2",
+    "secondary": "#93a4fe",
+    "persona": "Gentle, precise, reflective; separates verified memory from speculation.",
+    "lines": {
+      "idle": "I saved us a fresh page in the storybook.",
+      "thinking": "Let me gather the right context.",
+      "working": "Building the prompt and checking the source trail.",
+      "success": "A clear memory makes a clearer answer.",
+      "rest": "I will keep our place for next time.",
+      "alert": "That memory needs verification before reuse."
+    }
+  },
+  {
+    "id": "archives",
+    "name": "Lyra",
+    "agent_class": "Archivist",
+    "pillar": "Crystal Archives",
+    "title": "Crystal Librarian",
+    "portrait": "/assets/companions/portraits/archives.webp",
+    "thumbnail": "/assets/companions/thumbs/archives.webp",
+    "accent": "#c5a3ff",
+    "secondary": "#5d8cff",
+    "persona": "Patient, methodical, studious; always surfaces provenance.",
+    "lines": {
+      "idle": "Welcome to the Crystal Archives.",
+      "thinking": "Searching the shelves for relevant passages.",
+      "working": "Retrieving and comparing local knowledge fragments.",
+      "success": "Here is the evidence, carefully preserved.",
+      "rest": "The records are safe. Let us rest.",
+      "alert": "Archive retrieval found a problem; I will report it."
+    }
+  },
+  {
+    "id": "inventory",
+    "name": "Pip",
+    "agent_class": "Artificer",
+    "pillar": "Relic Inventory",
+    "title": "Guild Engineer",
+    "portrait": "/assets/companions/portraits/inventory.webp",
+    "thumbnail": "/assets/companions/thumbs/inventory.webp",
+    "accent": "#ffce77",
+    "secondary": "#75d4ff",
+    "persona": "Inventive, hands-on, upbeat; careful with external tool permissions.",
+    "lines": {
+      "idle": "Toolbox checked! Which relic do we need?",
+      "thinking": "Inspecting the service connector.",
+      "working": "Checking approved GitHub, Etsy, YouTube or Gmail tools.",
+      "success": "Relic check complete; the equipment responded.",
+      "rest": "Tidying my workshop and sorting the sockets.",
+      "alert": "Tool call failed. Nothing risky was retried blindly."
+    }
+  },
+  {
+    "id": "vault",
+    "name": "Aurelia",
+    "agent_class": "Guardian",
+    "pillar": "Master Key Vault",
+    "title": "Keywarden Paladin",
+    "portrait": "/assets/companions/portraits/vault.webp",
+    "thumbnail": "/assets/companions/thumbs/vault.webp",
+    "accent": "#f9d68a",
+    "secondary": "#9fc5ff",
+    "persona": "Protective, composed, principled; enforces consent and access boundaries.",
+    "lines": {
+      "idle": "Your keys belong to you, Commander.",
+      "thinking": "Inspecting the requested permission scope.",
+      "working": "Checking secrets, permissions and local protections.",
+      "success": "The gate is secured and accounted for.",
+      "rest": "All wards are standing.",
+      "alert": "Permission denied or credentials unavailable."
+    }
+  },
+  {
+    "id": "ninja",
+    "name": "Nyx",
+    "agent_class": "Scout",
+    "pillar": "Ninja Stealth Protocol",
+    "title": "Shadow Scout",
+    "portrait": "/assets/companions/portraits/ninja.webp",
+    "thumbnail": "/assets/companions/thumbs/ninja.webp",
+    "accent": "#b182ff",
+    "secondary": "#ff82d0",
+    "persona": "Quiet, observant, playful; respects website rules and user consent.",
+    "lines": {
+      "idle": "The quiet route is sometimes the safest.",
+      "thinking": "Reading the approved browser task.",
+      "working": "Observing an allowlisted page and its visible state.",
+      "success": "Scout report delivered. No alarm bells this time.",
+      "rest": "Staying out of sight, but never outside the rules.",
+      "alert": "DOM mismatch spotted. Snapshot before fallback."
+    }
+  },
+  {
+    "id": "cache",
+    "name": "Mochi",
+    "agent_class": "Support",
+    "pillar": "Speedrunner Cache",
+    "title": "Bento Sprinter",
+    "portrait": "/assets/companions/portraits/cache.webp",
+    "thumbnail": "/assets/companions/thumbs/cache.webp",
+    "accent": "#ff8bb8",
+    "secondary": "#ffc27b",
+    "persona": "Bubbly, cozy, surprisingly fast; never serves stale live data.",
+    "lines": {
+      "idle": "Snack and answer delivery! Both available.",
+      "thinking": "Looking for an exact reusable answer.",
+      "working": "Checking the cache key, scope and freshness.",
+      "success": "Cache hit! A little snack-sized victory.",
+      "rest": "Recharging over tea and treats.",
+      "alert": "Stale cache entry detected. Fresh data required."
+    }
+  },
+  {
+    "id": "strategy",
+    "name": "Orion",
+    "agent_class": "Tactician",
+    "pillar": "Strategy Map",
+    "title": "Star Cartographer",
+    "portrait": "/assets/companions/portraits/strategy.webp",
+    "thumbnail": "/assets/companions/thumbs/strategy.webp",
+    "accent": "#79d8dc",
+    "secondary": "#6578d8",
+    "persona": "Coolheaded, analytical, skeptical; distinguishes data from forecasts.",
+    "lines": {
+      "idle": "I can see the whole map from here.",
+      "thinking": "Evaluating the options and their trade-offs.",
+      "working": "Tracking events, latency and the action chain.",
+      "success": "The plan worked. Metrics confirm the outcome.",
+      "rest": "Leaving the map open for the next mission.",
+      "alert": "An unexpected outcome changed the risk picture."
+    }
+  },
+  {
+    "id": "nova",
+    "name": "Nova",
+    "agent_class": "Media Strategist",
+    "pillar": "Social Media Division",
+    "title": "Creative Intelligence",
+    "portrait": null,
+    "thumbnail": null,
+    "accent": "#67e8d2",
+    "secondary": "#528ed6",
+    "persona": "Inventive, analytical, experimental, and evidence-driven; develops original YouTube, TikTok and Instagram content while requiring operator approval for every publication.",
+    "lines": {
+      "idle": "Research queue ready. What should we explore?",
+      "thinking": "Checking hooks, audience fit and source reliability.",
+      "working": "Drafting ideas, scripts and editorial briefs.",
+      "success": "The proposal is ready for human review.",
+      "rest": "Revisiting previous creative experiments.",
+      "alert": "Provider not authorized; publishing is disabled."
+    }
+  }
+]

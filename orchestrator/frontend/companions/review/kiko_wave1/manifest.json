@@ -1,0 +1,235 @@
+{
+  "schema": "exodia.albedo-hd-2d-wave/v1",
+  "version": "wave1-20261101",
+  "character": "Albedo",
+  "agent_id": "kiko",
+  "stage": "art_review_only",
+  "benchmark_sha256": "bfc233740851980021ea0b479a1b4254574f6ca614e3a1e9cbb7bd66c03dc409",
+  "fullbody_source_sha256": "ddf1cc58e770d7cc99ffc3b2bd5a04ec77f720b05b8c96baf214090c899fb082",
+  "artwork": {
+    "happy": {
+      "kind": "emotion",
+      "source": "source_png/happy.png",
+      "display": "assets/hd/happy.webp",
+      "width": 1199,
+      "height": 1312,
+      "sha256": "00f726a1749932a35b9e72fa6b631f79be8ecf5e64ec4c6546781da38721df63",
+      "source_bytes": 2458430,
+      "webp_bytes": 354486,
+      "native_resolution_pass": true,
+      "art_status": "new_independent_candidate_pending_owner_review",
+      "alpha": false,
+      "crop_from_contact_sheet": false,
+      "display_sha256": "668fe02e03cefb276ea5697c02077255e67f070f9957f20abfe2a2fc2cac9158"
+    },
+    "thinking": {
+      "kind": "emotion",
+      "source": "source_png/thinking.png",
+      "display": "assets/hd/thinking.webp",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "f4dfde008ec57d40d6494a68b7905b55009b555d51cce5d8444d920709e726f3",
+      "source_bytes": 2462077,
+      "webp_bytes": 346432,
+      "native_resolution_pass": true,
+      "art_status": "new_independent_candidate_pending_owner_review",
+      "alpha": false,
+      "crop_from_contact_sheet": false,
+      "display_sha256": "3720238014265b3c597d00992b7a0e971beb5bf02a709597e652278e9659d92f"
+    },
+    "serious": {
+      "kind": "emotion",
+      "source": "source_png/serious.png",
+      "display": "assets/hd/serious.webp",
+      "width": 1312,
+      "height": 1199,
+      "sha256": "7a199661e0a821265d352960f13935378a43cc3ed26e12e09dd319e93e6e8cbd",
+      "source_bytes": 2771549,
+      "webp_bytes": 438378,
+      "native_resolution_pass": true,
+      "art_status": "new_independent_candidate_pending_owner_review",
+      "alpha": false,
+      "crop_from_contact_sheet": false,
+      "display_sha256": "aa80d75a2f2428f90ab4db050f56cbc9f25de179ba3676a1765ef85357dca83a"
+    },
+    "typing_working": {
+      "kind": "action",
+      "source": "source_png/typing_working.png",
+      "display": "assets/hd/typing_working.webp",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "c5ebc9b1b782fc52af42aac892cf3faded2f18871ae2cfa8165d6266da4226d0",
+      "source_bytes": 2623422,
+      "webp_bytes": 414540,
+      "native_resolution_pass": true,
+      "art_status": "new_independent_candidate_pending_owner_review",
+      "alpha": false,
+      "crop_from_contact_sheet": false,
+      "display_sha256": "089026cfc664b26485f26c1993584b79c5d5fa89e5da2ce936489e6740337885"
+    }
+  },
+  "emotions": {
+    "happy": {
+      "status": "candidate_pending_owner_review",
+      "asset": "assets/hd/happy.webp"
+    },
+    "excited": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "laugh": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "smile": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "thinking": {
+      "status": "candidate_pending_owner_review",
+      "asset": "assets/hd/thinking.webp"
+    },
+    "curious": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "surprised": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "confused": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "determined": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "serious": {
+      "status": "candidate_pending_owner_review",
+      "asset": "assets/hd/serious.webp"
+    },
+    "sad": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "disappointed": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "pouting": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "angry": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "hurt": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "bored": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "sleepy": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "dizzy": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "pain": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "cheerful_wink": {
+      "status": "not_yet_produced",
+      "asset": null
+    }
+  },
+  "actions": {
+    "idle": {
+      "status": "approved_existing_concept_source",
+      "asset": null
+    },
+    "walk": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "run": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "jump": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "sit": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "work_computer": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "typing_working": {
+      "status": "candidate_pending_owner_review",
+      "asset": "assets/hd/typing_working.webp"
+    },
+    "pointing": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "explaining": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "celebrating": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "stretching": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "sleeping": {
+      "status": "not_yet_produced",
+      "asset": null
+    },
+    "waking_up": {
+      "status": "not_yet_produced",
+      "asset": null
+    }
+  },
+  "deck": {
+    "directions": [
+      "front",
+      "back",
+      "left",
+      "right"
+    ],
+    "base_px": [
+      128,
+      196
+    ],
+    "stills_status": "previously_approved_for_small_scale_demo_only",
+    "right_mirrored_from_left": true,
+    "genuine_walk_cycle_ready": false
+  },
+  "owner_acceptance": {
+    "wave1_character_identity": false,
+    "high_res_expressions": false,
+    "action_illustrations": false,
+    "frame_authored_walk": false,
+    "fleet_rollout_allowed": false
+  },
+  "safety": {
+    "large_portrait_uses_thumbnail_atlas": false,
+    "animation_only_uses_position_tween": true,
+    "no_false_live_model_events": true,
+    "changes_to_ai_providers": false
+  }
+}

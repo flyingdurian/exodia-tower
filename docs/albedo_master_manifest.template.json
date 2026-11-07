@@ -1,0 +1,12 @@
+{
+  "schema": "exodia.companion-master/v1",
+  "companion_id": "kiko",
+  "approved_reference_sha256": "bfc233740851980021ea0b479a1b4254574f6ca614e3a1e9cbb7bd66c03dc409",
+  "source_method": "pending",
+  "visual_identity_review": "pending",
+  "rig_status": "not_started",
+  "assets": {
+    "front_master": "front_master.png",
+    "face_master": "face_master.png"
+  }
+}

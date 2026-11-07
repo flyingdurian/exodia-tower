@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Exodia | Native Portrait Motion Inspector</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,sans-serif;background:#090e22;color:#eee8ff}
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:radial-gradient(ellipse at 35% 20%,#35226b,transparent 55%),#080c20;min-height:100vh}
+header{max-width:1050px;margin:0 auto 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+h1{font-family:Georgia,serif;font-size:clamp(21px,3vw,32px);margin:0 0 6px}p{margin:4px 0;color:#c7bde9;font-size:13px;line-height:1.5}
+main{max-width:1050px;margin:auto;display:grid;grid-template-columns:minmax(280px,430px) minmax(280px,1fr);gap:18px}
+.panel{background:#161939;border:1px solid #827aca;border-radius:14px;padding:15px;margin-bottom:14px}
+.frame{aspect-ratio:4/5;position:relative;isolation:isolate;overflow:hidden;border:1px solid #b69cf4;border-radius:10px;background:radial-gradient(ellipse at center,#37225e,#14142e)}
+.frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;transform:none;display:none}
+.frame img.visible{display:block}
+#reference{opacity:.35;z-index:2;mix-blend-mode:screen}
+#empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:25px;font-size:13px;line-height:1.6;color:#d3caff}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:10px}
+label{font-size:12px;color:#d3c9f1;display:block;margin:10px 0}
+button,select{color:#ece8ff;background:#2d265b;border:1px solid #a18ce1;border-radius:8px;padding:8px}
+button:disabled{opacity:.4}
+input[type=file]{max-width:100%;display:block;margin-top:7px}input[type=range]{width:100%}
+.info{font-variant-numeric:tabular-nums;font-size:12px;color:#b6c9ef;line-height:1.7}
+#status{font-size:12px;white-space:pre-wrap;line-height:1.55;min-height:60px}
+.fail{color:#ffadb2}.ok{color:#90ffca}
+@media(max-width:730px){main{grid-template-columns:1fr}.panel.stage{max-width:440px;margin:auto}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<header><div><h1>EXODIA · Native Portrait Motion</h1><p>Strict 4:5 camera-locked inspector · no remote uploads or live task changes</p></div><strong class="fail" id="gate">NO PRODUCTION ASSETS LOADED</strong></header>
+<main>
+<section class="panel stage">
+<div class="frame" id="frame"><img id="art" alt="Native original portrait frame"><img id="reference" alt="First frame alignment overlay"><div id="empty">Select original 1536×1920 frames. No storyboard images or upscaled cells are included.</div></div>
+<div class="row"><button id="toggle" disabled>Play</button><button id="reset" disabled>First frame</button><label><input id="overlay" type="checkbox"> Alignment overlay</label></div>
+<label>Frame scrubber<input type="range" id="scrub" min="0" max="0" value="0" disabled></label>
+<div class="info" id="frameInfo">No native frames · camera fixed · 4:5 viewport</div>
+</section>
+<section>
+<div class="panel"><h2>Native candidate intake</h2>
+<label>Action <select id="state"><option value="idle">Idle / breathing</option><option value="working">Working / typing</option><option value="explaining">Explaining / gestures</option></select></label>
+<label>Independently authored 1536×1920 PNG frames <input id="files" type="file" accept="image/png" multiple></label>
+<label>Playback <select id="fps"><option value="24" selected>24 fps</option><option value="30">30 fps</option></select></label>
+<div id="status" class="fail" role="status">No artwork loaded. Client cannot publish any candidate.</div>
+</div>
+<div class="panel"><h2>Locked production requirements</h2><div class="info">
+Native 1536 × 1920 RGB/RGBA PNG<br>
+Idle: ≥72 distinct frames and ≥3 s<br>
+Working/Explaining: ≥48 distinct frames and ≥2 s<br>
+Five pixel-locked anchor regions, native motion mask<br>
+Static camera; local microgestures only<br>
+Human visual/anatomy/continuity review mandatory
+</div><p>The browser only checks size and previews motion; Python must verify source fingerprints, static pixels, anchor rectangles, mask and seam.</p></div>
+</section></main>
+<script type="module">
+const $=id=>document.querySelector('#'+id);
+let frames=[],urls=[],index=0,playing=false,start=null,raf=null;
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function stop(){playing=false;start=null;if(raf!==null)cancelAnimationFrame(raf);raf=null;$('toggle').textContent='Play'}
+function clear(){stop();urls.forEach(URL.revokeObjectURL);urls=[];frames=[];$('art').classList.remove('visible');$('reference').classList.remove('visible');$('empty').hidden=false;$('toggle').disabled=true;$('reset').disabled=true;$('scrub').disabled=true;$('frameInfo').textContent='No native frames · camera fixed · 4:5 viewport'}
+function show(i){if(!frames.length)return;index=(i+frames.length)%frames.length;$('art').src=urls[index];$('art').classList.add('visible');$('reference').src=urls[0];$('reference').classList.toggle('visible',$('overlay').checked);$('empty').hidden=true;$('scrub').value=String(index);$('frameInfo').textContent='Frame '+(index+1)+' / '+frames.length+' · 1536×1920 · 4:5 fixed camera'}
+function tick(t){if(!playing)return;if(start===null)start=t;const fps=Number($('fps').value);show(Math.floor((t-start)*fps/1000)%frames.length);raf=requestAnimationFrame(tick)}
+$('toggle').onclick=()=>{if(playing){stop();return}if(!frames.length)return;playing=true;start=null;$('toggle').textContent='Pause';raf=requestAnimationFrame(tick)};
+$('reset').onclick=()=>{stop();show(0)};
+$('scrub').oninput=e=>{stop();show(Number(e.target.value))};
+$('overlay').onchange=()=>{if(frames.length)show(index)};
+$('state').onchange=()=>{clear();$('files').value='';$('status').textContent='Choose native frames for the newly selected action.'};
+$('files').onchange=async e=>{
+ clear();const selected=[...e.target.files].sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
+ const min=$('state').value==='idle'?72:48,seconds=$('state').value==='idle'?3:2,fps=Number($('fps').value);
+ try{
+  if(selected.length<min||selected.length/fps<seconds)throw Error('Insufficient independently authored frames or loop duration.');
+  if(selected.length>240)throw Error('Too many frames in one review.');
+  for(const file of selected){
+   if(file.type!=='image/png')throw Error('Only original PNG frames: '+file.name);
+   const url=URL.createObjectURL(file),image=new Image();image.src=url;await image.decode();
+   if(image.naturalWidth!==1536||image.naturalHeight!==1920){URL.revokeObjectURL(url);throw Error('Wrong canvas: '+file.name)}
+   urls.push(url);frames.push(file.name)
+  }
+  $('scrub').max=String(frames.length-1);$('scrub').disabled=false;$('toggle').disabled=false;$('reset').disabled=false;show(0);
+  $('gate').textContent='REVIEW ONLY · NOT APPROVED';$('status').className='ok';
+  $('status').textContent='Native size passed. Run Python gate for unchanged anchor pixels, locality, continuity, actual provenance and manual art acceptance.';
+  if(reduced){$('status').textContent+=' Reduced motion is enabled: playback starts paused.'}
+ }catch(error){clear();$('status').className='fail';$('status').textContent='Rejected: '+error.message}
+};
+</script>
+</body></html>
