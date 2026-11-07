@@ -289,3 +289,8 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
   .masthead .top-nav a{transition:none}
   .chibi-floor .chibi-actor,.command-grid .card{animation:none!important;transition:none}
 }
+
+/* Keep standby terminal compact; the live operations floor remains the visual anchor. */
+.command-grid .response .welcome{padding:28px 9px 25px}
+.command-grid .response .welcome-glyph{font-size:43px}
+.command-grid .response .answer-frame{padding:10px 8px}
