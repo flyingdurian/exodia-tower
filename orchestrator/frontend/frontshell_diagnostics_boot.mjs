@@ -99,6 +99,8 @@ export function startFrontshellDiagnostics({doc=document,win=window,clock=()=>Da
   win.addEventListener('exodia:frontshell-observation',onObservation);
   win.addEventListener('exodia:frontshell-link',onLink);
   const timer=win.setInterval(paint,5000);
+  if(win.__exodiaLastTelemetryObservation)
+    onObservation({detail:win.__exodiaLastTelemetryObservation});
   paint();
   const runtime={
     open,refresh:paint,
