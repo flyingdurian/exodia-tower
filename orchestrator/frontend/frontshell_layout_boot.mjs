@@ -30,11 +30,13 @@ export function startFrontshellLayout({
   if(ROLES.some(role=>!nodes[role]))return null;
   let layout=readLayout(localStorage);
   let dragging=null;
+  const compact=()=> (win.innerWidth||1400)<=1180;
+  const activeOrder=()=>compact()?layout.compactOrder:layout.order;
   const headers={};
   const saved=doc.getElementById('fsLayoutSaved');
   const reset=doc.getElementById('fsLayoutReset');
   function dispatch(action){
-    const next=reduceLayout(layout,action);
+    const next=reduceLayout(layout,action?.type==='move'?{...action,compact:compact()}:action);
     if(JSON.stringify(next)===JSON.stringify(layout))return layout;
     layout=next;
     const stored=saveLayout(localStorage,layout);
@@ -87,14 +89,14 @@ export function startFrontshellLayout({
     bar.addEventListener('drop',event=>{
       if(!dragging||dragging===role)return;
       event.preventDefault();
-      const src=layout.order.indexOf(dragging);
-      const dst=layout.order.indexOf(role);
+      const src=activeOrder().indexOf(dragging);
+      const dst=activeOrder().indexOf(role);
       if(src>=0&&dst>=0){
         // Repeated adjacent swaps are validated and persisted individually.
         const direction=src<dst?1:-1;
         let current=dragging;
         for(let i=src;i!==dst;i+=direction){
-          layout=reduceLayout(layout,{type:'move',role:current,direction});
+          layout=reduceLayout(layout,{type:'move',role:current,direction,compact:compact()});
         }
         const stored=saveLayout(localStorage,layout);
         if(saved)saved.textContent=stored?'LAYOUT SAVED LOCALLY':'SESSION ONLY';
@@ -106,11 +108,12 @@ export function startFrontshellLayout({
   }
   function apply(){
     const width=win.innerWidth||1400;
+    const order=width<=1180?layout.compactOrder:layout.order;
     const expanded=layout.expanded;
     const focused=shell.dataset.frontshellFocus==='true';
     shell.dataset.fsExpanded=expanded||'none';
     for(const role of ROLES){
-      const index=layout.order.indexOf(role);
+      const index=order.indexOf(role);
       const node=nodes[role],header=headers[role];
       node.style.order=String(index);
       node.dataset.fsMinimized=String(layout.minimized[role]);
@@ -143,7 +146,7 @@ export function startFrontshellLayout({
     }else if(width>910){
       grid.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';
       for(const role of ROLES){
-        const index=layout.order.indexOf(role);
+        const index=order.indexOf(role);
         nodes[role].style.gridColumn=index===2?'1 / -1':String(index+1);
         nodes[role].style.gridRow=index===2?'2':'1';
       }
