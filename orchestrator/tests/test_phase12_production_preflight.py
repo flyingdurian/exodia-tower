@@ -16,6 +16,7 @@ import pytest
 
 from app.api import server
 from app.operations.inbox import Inbox
+from app.operations.workflow_plans import OperatorWorkflowStore
 from app.operations.production_readiness import (
     SCHEMA, inspect_production_readiness
 )
@@ -39,6 +40,7 @@ def isolated(tmp_path):
         shutil.copyfile(ROOT.parent / "assets/review/liu_bei_pilot" / name,
                         pilot / name)
     inbox = Inbox(root / "app_data/companion_tasks.sqlite")
+    OperatorWorkflowStore(root / "app_data/operator_workflows.sqlite")
     social = EditorialStore(root / "app_data/editorial.sqlite")
     with sqlite3.connect(root / "app_data/exodia_tower.sqlite") as c:
         c.execute("CREATE TABLE private_state (name TEXT)")
@@ -130,7 +132,7 @@ def test_private_backup_requires_opt_in_and_has_no_overwrite_or_network(isolated
     assert set(report["databases_snapshotted"]) == set(backup.FILES)
     assert "SECRET_PROMPT_BACKUP_ONLY" not in json.dumps(report)
     files = sorted((root / "app_data/phase12_private_backups").glob("*.sqlite"))
-    assert len(files) == 3
+    assert len(files) == 4
     if os.name != "nt":
         assert all((f.stat().st_mode & 0o077) == 0 for f in files)
     tasks = next(f for f in files if f.name.startswith("companion_tasks-"))
@@ -139,7 +141,7 @@ def test_private_backup_requires_opt_in_and_has_no_overwrite_or_network(isolated
         assert c.execute("SELECT COUNT(*) FROM tasks").fetchone()[0] == 1
         assert c.execute("SELECT prompt FROM tasks").fetchone()[0] == "SECRET_PROMPT_BACKUP_ONLY"
     again = backup.backup_local(root, confirmed=True)
-    assert len(list((root / "app_data/phase12_private_backups").glob("*.sqlite"))) == 6
+    assert len(list((root / "app_data/phase12_private_backups").glob("*.sqlite"))) == 8
     assert set(again["databases_snapshotted"]) == set(backup.FILES)
 
 

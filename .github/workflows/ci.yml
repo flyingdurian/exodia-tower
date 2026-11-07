@@ -103,3 +103,6 @@ jobs:
       - run: node --test orchestrator/tests/workflow_health_contract.test.mjs
       - run: node --check orchestrator/frontend/workflow_recovery_contract.mjs
       - run: node --test orchestrator/tests/workflow_recovery_contract.test.mjs
+      - run: node --check orchestrator/frontend/workflow_integrity_contract.mjs
+      - run: node --check orchestrator/frontend/workflow_integrity_boot.mjs
+      - run: node --test orchestrator/tests/workflow_integrity_contract.test.mjs

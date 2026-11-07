@@ -79,6 +79,14 @@ def test_phase15_operator_workflow_console_desktop_mobile():
                     assert "external execution disabled" in (
                         await desktop.locator("#progressStatus").inner_text())
                     assert await desktop.locator("#confirmReview").is_disabled()
+                    assert await desktop.locator("#forkRecovery").is_disabled()
+                    await desktop.locator("#workflowIntegrityRun").click()
+                    await desktop.wait_for_function(
+                        "()=>document.querySelector('#workflowIntegrityStatus')?."
+                        "textContent.includes('Sample consistent')",
+                        timeout=12000)
+                    assert 'no production release authorized' in (
+                        await desktop.locator('#workflowIntegrityStatus').inner_text())
                     assert "no external action" in (
                         await desktop.locator("body").inner_text()).lower() or (
                         "no tasks were sent" in
