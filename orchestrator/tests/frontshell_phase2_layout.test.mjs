@@ -49,4 +49,5 @@ test('layout fails closed on forged role, corrupted storage or bad action',()=>{
   const blocked={getItem(){throw Error('disabled')},setItem(){throw Error('disabled')}};
   assert.deepEqual(readLayout(blocked),defaultLayout());
   assert.equal(saveLayout(blocked,original),false);
+  assert.equal(saveLayout(null,original),false);
 });
