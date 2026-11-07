@@ -2,8 +2,8 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/><title>Albedo · Exodia Tower</title>
-<link rel="stylesheet" href="/assets/albedo_command.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_polish.css?v=1"/>
-<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script><script type="module" src="/assets/albedo_chibi_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_ui.mjs?v=1"></script><script type="module" src="/assets/liu_bei_pilot_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_33_review_boot.mjs?v=1"></script></head>
+<link rel="stylesheet" href="/assets/albedo_command.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_polish.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase2.css?v=1"/>
+<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script><script type="module" src="/assets/albedo_chibi_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_ui.mjs?v=1"></script><script type="module" src="/assets/frontshell_telemetry_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_layout_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_terminal_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_pilot_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_33_review_boot.mjs?v=1"></script></head>
 <body>
 <div class="app-shell">
 <header class="masthead"><a href="/" class="logo" aria-label="Exodia Tower home"><span class="brand-mark">✦</span><span><b>EXODIA TOWER</b><small>AI COMPANION COMMAND CENTER</small></span></a>
@@ -35,6 +35,9 @@
  <div class="frontshell-brief-actions">
   <span class="frontshell-live" id="frontshellLiveSignal" data-phase="idle" role="status">STANDBY · LOCAL</span>
   <button type="button" class="frontshell-focus-button" id="frontshellFocusToggle" aria-pressed="false">Focus operations floor</button>
+  <button type="button" class="frontshell-focus-button" id="fsTerminalToggle" aria-expanded="false" aria-controls="fsOperatorTerminal">Operator terminal ⌘</button>
+  <button type="button" class="fs-layout-reset" id="fsLayoutReset">Reset panels</button>
+  <span id="fsLayoutSaved" class="fs-layout-saved" role="status">BROWSER-LOCAL WORKSPACE</span>
  </div>
 </section>
 <section class="command-status-strip" id="commandStatusStrip" aria-label="Current mission status" data-state="idle">
@@ -47,6 +50,37 @@
 <div class="command-status-item"><small>LATENCY</small><strong id="summaryLatency">—</strong></div>
 <div class="command-status-item"><small>BACKGROUND</small><strong id="summaryBackground">No tasks running</strong></div>
 </section>
+<section id="fsTelemetry" class="fs-telemetry" data-ready="loading" data-link="connecting" aria-label="Read-only provider telemetry and real activity history">
+ <div class="fs-telemetry-heading">
+  <div><span class="section-kicker">LOCAL TELEMETRY / READ-ONLY</span>
+   <h2>Agent transport observatory <span>· provider snapshots</span></h2></div>
+  <div class="fs-telemetry-connection"><span id="fsTelemetryLink" data-link="connecting" role="status">LOCAL EVENTS CONNECTING</span>
+   <button type="button" id="fsTelemetryRefresh" class="fs-telemetry-refresh">Refresh</button></div>
+ </div>
+ <div class="fs-telemetry-grid" id="fsTelemetryCards" aria-label="ChatGPT Gemini DeepSeek and Ollama provider activity"><p class="fs-telemetry-empty">Loading actual local provider observations…</p></div>
+ <p class="fs-telemetry-note"><span id="fsTelemetryUpdated">Waiting for snapshots</span>
+  <span>Local /ws/events transport is shared by all four cards. Provider-site WebSocket and login authentication are NOT verified. Charts show observed task counts, never synthetic traffic.</span></p>
+</section>
+<details id="fsOperatorTerminal" class="fs-operator-terminal" aria-label="Local UI-only operator command drawer">
+ <summary>OPERATOR / LOCAL CONSOLE <span>ALLOWED COMMANDS ONLY · NO SHELL</span></summary>
+ <div class="fs-terminal-workspace">
+  <div class="fs-terminal-top"><strong>EXODIA://OPERATOR</strong><span id="fsTerminalStatus" role="status">UI-ONLY · NO PROVIDER DISPATCH</span></div>
+  <div id="fsTerminalLog" class="fs-terminal-log" role="log" aria-live="polite" aria-label="Safe local command output"></div>
+  <form id="fsTerminalForm" class="fs-terminal-form" autocomplete="off">
+   <label for="fsTerminalInput">Enter an allowlisted command</label>
+   <div class="fs-terminal-line-input"><span aria-hidden="true">❯</span><input id="fsTerminalInput" type="text" maxlength="120" autocapitalize="off" spellcheck="false" placeholder="help" aria-describedby="fsTerminalSyntax" /><button type="submit">Run</button></div>
+   <code id="fsTerminalSyntax" class="fs-terminal-syntax" aria-live="off"></code>
+  </form>
+  <div class="fs-terminal-quick" aria-label="Safe operator quick actions">
+   <button type="button" data-terminal-quick="status">Status</button>
+   <button type="button" data-terminal-quick="providers">Providers</button>
+   <button type="button" data-terminal-quick="tasks">Tasks</button>
+   <button type="button" data-terminal-quick="layout">Layout</button>
+   <button type="button" data-terminal-quick="help">Help</button>
+   <button type="button" data-terminal-quick="clear">Clear</button>
+  </div>
+ </div>
+</details>
 <main class="command-grid">
 <section class="hero-col">
 <div class="hero card task-stage" id="hero" data-state="idle">
