@@ -111,7 +111,8 @@
     "answered": "result",
     "failed": "recovery",
     "cancelled": "home",
-    "idle": "home"
+    "idle": "home",
+    "cooldown": "terminal"
   },
   "frames": {
     "idle_n": {

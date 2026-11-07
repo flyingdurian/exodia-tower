@@ -1,5 +1,5 @@
 /** Foot-registered DOM renderer. A movement marker is NEVER a substitute sprite. */
-import {validateChibiManifest} from './albedo_chibi_controller.mjs';
+import {validateChibiManifest,DIRECTIONS} from './albedo_chibi_controller.mjs';
 
 export class AlbedoChibiRenderer {
   constructor(root,manifest,{fetcher=fetch,cryptoProvider=globalThis.crypto}={}){
@@ -11,6 +11,7 @@ export class AlbedoChibiRenderer {
     this.zoneText=root.querySelector('#chibiZoneState');
     if(!this.actor||!this.status||!this.marker||!this.image||!this.zoneText)throw Error('Chibi floor DOM incomplete');
     this.readyFrames=new Map();this.pendingFrames=new Map();this.assetState=manifest.asset_status;
+    this.prefetchedHeadings=new Set();this.disposed=false;
     this.actor.style.setProperty('--foot-x',String(manifest.anchors.foot[0]*100)+'%');
     this.actor.style.setProperty('--foot-y',String(manifest.anchors.foot[1]*100)+'%');
     this.actor.style.setProperty('--shadow-x',String(manifest.anchors.shadow[0]*100)+'%');
@@ -18,7 +19,7 @@ export class AlbedoChibiRenderer {
     this.status.textContent=this.assetState==='approved_40_frame_set'?'40 approved frames · hash check pending':'MOTION PROOF · 40 ART FRAMES PENDING';
   }
   async acquireFrame(key){
-    if(this.assetState!=='approved_40_frame_set')return null;
+    if(this.disposed||this.assetState!=='approved_40_frame_set')return null;
     if(this.readyFrames.has(key))return this.readyFrames.get(key);
     if(this.pendingFrames.has(key))return this.pendingFrames.get(key);
     const record=this.manifest.frames[key];
@@ -39,13 +40,26 @@ export class AlbedoChibiRenderer {
         const valid=canvas.width===this.manifest.frame_size_px.width&&canvas.height===this.manifest.frame_size_px.height;
         canvas.close();
         if(!valid)throw Error('Sprite frame dimensions mismatch');
+        if(this.disposed)return null;
         const objectUrl=URL.createObjectURL(blob);
+        if(this.disposed){URL.revokeObjectURL(objectUrl);return null;}
         this.readyFrames.set(key,objectUrl);
         return objectUrl;
       }catch(_){this.status.textContent='FRAME UNAVAILABLE · NO UNVERIFIED ART SHOWN';return null;}
       finally{this.pendingFrames.delete(key);}
     })();
     this.pendingFrames.set(key,task);return task;
+  }
+  /** Verify all five independently authored frames of the active heading ahead
+   * of stride selection. Hashes and dimensions are still checked per frame. */
+  prefetchHeading(heading){
+    if(this.disposed||this.assetState!=='approved_40_frame_set'||
+       !DIRECTIONS.includes(heading)||this.prefetchedHeadings.has(heading))return;
+    this.prefetchedHeadings.add(heading);
+    for(const key of [
+      'idle_'+heading,...Array.from({length:4},(_,i)=>
+        'walk_'+heading+'_'+String(i).padStart(2,'0'))
+    ])void this.acquireFrame(key);
   }
   draw(snap){
     this.actor.hidden=!snap.enabled;
@@ -60,6 +74,7 @@ export class AlbedoChibiRenderer {
     this.marker.hidden=false;this.image.hidden=true;
     if(this.assetState==='approved_40_frame_set'){
       const key=snap.frame_key;
+      this.prefetchHeading(snap.heading);
       // Hide a stale image immediately; only verified current-frame bytes may render.
       if(this.readyFrames.has(key))this.showImage(this.readyFrames.get(key));
       else this.acquireFrame(key).then(url=>{
@@ -68,5 +83,5 @@ export class AlbedoChibiRenderer {
     }
   }
   showImage(url){this.image.src=url;this.image.hidden=false;this.marker.hidden=true;this.status.textContent='SHA-VERIFIED CHIBI · OWNER APPROVED ART';}
-  destroy(){for(const url of this.readyFrames.values())URL.revokeObjectURL(url);this.readyFrames.clear();}
+  destroy(){this.disposed=true;for(const url of this.readyFrames.values())URL.revokeObjectURL(url);this.readyFrames.clear();this.prefetchedHeadings.clear();}
 }

@@ -2,8 +2,8 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/><title>Albedo · Exodia Tower</title>
-<link rel="stylesheet" href="/assets/albedo_command.css?v=1"/>
-<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script><script type="module" src="/assets/albedo_chibi_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_pilot_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_33_review_boot.mjs?v=1"></script></head>
+<link rel="stylesheet" href="/assets/albedo_command.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_polish.css?v=1"/>
+<script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script><script type="module" src="/assets/albedo_chibi_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_ui.mjs?v=1"></script><script type="module" src="/assets/liu_bei_pilot_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_33_review_boot.mjs?v=1"></script></head>
 <body>
 <div class="app-shell">
 <header class="masthead"><a href="/" class="logo" aria-label="Exodia Tower home"><span class="brand-mark">✦</span><span><b>EXODIA TOWER</b><small>AI COMPANION COMMAND CENTER</small></span></a>
@@ -28,6 +28,15 @@
   <section class="card diagnostics"><span class="section-kicker">DIAGNOSTICS</span><div id="diagnosticText">No active errors</div><a href="/operations-legacy">Advanced operations →</a></section>
  </div>
 </details></header>
+<section class="frontshell-brief" aria-label="Command bridge overview">
+ <div><span class="frontshell-eyebrow">EXODIA / ACTIVE OPERATIONS BRIDGE</span>
+ <h1>Every agent. <em>One command.</em></h1>
+ <p>Local-first intelligence orchestration · tasks and companion motion follow real operational telemetry.</p></div>
+ <div class="frontshell-brief-actions">
+  <span class="frontshell-live" id="frontshellLiveSignal" data-phase="idle" role="status">STANDBY · LOCAL</span>
+  <button type="button" class="frontshell-focus-button" id="frontshellFocusToggle" aria-pressed="false">Focus operations floor</button>
+ </div>
+</section>
 <section class="command-status-strip" id="commandStatusStrip" aria-label="Current mission status" data-state="idle">
  <div class="command-status-item"><small>SELECTED COMPANION</small><strong id="summarySelectedCompanion">Albedo</strong></div>
  <div class="command-status-item command-status-task"><small>SELECTED TASK</small><strong id="summaryTask">No task selected</strong></div>
@@ -76,21 +85,33 @@
   <div class="hero-overlay" id="heroOverlay" aria-live="polite"></div>
 </div>
 <div class="hero-foot"><span><span class="live-dot"></span> AUTOMATIC EXPRESSIONS</span><span>Task states drive the companion, no manual controls</span></div>
-<section id="chibiOperations" class="chibi-operations card" aria-label="Albedo operations floor movement prototype" data-ready="loading">
+<section id="chibiOperations" class="chibi-operations card" aria-label="Albedo interactive eight-direction operations floor, with production sprite frames pending approval" data-ready="loading">
  <div class="chibi-header"><div><span class="section-kicker">OPERATIONS FLOOR · ALBEDO</span><p>8-direction navigation and workstation zones</p></div><strong id="chibiArtStatus" role="status">CHECKING 40-FRAME CONTRACT</strong></div>
- <div class="chibi-floor" id="chibiFloor" aria-label="Technical operations movement test floor">
-  <span class="chibi-zone" style="left:17%;top:77%" aria-label="Home zone">HOME</span>
-  <span class="chibi-zone" style="left:79%;top:30%" aria-label="Terminal zone">TERMINAL</span>
-  <span class="chibi-zone" style="left:50%;top:76%" aria-label="Waiting zone">WAITING</span>
-  <span class="chibi-zone" style="left:82%;top:76%" aria-label="Result zone">RESULT</span>
-  <span class="chibi-zone" style="left:20%;top:31%" aria-label="Recovery zone">RECOVERY</span>
+ <div class="chibi-stage-legend"><span class="legend-dot"></span><strong>LIVE TASK PATH</strong><span>Choose a station or click the floor to navigate locally · task updates take priority</span></div>
+ <div class="chibi-floor" id="chibiFloor" aria-label="Albedo eight-direction operations map, click to navigate" data-interactive="true">
+  <div class="floor-crosshair" aria-hidden="true"></div>
+  <span class="floor-coordinate" aria-hidden="true">EXODIA / MAP 02 · NAV VECTOR</span>
+  <span class="floor-coordinate" aria-hidden="true">KIKO · WAYPOINT TRACKING</span>
+  <button type="button" class="chibi-zone" data-chibi-zone="home" style="left:17%;top:77%" aria-label="Navigate Albedo to home">HOME</button>
+  <button type="button" class="chibi-zone" data-chibi-zone="terminal" style="left:79%;top:30%" aria-label="Navigate Albedo to terminal">TERMINAL</button>
+  <button type="button" class="chibi-zone" data-chibi-zone="waiting" style="left:50%;top:76%" aria-label="Navigate Albedo to waiting">WAITING</button>
+  <button type="button" class="chibi-zone" data-chibi-zone="result" style="left:82%;top:76%" aria-label="Navigate Albedo to results">RESULT</button>
+  <button type="button" class="chibi-zone" data-chibi-zone="recovery" style="left:20%;top:31%" aria-label="Navigate Albedo to recovery">RECOVERY</button>
   <div class="chibi-actor" id="chibiActor" data-motion="idle" data-heading="s" aria-label="Albedo navigation proof; not approved sprite art">
    <div class="chibi-floor-shadow" aria-hidden="true"></div>
    <div id="chibiMarker" class="chibi-technical-marker" role="img" aria-label="Temporary position and heading marker, not chibi artwork"><span class="chibi-arrow">↑</span><b>A</b><small class="chibi-heading">S</small></div>
    <img id="chibiFrame" hidden alt="Albedo chibi frame, SHA-verified only"/>
   </div>
  </div>
- <div class="chibi-footer"><span id="chibiZoneState" role="status">HOME · IDLE · S</span><span>Motion marker only · final 40-frame artwork pending</span></div>
+ <div class="chibi-footer">
+  <span id="chibiZoneState" role="status">HOME · IDLE · S</span>
+  <div class="chibi-telemetry" aria-label="Albedo navigation telemetry">
+    <span>HEADING <b id="chibiHeadingReadout">S</b></span>
+    <span>STRIDE <b id="chibiStrideReadout">00</b></span>
+    <button type="button" id="chibiMotionToggle" class="chibi-motion-toggle" aria-pressed="true">Motion on</button>
+  </div>
+  <span class="chibi-motion-note">40 independent native sprite frames pending · route marker is not character artwork</span>
+ </div>
  
 </section>
 <section id="liu_beiPilotPane" class="liu-bei-pilot card" aria-label="Liu Bei five-state art review" hidden>
