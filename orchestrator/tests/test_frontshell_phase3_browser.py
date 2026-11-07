@@ -58,6 +58,11 @@ def test_phase3_live_drilldowns_and_staleness():
                             "!!window.__exodiaPhase2Telemetry && "
                             "document.querySelector('#fsProviderDrilldown')",
                             timeout=18000)
+                        # Freeze the already-validated GET/WebSocket refresh loop.
+                        # The remainder explicitly tests synthetic lifecycle
+                        # transitions without 9-second polling races.
+                        await page.evaluate(
+                            "() => window.__exodiaPhase2Telemetry.stop()")
                         assert await page.locator(".fs-provider-card").count()==4
                         await page.locator(".fs-provider-card[data-provider=gemini]").click()
                         assert "Gemini" in await page.locator("#fsProviderDrilldown h3").inner_text()
