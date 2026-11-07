@@ -1,0 +1,36 @@
+/* Frontshell Phase 3 — local operational drilldowns (read-only). */
+.fs-provider-card{cursor:pointer;transition:border-color .18s,transform .18s}
+.fs-provider-card:hover,.fs-provider-card:focus-visible,
+.fs-provider-card[data-selected=true]{
+  border-color:#84d9e2;box-shadow:0 0 0 1px #4b99ad,inset 0 1px #ffffff18;
+  outline:none;
+}
+.fs-provider-card[data-selected=true]{background:linear-gradient(160deg,#1c3650,#0c2235)}
+.fs-drilldown{margin-top:12px;border:1px solid #42627e;border-radius:11px;
+  background:linear-gradient(155deg,#0e2438,#0c1b30);padding:13px 15px;color:#c8dcf3}
+.fs-drilldown-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.fs-drilldown h3{font:800 13px/1.4 Inter,system-ui,sans-serif;color:#eaf6ff;margin:0;flex:1}
+.fs-diagnostic-freshness{font:800 9px/1.45 ui-monospace,Consolas,monospace;
+  letter-spacing:.05em;color:#9dd6c2;border:1px solid #42665f;border-radius:6px;
+  padding:6px 8px;background:#122d35}
+.fs-drilldown[data-freshness=aging] .fs-diagnostic-freshness{color:#ffdaa6;border-color:#9a7a54}
+.fs-drilldown[data-freshness=stale] .fs-diagnostic-freshness,
+.fs-drilldown[data-freshness=unavailable] .fs-diagnostic-freshness{color:#ffc4cc;border-color:#975e72}
+.fs-drilldown-close{cursor:pointer;border:1px solid #56789a;border-radius:8px;
+  padding:7px 10px;background:#1d3b58;color:#d7edfc;font:760 10px Inter,system-ui,sans-serif}
+.fs-drilldown-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:13px}
+.fs-drilldown-list{border:1px solid #344d69;background:#091b2d;
+  border-radius:9px;padding:11px 13px;min-width:0;max-height:210px;overflow:auto}
+.fs-drilldown-list h4{font:800 10px Inter,system-ui,sans-serif;letter-spacing:.08em;
+  margin:0 0 9px;color:#b1d5f3;text-transform:uppercase}
+.fs-diagnostic-item{font:550 11px/1.5 ui-monospace,Consolas,monospace;
+  color:#d5e9fc;overflow-wrap:anywhere;margin:5px 0;padding:6px;
+  border-bottom:1px solid #3048676c}
+.fs-diagnostic-empty{color:#8fa8c6;font-size:11px}
+.fs-drilldown-disclaimer{color:#91aaca;font-size:10px;line-height:1.5;margin:10px 0 0}
+@media(max-width:610px){.fs-drilldown-grid{grid-template-columns:1fr}
+ .fs-drilldown{padding:10px}.fs-diagnostic-freshness{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.fs-provider-card{transition:none}}
+
+/* Author display rules must never override the semantic collapsed state. */
+.fs-drilldown-grid[hidden],.fs-drilldown-disclaimer[hidden]{display:none!important}
