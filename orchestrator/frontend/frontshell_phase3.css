@@ -31,3 +31,6 @@
 @media(max-width:610px){.fs-drilldown-grid{grid-template-columns:1fr}
  .fs-drilldown{padding:10px}.fs-diagnostic-freshness{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.fs-provider-card{transition:none}}
+
+/* Author display rules must never override the semantic collapsed state. */
+.fs-drilldown-grid[hidden],.fs-drilldown-disclaimer[hidden]{display:none!important}
