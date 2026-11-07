@@ -9,6 +9,7 @@ test('default layout keeps the accepted response / centered hero / controls orde
   const initial=defaultLayout();
   assert.equal(initial.schema,SCHEMA);
   assert.deepEqual(initial.order,['output','hero','control']);
+  assert.deepEqual(initial.compactOrder,['hero','output','control']);
   assert.equal(initial.expanded,null);
   assert.ok(Object.isFrozen(initial.order));
 });
@@ -17,6 +18,8 @@ test('keyboard-equivalent moves persist exact validated roles and dimensions',()
   let current=defaultLayout();
   current=reduceLayout(current,{type:'move',role:'hero',direction:-1});
   assert.deepEqual(current.order,['hero','output','control']);
+  current=reduceLayout(current,{type:'move',role:'hero',direction:1,compact:true});
+  assert.deepEqual(current.compactOrder,['output','hero','control']);
   current=reduceLayout(current,{type:'minimize',role:'control'});
   assert.equal(current.minimized.control,true);
   current=reduceLayout(current,{type:'expand',role:'control'});
@@ -29,6 +32,7 @@ test('keyboard-equivalent moves persist exact validated roles and dimensions',()
   assert.equal(JSON.stringify(store.data).includes('prompt'),false);
   const reset=reduceLayout(current,{type:'reset'});
   assert.deepEqual(reset.order,['output','hero','control']);
+  assert.deepEqual(reset.compactOrder,['hero','output','control']);
   assert.equal(reset.expanded,null);
 });
 test('layout fails closed on forged role, corrupted storage or bad action',()=>{
