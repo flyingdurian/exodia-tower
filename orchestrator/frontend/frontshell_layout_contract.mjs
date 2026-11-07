@@ -44,6 +44,7 @@ export function readLayout(storage){
 }
 export function saveLayout(storage,layout){
   const validated=validateLayout(layout);
+  if(!storage||typeof storage.setItem!=='function')return false;
   try{
     storage?.setItem?.(LAYOUT_KEY,JSON.stringify(validated));
     return true;
