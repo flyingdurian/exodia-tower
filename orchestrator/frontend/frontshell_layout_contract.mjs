@@ -5,6 +5,7 @@ export const SCHEMA='exodia.frontshell.layout/v2';
 const base=()=>({
   schema:SCHEMA,
   order:[...ROLES],
+  compactOrder:['hero','output','control'],
   minimized:{output:false,hero:false,control:false},
   expanded:null
 });
@@ -14,6 +15,10 @@ export function validateLayout(candidate){
      ||candidate.order.length!==3
      ||new Set(candidate.order).size!==3
      ||candidate.order.some(v=>!ROLES.includes(v))
+     ||!Array.isArray(candidate.compactOrder)
+     ||candidate.compactOrder.length!==3
+     ||new Set(candidate.compactOrder).size!==3
+     ||candidate.compactOrder.some(v=>!ROLES.includes(v))
      ||!candidate.minimized||typeof candidate.minimized!=='object'
      ||ROLES.some(id=>typeof candidate.minimized[id]!=='boolean')
      ||(candidate.expanded!==null&&!ROLES.includes(candidate.expanded))
@@ -22,6 +27,7 @@ export function validateLayout(candidate){
   return Object.freeze({
     schema:SCHEMA,
     order:Object.freeze([...candidate.order]),
+    compactOrder:Object.freeze([...candidate.compactOrder]),
     minimized:Object.freeze(Object.fromEntries(
       ROLES.map(role=>[role,candidate.minimized[role]]))),
     expanded:candidate.expanded
@@ -48,6 +54,7 @@ export function reduceLayout(layout,action){
   const next={
     schema:SCHEMA,
     order:[...previous.order],
+    compactOrder:[...previous.compactOrder],
     minimized:{...previous.minimized},
     expanded:previous.expanded
   };
@@ -57,10 +64,11 @@ export function reduceLayout(layout,action){
   if(action.type==='move'){
     if(!Number.isInteger(action.direction)||Math.abs(action.direction)!==1)
       throw Error('Direction must be left or right');
-    const pos=next.order.indexOf(role);
+    const target=action.compact===true?next.compactOrder:next.order;
+    const pos=target.indexOf(role);
     const at=pos+action.direction;
-    if(at>=0&&at<next.order.length){
-      [next.order[pos],next.order[at]]=[next.order[at],next.order[pos]];
+    if(at>=0&&at<target.length){
+      [target[pos],target[at]]=[target[at],target[pos]];
     }
   }else if(action.type==='minimize'){
     if(next.expanded===role)next.expanded=null;
