@@ -158,3 +158,10 @@
 @media(prefers-reduced-motion:reduce){
   .fs-provider-card,.fs-chart *,.fs-layout-button{transition:none!important;animation:none!important}
 }
+
+/* Every workspace is its own paint boundary. After focus/expand transitions
+   an overflowing response card must never intercept a Chibi floor station. */
+.command-grid .output-col{position:relative;isolation:isolate;z-index:1;overflow:clip}
+.command-grid .hero-col{position:relative;isolation:isolate;z-index:3}
+.command-grid .control-col{position:relative;isolation:isolate;z-index:1}
+.command-grid .hero-col .chibi-floor{isolation:isolate}
