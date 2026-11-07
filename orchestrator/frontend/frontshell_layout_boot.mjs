@@ -1,5 +1,5 @@
 /** Operator workspace controls: native DnD + buttons; browser-local layout only. */
-import {ROLES,defaultLayout,readLayout,saveLayout,reduceLayout}
+import {ROLES,defaultLayout,validateLayout,readLayout,saveLayout,reduceLayout}
   from './frontshell_layout_contract.mjs';
 const TITLES=Object.freeze({
   output:'Response / missions',hero:'Albedo operations',control:'Operator / systems'
@@ -177,6 +177,13 @@ export function startFrontshellLayout({
   const runtime={
     get layout(){return layout;},
     change:dispatch,
+    applyPreset:next=>{
+      layout=validateLayout(next);
+      const stored=saveLayout(localStorage,layout);
+      apply();
+      if(saved)saved.textContent=stored?'PRESET SAVED LOCALLY':'PRESET · SESSION ONLY';
+      return stored;
+    },
     reset:()=>reset?.click(),
     stop(){win.removeEventListener('resize',apply);}
   };
