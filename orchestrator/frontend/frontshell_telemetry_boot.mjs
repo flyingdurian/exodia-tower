@@ -70,14 +70,14 @@ export function startFrontshellTelemetry({
   const browserVisible=()=>doc?.visibilityState!=='hidden';
   const browserOnline=()=>win.navigator?.onLine!==false;
   const eligible=()=>canRefresh({visible:browserVisible(),online:browserOnline()});
-  const health=()=>observeResilience({
+  const sampleHealth=()=>observeResilience({
     now:Date.now(),lastSnapshotAt:lastSuccessAt,link,
     online:browserOnline(),visible:browserVisible(),failures
   });
   function paint(){
     const compact=summariseActivity(snapshot,link);
     root.dataset.link=link;
-    const readiness=health();
+    const readiness=sampleHealth();
     root.dataset.freshness=readiness.freshness;
     root.dataset.network=readiness.online?'online':'offline';
     try{win.dispatchEvent(new CustomEvent('exodia:frontshell-link',{detail:{link}}));}catch(_){}
@@ -223,7 +223,7 @@ export function startFrontshellTelemetry({
     summary:()=>summariseActivity(snapshot,link),
     get history(){return history.all();},
     get snapshot(){return snapshot;},
-    get readiness(){return health();},
+    get readiness(){return sampleHealth();},
     stop(){
       if(disposed)return;
       disposed=true;
