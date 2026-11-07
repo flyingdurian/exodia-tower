@@ -40,6 +40,7 @@ jobs:
       - run: node --check orchestrator/frontend/frontshell_ui.mjs
       - run: node --test orchestrator/tests/frontshell_signal.test.mjs
       - run: node --test orchestrator/tests/frontshell_chibi_integration.test.mjs
+      - run: node --test orchestrator/tests/albedo_chibi_renderer_signed_frames.test.mjs
       - run: node --check orchestrator/frontend/albedo_room_behavior.mjs
       - run: node --test orchestrator/tests/albedo_room_behavior.test.mjs
       - run: node --test orchestrator/tests/albedo_chibi_boot.test.mjs
