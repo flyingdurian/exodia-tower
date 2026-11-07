@@ -1,0 +1,49 @@
+/* Phase 4: accessible, local-only operator productivity surfaces. */
+.fs-palette-launch,.fs-presets-select{border:1px solid #4d83a5;
+ border-radius:10px;background:#1b3855;color:#d6e9fc;font-size:10px;
+ font-weight:780;min-height:37px;padding:8px 12px;cursor:pointer}
+.fs-palette-launch:hover,.fs-presets-select:hover{border-color:#9fdde9;background:#284b68}
+.fs-presets-select{max-width:168px}
+.fs-palette-dialog{border:1px solid #628aad;border-radius:18px;color:#e8f3ff;
+ background:linear-gradient(155deg,#142d47,#0a162b);
+ width:min(94vw,630px);max-height:min(84vh,650px);box-shadow:0 25px 80px #020815b8;
+ padding:0;overflow:auto}
+.fs-palette-dialog::backdrop{background:#010817c9;backdrop-filter:blur(7px)}
+.fs-palette-panel{padding:22px;display:grid;gap:13px}
+.fs-palette-panel h2{font:820 18px/1.3 Inter,system-ui,sans-serif;margin:0;
+ color:#f0f8ff;letter-spacing:.08em}
+.fs-palette-panel>p{font-size:11px;line-height:1.5;color:#a4c4d7;margin:0}
+.fs-palette-search{min-width:0;width:100%;background:#081f35;border:1px solid #739cb8;
+ border-radius:10px;color:#f0fbff;font:13px/1.4 Inter,system-ui,sans-serif;
+ padding:13px 15px;outline:none}
+.fs-palette-search:focus-visible{border-color:#a6e8e7;box-shadow:0 0 0 2px #65c6e84d}
+.fs-palette-results{display:grid;gap:6px;max-height:350px;overflow:auto;
+ scrollbar-color:#527998 #0b2139}
+.fs-palette-option{width:100%;display:flex;gap:10px;align-items:center;
+ justify-content:space-between;background:#16334d;color:#e2f2ff;
+ border:1px solid #3b6181;border-radius:9px;padding:12px 14px;
+ cursor:pointer;text-align:left}
+.fs-palette-option:hover,.fs-palette-option[aria-selected=true]{
+ border-color:#86d9db;background:#27506b;outline:none}
+.fs-palette-item-name{font:700 12px/1.3 Inter,system-ui,sans-serif}
+.fs-palette-item-group{font:760 9px/1.2 Inter,system-ui,sans-serif;
+ color:#a4c2df;text-transform:uppercase;letter-spacing:.06em}
+.fs-palette-empty{font-size:12px;color:#b5c8de}
+.fs-palette-hint{border-top:1px solid #3e5774;padding-top:11px}
+.fs-palette-status{color:#9ce3d2!important;font:700 10px Inter,system-ui,sans-serif!important}
+.fs-operator-notices{position:fixed;right:22px;bottom:20px;z-index:200;
+ display:grid;gap:8px;max-width:min(370px,85vw);pointer-events:none}
+.fs-operator-notice{padding:11px 14px;border:1px solid #4c867f;border-left:3px solid #6ae3bc;
+ border-radius:9px;background:#112f3bee;color:#dcf6f1;
+ font:750 11px/1.4 Inter,system-ui,sans-serif;
+ box-shadow:0 12px 30px #02091491;overflow-wrap:anywhere}
+.fs-operator-notice[data-attention=true]{border-color:#99636e;
+ border-left-color:#ffb1b8;background:#412735f2;color:#ffe6e4}
+@media(max-width:640px){
+ .fs-palette-dialog{width:calc(100vw - 20px);max-height:86vh}
+ .fs-palette-panel{padding:16px}
+ .fs-palette-option{padding:12px 10px}
+ .fs-presets-select{max-width:143px}
+ .fs-operator-notices{right:10px;bottom:10px}
+}
+@media(prefers-reduced-motion:reduce){.fs-palette-dialog,.fs-palette-option{transition:none!important}}
