@@ -116,13 +116,24 @@ export class AlbedoChibiController {
   setEnabled(on){this.enabled=!!on;if(!on){this.mode='idle';this.frame=0;}else if(!this.arrived)this.mode='walk';return this.snapshot();}
   goToZone(name){
     const z=this.manifest.zones[name];if(!z)throw new RangeError('Unknown chibi floor zone');
-    if(name===this.zone)return this.snapshot(); // Polling may repeat the same task state; never reset the walk loop.
-    const target={x:z.x,y:z.y};
-    // Compute before mutating: an impossible route keeps the current walk intact.
-    const waypoints=planFloorRoute(this.position,target,this.manifest,this.floorAspect);
-    this.zone=name;this.target=target;this.waypoints=waypoints;
-    this.arrived=Math.hypot((target.x-this.position.x)*this.floorAspect,target.y-this.position.y)<=this.manifest.motion.arrival_epsilon;
-    if(!this.arrived&&this.enabled){this.mode='walk';}
+    if(name===this.zone)return this.snapshot(); // Duplicate polling never rewinds contact phase.
+    return this.goToPoint(z.x,z.y,name);
+  }
+  /** Local stage navigation, never a model/task dispatch. Coordinates are bounded. */
+  goToPoint(x,y,zone='manual'){
+    if(!finite(x)||!finite(y))throw new TypeError('Floor coordinates must be finite');
+    if(zone!=='manual'&&!Object.hasOwn(this.manifest.zones,zone))
+      throw new RangeError('Unknown floor destination');
+    const b=this.manifest.anchors.floor_bounds;
+    const target={x:bounded(x,...b.x),y:bounded(y,...b.y)};
+    const distance=Math.hypot((target.x-this.position.x)*this.floorAspect,target.y-this.position.y);
+    // Compute route before mutating so invalid collision paths are atomic.
+    const waypoints=distance<=this.manifest.motion.arrival_epsilon?[]:
+      planFloorRoute(this.position,target,this.manifest,this.floorAspect);
+    this.zone=zone;this.target=target;this.waypoints=waypoints;
+    this.arrived=waypoints.length===0;
+    if(this.arrived){this.mode='idle';this.frame=0;}
+    else if(this.enabled){this.mode='walk';}
     return this.snapshot();
   }
   dispatchTaskState(state,agentId='kiko'){
