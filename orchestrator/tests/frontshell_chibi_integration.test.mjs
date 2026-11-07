@@ -114,7 +114,7 @@ test('clickable floor, station navigation and public task updates use same contr
     updatedAt:'2026-11-06T20:00:10Z'
   }});
   assert.equal(runtime.controller.zone,'recovery',
-    'Updated polling timestamp must not break operator's route');
+    "Updated polling timestamp must not break operator route");
   h.events['window:exodia:command-task']({detail:{
     taskId:'t-1',state:'answered',agentId:'kiko',
     updatedAt:'2026-11-06T20:00:12Z'
