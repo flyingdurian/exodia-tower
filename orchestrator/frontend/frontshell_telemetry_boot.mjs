@@ -4,6 +4,8 @@
 import {sanitizeTasks} from './frontshell_diagnostics_contract.mjs';
 import {PROVIDERS,ActivityHistory,projectProviders,
         sparklinePath,summariseActivity} from './frontshell_telemetry_contract.mjs';
+import {boundedRetryDelay,canRefresh,observeResilience}
+  from './frontshell_resilience_contract.mjs';
 const NAMES=Object.freeze({chatgpt:'ChatGPT',gemini:'Gemini',deepseek:'DeepSeek',ollama:'Ollama'});
 const SVG_NS='http://www.w3.org/2000/svg';
 function elt(tag,cls,text){
@@ -52,7 +54,7 @@ function cardFor(id){
 
 export function startFrontshellTelemetry({
   root=document.getElementById('fsTelemetry'),
-  fetcher=fetch,win=window,WebSocketType=win.WebSocket
+  fetcher=fetch,win=window,doc=document,WebSocketType=win.WebSocket
 }={}){
   if(!root)return null;
   const history=new ActivityHistory(32);
@@ -64,10 +66,20 @@ export function startFrontshellTelemetry({
   const refreshButton=root.querySelector('#fsTelemetryRefresh');
   let link='connecting',socket=null,disposed=false;
   let snapshot=null,interval=null,retry=null,throttle=null,pending=null;
-  let retryDelay=1800;
+  let attempt=0,lastSuccessAt=0,failures=0,activeRequest=null,requestTimer=null;
+  const browserVisible=()=>doc?.visibilityState!=='hidden';
+  const browserOnline=()=>win.navigator?.onLine!==false;
+  const eligible=()=>canRefresh({visible:browserVisible(),online:browserOnline()});
+  const health=()=>observeResilience({
+    now:Date.now(),lastSnapshotAt:lastSuccessAt,link,
+    online:browserOnline(),visible:browserVisible(),failures
+  });
   function paint(){
     const compact=summariseActivity(snapshot,link);
     root.dataset.link=link;
+    const readiness=health();
+    root.dataset.freshness=readiness.freshness;
+    root.dataset.network=readiness.online?'online':'offline';
     try{win.dispatchEvent(new CustomEvent('exodia:frontshell-link',{detail:{link}}));}catch(_){}
     if(health){
       health.textContent=compact.transportLabel;
@@ -80,6 +92,7 @@ export function startFrontshellTelemetry({
       el.badge.dataset.link=link;
       el.status.textContent=record?.session||'Snapshot pending · no authentication claim';
       el.status.dataset.health=record?.status||'unknown';
+      el.card.dataset.stale=String(readiness.freshness!=='fresh');
       el.active.textContent=record?String(record.active):'—';
       const points=history.series[id];
       el.trace.setAttribute('d',sparklinePath(points));
@@ -88,64 +101,78 @@ export function startFrontshellTelemetry({
         :'OBSERVED TASKS · NO SAMPLES';
     }
   }
-  async function read(url){
-    const response=await fetcher(url,{method:'GET',cache:'no-store'});
+  async function read(url,signal){
+    const response=await fetcher(url,{method:'GET',cache:'no-store',signal});
     if(!response.ok)throw Error('Local telemetry snapshot unavailable');
     return response.json();
   }
-  async function refresh(){
-    if(disposed)return;
+  async function refresh({force=false}={}){
+    if(disposed||(!force&&!eligible()))return;
     if(pending)return pending;
     pending=(async()=>{
+      const controller=new AbortController();
+      activeRequest=controller;
+      requestTimer=win.setTimeout(()=>controller.abort(),7000);
       try{
         const [providers,sessions,tasks]=await Promise.all([
-          read('/api/command/providers'),read('/api/web/sessions'),
-          read('/api/command/tasks')
+          read('/api/command/providers',controller.signal),
+          read('/api/web/sessions',controller.signal),
+          read('/api/command/tasks',controller.signal)
         ]);
         const next=projectProviders(providers,sessions,tasks);
         if(disposed)return;
         snapshot=next;
         history.append(snapshot);
         root.dataset.ready='1';
+        failures=0;
+        lastSuccessAt=Date.now();
         try{
           // Only allowlisted task keys/states/agents; never publish prompt/results.
-          const observation={tasks:sanitizeTasks(tasks),observedAt:Date.now(),link};
+          const observation={tasks:sanitizeTasks(tasks),observedAt:lastSuccessAt,link};
           win.__exodiaLastTelemetryObservation=observation;
           win.dispatchEvent(new CustomEvent('exodia:frontshell-observation',{
             detail:observation
           }));
         }catch(_){/* Local diagnostics must not break provider telemetry. */}
-        if(updated)updated.textContent='Snapshot: '+new Date().toLocaleTimeString()+
+        if(updated)updated.textContent='Snapshot: '+new Date(lastSuccessAt).toLocaleTimeString()+
           ' · Local service observations, not vendor authentication';
         paint();
       }catch(_){
         if(disposed)return;
+        failures++;
         root.dataset.ready=snapshot?'stale':'error';
         if(updated)updated.textContent='Telemetry unavailable · last snapshot may be stale';
+        try{win.dispatchEvent(new CustomEvent('exodia:frontshell-snapshot-error',{detail:{failed:true}}));}catch(_){}
         paint();
-      }finally{pending=null;}
+      }finally{
+        if(requestTimer!==null)win.clearTimeout(requestTimer);
+        requestTimer=null;activeRequest=null;pending=null;
+      }
     })();
     return pending;
   }
   function invalidate(){
-    if(disposed||throttle!==null)return;
+    if(disposed||!eligible()||throttle!==null)return;
     throttle=win.setTimeout(()=>{
       throttle=null;
       void refresh();
     },700);
   }
   function connect(){
-    if(disposed||!WebSocketType){
+    if(retry!==null){win.clearTimeout(retry);retry=null;}
+    if(disposed||!WebSocketType||!eligible()){
       link='disconnected';paint();return;
     }
+    if(socket&&socket.readyState===1)return;
     link='connecting';paint();
     try{
       const scheme=win.location?.protocol==='https:'?'wss:':'ws:';
       const host=win.location?.host||'';
       socket=new WebSocketType(scheme+'//'+host+'/ws/events');
+      const candidate=socket;
       socket.onopen=()=>{
-        if(disposed)return;
-        link='connected';retryDelay=1800;paint();invalidate();
+        if(disposed||socket!==candidate)return;
+        link='connected';attempt=0;paint();invalidate();
       };
       socket.onmessage=event=>{
         // Payload is never rendered or stored. Kind only invalidates GETs.
@@ -155,35 +182,57 @@ export function startFrontshellTelemetry({
             invalidate();
         }catch(_){/* ignore malformed/injected event frames */}
       };
-      socket.onerror=()=>{if(!disposed)socket?.close();};
+      socket.onerror=()=>{if(!disposed&&socket===candidate)candidate.close();};
       socket.onclose=()=>{
-        if(disposed)return;
-        link='disconnected';paint();
-        retry=win.setTimeout(connect,retryDelay);
-        retryDelay=Math.min(15000,retryDelay*2);
+        if(disposed||socket!==candidate)return;
+        socket=null;link='disconnected';paint();
+        if(eligible())retry=win.setTimeout(connect,boundedRetryDelay(attempt++));
       };
     }catch(_){
-      link='disconnected';paint();
-      retry=win.setTimeout(connect,retryDelay);
-      retryDelay=Math.min(15000,retryDelay*2);
+      socket=null;link='disconnected';paint();
+      if(eligible())retry=win.setTimeout(connect,boundedRetryDelay(attempt++));
     }
   }
-  refreshButton?.addEventListener('click',()=>{void refresh();});
+  function closeLocalSocket(){
+    if(retry!==null){win.clearTimeout(retry);retry=null;}
+    if(throttle!==null){win.clearTimeout(throttle);throttle=null;}
+    if(socket){
+      const closing=socket;socket=null;
+      closing.onclose=null;closing.onmessage=null;
+      try{closing.close();}catch(_){}
+    }
+    if(activeRequest)activeRequest.abort();
+    link='disconnected';paint();
+  }
+  const onConnectivity=()=>{
+    if(disposed)return;
+    if(!eligible())closeLocalSocket();
+    else{attempt=0;connect();void refresh();}
+  };
+  const onVisibility=()=>onConnectivity();
+  refreshButton?.addEventListener('click',()=>{void refresh({force:true});});
+  win.addEventListener('online',onConnectivity);
+  win.addEventListener('offline',onConnectivity);
+  doc?.addEventListener?.('visibilitychange',onVisibility);
   paint();
   connect();
   void refresh();
-  interval=win.setInterval(()=>{void refresh();},9000);
+  interval=win.setInterval(()=>{if(eligible())void refresh();},9000);
   const runtime={
     refresh,
     summary:()=>summariseActivity(snapshot,link),
     get history(){return history.all();},
     get snapshot(){return snapshot;},
+    get readiness(){return health();},
     stop(){
+      if(disposed)return;
       disposed=true;
       win.clearInterval(interval);
-      if(retry!==null)win.clearTimeout(retry);
-      if(throttle!==null)win.clearTimeout(throttle);
-      if(socket){socket.onclose=null;socket.onmessage=null;socket.close();}
+      win.removeEventListener('online',onConnectivity);
+      win.removeEventListener('offline',onConnectivity);
+      doc?.removeEventListener?.('visibilitychange',onVisibility);
+      closeLocalSocket();
+      if(requestTimer!==null)win.clearTimeout(requestTimer);
     }
   };
   win.__exodiaPhase2Telemetry=runtime;

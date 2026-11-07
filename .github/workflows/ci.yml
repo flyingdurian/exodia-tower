@@ -41,6 +41,9 @@ jobs:
       - run: node --test orchestrator/tests/frontshell_signal.test.mjs
       - run: node --check orchestrator/frontend/frontshell_telemetry_contract.mjs
       - run: node --check orchestrator/frontend/frontshell_telemetry_boot.mjs
+      - run: node --check orchestrator/frontend/frontshell_resilience_contract.mjs
+      - run: node --check orchestrator/frontend/frontshell_resilience_boot.mjs
+      - run: node --test orchestrator/tests/frontshell_phase6_resilience.test.mjs
       - run: node --check orchestrator/frontend/frontshell_terminal_contract.mjs
       - run: node --check orchestrator/frontend/frontshell_terminal_boot.mjs
       - run: node --check orchestrator/frontend/frontshell_layout_contract.mjs
@@ -72,7 +75,7 @@ jobs:
       - run: node --check orchestrator/frontend/test_workbench_33.mjs
       - run: node --test orchestrator/tests/albedo_motion.test.mjs
       - run: python -m playwright install --with-deps chromium
-      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py tests/test_core5_browser.py tests/test_gate3_33_browser.py tests/test_albedo_chibi_browser.py tests/test_phase15_workflow_browser.py tests/test_frontshell_polish_browser.py tests/test_frontshell_phase2_browser.py tests/test_frontshell_phase3_browser.py tests/test_frontshell_phase4_browser.py -q
+      - run: cd orchestrator && EXODIA_VISUAL_QA=1 python -m pytest tests/test_albedo_visual.py tests/test_gemini_media_browser.py tests/test_chatgpt_visual.py tests/test_core5_browser.py tests/test_gate3_33_browser.py tests/test_albedo_chibi_browser.py tests/test_phase15_workflow_browser.py tests/test_frontshell_polish_browser.py tests/test_frontshell_phase2_browser.py tests/test_frontshell_phase3_browser.py tests/test_frontshell_phase4_browser.py tests/test_frontshell_phase6_browser.py -q
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -134,6 +137,13 @@ jobs:
         with:
           name: exodia-frontshell-phase4-command-palette
           path: orchestrator/app_data/qa_frontshell_phase4/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: exodia-frontshell-phase6-release-visual-gate
+          path: orchestrator/app_data/qa_frontshell_phase6/*.png
           if-no-files-found: ignore
           retention-days: 7
       - run: node --check orchestrator/frontend/albedo_experience.mjs
