@@ -110,7 +110,7 @@ def test_frontshell_polish_and_chibi_navigation_desktop_tablet_mobile():
                             await page.locator('[data-chibi-zone="terminal"]').click()
                             assert await page.locator("#chibiActor").get_attribute(
                                 "data-motion") in ("walk","idle")
-                            assert await page.locator("#chibiZoneState").inner_text()\
+                            assert (await page.locator("#chibiZoneState").inner_text())\
                                 .startswith("TERMINAL")
                             await page.evaluate("""()=>{
                               window.dispatchEvent(new CustomEvent('exodia:command-task',{
