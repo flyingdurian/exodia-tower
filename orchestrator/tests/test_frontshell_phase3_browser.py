@@ -42,7 +42,17 @@ def test_phase3_live_drilldowns_and_staleness():
                         page.on("pageerror",lambda e:errors.append(str(e)))
                         page.on("request",lambda r:writes.append(r.url)
                             if r.method not in ("GET","HEAD","OPTIONS") else None)
+                        # The local SQLite inbox is allowed to contain real tasks.
+                        # Intercept only this read model so periodic GET refreshes
+                        # cannot race against our deterministic synthetic event.
+                        async def isolated_tasks(route):
+                            await route.fulfill(status=200,
+                                content_type="application/json",body='{"tasks":[]}')
+                        await page.route("**/api/command/tasks",isolated_tasks)
                         await page.goto(url+"/",wait_until="domcontentloaded")
+                        await page.wait_for_function(
+                            "() => document.querySelector('#fsTelemetry')?.dataset.ready==='1'",
+                            timeout=16000)
                         await page.wait_for_function(
                             "() => !!window.__exodiaPhase3Diagnostics && "
                             "!!window.__exodiaPhase2Telemetry && "
