@@ -24,8 +24,8 @@ test('terminal status and providers are read-only projections without secret ech
   assert.ok(status.lines.join(' ').includes('NOT VERIFIED'));
   assert.equal(status.lines.join(' ').includes('SECRET_PROMPT'),false);
   const providers=runOperatorCommand('providers',{telemetry:service});
-  assert.ok(providers.lines.join(' ').includes('WebSocket is verified')===false);
-  assert.ok(providers.lines.join(' ').includes('No individual provider WebSocket is verified'));
+  assert.equal(providers.lines.at(-1),'No individual provider WebSocket is verified');
+  assert.ok(providers.lines.every(line=>!line.includes('PROVIDER VERIFIED')));
   assert.equal(runOperatorCommand('layout reset').action,'layout reset');
   const invalid=runOperatorCommand('shell rm -rf /');
   assert.equal(invalid.ok,false);
