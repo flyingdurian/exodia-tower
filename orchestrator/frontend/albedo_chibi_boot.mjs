@@ -2,6 +2,7 @@
 import {AlbedoChibiController,validateChibiManifest} from './albedo_chibi_controller.mjs';
 import {AlbedoChibiRenderer} from './albedo_chibi_renderer.mjs';
 import {AlbedoRoomBehavior} from './albedo_room_behavior.mjs';
+import {IdleChoreography,routeCoordinates} from './albedo_chibi_choreography.mjs';
 
 export async function startAlbedoChibi({
   doc=document,win=window,
@@ -28,6 +29,11 @@ export async function startAlbedoChibi({
   const reduced=win.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false;
   let motionEnabled=!reduced;
   let manualRoute=false;
+  const choreography=new IdleChoreography();
+  const routeLine=floor?.querySelector?.('#chibiRouteLine');
+  const routeTarget=floor?.querySelector?.('#chibiRouteTarget');
+  const activity=root.querySelector?.('#chibiActivityReadout');
+  let lastIdleStep=-1;
   const measure=()=>{
     if(floor?.clientHeight>0&&floor?.clientWidth>0){
       controller.setFloorAspect(floor.clientWidth/floor.clientHeight);
@@ -44,11 +50,25 @@ export async function startAlbedoChibi({
   cue.setAttribute('role','status');
   root.querySelector('#chibiZoneState')?.parentElement?.append(cue);
   const inStage=()=> (comp?.value||'kiko')==='kiko' && controller.enabled;
+  const cuesText=(snap,beat)=>snap.mode==='walk'?
+    'En route · '+snap.waypoints_remaining+' waypoint(s)':
+    beat.label+' · '+beat.heading.toUpperCase()+' gaze (technical proof)';
   const paint=()=>{
     const snap=controller.snapshot();
     renderer.draw(snap);
     if(compass)compass.textContent=snap.heading.toUpperCase();
     if(stride)stride.textContent=String(snap.frame).padStart(2,'0')+'/04';
+    const cue=choreography.snapshot();
+    root.dataset.idleBeat=String(cue.beat);
+    root.dataset.activity=cue.behavior;
+    if(activity)activity.textContent=cuesText(snap,cue);
+    if(routeLine&&routeTarget){
+      const route=routeCoordinates(snap,controller.waypoints);
+      routeLine.setAttribute('d',route.path);
+      routeTarget.setAttribute('cx',String((route.target.x*1000).toFixed(1)));
+      routeTarget.setAttribute('cy',String((route.target.y*1000).toFixed(1)));
+      routeTarget.hidden=route.count===0;
+    }
     root.dataset.motionOff=String(!motionEnabled);
     root.dataset.direction=snap.heading;
     for(const button of root.querySelectorAll?.('[data-chibi-zone]')||[]){
@@ -59,6 +79,9 @@ export async function startAlbedoChibi({
   };
   const apply=decision=>{
     manualRoute=false;
+    choreography.setBehavior(decision.behavior);
+    choreography.reset();
+    lastIdleStep=-1;
     controller.dispatchTaskState(decision.state,decision.visible?'kiko':'offstage');
     root.dataset.behavior=decision.behavior;
     root.dataset.taskPhase=decision.state;
@@ -85,6 +108,7 @@ export async function startAlbedoChibi({
   const moveToZone=name=>{
     if(!inStage()||!Object.hasOwn(manifest.zones,name))return false;
     controller.goToZone(name);
+    choreography.reset();lastIdleStep=-1;
     manualRoute=true;
     root.dataset.manualRoute='true';
     cue.textContent='Operator floor navigation · task telemetry remains authoritative';
@@ -94,6 +118,7 @@ export async function startAlbedoChibi({
   const moveToPoint=(x,y)=>{
     if(!inStage())return false;
     controller.goToPoint(x,y);
+    choreography.reset();lastIdleStep=-1;
     manualRoute=true;
     root.dataset.manualRoute='true';
     cue.textContent='Manual waypoint · no provider or task dispatch';
@@ -121,12 +146,26 @@ export async function startAlbedoChibi({
     if(Number.isFinite(x)&&Number.isFinite(y))moveToPoint(x,y);
   };
   floor?.addEventListener?.('click',onFloorClick);
+  // Keyboard moves the registered foot anchor, not a DOM cutout.
+  const onFloorKey=event=>{
+    if(event?.target!==floor||event.altKey||event.ctrlKey||event.metaKey)return;
+    const deltas={ArrowUp:[0,-1],ArrowDown:[0,1],
+      ArrowLeft:[-1,0],ArrowRight:[1,0]};
+    const axis=deltas[event.key];if(!axis||!inStage())return;
+    event.preventDefault?.();
+    const step=event.shiftKey?.07:.035;
+    moveToPoint(controller.target.x+axis[0]*step,
+      controller.target.y+axis[1]*step);
+  };
+  floor?.addEventListener?.('keydown',onFloorKey);
 
   const onMotionToggle=()=>{
     motionEnabled=!motionEnabled;
     motionToggle?.setAttribute('aria-pressed',String(motionEnabled));
     if(motionToggle)motionToggle.textContent=motionEnabled?'Motion on':'Motion off';
     if(!motionEnabled&&!controller.arrived)controller.finish();
+    choreography.pause(!motionEnabled);
+    lastIdleStep=-1;
     paint();
   };
   if(motionToggle){
@@ -138,10 +177,19 @@ export async function startAlbedoChibi({
   const render=now=>{
     const dt=previous===null?0:Math.max(0,(now-previous)/1000);
     previous=now;
+    if(doc?.hidden){previous=null;raf=win.requestAnimationFrame(render);return;}
     if(controller.enabled&&!controller.arrived){
       if(!motionEnabled)controller.finish();
       else controller.tick(dt);
+      if(controller.arrived){choreography.reset();lastIdleStep=-1;}
       paint();
+    }else if(controller.enabled&&controller.arrived&&motionEnabled){
+      const cue=choreography.tick(dt,{idle:true,motion:motionEnabled});
+      if(cue.steps!==lastIdleStep){
+        lastIdleStep=cue.steps;
+        controller.faceIdle(cue.heading);
+        paint();
+      }
     }
     raf=win.requestAnimationFrame(render);
   };
@@ -151,12 +199,13 @@ export async function startAlbedoChibi({
   raf=win.requestAnimationFrame(render);
   root.dataset.ready='1';
   const runtime={
-    controller,renderer,behavior,moveToPoint,moveToZone,
+    controller,renderer,behavior,choreography,moveToPoint,moveToZone,
     stop(){
       win.cancelAnimationFrame(raf);
       win.removeEventListener('exodia:command-task',onTask);
       comp?.removeEventListener('change',onCompanion);
       floor?.removeEventListener?.('click',onFloorClick);
+      floor?.removeEventListener?.('keydown',onFloorKey);
       motionToggle?.removeEventListener?.('click',onMotionToggle);
       observer?.disconnect();renderer.destroy();
     },

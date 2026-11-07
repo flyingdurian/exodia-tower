@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="color-scheme" content="dark"/><title>Albedo · Exodia Tower</title>
-<link rel="stylesheet" href="/assets/albedo_command.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_polish.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase2.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase3.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase4.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase6.css?v=1"/>
+<link rel="stylesheet" href="/assets/albedo_command.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_polish.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase2.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase3.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase4.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase5.css?v=1"/><link rel="stylesheet" href="/assets/frontshell_phase6.css?v=1"/>
 <script type="module" src="/assets/albedo_command.js?v=1"></script><script type="module" src="/assets/albedo_experience.mjs?v=1"></script><link rel="stylesheet" href="/assets/portrait_state_manager.css?v=1"><script type="module" src="/assets/portrait_state_boot.mjs?v=1"></script><script type="module" src="/assets/development_portrait_boot.mjs?v=1"></script><script type="module" src="/assets/albedo_chibi_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_ui.mjs?v=1"></script><script type="module" src="/assets/frontshell_telemetry_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_resilience_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_diagnostics_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_layout_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_palette_boot.mjs?v=1"></script><script type="module" src="/assets/frontshell_terminal_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_pilot_boot.mjs?v=1"></script><script type="module" src="/assets/liu_bei_33_review_boot.mjs?v=1"></script></head>
 <body>
 <a class="fs-skip" href="#mainContent">Skip to command center</a>
@@ -123,7 +123,11 @@
 <section id="chibiOperations" class="chibi-operations card" aria-label="Albedo interactive eight-direction operations floor, with production sprite frames pending approval" data-ready="loading">
  <div class="chibi-header"><div><span class="section-kicker">OPERATIONS FLOOR · ALBEDO</span><p>8-direction navigation and workstation zones</p></div><strong id="chibiArtStatus" role="status">CHECKING 40-FRAME CONTRACT</strong></div>
  <div class="chibi-stage-legend"><span class="legend-dot"></span><strong>LIVE TASK PATH</strong><span>Choose a station or click the floor to navigate locally · task updates take priority</span></div>
- <div class="chibi-floor" id="chibiFloor" aria-label="Albedo eight-direction operations map, click to navigate" data-interactive="true">
+ <div class="chibi-floor" id="chibiFloor" aria-label="Albedo eight-direction operations map; select a station, click to navigate, or use arrow keys to nudge" data-interactive="true" tabindex="0" aria-describedby="chibiKeyboardHint">
+  <svg id="chibiRouteOverlay" class="chibi-route-overlay" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+   <path id="chibiRouteLine" d=""/>
+   <circle id="chibiRouteTarget" cx="170" cy="770" r="9" hidden/>
+  </svg>
   <div class="floor-crosshair" aria-hidden="true"></div>
   <span class="floor-coordinate" aria-hidden="true">EXODIA / MAP 02 · NAV VECTOR</span>
   <span class="floor-coordinate" aria-hidden="true">KIKO · WAYPOINT TRACKING</span>
@@ -145,7 +149,8 @@
     <span>STRIDE <b id="chibiStrideReadout">00</b></span>
     <button type="button" id="chibiMotionToggle" class="chibi-motion-toggle" aria-pressed="true">Motion on</button>
   </div>
-  <span class="chibi-motion-note">40 independent native sprite frames pending · route marker is not character artwork</span>
+  <span id="chibiActivityReadout" class="chibi-activity-readout" role="status">Standing by · technical proof</span>
+  <span class="chibi-motion-note" id="chibiKeyboardHint">Arrow keys nudge the destination · Shift accelerates · 40 native sprite frames pending approval</span>
  </div>
  
 </section>
