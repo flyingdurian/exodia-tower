@@ -1,0 +1,48 @@
+/* Phase 6 technical RC: resilient visual states and accessible status disclosure. */
+.fs-skip{position:absolute;left:16px;top:-80px;z-index:9999;
+ background:#ddf7fa;color:#071c31;padding:10px 15px;border-radius:9px;
+ font:800 13px Inter,system-ui,sans-serif}
+.fs-skip:focus-visible{top:12px}
+.fs-reliability{margin:10px clamp(17px,2.5vw,38px) 0;padding:13px 17px;
+ border:1px solid #425c7e;border-radius:13px;
+ background:linear-gradient(145deg,#101d32,#0b1930);color:#e6f2ff;
+ box-shadow:inset 0 1px #e0eeff0c}
+.fs-release-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ flex-wrap:wrap}
+.fs-release-heading strong{font:800 11px/1.4 Inter,system-ui,sans-serif;
+ letter-spacing:.13em;color:#c7e5fa}
+.fs-release-heading span{font:800 9px/1.4 Inter,system-ui,sans-serif;
+ color:#ffcf9b;border:1px solid #947153;border-radius:7px;padding:5px 8px}
+.fs-release-indicators{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:9px;margin-top:11px}
+.fs-release-item{background:#142840;border:1px solid #3a5a78;border-radius:9px;
+ padding:9px 11px;min-width:0;display:grid;gap:5px}
+.fs-release-item small{font:800 9px/1.4 Inter,system-ui,sans-serif;
+ letter-spacing:.07em;color:#8eafc8}
+.fs-release-item strong{font:750 10px/1.5 ui-monospace,Consolas,monospace;
+ color:#e5edfa;overflow-wrap:anywhere}
+.fs-reliability[data-freshness=stale] .fs-release-item[data-check=freshness],
+.fs-reliability[data-freshness=offline] .fs-release-item[data-check=freshness],
+.fs-reliability[data-freshness=unavailable] .fs-release-item[data-check=freshness]{
+ border-color:#aa6674;background:#322035}
+.fs-reliability[data-link=connected] .fs-release-item[data-check=stream] strong{
+ color:#9ef3d0}
+.fs-release-note{font:500 10px/1.6 Inter,system-ui,sans-serif;
+ color:#91abc5;margin:10px 0 0}
+.fs-telemetry[data-ready=stale] .fs-provider-card,
+.fs-telemetry[data-ready=error] .fs-provider-card{
+ border-color:#876576;
+ background:linear-gradient(165deg,#30233e,#0d1b2d)}
+.fs-provider-card[data-stale=true] .fs-chart-trace{stroke:#b0a3b4}
+.fs-provider-card[data-stale=true] .fs-chart-key:after{
+ content:" · NOT CURRENT";color:#f6bbbf}
+@media(max-width:1100px){.fs-release-indicators{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.fs-reliability{margin-inline:12px;padding:12px}
+ .fs-release-indicators{gap:6px}
+ .fs-release-item{padding:8px}
+ .fs-release-item strong{font-size:9px}
+ .fs-release-note{font-size:9px}}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto!important}
+ .fs-reliability,.fs-release-item{animation:none!important;transition:none!important}
+}
