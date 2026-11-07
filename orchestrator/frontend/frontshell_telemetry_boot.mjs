@@ -109,8 +109,10 @@ export function startFrontshellTelemetry({
         root.dataset.ready='1';
         try{
           // Only allowlisted task keys/states/agents; never publish prompt/results.
+          const observation={tasks:sanitizeTasks(tasks),observedAt:Date.now(),link};
+          win.__exodiaLastTelemetryObservation=observation;
           win.dispatchEvent(new CustomEvent('exodia:frontshell-observation',{
-            detail:{tasks:sanitizeTasks(tasks),observedAt:Date.now(),link}
+            detail:observation
           }));
         }catch(_){/* Local diagnostics must not break provider telemetry. */}
         if(updated)updated.textContent='Snapshot: '+new Date().toLocaleTimeString()+
